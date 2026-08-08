@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — My Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --gold-soft:#fbe4b3;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;gap:12px;}
+  header.topbar .kps-logo{height:32px;width:32px;object-fit:contain;border-radius:6px;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .left .page-label{font-weight:400;font-size:11.5px;opacity:.75;letter-spacing:.4px;margin-left:2px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .live-pill{
+    display:flex;align-items:center;gap:6px;background:rgba(30,132,73,.18);
+    border:1px solid rgba(90,220,150,.4);color:#bdf5d3;border-radius:20px;
+    padding:4px 10px;font-size:10.5px;font-weight:700;letter-spacing:.4px;
+  }
+  header.topbar .live-pill .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:pulseDot 1.8s infinite;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55);}70%{box-shadow:0 0 0 7px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
+  header.topbar .topbar-actions button{
+    border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;
+    border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  header.topbar .topbar-actions button:hover{background:rgba(255,255,255,.18);}
+
+  .notice-strip{
+    background:var(--gold-soft);border-bottom:1px solid #ecd090;color:#5c3c0c;
+    font-size:12px;font-weight:600;text-align:center;padding:8px 16px;line-height:1.5;
+  }
+  .notice-strip b{color:#3a2205;}
+  .notice-strip.updated{background:#e8f5ec;border-bottom-color:#bfe4cc;color:#155c31;}
+  .notice-strip.updated b{color:#0d3d20;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:900px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,32px) clamp(20px,4vw,32px) clamp(16px,3vh,28px);text-align:left;}
+
+  .page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:clamp(10px,2vh,16px);flex-wrap:wrap;}
+  .page-head .id{display:flex;align-items:center;gap:16px;}
+  .seal-stage{position:relative;width:56px;height:56px;flex-shrink:0;}
+  .seal-stage img.seal{height:56px;width:56px;object-fit:contain;border-radius:10px;background:#fff;padding:3px;box-shadow:0 6px 16px rgba(11,23,48,.2), 0 0 0 3px #fff, 0 0 0 4px var(--line);}
+  .page-head h1{font-size:clamp(16px,3vh,19px);color:var(--navy);font-weight:800;line-height:1.35;letter-spacing:.2px;}
+  .page-head h1 .school-line{display:block;color:var(--crimson);font-size:clamp(12.5px,2.4vh,13.5px);font-weight:700;margin-top:2px;}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:0 0 clamp(14px,2.6vh,20px);border-radius:2px;}
+
+  /* Empty state */
+  .empty-state{border:1.5px dashed var(--line);border-radius:10px;padding:clamp(28px,6vh,48px) 20px;text-align:center;background:var(--panel);}
+  .empty-state .icon{font-size:34px;margin-bottom:10px;}
+  .empty-state h2{font-size:16px;color:var(--navy);margin-bottom:8px;}
+  .empty-state p{font-size:13px;color:var(--muted);max-width:440px;margin:0 auto;line-height:1.6;}
+
+  /* Profile document */
+  .profile-doc{background:#fff;}
+  .prof-hero{display:flex;align-items:center;gap:16px;padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:16px;flex-wrap:wrap;}
+  .prof-photo{width:74px;height:88px;border:1.5px solid var(--line);border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--panel);display:flex;align-items:center;justify-content:center;}
+  .prof-photo img{width:100%;height:100%;object-fit:cover;}
+  .prof-photo span{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+  .prof-hero-text{flex:1;min-width:180px;}
+  .prof-hero-text .name{font-size:19px;font-weight:800;color:var(--navy);}
+  .prof-hero-text .meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.6;}
+  .prof-hero-text .badge{display:inline-block;margin-top:8px;padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;background:#e8f5ec;color:var(--ok);}
+
+  .section-title{font-weight:800;font-size:11.5px;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin:20px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line);}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;}
+  @media (max-width:640px){.info-grid{grid-template-columns:1fr;}}
+  .info-row{padding:6px 0;}
+  .info-row .lbl{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+  .info-row .val{font-size:13.5px;color:var(--ink);font-weight:600;margin-top:2px;}
+  .info-row .val.empty{color:#b7bac1;font-weight:400;font-style:italic;}
+  .info-row.full{grid-column:1 / -1;}
+
+  .doc-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .doc-chip{border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:11.5px;font-weight:700;color:var(--navy);background:var(--panel);display:flex;align-items:center;gap:6px;}
+  .doc-chip .ok-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);}
+
+  .footer-note{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--navy-deep);color:#fff;border:1px solid var(--gold);
+    border-radius:8px;padding:11px 20px;font-size:13px;font-weight:600;
+    box-shadow:0 10px 30px rgba(11,23,48,.35);opacity:0;pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;z-index:999;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* Editable contact-number row \u2014 the one field a student may change */
+  .info-row.editable .val-row{display:flex;align-items:center;gap:8px;}
+  .info-row.editable .edit-phone-btn{
+    border:1px solid var(--line);background:var(--panel);color:var(--navy);
+    border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;
+  }
+  .info-row.editable .edit-phone-btn:hover{background:#eceae4;}
+  .info-row.editable .hint{font-size:10px;color:var(--muted);font-weight:400;margin-left:6px;}
+  .phone-edit-form{display:flex;gap:6px;margin-top:2px;flex-wrap:wrap;}
+  .phone-edit-form input{
+    border:1.5px solid var(--line);border-radius:6px;padding:5px 8px;font-size:13px;
+    font-weight:600;color:var(--ink);min-width:150px;
+  }
+  .phone-edit-form input:focus{outline:none;border-color:var(--navy);}
+  .phone-edit-form button{
+    border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .phone-edit-form .save-btn{background:var(--navy);color:#fff;}
+  .phone-edit-form .save-btn:hover{background:var(--navy-deep);}
+  .phone-edit-form .cancel-btn{background:var(--panel);color:var(--ink);border:1px solid var(--line);}
+  .phone-edit-form .err-txt{font-size:11px;color:var(--crimson-dark);width:100%;margin-top:2px;}
+
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+  <div class="left">
+    <img class="kps-logo" id="topbarKpsLogo" alt="Kingsville Public School logo">
+    <div>
+      <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+      <span class="page-label">Student Dashboard · My Profile</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="live-pill"><span class="dot"></span>LIVE · SYNCED WITH REGISTRAR</div>
+    <div class="topbar-actions"><button id="refreshBtn">Refresh</button></div>
+    <img class="moe-mini" id="topbarMoeLogo" alt="Ministry of Education seal">
+  </div>
+</header>
+
+<div class="notice-strip" id="noticeStrip">
+  <b>About this page:</b> Your profile is filled in and kept up to date by the Office of the Registrar. You can update your own contact number below; everything else appears here automatically as soon as they save it — no refresh needed.
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+
+      <div class="page-head">
+        <div class="id">
+          <div class="seal-stage"><img class="seal" id="cardSeal" alt="School seal"></div>
+          <h1>My Profile<span class="school-line">Kingsville Public High School — Student Dashboard</span></h1>
+        </div>
+      </div>
+      <div class="subtitle-rule"></div>
+
+      <div id="profileArea"><!-- populated by JS --></div>
+
+      <div class="back-row" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:13px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <a href="dashboard.html" style="color:var(--navy);text-decoration:none;font-weight:600;">Back to Dashboard</a>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const el = id => document.getElementById(id);
+
+  const toast = el('toast');
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>toast.classList.remove('show'), 2600);
+  }
+
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function fmtDate(d){
+    if(!d) return '';
+    const dt = new Date(d + 'T00:00:00');
+    if(isNaN(dt)) return d;
+    return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+  }
+  function fmtWhen(ts){
+    if(!ts) return '';
+    try{
+      return new Date(ts).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    }catch(e){ return ''; }
+  }
+
+  // -------- Logos (same seal/logo as the Registrar's document) --------
+  const KPS_LOGO = "../assets/images/img-05ddf6d498159c2e.png";
+  const MOE_SEAL = "../assets/images/img-2c6f3402d893a11c.png";
+  ['topbarKpsLogo','cardSeal'].forEach(id => el(id).src = KPS_LOGO);
+  el('topbarMoeLogo').src = MOE_SEAL;
+
+  // -------- Live database access --------
+  // This student's own row in `students`, and only this student's row: Row
+  // Level Security (see "students: own" policy, students.profile_id =
+  // auth.uid()) enforces that server-side, so even a modified/malicious
+  // client can never fetch anyone else's profile through this call.
+  let myProfileRowId = null; // students.id, once known \u2014 used by the realtime filter
+
+  async function fetchMyStudentRow(){
+    if(!window.sb) return null;
+    const { data: userData, error: userErr } = await window.sb.auth.getUser();
+    if(userErr || !userData || !userData.user) return null;
+
+    const { data, error } = await window.sb
+      .from('students')
+      .select('id, student_id, full_name, date_of_birth, gender, profile_extra, updated_at')
+      .eq('profile_id', userData.user.id)
+      .maybeSingle();
+    if(error){ console.warn('[KPS] Could not load student profile', error); return null; }
+    return data || null;
+  }
+
+  /** Reshapes a `students` row (columns + profile_extra JSON) into the same
+   *  flat record shape renderProfile()/infoRow() already know how to draw \u2014
+   *  the exact object registrar/student-profile.html's collectData() builds. */
+  function toRecord(row){
+    if(!row) return null;
+    const extra = row.profile_extra || {};
+    return {
+      ...extra,
+      stuId: extra.stuId || row.student_id,
+      name: extra.name || row.full_name,
+      dob: extra.dob || row.date_of_birth,
+      gender: extra.gender || row.gender,
+      savedAt: row.updated_at ? new Date(row.updated_at).getTime() : extra.savedAt,
+    };
+  }
+
+  function infoRow(label, value, full){
+    const hasValue = value !== null && value !== undefined && String(value).trim() !== '';
+    return `<div class="info-row${full ? ' full' : ''}">
+      <div class="lbl">${escapeHtml(label)}</div>
+      <div class="val${hasValue ? '' : ' empty'}">${hasValue ? escapeHtml(String(value)) : 'Not on file yet'}</div>
+    </div>`;
+  }
+
+  // -------- Contact # \u2014 the one field a student may edit themselves --------
+  // Everything else on this page is Registrar-only (see the notice strip
+  // and renderProfile() above); this row alone gets a small "Edit" control
+  // that calls the student_update_own_phone RPC (migration 018), which is
+  // locked server-side to the caller's own row and this one JSON key.
+  function phoneRow(value){
+    const hasValue = value !== null && value !== undefined && String(value).trim() !== '';
+    return `<div class="info-row editable" id="phoneRow">
+      <div class="lbl">Contact #<span class="hint">you can update this</span></div>
+      <div class="val-row" id="phoneDisplay">
+        <div class="val${hasValue ? '' : ' empty'}" id="phoneVal">${hasValue ? escapeHtml(String(value)) : 'Not on file yet'}</div>
+        <button type="button" class="edit-phone-btn" id="editPhoneBtn">Edit</button>
+      </div>
+      <div id="phoneEditWrap"></div>
+    </div>`;
+  }
+
+  function wirePhoneEdit(currentValue){
+    const btn = el('editPhoneBtn');
+    if(!btn) return;
+    btn.addEventListener('click', () => {
+      el('phoneDisplay').style.display = 'none';
+      el('phoneEditWrap').innerHTML = `
+        <form class="phone-edit-form" id="phoneForm">
+          <input type="tel" id="phoneInput" value="${escapeHtml(currentValue || '')}" placeholder="e.g. 077 123 4567" autocomplete="tel">
+          <button type="submit" class="save-btn">Save</button>
+          <button type="button" class="cancel-btn" id="phoneCancelBtn">Cancel</button>
+          <div class="err-txt" id="phoneErr" style="display:none;"></div>
+        </form>`;
+      el('phoneInput').focus();
+      el('phoneCancelBtn').addEventListener('click', () => {
+        el('phoneEditWrap').innerHTML = '';
+        el('phoneDisplay').style.display = '';
+      });
+      el('phoneForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const newVal = el('phoneInput').value.trim();
+        const errEl = el('phoneErr');
+        errEl.style.display = 'none';
+        if(!newVal){ errEl.textContent = 'Enter a phone number.'; errEl.style.display = 'block'; return; }
+        const saveBtn = e.target.querySelector('.save-btn');
+        saveBtn.disabled = true; saveBtn.textContent = 'Saving\u2026';
+        try{
+          if(!window.KPS || !window.KPS.db || !window.KPS.db.rpc){ throw new Error('Not connected.'); }
+          await window.KPS.db.rpc('student_update_own_phone', { p_phone: newVal });
+          el('phoneEditWrap').innerHTML = '';
+          el('phoneDisplay').style.display = '';
+          showToast('Contact number updated.');
+          await refresh({ forceAnnounce:false });
+        }catch(err){
+          console.warn('[KPS] phone update failed', err);
+          errEl.textContent = (err && err.message) ? err.message : 'Could not save \u2014 please try again.';
+          errEl.style.display = 'block';
+          saveBtn.disabled = false; saveBtn.textContent = 'Save';
+        }
+      });
+    });
+  }
+
+  function renderEmpty(){
+    el('profileArea').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🗂️</div>
+        <h2>Your profile hasn't been filled in yet</h2>
+        <p>The Office of the Registrar hasn't completed your student profile record yet. As soon as they save it on their dashboard, it will appear here automatically.</p>
+      </div>`;
+    el('noticeStrip').classList.remove('updated');
+    el('noticeStrip').innerHTML = '<b>About this page:</b> Your profile is filled in and kept up to date by the Office of the Registrar. You can update your own contact number below; everything else appears here automatically as soon as they save it — no refresh needed.';
+  }
+
+  let lastRenderedKey = null;
+
+  function renderProfile(record, opts){
+    opts = opts || {};
+    const name = [record.firstName, record.middleName, record.lastName].filter(Boolean).join(' ') || record.name || 'Unnamed Student';
+    const docsList = Object.keys(record.docs || {});
+
+    const html = `
+      <div class="profile-doc">
+        <div class="prof-hero">
+          <div class="prof-photo">${record.photoData ? `<img src="${record.photoData}">` : '<span>Photo</span>'}</div>
+          <div class="prof-hero-text">
+            <div class="name">${escapeHtml(name)}</div>
+            <div class="meta">
+              Reference: ${escapeHtml(record.reference || '—')}${record.stuId ? ' &middot; Student ID# ' + escapeHtml(record.stuId) : ''}<br>
+              ${record.college ? escapeHtml(record.college) : ''}${record.department ? ' &middot; ' + escapeHtml(record.department) : ''}${record.degree ? ' &middot; ' + escapeHtml(record.degree) : ''}
+            </div>
+            <span class="badge">On file with the Registrar</span>
+          </div>
+        </div>
+
+        <div class="section-title">Identification &amp; Admission</div>
+        <div class="info-grid">
+          ${infoRow('Student ID#', record.stuId)}
+          ${infoRow('Provisional ID#', record.provId)}
+          ${infoRow('Year of provisional admission', fmtDate(record.provAdmDate))}
+          ${infoRow('Year of regular admission', fmtDate(record.regAdmDate))}
+          ${infoRow('Address at time of admission', record.admAddress, true)}
+          ${infoRow('Current address', record.currentAddress, true)}
+        </div>
+
+        <div class="section-title">Personal Information</div>
+        <div class="info-grid">
+          ${infoRow('Gender', record.gender)}
+          ${infoRow('Marital status', record.maritalStatus)}
+          ${infoRow('Email', record.email)}
+          ${phoneRow(record.phone)}
+          ${infoRow('Nationality', record.nationality)}
+          ${infoRow('National ID#', record.natlId)}
+          ${infoRow('County', record.county)}
+          ${infoRow('State / Region', record.stateRegion)}
+          ${infoRow('Date of birth', fmtDate(record.dob))}
+        </div>
+
+        <div class="section-title">Previous School</div>
+        <div class="info-grid">
+          ${infoRow('School accepted from', record.schoolAccepted)}
+          ${infoRow('School location', record.schoolLocation)}
+        </div>
+
+        <div class="section-title">Academic Program</div>
+        <div class="info-grid">
+          ${infoRow('Name of school', record.college, true)}
+          ${infoRow('Grade level', record.department)}
+          ${infoRow('Class / Section', record.degree)}
+          ${infoRow('Academic year', record.major)}
+          ${infoRow('Track / Program', record.minorPathway)}
+        </div>
+
+        <div class="section-title">Parent / Guardian &amp; Emergency Contact</div>
+        <div class="info-grid">
+          ${infoRow('Name of parent / guardian', record.parentName, true)}
+          ${infoRow('Parent / guardian address', record.parentAddress)}
+          ${infoRow('Parent / guardian contact #', record.parentPhone)}
+          ${infoRow('Emergency person name', record.emergName, true)}
+          ${infoRow('Emergency person address', record.emergAddress)}
+          ${infoRow('Emergency person contact', record.emergPhone)}
+        </div>
+
+        <div class="section-title">Account</div>
+        <div class="info-grid">
+          ${infoRow('Username', record.portalUsername)}
+          ${infoRow('KPS / school email', record.schoolEmail)}
+        </div>
+
+        ${docsList.length ? `
+        <div class="section-title">Supporting Documents on File</div>
+        <div class="doc-chip-row">
+          ${docsList.map(k => `<div class="doc-chip"><span class="ok-dot"></span>${escapeHtml(record.docs[k].label || k)}</div>`).join('')}
+        </div>` : ''}
+
+        <div class="footer-note">
+          <span>Signed by: ${record.declName ? escapeHtml(record.declName) : '—'}${record.declDate ? ' on ' + fmtDate(record.declDate) : ''}</span>
+          <span>${record.savedAt ? 'Last updated by the Registrar: ' + fmtWhen(record.savedAt) : ''}</span>
+        </div>
+      </div>`;
+
+    el('profileArea').innerHTML = html;
+    wirePhoneEdit(record.phone);
+
+    if(opts.announce){
+      el('noticeStrip').classList.add('updated');
+      el('noticeStrip').innerHTML = '<b>Just updated:</b> The Office of the Registrar saved changes to your profile — you\'re seeing the latest version.';
+      showToast('Your profile was just updated by the Registrar.');
+      setTimeout(() => {
+        el('noticeStrip').classList.remove('updated');
+        el('noticeStrip').innerHTML = '<b>About this page:</b> Your profile is filled in and kept up to date by the Office of the Registrar. You can update your own contact number below; everything else appears here automatically as soon as they save it — no refresh needed.';
+      }, 5000);
+    }
+  }
+
+  async function refresh(opts){
+    opts = opts || {};
+    const row = await fetchMyStudentRow();
+    const record = toRecord(row);
+    if(!record){
+      lastRenderedKey = null;
+      renderEmpty();
+      return;
+    }
+    myProfileRowId = row.id;
+    const key = row.id + ':' + (row.updated_at || 0);
+    const changed = key !== lastRenderedKey;
+    const hadPrevious = lastRenderedKey !== null;
+    lastRenderedKey = key;
+    renderProfile(record, { announce: opts.forceAnnounce || (changed && hadPrevious) });
+  }
+
+  // -------- Live sync: Supabase Realtime --------
+  // Fires the instant the Registrar saves, on any device, for any student
+  // \u2014 unlike the old localStorage/BroadcastChannel approach, which only
+  // ever worked inside one browser and could never separate one student's
+  // data from another's. Row Level Security applies to realtime the same
+  // way it applies to a normal select, so this channel only ever delivers
+  // changes to *this* student's own row.
+  (async function initRealtime(){
+    const { data: userData } = await (window.sb ? window.sb.auth.getUser() : { data:null });
+    const uid = userData && userData.user ? userData.user.id : null;
+    if(!uid || !window.sb) return;
+
+    window.sb
+      .channel('student-profile-' + uid)
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'students', filter: `profile_id=eq.${uid}` },
+        () => refresh()
+      )
+      .subscribe();
+  })();
+
+  // -------- Fallback polling (covers missed realtime events / reconnects) --------
+  setInterval(() => refresh(), 15000);
+
+  el('refreshBtn').addEventListener('click', async () => {
+    await refresh({ forceAnnounce:false });
+    showToast('Profile refreshed.');
+  });
+
+  // -------- Init --------
+  refresh();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Card — Kingsville Public High School</title>
+<style>
+  :root{
+    --ink-navy:#16233D;
+    --ink-navy-soft:#233252;
+    --parchment:#F7F2E7;
+    --line:#000;
+    --blue:#1A3A8F;
+    --red:#B3241A;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--parchment);
+    font-family:'Times New Roman', Times, serif;
+    display:flex;min-height:100vh;color:#111;
+  }
+  a{color:inherit;text-decoration:none}
+
+  /* SIDEBAR (site chrome, sans-serif, matches rest of portal) */
+  .sidebar{
+    width:220px;flex-shrink:0;background:var(--ink-navy);color:#DCE3EE;
+    padding:24px 0;font-family:Arial,Helvetica,sans-serif;
+  }
+  .brand{padding:0 20px 18px;font-size:17px;font-weight:700;color:#F3EFE4}
+  .brand small{display:block;font-size:10px;font-weight:400;color:#8C9BB5;letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
+  .navgroup{padding:0 10px;margin-bottom:16px}
+  .navgroup h4{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#71809C;margin:0 0 6px 10px}
+  .navgroup ul{list-style:none;margin:0;padding:0}
+  .navgroup li a{display:block;padding:6px 10px;border-radius:5px;font-size:13px;color:#C4CDDD}
+  .navgroup li a:hover{background:var(--ink-navy-soft);color:#fff}
+  .navgroup li a.active{background:var(--parchment);color:var(--ink-navy);font-weight:700}
+
+  /* MAIN */
+  .main{flex:1;padding:30px 30px 60px;overflow-x:auto}
+  .toolbar{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;
+    font-family:Arial,Helvetica,sans-serif;
+  }
+  .toolbar h1{font-size:20px;margin:0;color:var(--ink-navy)}
+  .toolbar button{
+    font-family:Arial,sans-serif;font-size:12.5px;background:var(--ink-navy);color:#fff;
+    border:none;padding:8px 14px;border-radius:5px;cursor:pointer;
+  }
+  .toolbar button:hover{background:var(--ink-navy-soft)}
+
+  /* PRINT SHEET */
+  .sheet{
+    background:#fff;border:1px solid #999;box-shadow:0 2px 10px rgba(0,0,0,.12);
+    padding:14px 18px 20px;min-width:1180px;
+  }
+  .studentline{
+    font-size:15px;padding:6px 4px 14px;
+  }
+  .studentline .fill{border-bottom:1px solid #000;padding:0 6px;font-weight:bold}
+
+  .cards{display:flex;gap:12px;align-items:flex-start}
+  .card{border:1.5px solid #000;padding:10px 12px}
+  .card-notice{width:270px;font-size:12px;line-height:1.45}
+  .card-info{width:270px;font-size:12px;line-height:1.4}
+  .card-grades{flex:1}
+
+  .card-notice h3{font-size:12.5px;text-align:center;margin:0 0 8px;letter-spacing:.02em}
+  .card-notice p{margin:0 0 10px;text-align:justify}
+  .card-notice h4{font-size:12px;text-align:center;margin:12px 0 6px;text-decoration:underline}
+  .promo-item{margin:4px 0 4px 14px;text-indent:-14px}
+  .sign-block{margin-top:16px;font-size:12px}
+  .sign-block .line{border-bottom:1px solid #000;display:inline-block;min-width:150px;margin-right:6px}
+  .sign-block .role{font-style:italic;font-size:11px;display:block;margin:2px 0 8px 4px}
+
+  .school-header{text-align:center;margin-bottom:8px}
+  .school-header .name{color:var(--blue);font-weight:bold;font-size:14px;letter-spacing:.02em}
+  .school-header .sub{color:var(--blue);font-weight:bold;font-size:12px}
+  .school-header .card-title{font-weight:bold;font-size:13px;margin-top:2px}
+  .school-header .found{color:var(--blue);font-weight:bold;font-size:11px;margin-top:4px}
+
+  .info-row{margin:8px 0 4px}
+  .info-row .fill{border-bottom:1px solid #000;padding:0 4px;font-weight:bold}
+
+  .guardian-note{font-size:11px;text-align:center;font-weight:bold;margin:10px 0 6px}
+  .guardian-body{font-size:11px;text-align:justify;margin-bottom:8px}
+
+  table.period-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px}
+  table.period-table th,table.period-table td{border:1px solid #000;padding:3px 4px;text-align:center}
+  table.period-table td.blank{height:16px}
+
+  .fine-note{font-size:10.5px;text-align:justify;margin-top:6px}
+
+  /* SUBJECT / GRADES CARD */
+  .grades-head{display:flex;font-size:11px;font-weight:bold;text-align:center}
+  .subject-col-head{width:150px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}
+  .subject-col-head .big{font-size:15px}
+  table.grades{border-collapse:collapse;width:100%;font-size:11.5px}
+  table.grades th,table.grades td{border:1px solid #000;padding:4px 5px;text-align:center}
+  table.grades th{font-weight:bold;background:#F3F3F3}
+  table.grades td.subject{text-align:left;font-weight:bold;padding-left:8px}
+  table.grades td.num{font-family:'Courier New',monospace}
+  table.grades td.flag{color:var(--red);font-weight:bold}
+  table.grades tr.avgrow td{font-weight:bold;background:#F7F7F7}
+  table.grades tr.conductrow td{font-weight:bold}
+
+  .grading-system{display:flex;justify-content:center;gap:40px;font-size:11px;margin-top:14px}
+  .grading-system div{line-height:1.5}
+  .motto{text-align:center;color:var(--red);font-weight:bold;font-style:italic;font-size:12px;margin-top:10px}
+
+  .semhead{background:#E7E2D4;font-weight:bold}
+
+  @media print{
+    .sidebar,.toolbar,.back-row{display:none}
+    .main{padding:0}
+    .sheet{box-shadow:none;border:none}
+  }
+  .back-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:13px;}
+  .back-row a{color:var(--blue);text-decoration:none;font-weight:600;}
+  .back-row a:hover{text-decoration:underline;}
+  .back-row svg{width:14px;height:14px;flex-shrink:0;}
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<nav class="sidebar">
+  <div class="brand">Kingsville Public High School<small>Student Portal</small></div>
+  <div class="navgroup">
+    <h4>Overview</h4>
+    <ul><li><a href="dashboard.html">Dashboard</a></li></ul>
+  </div>
+  <div class="navgroup">
+    <h4>Academics</h4>
+    <ul>
+      <li><a href="academics.html">Academics</a></li>
+      <li><a href="assignments.html">Assignments</a></li>
+      <li><a href="homework.html">Homework</a></li>
+      <li><a href="results.html">Results</a></li>
+      <li><a href="report-card.html" class="active">Report Card</a></li>
+      <li><a href="transcript-request.html">Transcript Request</a></li>
+    </ul>
+  </div>
+  <div class="navgroup">
+    <h4>Campus Life</h4>
+    <ul>
+      <li><a href="clubs.html">Clubs</a></li>
+      <li><a href="borrow-books.html">Borrow Books</a></li>
+    </ul>
+  </div>
+  <div class="navgroup">
+    <h4>Support</h4>
+    <ul>
+      <li><a href="communication.html">Communication</a></li>
+    </ul>
+  </div>
+  <div class="navgroup">
+    <h4>Administration</h4>
+    <ul>
+      <li><a href="attendance.html">Attendance</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div class="toolbar">
+    <h1>Report Card</h1>
+    <button onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <div class="sheet">
+
+    <div class="studentline">
+      Name of Student: <span class="fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      &nbsp;&nbsp;&nbsp;Grade: <span class="fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      &nbsp;&nbsp;&nbsp;Year: <span class="fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    </div>
+
+    <div class="cards">
+
+      <!-- CARD 1: PARENTS NOTICE + PROMOTION STATEMENT -->
+      <div class="card card-notice">
+        <h3>PARENTS OR GUARDIANS–PLEASE READ</h3>
+        <p>The grades and comments on this Report Card represent a cumulative average of hard work, classwork, class participation, quizzes, projects, test and exam. It also reports on the child's social, emotional and physical development. The grades are not meant for comparison with other children, but rather to encourage them strive for better competence. The support to students' progress should be guided by these grades and comments.</p>
+
+        <h4>PROMOTION STATEMENT</h4>
+        <p>This is to certify that this student has/has not satisfactorily completed the work of <span class="fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> prescribed by Restoring Hope Foundation in collaboration with Ministry of Education and is:</p>
+        <div class="promo-item">A.&nbsp;&nbsp;Eligible for promotion to <span class="fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+        <div class="promo-item">B.&nbsp;&nbsp;Condition in <span class="fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> and is to be given conditional examination in this subject during vacation school.</div>
+        <div class="promo-item">C.&nbsp;&nbsp;Require to repeat grade <span class="fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+        <div class="promo-item">D.&nbsp;&nbsp;Asked not to enroll at this school next year.</div>
+
+        <div class="sign-block">
+          Signed: <span class="line">&nbsp;</span>
+          <span class="role">Class Sponsor</span>
+          Approved: <span class="line">&nbsp;</span>
+          <span class="role">Principal</span>
+          Date: <span class="line" style="min-width:100px">&nbsp;</span>
+        </div>
+      </div>
+
+      <!-- CARD 2: SCHOOL INFO CARD -->
+      <div class="card card-info">
+        <div class="school-header">
+          <div class="name">MISSION SCHOOL</div>
+          <div class="sub">EARLY CHILDHOOD EDUCATION</div>
+          <div class="card-title">REPORT CARD</div>
+          <div class="found">RESTORING HOPE FOUNDATION</div>
+        </div>
+
+        <div class="info-row">Student's Name: <span class="fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+        <div class="info-row">Class: <span class="fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp; Sex: <span class="fill">&nbsp;&nbsp;&nbsp;</span>&nbsp; Academic Year: <span class="fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+
+        <div class="guardian-note">PARENTS OR GUARDIANS</div>
+        <div class="guardian-body">Please sign below as evidence that you have examined the report with possible acknowledgment or motivation to your kid(s) or teacher(s) as this instrument could shape your child's destiny.</div>
+
+        <table class="period-table">
+          <thead><tr><th>Period</th><th>Class Sponsor</th><th>Parents/Guardians</th></tr></thead>
+          <tbody>
+            <tr><td>1st Period</td><td class="blank"></td><td class="blank"></td></tr>
+            <tr><td>2nd Period</td><td class="blank"></td><td class="blank"></td></tr>
+            <tr><td>3rd Period</td><td class="blank"></td><td class="blank"></td></tr>
+            <tr><td>4th Period</td><td class="blank"></td><td class="blank"></td></tr>
+            <tr><td>5th Period</td><td class="blank"></td><td class="blank"></td></tr>
+            <tr><td>6th Period</td><td class="blank"></td><td class="blank"></td></tr>
+          </tbody>
+        </table>
+
+        <div class="fine-note"><em>Note:</em> When a student's mark is 75% or below in any subject, the parents or guardians should give special attention to see that the student does well in his/her work required by teacher; otherwise, the student will probably repeat the class.</div>
+      </div>
+
+      <!-- CARD 3: SUBJECT GRADES -->
+      <div class="card card-grades">
+        <table class="grades">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width:150px">SUBJECT</th>
+              <th colspan="5" class="semhead">FIRST SEMESTER</th>
+              <th colspan="5" class="semhead">SECOND SEMESTER</th>
+            </tr>
+            <tr>
+              <th>1<sup>st</sup><br>Pd.</th>
+              <th>2<sup>nd</sup><br>Pd.</th>
+              <th>3<sup>rd</sup><br>Pd.</th>
+              <th>Exam</th>
+              <th>Sem.<br>Ave.</th>
+              <th>4<sup>th</sup><br>Pd.</th>
+              <th>5<sup>th</sup><br>Pd.</th>
+              <th>6<sup>th</sup><br>Pd.</th>
+              <th>Exam</th>
+              <th>Sem./Yrly<br>Ave.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="subject">English</td><td class="num">100</td><td class="num">100</td><td class="num">79</td><td class="num">100</td><td class="num">87</td><td class="num">80</td><td class="num">86</td><td class="num">90</td><td class="num">87</td><td class="num">87</td></tr>
+            <tr><td class="subject">Mathematics</td><td class="num">85</td><td class="num">85</td><td class="num">70</td><td class="num">86</td><td class="num">83</td><td class="num">86</td><td class="num">80</td><td class="num">82</td><td class="num">80</td><td class="num">82</td></tr>
+            <tr><td class="subject">General Science</td><td class="num">100</td><td class="num">100</td><td class="num">94</td><td class="num">100</td><td class="num">97</td><td class="num">90</td><td class="num">87</td><td class="num">84</td><td class="num">89</td><td class="num">91</td></tr>
+            <tr><td class="subject">Social Studies</td><td class="num">80</td><td class="num">85</td><td class="num">95</td><td class="num">100</td><td class="num">93</td><td class="num">90</td><td class="num">93</td><td class="num">86</td><td class="num">89</td><td class="num">91</td></tr>
+            <tr><td class="subject">Health Science</td><td class="num">100</td><td class="num">100</td><td class="num">80</td><td class="num">73</td><td class="num">86</td><td class="num">75</td><td class="num">83</td><td class="num">90</td><td class="num">85</td><td class="num">86</td></tr>
+            <tr><td class="subject">Spelling</td><td class="num">75</td><td class="num">60</td><td class="num">76</td><td class="num">96</td><td class="num">83</td><td class="num">80</td><td class="num">91</td><td class="num">80</td><td class="num">87</td><td class="num">85</td></tr>
+            <tr><td class="subject">Reading</td><td class="num">80</td><td class="num">89</td><td class="num">84</td><td class="num">75</td><td class="num">80</td><td class="num">83</td><td class="num">79</td><td class="num">84</td><td class="num">89</td><td class="num">82</td></tr>
+            <tr><td class="subject">Pre-Writing Skills</td><td class="num">70</td><td class="num">75</td><td class="num">73</td><td class="num">76</td><td class="num">75</td><td class="num">80</td><td class="num">81</td><td class="num">84</td><td class="num">89</td><td class="num">82</td></tr>
+            <tr><td class="subject">Phonics</td><td class="num">80</td><td class="num">85</td><td class="num">95</td><td class="num">89</td><td class="num">86</td><td class="num">80</td><td class="num">83</td><td class="num">84</td><td class="num">92</td><td class="num">85</td></tr>
+            <tr><td class="subject">Early-Writing Skills</td><td class="num">70</td><td class="num">77</td><td class="num">76</td><td class="num">76</td><td class="num">75</td><td class="num">70</td><td class="num">70</td><td class="num flag">68</td><td class="num">78</td><td class="num">74</td></tr>
+            <tr><td class="subject">Bible</td><td class="num">100</td><td class="num">100</td><td class="num">82</td><td class="num">80</td><td class="num">87</td><td class="num">70</td><td class="num">80</td><td class="num">75</td><td class="num">84</td><td class="num">81</td></tr>
+            <tr><td class="subject">Drawing</td><td class="num">85</td><td class="num">90</td><td class="num">76</td><td class="num">80</td><td class="num">82</td><td class="num">70</td><td class="num">75</td><td class="num">84</td><td class="num">89</td><td class="num">82</td></tr>
+            <tr><td class="subject">Color Recognition</td><td class="num">100</td><td class="num">100</td><td class="num">90</td><td class="num">95</td><td class="num">96</td><td class="num">80</td><td class="num">81</td><td class="num">89</td><td class="num">96</td><td class="num">89</td></tr>
+            <tr><td class="subject">Physical Education</td><td class="num">95</td><td class="num">90</td><td class="num">80</td><td class="num">93</td><td class="num">91</td><td class="num">80</td><td class="num">82</td><td class="num">73</td><td class="num">78</td><td class="num">85</td></tr>
+            <tr class="avgrow"><td class="subject">Average</td><td></td><td></td><td></td><td></td><td>86%</td><td></td><td></td><td></td><td></td><td>85%</td></tr>
+            <tr><td class="subject">Days Present</td><td colspan="5"></td><td colspan="5"></td></tr>
+            <tr><td class="subject">Days Absent</td><td colspan="5"></td><td colspan="5"></td></tr>
+            <tr class="conductrow"><td class="subject">Conduct</td><td colspan="5" style="text-align:center">G</td><td colspan="5" style="text-align:center">G</td></tr>
+            <tr><td class="subject">Rank in Class</td><td colspan="5"></td><td colspan="5"></td></tr>
+          </tbody>
+        </table>
+
+        <div class="grading-system">
+          <div><strong>Excellent</strong>&nbsp;&nbsp;95 – 100<br><strong>Very Good</strong>&nbsp;&nbsp;90 – 94<br><strong>Good</strong>&nbsp;&nbsp;80 – 89</div>
+          <div><strong>Average</strong>&nbsp;&nbsp;75 – 79<br><strong>Fair</strong>&nbsp;&nbsp;70 – 74<br><strong>Below 70</strong>&nbsp;&nbsp;Means Failed</div>
+        </div>
+        <div class="fine-note" style="text-align:center;margin-top:6px">Any grades lower than 70% will not be honored for promotion.</div>
+        <div class="motto">Motto: "Quality Education, Discipline"</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="back-row">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <a href="dashboard.html">Back to Dashboard</a>
+  </div>
+
+</main>
+</body>
+</html>

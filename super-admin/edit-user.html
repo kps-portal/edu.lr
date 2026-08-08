@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Edit User</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand img{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; object-fit:cover; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER (ICT signature element) ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* chart bars */
+.chart-bars{ display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:10px; }
+.chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.chart-bar{ width:100%; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--gold-light), var(--gold-deep)); position:relative; transition:filter .15s; }
+.chart-bar:hover{ filter:brightness(1.08); }
+.chart-bar.alt{ background:linear-gradient(180deg, #9FB6E0, var(--navy-3)); }
+.chart-lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+.chart-legend{ display:flex; gap:16px; margin-top:6px; font-size:11.5px; color:var(--muted); }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.chip-dot{ width:8px; height:8px; border-radius:2px; }
+
+/* feed / lists */
+.feed-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px dashed var(--line); }
+.feed-item:last-child{ border-bottom:none; }
+.feed-dot{ width:32px; height:32px; border-radius:9px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex:none; }
+.feed-dot svg{ width:15px; height:15px; color:var(--crimson); }
+.feed-dot.gold svg{ color:var(--gold-deep); }
+.feed-dot.navy svg{ color:var(--navy-3); }
+.feed-text{ font-size:13px; font-weight:600; }
+.feed-sub{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.feed-time{ margin-left:auto; font-size:11px; color:var(--muted); white-space:nowrap; }
+
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+.progress-track{ height:6px; border-radius:20px; background:var(--line); overflow:hidden; flex:1; }
+.progress-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); }
+.progress-fill.ok{ background:linear-gradient(90deg, #8FD8AC, var(--success)); }
+.progress-fill.warn{ background:linear-gradient(90deg, var(--gold-light), var(--warn)); }
+.progress-fill.bad{ background:linear-gradient(90deg, #F0A7AE, var(--danger)); }
+
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.health-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; padding:7px 0; }
+.health-row .hb{ flex:1; height:7px; background:var(--line); border-radius:20px; overflow:hidden; }
+.health-row .hb i{ display:block; height:100%; border-radius:20px; }
+.health-row .hv{ width:74px; text-align:right; font-weight:700; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+button.pill:hover{ filter:brightness(0.96); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* Module placeholder cards */
+.module-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.module-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.module-ic{ width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.module-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.module-card h4{ margin:0; font-size:14.5px; }
+.module-card p{ margin:0; font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* Device status card (network) */
+.device-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
+.device-top{ display:flex; align-items:center; justify-content:space-between; }
+.device-ic{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.device-ic svg{ width:19px; height:19px; }
+.device-name{ font-weight:700; font-size:13.5px; margin-top:2px; }
+.device-meta{ font-size:11.5px; color:var(--muted); }
+
+/* Restricted note */
+.restricted-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#FBE6E6; border:1px solid #F3C7CB; margin-top:14px; }
+.restricted-note svg{ width:16px; height:16px; color:var(--danger); flex:none; margin-top:1px; }
+.restricted-note div{ font-size:12px; color:#7A2530; line-height:1.55; }
+.restricted-note b{ color:var(--danger); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field input[type=text], .field input[type=password], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.settings-list .row-line{ align-items:flex-start; }
+.settings-list .rl-name{ font-size:13.5px; }
+.settings-list .rl-sub{ margin-top:2px; max-width:52ch; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .bento{ grid-template-columns:1fr; }
+  .grid-3,.grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .tbl-actions, .toolbar, .tabs, .toast-wrap, .modal-backdrop, .footer-ribbon, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .view{ display:none !important; }
+  .view.active{ display:block !important; }
+  .card, .stat-card, .module-card, .device-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid,.grid-3,.grid-2,.grid-4{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+
+/* ============================= FORM-SPECIFIC (Edit User / Registration) ============================= */
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:700; color:var(--muted); border:none; background:transparent; }
+.role-tab svg{ width:16px; height:16px; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.form-shell{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; }
+.form-head{ padding:22px 26px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; }
+.form-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.form-head h2{ color:#fff; margin:0 0 4px; font-size:20px; }
+.form-head p{ margin:0; color:rgba(255,255,255,.65); font-size:12.6px; max-width:60ch; }
+.form-body{ padding:26px; display:flex; flex-direction:column; gap:26px; }
+
+.fsection{ border:1px dashed var(--line); border-radius:14px; padding:20px 22px; }
+.fsection-title{ display:flex; align-items:center; gap:10px; margin:0 0 16px; font-size:14px; font-weight:800; color:var(--navy); }
+.fsection-title .num{ width:24px; height:24px; border-radius:8px; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex:none; }
+
+.fgrid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+.fgrid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+.fgrid.cols-4{ grid-template-columns:repeat(4, 1fr); }
+.fspan-2{ grid-column:span 2; }
+.fspan-3{ grid-column:span 3; }
+
+.field .hint{ font-size:10.8px; color:var(--muted); font-weight:500; }
+.field .err{ font-size:10.8px; color:var(--danger); font-weight:700; display:none; }
+.field.invalid input, .field.invalid select, .field.invalid textarea{ border-color:var(--danger); background:#FEF4F4; }
+.field.invalid .err{ display:block; }
+.field.valid input, .field.valid select{ border-color:#9CD3AF; }
+
+.field input[type=text], .field input[type=email], .field input[type=tel], .field input[type=password],
+.field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit;
+  background:var(--paper); width:100%; transition:border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); }
+.field textarea{ resize:vertical; min-height:70px; }
+
+.dob-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+.radio-row, .check-row{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
+.radio-opt, .check-opt{ display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; cursor:pointer; }
+.radio-opt input, .check-opt input{ width:16px; height:16px; accent-color:var(--crimson-bright); cursor:pointer; }
+
+.role-fields{ display:none; }
+.role-fields.active{ display:block; }
+
+table.qual{ width:100%; border-collapse:collapse; font-size:12.6px; }
+table.qual th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:8px 10px; border-bottom:2px solid var(--line); }
+table.qual td{ padding:7px 10px; border-bottom:1px solid var(--line); }
+table.qual input{ border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-size:12.6px; width:100%; font-family:inherit; }
+table.qual tr:last-child td{ border-bottom:none; }
+
+.role-pill-preview{ display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:20px; font-size:11.5px; font-weight:800; }
+
+.form-foot{ padding:20px 26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:#FBF8F0; }
+.form-foot .fp-note{ font-size:11.8px; color:var(--muted); max-width:52ch; }
+.form-actions{ display:flex; gap:10px; }
+
+@media (max-width: 900px){
+  .fgrid, .fgrid.cols-2, .fgrid.cols-4{ grid-template-columns:1fr; }
+  .dob-row{ grid-template-columns:1fr 1fr 1fr; }
+}
+
+</style>
+<style>
+.app{ display:block; grid-template-columns:none; min-height:100vh; }
+.main{ min-width:0; }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+  <main class="main">
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia &middot; Ministry of Education</div>
+        <div class="page-title">Edit User</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search users, roles, records&hellip;">
+      </div>
+      <a class="btn btn-ghost" href="users.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/></svg>
+        View All Users
+      </a>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="view active" id="view-edit-user">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div>
+            <div class="sb-t">Editing Existing Account</div>
+            <div class="sb-s">The record below has been loaded for editing &mdash; the form adapts to show only the fields relevant to this user&rsquo;s role. Changes to an <b class="sa">Active</b> account made by a Super Administrator take effect immediately; all other edits are routed through <b class="sa">Workflow Management</b> for approval.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Browse Users</h2>
+            <p>Search or filter, then click any row to load that person into the form below for editing.</p>
+          </div>
+        </div>
+
+        <div class="fsection" style="margin-bottom:28px;">
+          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+            <input id="userSearch" type="text" placeholder="Search by name, username, or ID&hellip;" style="flex:1; min-width:220px; padding:10px 14px; border:1px solid var(--line); border-radius:10px; font-size:13.5px;">
+            <select id="userRoleFilter" style="padding:10px 14px; border:1px solid var(--line); border-radius:10px; font-size:13.5px;">
+              <option value="">All roles</option>
+              <option value="student">Student</option>
+              <option value="teacher">Teacher</option>
+              <option value="registrar">Registrar</option>
+              <option value="principal">Principal</option>
+              <option value="ict">ICT</option>
+              <option value="super_admin">Super Admin</option>
+            </select>
+          </div>
+          <div style="max-height:340px; overflow-y:auto; border:1px solid var(--line); border-radius:12px;">
+            <table style="width:100%; border-collapse:collapse; font-size:13px;">
+              <thead style="position:sticky; top:0; background:var(--cream); z-index:1;">
+                <tr>
+                  <th style="text-align:left; padding:10px 14px; border-bottom:1px solid var(--line);">Name</th>
+                  <th style="text-align:left; padding:10px 14px; border-bottom:1px solid var(--line);">Username / ID</th>
+                  <th style="text-align:left; padding:10px 14px; border-bottom:1px solid var(--line);">Role</th>
+                  <th style="text-align:left; padding:10px 14px; border-bottom:1px solid var(--line);">Status</th>
+                </tr>
+              </thead>
+              <tbody id="userListBody">
+                <tr><td colspan="4" style="padding:16px 14px; color:var(--muted);">Loading users&hellip;</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Edit Student &amp; Staff Details</h2>
+            <p>Update the user&rsquo;s details below. Fields marked with an asterisk are required. This form performs live validation as you type.</p>
+          </div>
+        </div>
+
+        <div class="role-tabs" id="roleTabs">
+          <button type="button" class="role-tab active" data-role="student">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l9 4.5-9 4.5-9-4.5L12 3z"/><path d="M5 10.3V15c0 1.7 3.1 3 7 3s7-1.3 7-3v-4.7"/></svg>
+            Student
+          </button>
+          <button type="button" class="role-tab" data-role="teacher">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2S19 16.4 19 20"/></svg>
+            Teacher
+          </button>
+          <button type="button" class="role-tab" data-role="staff">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="8" width="16" height="12" rx="1.5"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>
+            Non-Teaching Staff
+          </button>
+        </div>
+
+        <form id="editUserForm" novalidate>
+          <div class="form-shell">
+
+            <div class="form-head">
+              <h2>Edit User Profile</h2>
+              <p>Kingsville Public High School &middot; Super Administrator Console &middot; editing <b id="editUserName">Comfort Doe</b> &middot; ID <span id="editUserId" class="mono">STU-2024-0182</span> &middot; account type: <span id="roleHeadLabel">Student</span></p>
+              <div id="acctActionBar" style="display:none; align-items:center; gap:10px; margin-top:12px; flex-wrap:wrap;">
+                <span id="acctStatusBadge" class="pill green">Active</span>
+                <button type="button" class="btn btn-ghost" id="lockAcctBtn" style="padding:8px 14px; font-size:12.5px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+                  <span id="lockAcctBtnLabel">Lock Account</span>
+                </button>
+                <button type="button" class="btn btn-ghost" id="deleteAcctBtn" style="padding:8px 14px; font-size:12.5px; color:var(--danger); border-color:#f6c9c4;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>
+                  Delete Permanently
+                </button>
+              </div>
+            </div>
+
+            <div class="form-body">
+
+              <!-- SECTION 1: Personal Details (profiles.full_name / profiles.phone) -->
+              <div class="fsection">
+                <div class="fsection-title"><span class="num">1</span> Personal Details</div>
+                <div class="fgrid">
+                  <div class="field" id="f-firstName">
+                    <label>First Name *</label>
+                    <input type="text" id="firstName" maxlength="30" placeholder="e.g. Comfort">
+                    <span class="hint">Max 30 characters, letters only (a-z, A-Z)</span>
+                    <span class="err">Letters only, up to 30 characters</span>
+                  </div>
+                  <div class="field" id="f-lastName">
+                    <label>Last Name *</label>
+                    <input type="text" id="lastName" maxlength="30" placeholder="e.g. Doe">
+                    <span class="hint">Max 30 characters, letters only (a-z, A-Z)</span>
+                    <span class="err">Letters only, up to 30 characters</span>
+                  </div>
+                  <div class="field" id="f-mobile">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="mobile" maxlength="10" placeholder="e.g. 0770123456">
+                    <span class="hint">10 digit number</span>
+                    <span class="err">Must be exactly 10 digits</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 3: Hobbies -->
+              <div class="fsection">
+                <div class="fsection-title"><span class="num">3</span> Hobbies &amp; Interests <span style="font-weight:500; color:var(--muted); font-size:11.5px;">(optional)</span></div>
+                <div class="check-row">
+                  <label class="check-opt"><input type="checkbox" id="hobbyDrawing" value="Drawing" checked> Drawing</label>
+                  <label class="check-opt"><input type="checkbox" id="hobbySinging" value="Singing"> Singing</label>
+                  <label class="check-opt"><input type="checkbox" id="hobbyDancing" value="Dancing" checked> Dancing</label>
+                  <label class="check-opt"><input type="checkbox" id="hobbySketching" value="Sketching"> Sketching</label>
+                  <label class="check-opt"><input type="checkbox" id="hobbyOtherCheck"> Others:
+                    <input type="text" id="hobbyOtherText" style="width:160px; margin-left:6px; padding:6px 9px; border:1px solid var(--line); border-radius:8px; font-size:12.6px;" disabled placeholder="Please specify">
+                  </label>
+                </div>
+              </div>
+
+              <!-- SECTION 4: Student Record Details (students table, matched via students.profile_id) -->
+              <div class="fsection role-fields active" data-role-group="student">
+                <div class="fsection-title"><span class="num">4</span> Student Record Details</div>
+                <div class="fgrid">
+                  <div class="field" id="f-gender">
+                    <label>Gender</label>
+                    <div class="radio-row" style="padding-top:10px;">
+                      <label class="radio-opt"><input type="radio" name="gender" value="Female"> Female</label>
+                      <label class="radio-opt"><input type="radio" name="gender" value="Male"> Male</label>
+                      <label class="radio-opt"><input type="radio" name="gender" value="Other"> Other</label>
+                    </div>
+                  </div>
+                  <div class="field" id="f-dob">
+                    <label>Date of Birth</label>
+                    <div class="dob-row">
+                      <select id="dobDay"><option value="">Day</option></select>
+                      <select id="dobMonth">
+                        <option value="">Month</option>
+                        <option>January</option><option>February</option><option>March</option><option>April</option>
+                        <option>May</option><option>June</option><option>July</option><option>August</option>
+                        <option>September</option><option>October</option><option>November</option><option>December</option>
+                      </select>
+                      <select id="dobYear"><option value="">Year</option></select>
+                    </div>
+                  </div>
+                  <div class="field" id="f-county">
+                    <label>County</label>
+                    <input type="text" id="county" maxlength="30" placeholder="e.g. Montserrado">
+                  </div>
+                </div>
+                <span class="hint" style="display:block; margin-top:10px;">These fields are stored on this student&rsquo;s enrolment record (linked by account), not on the login account itself.</span>
+              </div>
+
+              <!-- SECTION 4: Teacher -->
+              <div class="fsection role-fields" data-role-group="teacher">
+                <div class="fsection-title"><span class="num">4</span> Teaching Assignment</div>
+                <div class="fgrid cols-2">
+                  <div class="field">
+                    <label>Subject(s) Taught *</label>
+                    <input type="text" placeholder="e.g. Mathematics, Physics">
+                  </div>
+                  <div class="field">
+                    <label>Department</label>
+                    <select><option>Sciences</option><option>Humanities</option><option>Languages</option><option>Business</option><option>Physical Education</option></select>
+                  </div>
+                  <div class="field">
+                    <label>Highest Qualification</label>
+                    <input type="text" placeholder="e.g. B.Ed, M.A.">
+                  </div>
+                  <div class="field">
+                    <label>Years of Experience</label>
+                    <input type="text" placeholder="e.g. 5">
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 4: Staff -->
+              <div class="fsection role-fields" data-role-group="staff">
+                <div class="fsection-title"><span class="num">4</span> Employment Details</div>
+                <div class="fgrid cols-2">
+                  <div class="field">
+                    <label>Designation *</label>
+                    <input type="text" placeholder="e.g. Registrar, Records Officer, Security">
+                  </div>
+                  <div class="field">
+                    <label>Department</label>
+                    <select><option>Administration</option><option>Facilities</option><option>ICT</option><option>Security</option></select>
+                  </div>
+                  <div class="field" id="f-backendRole">
+                    <label>System Role *</label>
+                    <select id="backendRole">
+                      <option value="registrar">Registrar</option>
+                      <option value="principal">Principal</option>
+                      <option value="ict">ICT</option>
+                      <option value="super_admin">Super Admin</option>
+                    </select>
+                    <span class="hint">Determines which dashboard and permissions this account receives.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 5: Account & Permissions -->
+              <div class="fsection">
+                <div class="fsection-title"><span class="num">5</span> Account &amp; Permissions</div>
+                <div class="fgrid cols-2">
+                  <div class="field">
+                    <label>Account Status</label>
+                    <select id="acctStatus">
+                      <option value="Active" selected>Active</option>
+                      <option value="Pending Approval">Pending Approval</option>
+                      <option value="Suspended">Suspended</option>
+                    </select>
+                    <span class="hint">Only Super Administrator can change status immediately</span>
+                  </div>
+                  <div class="field" id="f-username">
+                    <label>Username <span id="usernameHint" style="font-weight:400; color:var(--muted);">(staff login)</span></label>
+                    <input type="text" id="username" placeholder="e.g. b.zaza" maxlength="40">
+                    <span class="hint">Staff sign in with this. Students sign in with their auto-generated Student ID instead (not editable here).</span>
+                  </div>
+                </div>
+                <div class="fgrid cols-2" style="margin-top:16px;">
+                  <div class="field" id="f-email">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="name@example.com">
+                    <span class="hint">Changing this updates the account&rsquo;s sign-in email.</span>
+                    <span class="err">Enter a valid email address</span>
+                  </div>
+                  <div class="field">
+                    <label>Reset Password</label>
+                    <input type="text" id="newPassword" placeholder="Leave blank to keep current password" minlength="8">
+                    <span class="hint">Only sent if filled in &mdash; minimum 8 characters.</span>
+                    <span class="err">Password must be at least 8 characters</span>
+                  </div>
+                </div>
+                <div class="fgrid cols-2" style="margin-top:16px;">
+                  <div class="field" style="display:flex; align-items:flex-end;">
+                    <label class="check-opt" style="margin:0;"><input type="checkbox" id="mustChangePassword"> Require password change at next login</label>
+                  </div>
+                </div>
+                <div style="margin-top:14px; display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:12px; font-weight:700; color:var(--muted);">This account is currently:</span>
+                  <span class="role-pill-preview pill navy" id="rolePreviewPill">Student</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-foot">
+              <div class="fp-note" id="workflowNote">Saving applies these changes immediately. If the status is changed to <b>Pending Approval</b>, the record is routed to <b>Workflow Management</b> for Principal / Registrar approval. Every action here is audit-logged.</div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-ghost" id="resetBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+                  Discard Changes
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg>
+                  Save Changes
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </form>
+
+        <div class="allowed-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          <div><b>Super Administrator can:</b> edit accounts of any role, change status directly, and bypass the workflow queue when required. All other roles can only submit edit requests here that route to this workflow for approval.</div>
+        </div>
+
+        <!-- Activity panel: get_user_activity() RPC (migration 009) -->
+        <div class="fsection" style="margin-top:22px;">
+          <div class="fsection-title" style="display:flex; align-items:center; justify-content:space-between;">
+            <span><span class="num">A</span> Activity</span>
+            <button type="button" class="btn btn-ghost" id="activityRefreshBtn" style="padding:6px 12px; font-size:12px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+              Refresh
+            </button>
+          </div>
+          <div id="activityList" style="display:flex; flex-direction:column; gap:0; margin-top:8px; border:1px solid var(--line); border-radius:12px; overflow:hidden;">
+            <div style="padding:16px 14px; color:var(--muted); font-size:13px;">Select a user above to see their activity.</div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Delete Permanently confirmation modal -->
+      <div class="modal-backdrop" id="deleteAcctModalBackdrop">
+        <div class="modal">
+          <div class="modal-head" style="background:linear-gradient(135deg, #b91c1c, #7f1d1d);">
+            <h3>Delete User Permanently</h3>
+            <button type="button" id="deleteAcctModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div class="modal-body">
+            <div style="background:#FBE6E6; border:1px solid #f6c9c4; border-radius:10px; padding:12px 14px; font-size:12.5px; color:#7f1d1d; line-height:1.5;">
+              <b>This cannot be undone.</b> This permanently deletes <b id="deleteAcctName">&mdash;</b>&rsquo;s
+              account &mdash; their sign-in, profile, and every record tied to it. There is no way to recover it afterward.
+            </div>
+            <div class="field">
+              <label>Type <b id="deleteAcctNameConfirm" style="color:var(--ink);">&mdash;</b> to confirm</label>
+              <input type="text" id="deleteAcctConfirmInput" autocomplete="off" placeholder="Type the user's full name exactly">
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button type="button" class="btn btn-ghost" id="deleteAcctCancelBtn">Cancel</button>
+            <button type="button" class="btn btn-primary" id="deleteAcctConfirmBtn" disabled
+              style="background:linear-gradient(135deg, #dc2626, #7f1d1d); box-shadow:0 10px 22px -10px rgba(180,20,20,.55); opacity:.5; cursor:not-allowed;">
+              Delete Permanently
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-ribbon">
+        <img class="footer-crest" src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="">
+        Kingsville Public High School &middot; Super Administrator Console &middot; <b>Knowledge is Power</b> &middot; Kingsville #7, Careysburg District
+        <img class="footer-crest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+        Republic of Liberia &middot; Ministry of Education
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ---------- Role-aware "View All Users" back-link ---------- */
+/* ICT is allowed onto this page (auth-guard.js), but has no access to
+   super-admin/users.html — send ICT back to their own list instead. */
+(function(){
+  document.addEventListener('kps:authorized', function(e){
+    var role = e.detail && e.detail.profile && e.detail.profile.role;
+    if (role === 'ict') {
+      var link = document.querySelector('a.btn.btn-ghost[href="users.html"]');
+      if (link) link.setAttribute('href', window.KPS.withPrefix('ict/view-users.html'));
+    }
+  });
+})();
+
+/* ---------- Populate Day / Year selects ---------- */
+(function(){
+  const daySel = document.getElementById('dobDay');
+  for(let d=1; d<=31; d++){
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    daySel.appendChild(o);
+  }
+  const yearSel = document.getElementById('dobYear');
+  const thisYear = new Date().getFullYear();
+  for(let y=thisYear; y>=thisYear-90; y--){
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y;
+    yearSel.appendChild(o);
+  }
+})();
+
+/* ==========================================================================
+   REAL SUPABASE WIRING
+   --------------------------------------------------------------------------
+   `profiles` actually has: id, institution_id, full_name, username,
+   student_id, role, is_active, status, dashboard_route,
+   must_change_password, phone, avatar_url, last_login, created_at,
+   updated_at. It does NOT have first_name/last_name/email/address/
+   city/state/country/gender/date_of_birth — those columns don't exist,
+   so this page no longer tries to write them there.
+
+   - Email + password + role/username changes go through the
+     `admin_update_user()` SQL function via `sb.rpc(...)` (no Edge
+     Function, no service-role key in the browser — email/password live
+     on auth.users, and this SECURITY DEFINER function is the only thing
+     allowed to touch that table, same pattern as admin_create_user()).
+   - Gender / date of birth / county are real columns, but they live on
+     `students`, one row per student, linked by `students.profile_id`.
+     Those are only loaded/saved when the account's role is `student`,
+     and are written directly (no auth.users involved, ordinary RLS
+     write via KPS.db.update).
+   ========================================================================== */
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const params = new URLSearchParams(window.location.search);
+let editUserId = params.get('id');
+let loadedProfile = null;
+let loadedStudentRow = null; // the matching `students` row, if role === 'student'
+
+function roleGroupFor(role){
+  if(role === 'student') return 'student';
+  if(role === 'teacher') return 'teacher';
+  return 'staff'; // registrar, principal, ict, super_admin
+}
+
+function splitFullName(fullName){
+  const parts = (fullName || '').trim().split(/\s+/);
+  if(parts.length <= 1) return { first: parts[0] || '', last: '' };
+  return { first: parts.slice(0, -1).join(' '), last: parts[parts.length - 1] };
+}
+
+function fillFormFromProfile(p, studentRow){
+  loadedProfile = p;
+  loadedStudentRow = studentRow || null;
+
+  const { first, last } = splitFullName(p.full_name);
+  document.getElementById('firstName').value = first;
+  document.getElementById('lastName').value = last;
+  document.getElementById('mobile').value = p.phone || '';
+  document.getElementById('username').value = p.username || '';
+  document.getElementById('email').value = ''; // auth.users email isn't readable from the client; type a new one only if you want to change it
+  document.getElementById('newPassword').value = '';
+  document.getElementById('mustChangePassword').checked = !!p.must_change_password;
+
+  const fullName = p.full_name || 'Unnamed User';
+  document.getElementById('editUserName').textContent = fullName;
+  document.getElementById('editUserId').textContent = p.student_id || p.id || '';
+  document.getElementById('acctStatus').value =
+    p.status === 'suspended' || p.is_active === false ? 'Suspended'
+    : p.status === 'pending' ? 'Pending Approval'
+    : 'Active';
+
+  // Student-only record fields, from `students` (matched via profile_id)
+  document.querySelectorAll('input[name="gender"]').forEach(el => { el.checked = false; });
+  document.getElementById('dobDay').value = '';
+  document.getElementById('dobMonth').value = '';
+  document.getElementById('dobYear').value = '';
+  document.getElementById('county').value = '';
+  if(studentRow){
+    if(studentRow.gender){
+      const g = document.querySelector('input[name="gender"][value="' + studentRow.gender + '"]');
+      if(g) g.checked = true;
+    }
+    if(studentRow.date_of_birth){
+      const d = new Date(studentRow.date_of_birth + 'T00:00:00');
+      if(!isNaN(d)){
+        document.getElementById('dobDay').value = d.getDate();
+        document.getElementById('dobMonth').value = MONTHS[d.getMonth()];
+        document.getElementById('dobYear').value = d.getFullYear();
+      }
+    }
+    document.getElementById('county').value = studentRow.county || '';
+  }
+
+  const group = roleGroupFor(p.role);
+  setRole(group);
+  if(group === 'staff'){
+    const roleSel = document.getElementById('backendRole');
+    if(roleSel && p.role) roleSel.value = p.role;
+  }
+
+  // Account-action bar: status badge + Lock/Unlock button reflect
+  // whichever profile is currently loaded into the form.
+  const locked = p.is_active === false || p.status === 'suspended';
+  const badge = document.getElementById('acctStatusBadge');
+  badge.textContent = locked ? 'Locked' : (p.status === 'pending' ? 'Pending Approval' : 'Active');
+  badge.className = 'pill ' + (locked ? 'red' : (p.status === 'pending' ? 'gold' : 'green'));
+  document.getElementById('lockAcctBtnLabel').textContent = locked ? 'Unlock Account' : 'Lock Account';
+  document.getElementById('acctActionBar').style.display = 'flex';
+}
+
+async function fetchStudentRowFor(profileId){
+  const rows = await KPS.db.list('students', (q) => q.eq('profile_id', profileId));
+  return rows[0] || null;
+}
+
+async function loadUserForEdit(){
+  if(!editUserId){
+    showToast('No user selected &mdash; search or click a row below to load someone into the form.');
+    return;
+  }
+  try{
+    const { profile } = await KPS.getSessionProfile();
+    if(!profile){ return; } // auth-guard.js already handles the redirect
+    const rows = await KPS.db.list('profiles', (q) => q.eq('id', editUserId));
+    if(!rows.length){
+      showToast('Could not find that user &mdash; they may have been removed.');
+      return;
+    }
+    const p = rows[0];
+    const studentRow = p.role === 'student' ? await fetchStudentRowFor(p.id) : null;
+    fillFormFromProfile(p, studentRow);
+    highlightSelectedRow(editUserId);
+  }catch(err){
+    console.error('[edit-user] load failed', err);
+    showToast('Could not load this user&rsquo;s profile. See console for details.');
+  }
+}
+
+/* ---------- Browse Users: loads EVERY user in the system ---------- */
+let allUsersCache = [];
+let userListDebounce = null;
+
+function roleBadgePill(role){
+  const map = { student: 'navy', teacher: 'gold', super_admin: 'crimson' };
+  return map[role] || 'grey';
+}
+function statusBadgePill(status, isActive){
+  if(isActive === false || status === 'suspended') return 'crimson';
+  if(status === 'pending') return 'gold';
+  return 'green';
+}
+
+function renderUserList(rows){
+  const tbody = document.getElementById('userListBody');
+  if(!rows.length){
+    tbody.innerHTML = '<tr><td colspan="4" style="padding:16px 14px; color:var(--muted);">No users match this search.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = '';
+  rows.forEach(u => {
+    const tr = document.createElement('tr');
+    tr.dataset.userId = u.id;
+    tr.style.cursor = 'pointer';
+    tr.innerHTML =
+      '<td>' + (escapeHtml(u.full_name) || '&mdash;') + '</td>' +
+      '<td class="mono">' + escapeHtml(u.username || u.student_id || '&mdash;') + '</td>' +
+      '<td><span class="pill ' + roleBadgePill(u.role) + '">' + escapeHtml(u.role || '') + '</span></td>' +
+      '<td><span class="pill ' + statusBadgePill(u.status, u.is_active) + '">' + escapeHtml(u.is_active === false ? 'suspended' : (u.status || 'active')) + '</span></td>';
+    tr.addEventListener('click', () => selectUserFromList(u.id));
+    tbody.appendChild(tr);
+  });
+  highlightSelectedRow(editUserId);
+}
+
+function highlightSelectedRow(id){
+  document.querySelectorAll('#userListBody tr').forEach(tr => {
+    tr.style.background = (id && tr.dataset.userId === id) ? 'var(--gold-light)' : '';
+  });
+}
+
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadUserList(){
+  const tbody = document.getElementById('userListBody');
+  tbody.innerHTML = '<tr><td colspan="4" style="padding:16px 14px; color:var(--muted);">Loading users&hellip;</td></tr>';
+  try{
+    const rows = await KPS.db.list('profiles', (q) => q.order('full_name', { ascending: true }));
+    allUsersCache = rows;
+    applyUserListFilters();
+  }catch(err){
+    console.error('[edit-user] failed to load user list', err);
+    tbody.innerHTML = '<tr><td colspan="4" style="padding:16px 14px; color:var(--danger);">Could not load users from Supabase. See console for details.</td></tr>';
+  }
+}
+
+function applyUserListFilters(){
+  const q = (document.getElementById('userSearch').value || '').trim().toLowerCase();
+  const role = document.getElementById('userRoleFilter').value;
+  const filtered = allUsersCache.filter(u => {
+    if(role && u.role !== role) return false;
+    if(!q) return true;
+    const hay = [u.full_name, u.username, u.student_id].filter(Boolean).join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  renderUserList(filtered);
+}
+
+async function selectUserFromList(id){
+  editUserId = id;
+  const url = new URL(window.location.href);
+  url.searchParams.set('id', id);
+  history.replaceState(null, '', url.toString());
+  await loadUserForEdit();
+  loadActivity();
+  document.getElementById('editUserForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+document.getElementById('userSearch').addEventListener('input', () => {
+  clearTimeout(userListDebounce);
+  userListDebounce = setTimeout(applyUserListFilters, 200);
+});
+document.getElementById('userRoleFilter').addEventListener('change', applyUserListFilters);
+
+/* ---------- Role tabs ---------- */
+const roleLabels = { student:'Student', teacher:'Teacher', staff:'Non-Teaching Staff' };
+const roleTabs = document.querySelectorAll('.role-tab');
+let currentRole = 'student';
+
+function setRole(role){
+  currentRole = role;
+  roleTabs.forEach(t => t.classList.toggle('active', t.dataset.role === role));
+  document.querySelectorAll('.role-fields').forEach(el => {
+    el.classList.toggle('active', el.dataset.roleGroup === role);
+  });
+  document.getElementById('roleHeadLabel').textContent = roleLabels[role];
+  const pill = document.getElementById('rolePreviewPill');
+  pill.textContent = roleLabels[role];
+  pill.className = 'role-pill-preview pill ' + (role === 'student' ? 'navy' : role === 'teacher' ? 'gold' : 'grey');
+}
+roleTabs.forEach(t => t.addEventListener('click', () => setRole(t.dataset.role)));
+
+/* ---------- Hobbies "Others" toggle ---------- */
+const hobbyOtherCheck = document.getElementById('hobbyOtherCheck');
+const hobbyOtherText = document.getElementById('hobbyOtherText');
+hobbyOtherCheck.addEventListener('change', () => {
+  hobbyOtherText.disabled = !hobbyOtherCheck.checked;
+  if(!hobbyOtherCheck.checked) hobbyOtherText.value = '';
+});
+
+/* ---------- Input restriction helpers ---------- */
+function restrictLetters(el, max){
+  el.addEventListener('input', () => {
+    el.value = el.value.replace(/[^a-zA-Z\s]/g, '').slice(0, max);
+  });
+}
+function restrictDigits(el, max){
+  el.addEventListener('input', () => {
+    el.value = el.value.replace(/[^0-9]/g, '').slice(0, max);
+  });
+}
+['firstName','lastName','county'].forEach(id => restrictLetters(document.getElementById(id), 30));
+restrictDigits(document.getElementById('mobile'), 10);
+
+/* ---------- Validation ----------
+   Only fields that actually persist somewhere are required. Email /
+   password / mobile are validated for FORMAT only when filled in — none
+   of them are mandatory to save a profile edit. */
+function markInvalid(fieldId, invalid){
+  const el = document.getElementById(fieldId);
+  if(!el) return;
+  el.classList.toggle('invalid', invalid);
+  el.classList.toggle('valid', !invalid);
+}
+function isLettersMax(val, max){ return /^[a-zA-Z\s]{1,}$/.test(val.trim()) && val.trim().length <= max; }
+
+function validateForm(){
+  let ok = true;
+
+  const firstName = document.getElementById('firstName').value;
+  const fnInvalid = !isLettersMax(firstName, 30);
+  markInvalid('f-firstName', fnInvalid); if(fnInvalid) ok = false;
+
+  const lastName = document.getElementById('lastName').value;
+  const lnInvalid = !isLettersMax(lastName, 30);
+  markInvalid('f-lastName', lnInvalid); if(lnInvalid) ok = false;
+
+  const mobile = document.getElementById('mobile').value;
+  const mobileInvalid = mobile.length > 0 && !/^[0-9]{10}$/.test(mobile);
+  markInvalid('f-mobile', mobileInvalid); if(mobileInvalid) ok = false;
+
+  const email = document.getElementById('email').value;
+  const emailInvalid = email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  markInvalid('f-email', emailInvalid); if(emailInvalid) ok = false;
+
+  const pw = document.getElementById('newPassword').value;
+  const pwInvalid = pw.length > 0 && pw.length < 8;
+  markInvalid('newPassword', pwInvalid); if(pwInvalid) ok = false;
+
+  return ok;
+}
+
+/* ---------- Toast ---------- */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+
+/* ---------- Submit / Reset ---------- */
+document.getElementById('editUserForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  if(!validateForm()){
+    showToast('Please correct the highlighted fields before submitting.');
+    const firstInvalid = document.querySelector('.field.invalid');
+    if(firstInvalid) firstInvalid.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  if(!editUserId){
+    showToast('Cannot save &mdash; no user is loaded. Pick someone from the list above first.');
+    return;
+  }
+
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const fullName = (firstName + ' ' + lastName).trim();
+  const status = document.getElementById('acctStatus').value;
+  const isActive = status !== 'Suspended';
+  const statusValue = status === 'Suspended' ? 'suspended' : status === 'Pending Approval' ? 'pending' : 'active';
+  const email = document.getElementById('email').value.trim();
+  const newPassword = document.getElementById('newPassword').value;
+  const username = document.getElementById('username').value.trim();
+
+  // Payload for the admin_update_user() SQL function (handles everything
+  // that touches auth.users, plus the ordinary profiles columns) — no
+  // Edge Function involved, just a plain sb.rpc(...) call under the
+  // signed-in admin's own session.
+  const payload = {
+    p_id: editUserId,
+    p_full_name: fullName,
+    p_phone: document.getElementById('mobile').value.trim(),
+    p_is_active: isActive,
+    p_status: statusValue,
+    p_must_change_password: document.getElementById('mustChangePassword').checked,
+    p_username: username || null
+  };
+  if(currentRole === 'staff'){
+    const roleSel = document.getElementById('backendRole');
+    if(roleSel) payload.p_role = roleSel.value;
+  }
+  if(email) payload.p_email = email;
+  if(newPassword) payload.p_password = newPassword;
+
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  if(submitBtn) submitBtn.disabled = true;
+  try{
+    const { data, error } = await sb.rpc('admin_update_user', payload);
+    if(error) throw error;
+
+    // Student-only fields (gender / DOB / county) live on `students`,
+    // written directly — no auth.users involvement needed here.
+    if(currentRole === 'student' && loadedStudentRow){
+      const day = document.getElementById('dobDay').value;
+      const month = MONTHS.indexOf(document.getElementById('dobMonth').value);
+      const year = document.getElementById('dobYear').value;
+      const dobIso = (day && month >= 0 && year)
+        ? year + '-' + String(month + 1).padStart(2,'0') + '-' + String(day).padStart(2,'0')
+        : null;
+      const genderChecked = document.querySelector('input[name="gender"]:checked');
+      const studentPatch = {
+        full_name: fullName,
+        gender: genderChecked ? genderChecked.value : null,
+        date_of_birth: dobIso,
+        county: document.getElementById('county').value.trim() || null
+      };
+      await KPS.db.update('students', { profile_id: editUserId }, studentPatch);
+    }
+
+    showToast(fullName + '&rsquo;s account updated &middot; ' + roleLabels[currentRole] + ' &middot; status: ' + status + '.');
+    document.getElementById('editUserName').textContent = fullName;
+    document.getElementById('email').value = '';
+    document.getElementById('newPassword').value = '';
+    loadUserList(); // refresh the Browse Users table so the change is visible there too
+  }catch(err){
+    console.error('[edit-user] save failed', err);
+    showToast('Save failed: ' + (err.message || 'could not update this account.'));
+  }finally{
+    if(submitBtn) submitBtn.disabled = false;
+  }
+});
+
+document.getElementById('resetBtn').addEventListener('click', function(){
+  if(loadedProfile){
+    fillFormFromProfile(loadedProfile, loadedStudentRow);
+  }
+  hobbyOtherText.disabled = !document.getElementById('hobbyOtherCheck').checked;
+  document.querySelectorAll('.field').forEach(f => { f.classList.remove('invalid'); f.classList.remove('valid'); });
+  showToast('Changes discarded &mdash; reverted to the last saved values.');
+});
+
+/* ---------- Lock / Unlock (admin_lock_user() / admin_unlock_user() RPCs) ---------- */
+document.getElementById('lockAcctBtn').addEventListener('click', async () => {
+  if(!editUserId || !loadedProfile){
+    showToast('No user loaded &mdash; pick someone from Browse Users first.');
+    return;
+  }
+  const locked = loadedProfile.is_active === false || loadedProfile.status === 'suspended';
+  const verb = locked ? 'Unlock' : 'Lock';
+  if(!confirm(verb + ' ' + (loadedProfile.full_name || 'this user') + '\u2019s account?' +
+      (!locked ? ' They will not be able to sign in until unlocked.' : ''))) return;
+  const btn = document.getElementById('lockAcctBtn');
+  btn.disabled = true;
+  try{
+    const fn = locked ? 'admin_unlock_user' : 'admin_lock_user';
+    const args = locked ? { p_id: editUserId } : { p_id: editUserId, p_reason: null };
+    const { data, error } = await sb.rpc(fn, args);
+    if(error) throw error;
+    showToast('Account ' + (locked ? 'unlocked' : 'locked') + '.');
+    fillFormFromProfile(data, loadedStudentRow);
+    loadUserList();
+    loadActivity();
+  }catch(err){
+    console.error('[edit-user] lock/unlock failed', err);
+    showToast('Could not update this account: ' + (err.message || 'please try again.'));
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+/* ---------- Delete Permanently (admin_delete_user() RPC) ---------- */
+const deleteAcctModalBackdrop = document.getElementById('deleteAcctModalBackdrop');
+
+function closeDeleteAcctModal(){
+  deleteAcctModalBackdrop.classList.remove('open');
+  document.getElementById('deleteAcctConfirmInput').value = '';
+  updateDeleteAcctConfirmState();
+}
+function updateDeleteAcctConfirmState(){
+  const btn = document.getElementById('deleteAcctConfirmBtn');
+  const typed = document.getElementById('deleteAcctConfirmInput').value.trim();
+  const matches = loadedProfile && typed === (loadedProfile.full_name || '').trim() && typed.length > 0;
+  btn.disabled = !matches;
+  btn.style.opacity = matches ? '1' : '.5';
+  btn.style.cursor = matches ? 'pointer' : 'not-allowed';
+}
+document.getElementById('deleteAcctBtn').addEventListener('click', () => {
+  if(!editUserId || !loadedProfile){
+    showToast('No user loaded &mdash; pick someone from Browse Users first.');
+    return;
+  }
+  const name = loadedProfile.full_name || 'this user';
+  document.getElementById('deleteAcctName').textContent = name;
+  document.getElementById('deleteAcctNameConfirm').textContent = name;
+  document.getElementById('deleteAcctConfirmInput').value = '';
+  updateDeleteAcctConfirmState();
+  deleteAcctModalBackdrop.classList.add('open');
+});
+document.getElementById('deleteAcctConfirmInput').addEventListener('input', updateDeleteAcctConfirmState);
+document.getElementById('deleteAcctModalClose').addEventListener('click', closeDeleteAcctModal);
+document.getElementById('deleteAcctCancelBtn').addEventListener('click', closeDeleteAcctModal);
+deleteAcctModalBackdrop.addEventListener('click', (e) => { if(e.target === deleteAcctModalBackdrop) closeDeleteAcctModal(); });
+
+document.getElementById('deleteAcctConfirmBtn').addEventListener('click', async () => {
+  if(!editUserId) return;
+  const btn = document.getElementById('deleteAcctConfirmBtn');
+  btn.disabled = true;
+  try{
+    const { error } = await sb.rpc('admin_delete_user', { p_id: editUserId });
+    if(error) throw error;
+    showToast((loadedProfile.full_name || 'This user') + '\u2019s account was permanently deleted.');
+    closeDeleteAcctModal();
+    editUserId = null;
+    loadedProfile = null;
+    loadedStudentRow = null;
+    const url = new URL(window.location.href);
+    url.searchParams.delete('id');
+    history.replaceState(null, '', url.toString());
+    document.getElementById('acctActionBar').style.display = 'none';
+    document.getElementById('activityList').innerHTML = '<div style="padding:16px 14px; color:var(--muted); font-size:13px;">Select a user above to see their activity.</div>';
+    loadUserList();
+  }catch(err){
+    console.error('[edit-user] delete failed', err);
+    showToast('Could not delete this account: ' + (err.message || 'please try again.'));
+    btn.disabled = false;
+  }
+});
+
+/* ---------- Activity panel (get_user_activity() RPC, migration 009) ---------- */
+function activityIcon(row){
+  if(row.activity_type === 'login') return '<svg viewBox="0 0 24 24" fill="none" stroke="#1a7f4d" stroke-width="2" width="16" height="16"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>';
+  if(row.activity_type === 'login_failed') return '<svg viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>';
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="#8a6d1a" stroke-width="2" width="16" height="16"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>';
+}
+function activityTimeLabel(iso){
+  const d = new Date(iso);
+  if(isNaN(d)) return '';
+  return d.toLocaleString(undefined, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+async function loadActivity(){
+  const list = document.getElementById('activityList');
+  if(!editUserId){
+    list.innerHTML = '<div style="padding:16px 14px; color:var(--muted); font-size:13px;">Select a user above to see their activity.</div>';
+    return;
+  }
+  list.innerHTML = '<div style="padding:16px 14px; color:var(--muted); font-size:13px;">Loading activity&hellip;</div>';
+  try{
+    const { data, error } = await sb.rpc('get_user_activity', { p_id: editUserId, p_limit: 50 });
+    if(error) throw error;
+    const rows = data || [];
+    if(!rows.length){
+      list.innerHTML = '<div style="padding:16px 14px; color:var(--muted); font-size:13px;">No activity recorded for this account yet.</div>';
+      return;
+    }
+    list.innerHTML = rows.map((row, i) => {
+      const actor = row.actor_name ? ' &middot; by ' + escapeHtml(row.actor_name) : '';
+      const ip = row.ip_address ? ' &middot; ' + escapeHtml(row.ip_address) : '';
+      return '<div style="display:flex; align-items:flex-start; gap:10px; padding:11px 14px;' +
+          (i < rows.length - 1 ? ' border-bottom:1px solid var(--line);' : '') + '">' +
+        '<div style="margin-top:2px;">' + activityIcon(row) + '</div>' +
+        '<div style="flex:1; min-width:0;">' +
+          '<div style="font-size:13px; font-weight:600;">' + escapeHtml(row.description || row.action || '') + actor + '</div>' +
+          '<div style="font-size:11.5px; color:var(--muted); margin-top:2px;">' + activityTimeLabel(row.created_at) + ip + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }catch(err){
+    console.error('[edit-user] failed to load activity', err);
+    list.innerHTML = '<div style="padding:16px 14px; color:var(--danger); font-size:13px;">Could not load activity. See console for details.</div>';
+  }
+}
+document.getElementById('activityRefreshBtn').addEventListener('click', loadActivity);
+
+setRole('student');
+loadUserList();
+loadUserForEdit().then(loadActivity);
+</script>
+</body>
+</html>

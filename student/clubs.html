@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Life — Clubs — Kingsville Public High School</title>
+<style>
+  :root{
+    --red:#a3181c;
+    --red-bright:#d31f24;
+    --gold:#d4af37;
+    --gold-light:#f4e5a3;
+    --ink:#1a1a1a;
+    --line:#000;
+    --paper:#ffffff;
+    --grey-band:#e9e9e9;
+    --slate:#5c5f66;
+    --good:#1f7a3d;
+    --glow:rgba(163,24,28,.45);
+    --glow-gold:rgba(212,175,55,.65);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(163,24,28,.06), transparent 60%),
+      #f2f2f0;
+    margin:0;
+    padding:24px 12px 60px;
+  }
+  a{color:inherit;text-decoration:none}
+
+  .sheet{
+    position:relative;
+    max-width:1180px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:26px 34px 40px;
+    border:1px solid transparent;
+    border-radius:6px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    isolation:isolate;
+  }
+
+  /* Premium animated gold/crimson glowing frame */
+  .sheet::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:8px;
+    padding:2px;
+    background:conic-gradient(from var(--frame-angle,0deg),
+      var(--gold), var(--red-bright), var(--gold-light), var(--red), var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    z-index:-1;
+    animation: frame-spin 7s linear infinite;
+    filter:drop-shadow(0 0 6px var(--glow-gold));
+  }
+  @property --frame-angle{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:0deg;
+  }
+  @keyframes frame-spin{
+    to{ --frame-angle:360deg; }
+  }
+
+  .letterhead{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:3px double #333;
+    padding-bottom:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .letterhead::after{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:40%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.35), transparent);
+    animation: sweep 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{ left:-60%; }
+    45%{ left:120%; }
+    100%{ left:120%; }
+  }
+  .letterhead img{
+    height:64px;
+    width:64px;
+    object-fit:contain;
+    flex-shrink:0;
+    border-radius:50%;
+    background:#fff;
+    padding:3px;
+    box-shadow:
+      0 0 0 2px var(--gold),
+      0 0 10px 2px var(--glow-gold);
+    animation: crest-glow 2.6s ease-in-out infinite;
+  }
+  @keyframes crest-glow{
+    0%, 100%{
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 8px 1px var(--glow-gold);
+    }
+    50%{
+      box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 0 18px 6px var(--glow-gold);
+    }
+  }
+  .letterhead .headtext{
+    flex:1;
+    text-align:center;
+  }
+  .school-name{
+    font-weight:800;
+    font-size:26px;
+    letter-spacing:.5px;
+    margin:0 0 4px;
+    background:linear-gradient(100deg,
+      var(--red) 0%, var(--gold) 22%, var(--red-bright) 45%,
+      var(--gold-light) 60%, var(--red) 82%, var(--gold) 100%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 14px rgba(163,24,28,.18);
+    animation: text-shine 5s linear infinite;
+  }
+  @keyframes text-shine{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:250% 50%; }
+  }
+  .sub{ font-weight:700; font-size:13px; margin:0; color:#333; }
+  .motto{ font-style:italic; font-size:12.5px; color:#555; margin-top:2px; }
+
+  .master-title{
+    color:var(--red);
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:1px;
+    margin:8px 0 6px;
+    text-align:center;
+    text-shadow:0 0 10px rgba(163,24,28,.15);
+  }
+
+  .band{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    background:linear-gradient(180deg,var(--grey-band),#f4f4f2);
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    color:var(--red);
+    padding:7px 0;
+    margin:4px 0 20px;
+    letter-spacing:2px;
+    border-radius:3px;
+    box-shadow:inset 0 0 0 1px rgba(212,175,55,.35), 0 0 10px rgba(163,24,28,.08);
+  }
+  .band::before{
+    content:"";
+    position:absolute;
+    top:0; left:-40%;
+    width:25%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.55), transparent);
+    animation: sweep 4.5s ease-in-out infinite;
+    animation-delay:1s;
+    pointer-events:none;
+  }
+  .year-select{
+    font-family:inherit;
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:1px;
+    color:var(--red);
+    background:#fff;
+    border:1px solid rgba(163,24,28,.4);
+    border-radius:4px;
+    padding:4px 10px;
+  }
+
+  /* HERO STRIP */
+  .hero-strip{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:24px;
+  }
+  .hero-card{
+    position:relative;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:16px 18px;
+    overflow:hidden;
+    box-shadow:0 1px 4px rgba(0,0,0,.05);
+  }
+  .hero-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:8px;
+    padding:1.5px;
+    background:linear-gradient(135deg, var(--gold), transparent 40%, transparent 60%, var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity:.6;
+  }
+  .hero-card .label{
+    font-family:Georgia, serif;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--slate);
+    font-weight:700;
+  }
+  .hero-card .value{
+    font-size:28px;
+    font-weight:800;
+    color:var(--ink);
+    margin-top:6px;
+  }
+  .hero-card .value small{
+    font-size:13px;
+    color:var(--slate);
+    font-weight:400;
+  }
+  .hero-card::after{
+    content:"";
+    position:absolute;
+    top:12px;
+    right:14px;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    box-shadow:0 0 8px 2px currentColor;
+  }
+  .hero-card.clubs::after{ background:var(--gold); color:var(--gold); }
+  .hero-card.categories::after{ background:var(--red); color:var(--red); }
+  .hero-card.members::after{ background:var(--good); color:var(--good); }
+  .hero-card.clubs .value{
+    background:linear-gradient(100deg, var(--red) 0%, var(--gold) 40%, var(--red-bright) 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent; -webkit-text-fill-color:transparent;
+    animation:text-shine 6s linear infinite;
+  }
+
+  /* EMPTY-STATE / STATUS NOTICE */
+  .notice{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#FBF6E6;
+    border:1px solid var(--gold);
+    border-radius:6px;
+    padding:10px 16px;
+    margin-bottom:26px;
+    font-size:12.5px;
+    color:#5E4A20;
+    box-shadow:0 0 10px rgba(212,175,55,.2);
+  }
+  .notice .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--gold);
+    flex-shrink:0;
+    box-shadow:0 0 6px 2px var(--glow-gold);
+    animation:crest-glow 2.2s ease-in-out infinite;
+  }
+
+  :focus-visible{ outline:2px solid var(--red); outline-offset:2px; }
+
+  /* TOOLBAR + PREMIUM BUTTONS */
+  button.premium, a.premium{
+    position:relative;
+    display:inline-block;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    padding:9px 18px;
+    cursor:pointer;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--gold) 100%);
+    background-size:220% 100%;
+    background-position:0% 50%;
+    box-shadow:0 0 8px 1px var(--glow-gold);
+    transition:box-shadow .25s ease, transform .15s ease, background-position .3s ease;
+    text-decoration:none;
+    text-align:center;
+  }
+  button.premium:hover, a.premium:hover{
+    background-position:100% 50%;
+    box-shadow:0 0 14px 3px var(--glow-gold);
+    transform:translateY(-1px);
+  }
+  button.premium:active, a.premium:active{ transform:translateY(0); }
+  a.premium.ghost, button.premium.ghost{
+    background:#fff;
+    color:var(--red);
+    border:1px solid var(--red);
+    box-shadow:none;
+  }
+  .premium.small{ padding:7px 12px; font-size:12px; }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .sheet{ box-shadow:none; border:1px solid #999; }
+    .sheet::before{ display:none; }
+    .toolbar{ display:none !important; }
+    .lib-controls{ display:none !important; }
+    .band{ display:none !important; }
+  }
+
+  @media (max-width:820px){
+    .sheet{ padding:16px; }
+    .school-name{ font-size:20px; }
+    .letterhead img{ height:44px; width:44px; }
+    .hero-strip{ grid-template-columns:repeat(2,1fr); }
+  }
+
+  /* ============ CLUBS STYLES ============ */
+
+  /* MY CLUB spotlight card */
+  .my-club-wrap{ margin-bottom:30px; }
+  .my-club-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:var(--slate);
+    font-weight:700;
+    margin:0 0 8px 2px;
+  }
+  .my-club-card{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    background:linear-gradient(120deg, #fffdf6, #fbf3d9 70%, #fffdf6);
+    border:2px solid var(--gold);
+    border-radius:12px;
+    padding:20px 24px;
+    overflow:hidden;
+    box-shadow:0 4px 18px rgba(212,175,55,.25);
+  }
+  .my-club-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:35%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.5), transparent);
+    animation: sweep 5s ease-in-out infinite;
+    pointer-events:none;
+  }
+  .my-club-badge{
+    flex-shrink:0;
+    width:64px; height:64px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--red), var(--red-bright));
+    display:flex; align-items:center; justify-content:center;
+    font-size:30px;
+    color:#fdf6e3;
+    box-shadow:0 0 0 3px var(--gold), 0 0 14px 3px var(--glow-gold);
+    animation: crest-glow 2.6s ease-in-out infinite;
+  }
+  .my-club-info{ flex:1; }
+  .my-club-info .name{
+    font-size:20px;
+    font-weight:800;
+    color:var(--red);
+    margin:0 0 2px;
+    text-shadow:0 0 8px rgba(163,24,28,.12);
+  }
+  .my-club-info .abbr{
+    font-size:12px;
+    font-weight:700;
+    color:#5E4A20;
+    background:#fff;
+    border:1px solid var(--gold);
+    display:inline-block;
+    border-radius:20px;
+    padding:2px 10px;
+    margin-left:8px;
+    vertical-align:middle;
+  }
+  .my-club-info .meta{
+    font-size:12.5px;
+    color:var(--slate);
+    margin-top:6px;
+  }
+  .my-club-info .meta b{ color:var(--ink); }
+  .my-club-status{
+    flex-shrink:0;
+    text-align:center;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--good);
+    background:#fff;
+    border:1px solid var(--good);
+    border-radius:20px;
+    padding:6px 14px;
+  }
+
+  .lib-controls{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-end;
+    margin-bottom:18px;
+  }
+  .lib-search{
+    font-family:inherit;
+    font-size:13.5px;
+    padding:9px 14px;
+    border:1px solid rgba(163,24,28,.4);
+    border-radius:5px;
+    min-width:220px;
+    flex:1;
+    max-width:320px;
+  }
+
+  .grade-section{ margin-bottom:34px; }
+  .grade-section-title{
+    font-family:Georgia, serif;
+    font-size:17px;
+    font-weight:800;
+    color:var(--red);
+    border-bottom:2px solid var(--gold);
+    padding-bottom:6px;
+    margin:0 0 16px;
+    text-shadow:0 0 8px rgba(163,24,28,.12);
+  }
+
+  .book-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+    gap:16px;
+  }
+  .book-card{
+    position:relative;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:16px 16px 14px;
+    box-shadow:0 1px 4px rgba(0,0,0,.05);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .book-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 16px rgba(0,0,0,.1);
+  }
+  .book-card::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:5px;
+  }
+  .book-card.mine{
+    border:2px solid var(--gold);
+    box-shadow:0 0 0 1px var(--gold), 0 4px 14px rgba(212,175,55,.25);
+  }
+  .cat-stem::before{ background:#2e8b57; }
+  .cat-arts::before{ background:var(--red-bright); }
+  .cat-service::before{ background:#1f5f9e; }
+  .cat-leadership::before{ background:#d4a017; }
+  .cat-career::before{ background:#7a4fb5; }
+  .cat-sport::before{ background:#c0392b; }
+
+  .book-icon{
+    font-size:26px;
+    margin-bottom:8px;
+  }
+  .book-title{
+    font-family:Georgia, serif;
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 4px;
+    line-height:1.3;
+  }
+  .mine-tag{
+    display:inline-block;
+    font-size:9.5px;
+    font-weight:800;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:#5E4A20;
+    background:var(--gold-light);
+    border:1px solid var(--gold);
+    border-radius:10px;
+    padding:1px 8px;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+  .book-meta{
+    font-size:11.5px;
+    color:var(--slate);
+    margin-bottom:8px;
+  }
+  .book-meta .grade-pill{
+    display:inline-block;
+    background:#fbf6e6;
+    border:1px solid var(--gold);
+    color:#5E4A20;
+    font-weight:700;
+    border-radius:20px;
+    padding:2px 9px;
+    margin-right:6px;
+    font-size:10.5px;
+  }
+  .book-desc{
+    font-size:12px;
+    color:#444;
+    margin-bottom:12px;
+    flex:1;
+  }
+  .book-actions{
+    margin-top:auto;
+    display:flex;
+    gap:8px;
+  }
+  .book-actions .premium.small{
+    flex:1;
+  }
+  .book-actions .premium.ghost.small{
+    flex:1;
+  }
+
+  .no-results{
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:32px 8px;
+    text-align:center;
+    color:#999;
+    font-style:italic;
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="sheet" id="sheet">
+
+  <div class="letterhead">
+    <img src="../assets/images/img-1005aedff1a0c5ea.png" alt="Kingsville Public High School crest">
+    <div class="headtext">
+      <p class="school-name">Kingsville Public High School</p>
+      <p class="sub">Kingsville Township, Careysburg District &middot; Montserrado County, Liberia</p>
+      <p class="motto">Motto: "Knowledge Is Power"</p>
+    </div>
+    <img src="../assets/images/img-a7df6c3d8d6e390b.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+
+    <div class="toolbar">
+      <button class="premium ghost small" onclick="printPage()">🖨 Print</button>
+      <button class="premium small" onclick="downloadDirectory()">⬇ Download</button>
+    </div>
+
+    <p class="master-title">STUDENT LIFE — CLUBS &amp; ORGANIZATIONS</p>
+  <div class="band">
+    CATEGORY:
+    <select class="year-select" id="catSelect" aria-label="Filter by category">
+      <option value="all">All Categories</option>
+      <option value="Career &amp; Skills">Career &amp; Skills</option>
+      <option value="STEM">STEM</option>
+      <option value="Arts &amp; Culture">Arts &amp; Culture</option>
+      <option value="Leadership">Leadership</option>
+      <option value="Service">Service</option>
+      <option value="Sport">Sport</option>
+    </select>
+  </div>
+
+  <div class="lib-controls">
+    <input type="text" class="lib-search" id="searchInput" placeholder="Search by club name or advisor…">
+    <button class="premium ghost small" onclick="clearFilters()">Clear Filters</button>
+  </div>
+
+  <div class="hero-strip library" id="heroStrip">
+    <div class="hero-card clubs">
+      <div class="label">Clubs Offered</div>
+      <div class="value" id="totalClubsValue">—</div>
+    </div>
+    <div class="hero-card categories">
+      <div class="label">Categories</div>
+      <div class="value" id="categoriesValue">—</div>
+    </div>
+    <div class="hero-card members">
+      <div class="label">You Are Enrolled In</div>
+      <div class="value" id="myClubsValue">—</div>
+    </div>
+  </div>
+
+  <div class="notice" id="statusNotice">
+    <span class="dot"></span>
+    Your current club membership is highlighted in gold below. Speak with the club advisor if you would like to join an additional club.
+  </div>
+
+  <div class="my-club-wrap">
+    <p class="my-club-label">My Club</p>
+    <div class="my-club-card">
+      <div class="my-club-badge">💼</div>
+      <div class="my-club-info">
+        <p class="name">Work Ready Now<span class="abbr">WRN</span></p>
+        <p class="meta"><b>Category:</b> Career &amp; Skills &middot; <b>Meets:</b> Wednesdays, 3:30 PM &middot; <b>Advisor:</b> Mrs. Kolubah</p>
+      </div>
+      <div class="my-club-status">Enrolled ✓</div>
+    </div>
+  </div>
+
+  <div id="catalogContainer">
+    <div class="no-results" id="noResults" style="display:none;">No clubs match your search.</div>
+  </div>
+
+  <footer class="note">
+    Club offerings are provided by Kingsville Public High School for enrolled students. Membership is free; see the club advisor for meeting locations and requirements.
+  </footer>
+
+  <div class="back-row" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:13px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <a href="dashboard.html" style="color:var(--red, var(--navy, var(--blue, #333)));text-decoration:none;font-weight:600;">Back to Dashboard</a>
+  </div>
+
+</div>
+
+<script>
+  /*
+    ================================================================
+    CLUB DIRECTORY
+    ================================================================
+    Each entry describes a club offered at the school. To add a new
+    club, add a matching row below — no other code changes are
+    needed. Set "mine: true" on the club(s) the logged-in student
+    currently belongs to so it is highlighted at the top of the page.
+  */
+  const clubCatalog = [
+    { category: "Career & Skills", name: "Work Ready Now", abbr: "WRN", advisor: "Mrs. Kolubah", meets: "Wednesdays, 3:30 PM", desc: "Work-readiness and vocational skills club preparing students for internships and the job market.", mine: true },
+    { category: "STEM",           name: "Science & Robotics Club", abbr: "SRC", advisor: "Mr. Toe",     meets: "Tuesdays, 3:30 PM",  desc: "Hands-on science experiments, robotics builds, and regional competitions." },
+    { category: "STEM",           name: "Mathematics Club",        abbr: "MC",  advisor: "Mr. Gono",     meets: "Thursdays, 3:30 PM", desc: "Problem-solving, math olympiad prep, and peer tutoring." },
+    { category: "Arts & Culture", name: "Drama & Debate Society",  abbr: "DDS", advisor: "Ms. Weah",     meets: "Mondays, 3:30 PM",   desc: "Public speaking, stage productions, and inter-school debate competitions." },
+    { category: "Arts & Culture", name: "Choir & Music Club",      abbr: "CMC", advisor: "Mrs. Kpehe",   meets: "Fridays, 3:00 PM",   desc: "Vocal training, instrumental practice, and performances at school events." },
+    { category: "Leadership",     name: "Student Government Association", abbr: "SGA", advisor: "Mr. Dahn", meets: "Mondays, 3:00 PM", desc: "Student-led council representing the student body and organizing school events." },
+    { category: "Service",        name: "Red Cross Club",          abbr: "RCC", advisor: "Mrs. Sirleaf", meets: "Thursdays, 3:30 PM", desc: "First aid training, blood drives, and community service projects." },
+    { category: "Sport",          name: "Athletics Club",          abbr: "AC",  advisor: "Coach Freeman", meets: "Daily, 4:00 PM",     desc: "Track and field training and preparation for inter-school meets." }
+  ];
+
+  const CATEGORY_ICON = {
+    "Career & Skills": "💼",
+    "STEM": "🔬",
+    "Arts & Culture": "🎭",
+    "Leadership": "🏛️",
+    "Service": "❤️",
+    "Sport": "🏃"
+  };
+
+  function catClass(category){
+    return "cat-" + category.toLowerCase().replace(/&/g,'').replace(/[^a-z]+/g,'-').replace(/^-|-$/g,'');
+  }
+
+  function escapeHtml(str){
+    if(str === undefined || str === null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function renderCatalog(){
+    const container = document.getElementById('catalogContainer');
+    const noResults = document.getElementById('noResults');
+    const catFilter = document.getElementById('catSelect').value;
+    const search = document.getElementById('searchInput').value.trim().toLowerCase();
+
+    const filtered = clubCatalog.filter(c => {
+      if(catFilter !== 'all' && c.category !== catFilter) return false;
+      if(search && !(c.name.toLowerCase().includes(search) || c.advisor.toLowerCase().includes(search))) return false;
+      return true;
+    });
+
+    // stats always reflect the FULL catalog, not the current filter
+    document.getElementById('totalClubsValue').textContent = clubCatalog.length;
+    document.getElementById('categoriesValue').textContent = new Set(clubCatalog.map(c => c.category)).size;
+    document.getElementById('myClubsValue').textContent = clubCatalog.filter(c => c.mine).length;
+
+    if(filtered.length === 0){
+      container.querySelectorAll('.grade-section').forEach(el => el.remove());
+      noResults.style.display = 'block';
+      return;
+    }
+    noResults.style.display = 'none';
+
+    const categories = ["Career & Skills", "STEM", "Arts & Culture", "Leadership", "Service", "Sport"].filter(cat =>
+      filtered.some(c => c.category === cat)
+    );
+
+    const html = categories.map(category => {
+      const clubs = filtered.filter(c => c.category === category);
+      const cards = clubs.map(c => `
+        <div class="book-card ${catClass(c.category)}${c.mine ? ' mine' : ''}">
+          <div class="book-icon">${CATEGORY_ICON[c.category] || '⭐'}</div>
+          <h3 class="book-title">${escapeHtml(c.name)}${c.mine ? '<span class="mine-tag">My Club</span>' : ''}</h3>
+          <div class="book-meta">
+            <span class="grade-pill">${escapeHtml(c.abbr)}</span>${escapeHtml(c.meets)}
+          </div>
+          <p class="book-desc">${escapeHtml(c.desc)}</p>
+          <div class="book-meta">Advisor: ${escapeHtml(c.advisor)}</div>
+        </div>
+      `).join('');
+      return `<div class="grade-section">
+        <h2 class="grade-section-title">${escapeHtml(category)}</h2>
+        <div class="book-grid">${cards}</div>
+      </div>`;
+    }).join('');
+
+    container.querySelectorAll('.grade-section').forEach(el => el.remove());
+    container.insertAdjacentHTML('beforeend', html);
+  }
+
+  function clearFilters(){
+    document.getElementById('catSelect').value = 'all';
+    document.getElementById('searchInput').value = '';
+    renderCatalog();
+  }
+
+  document.getElementById('catSelect').addEventListener('change', renderCatalog);
+  document.getElementById('searchInput').addEventListener('input', renderCatalog);
+  renderCatalog();
+
+  /* ============ PRINT & DOWNLOAD ============ */
+  function printPage(){
+    window.print();
+  }
+
+  function downloadDirectory(){
+    const clone = document.getElementById('sheet').cloneNode(true);
+    // Strip interactive-only chrome that shouldn't appear in the saved copy
+    clone.querySelectorAll('.toolbar, .lib-controls, .band').forEach(el => el.remove());
+
+    const styles = document.querySelector('style').outerHTML;
+    const html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">'
+      + '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+      + '<title>Kingsville Public High School — Clubs Directory</title>'
+      + styles
+      + '</head><body>' + clone.outerHTML + '</body></html>';
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kingsville-clubs-directory.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+</script>
+
+<!-- KPS ERP Core -->
+
+</body>
+</html>

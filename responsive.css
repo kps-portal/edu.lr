@@ -1,0 +1,83 @@
+/* ============================================================
+   KPS Universal Responsive Layer
+   Loaded on every page as a safety net UNDER each page's own
+   bespoke responsive rules (sidebars, grids, print styles).
+   Keep this layer light and non-destructive — it should never
+   fight a page's own layout, only patch pages that don't have
+   their own responsive handling (auth screens, print sheets).
+   ============================================================ */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Respect notches / home-indicator safe areas on phones */
+body {
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+img, video, iframe, svg { max-width: 100%; height: auto; }
+
+/* Prevent any accidentally fixed-width block from forcing a
+   horizontal scrollbar on the whole page. */
+table, pre, code { max-width: 100%; }
+
+/* iOS Safari zooms in on focus if an input's font-size is under
+   16px — this keeps every form field at a safe minimum. */
+input, select, textarea, button {
+  font-size: max(16px, 1em);
+}
+
+/* Comfortable touch targets on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  a, button, [role="button"], input[type="checkbox"], input[type="radio"] {
+    min-height: 40px;
+  }
+}
+
+/* Generic fallback container — only affects pages that use these
+   utility class names without defining their own rules. */
+.container, .main-content {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 15px;
+}
+
+/* Tables: allow horizontal scroll on narrow screens instead of
+   squashing columns unreadably. */
+@media (max-width: 720px) {
+  table { display: block; overflow-x: auto; white-space: nowrap; }
+  h1 { font-size: 22px; }
+  h2 { font-size: 18px; }
+}
+
+@media (max-width: 480px) {
+  .container, .main-content { padding: 10px; }
+}
+
+/* Fallback stacked grid ONLY for simple pages (auth screens,
+   standalone forms) that have no app-shell sidebar of their own.
+   Scoped so it never touches the six dashboard app-shells, which
+   already handle their own responsive sidebar/grid collapse. */
+body:not(:has(.sidebar)) .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 15px;
+}
+
+@media print {
+  .hamburger, .sidebar, .topbar { display: none !important; }
+}

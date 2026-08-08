@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Certificate Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&family=Alex+Brush&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E; --crimson:#A81530; --crimson-bright:#E01B2E;
+  --gold:#D98A24; --gold-deep:#A8631A; --gold-light:#F3CD8E;
+  --navy:#0D1730; --navy-2:#182548; --navy-3:#22315C;
+  --cream:#FBF4E6; --paper:#FFFEFB; --ink:#1E1712; --muted:#7A7064; --line:#EBE0CA;
+  --success:#2E7D4F; --warn:#B9750D; --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35); --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{ margin:0; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+input,select,textarea{ font-family:inherit; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* -------- Topbar -------- */
+.topbar{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:16px; padding:16px 32px; background:rgba(251,244,230,.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.brand-mark{ width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg, var(--navy-3), var(--navy)); box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Fraunces',serif; font-weight:700; font-size:15px; overflow:hidden; }
+.brand-mark img{ width:100%; height:100%; object-fit:cover; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+
+.content{ padding:22px 32px 70px; max-width:1560px; margin:0 auto; }
+
+.scope-banner{ display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px; background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08)); border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px; }
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:6px 11px; font-size:11.5px; border-radius:8px; }
+
+/* -------- Layout: designer grid -------- */
+.designer-grid{ display:grid; grid-template-columns: 380px 1fr; gap:22px; align-items:start; }
+@media (max-width:1180px){ .designer-grid{ grid-template-columns:1fr; } }
+
+.panel{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; position:sticky; top:90px; max-height:calc(100vh - 110px); display:flex; flex-direction:column; }
+@media (max-width:1180px){ .panel{ position:static; max-height:none; } }
+.panel-head{ padding:18px 20px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; flex:none; }
+.panel-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:110px; height:110px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.panel-head h2{ color:#fff; margin:0 0 3px; font-size:17.5px; }
+.panel-head p{ margin:0; color:rgba(255,255,255,.65); font-size:11.8px; }
+.panel-body{ padding:6px 20px 18px; overflow-y:auto; }
+
+.pgroup{ border-bottom:1px solid var(--line); padding:16px 0; }
+.pgroup:last-child{ border-bottom:none; }
+.pgroup-t{ display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--navy-3); margin-bottom:12px; }
+.pgroup-t svg{ width:15px; height:15px; color:var(--gold-deep); }
+
+.field{ margin-bottom:12px; }
+.field label{ display:block; font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:5px; }
+.field input[type=text], .field select, .field textarea{
+  width:100%; border:1px solid var(--line); border-radius:9px; padding:8px 11px; font-size:13px; background:var(--paper); color:var(--ink); transition:border-color .15s;
+}
+.field textarea{ resize:vertical; min-height:56px; line-height:1.45; }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); }
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+.color-row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.color-row input[type=color]{ width:36px; height:36px; border-radius:9px; border:1px solid var(--line); padding:2px; background:var(--paper); cursor:pointer; flex:none; }
+.color-row .cr-label{ font-size:12.5px; font-weight:700; }
+.color-row .cr-sub{ font-size:10.8px; color:var(--muted); }
+
+.logo-upload{ display:flex; align-items:center; gap:12px; }
+.logo-preview{ width:54px; height:54px; border-radius:50%; border:2px dashed var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; background:#FBF8F0; flex:none; }
+.logo-preview img{ width:100%; height:100%; object-fit:cover; }
+.logo-preview svg{ width:20px; height:20px; color:var(--muted); }
+
+.panel-foot{ padding:14px 20px; border-top:1px solid var(--line); background:#FBF8F0; display:flex; gap:9px; flex:none; }
+.panel-foot .btn{ flex:1; justify-content:center; }
+
+/* -------- Preview column -------- */
+.preview-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:16px; flex-wrap:wrap; }
+.preview-toolbar .pt-l{ font-size:12.5px; color:var(--muted); }
+.zoom-tabs{ display:flex; gap:6px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:11px; }
+.zoom-tabs button{ padding:6px 13px; border-radius:8px; border:none; background:transparent; font-size:12px; font-weight:700; color:var(--muted); }
+.zoom-tabs button.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.preview-stage{ background:repeating-conic-gradient(#EFE7D3 0% 25%, #F6EFDD 0% 50%) 50%/22px 22px; border:1px solid var(--line); border-radius:18px; padding:34px; overflow-x:auto; }
+.cert-wrap{ width:max-content; margin:0 auto; transform-origin: top left; }
+
+.range-row{ display:flex; align-items:center; gap:10px; }
+.range-row input[type=range]{ flex:1; accent-color:var(--gold-deep); }
+.range-row .rr-val{ font-size:11.8px; font-weight:800; color:var(--navy); width:56px; text-align:right; flex:none; }
+.seg{ display:flex; border:1px solid var(--line); border-radius:9px; overflow:hidden; }
+.seg button{ flex:1; border:none; background:var(--paper); padding:8px 6px; font-size:12px; font-weight:700; color:var(--muted); }
+.seg button.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+/* ===== Certificate v2 (Black & Gold Completion style) ===== */
+.c2-page{ position:relative; width:1000px; height:720px; background:
+    repeating-linear-gradient(120deg, rgba(0,0,0,.025) 0 2px, transparent 2px 60px),
+    #ffffff;
+  box-shadow:0 24px 60px -20px rgba(0,0,0,.4); overflow:hidden; font-family:'Inter',sans-serif; transition:width .2s, height .2s; }
+.c2-page.size-letter{ width:1056px; height:816px; }
+.c2-frame{ position:absolute; inset:var(--c2-margin,20px); border:2.5px solid var(--c2-gold); pointer-events:none; z-index:5; }
+
+.c2-corner{ position:absolute; top:0; right:0; width:420px; height:340px; z-index:1; }
+.c2-ribbon{ position:absolute; left:0; right:0; bottom:0; width:100%; height:150px; z-index:1; }
+
+.c2-content{ position:relative; z-index:3; height:100%; display:flex; flex-direction:column; padding:calc(var(--c2-margin,20px) + 26px) calc(var(--c2-margin,20px) + 50px) calc(var(--c2-margin,20px) + 130px) calc(var(--c2-margin,20px) + 40px); }
+.c2-head{ display:flex; align-items:flex-start; gap:20px; }
+.c2-badge{ width:130px; height:130px; flex:none; position:relative; }
+.c2-badge img.logo-img{ position:absolute; top:50%; left:50%; width:66px; height:66px; transform:translate(-50%,-50%); border-radius:50%; object-fit:cover; }
+.c2-head-text{ padding-top:14px; }
+.c2-org{ font-family:'Playfair Display', serif; font-weight:800; font-size:34px; color:#1a1a1a; line-height:1.1; margin:0; }
+.c2-addr{ font-size:15px; color:#2a2a2a; margin-top:6px; line-height:1.45; }
+
+.c2-titlewrap{ text-align:center; margin-top:6px; }
+.c2-title{ font-family:'Playfair Display', serif; font-weight:900; font-size:58px; color:#181818; letter-spacing:.02em; margin:0; }
+.c2-subtitle{ font-family:'Playfair Display', serif; font-weight:800; font-size:22px; color:#181818; letter-spacing:.03em; margin-top:-6px; }
+.c2-presented{ font-size:16px; color:#2a2a2a; margin-top:6px; }
+
+.c2-name{ font-family:'Alex Brush', cursive; font-size:56px; color:var(--c2-gold); text-align:center; margin:6px 0 0; line-height:1; }
+.c2-name-line{ width:420px; height:1.5px; background:#333; margin:8px auto 0; }
+
+.c2-bold-line{ font-size:14.5px; font-weight:700; color:#181818; margin-top:22px; line-height:1.5; max-width:900px; }
+.c2-body{ font-size:14px; color:#2a2a2a; margin-top:14px; line-height:1.6; max-width:900px; }
+.c2-body b{ text-decoration:underline; }
+
+.c2-sigrow{ display:flex; gap:90px; margin-top:auto; padding-top:30px; }
+.c2-sig{ text-align:center; }
+.c2-sig .sline{ width:230px; border-bottom:1.5px solid #222; margin-bottom:4px; }
+.c2-sig .sname{ font-family:'Playfair Display', serif; font-weight:800; font-size:17px; color:#181818; }
+.c2-sig .srole{ font-size:13.5px; color:#2a2a2a; margin-top:1px; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+@media print{
+  @page{ size:landscape; margin:0; }
+  body *{ visibility:hidden; }
+  .c2-page, .c2-page *{ visibility:visible; }
+  .c2-page{ position:fixed; top:0; left:0; box-shadow:none; margin:0; transform:none !important; }
+  .cert-wrap{ transform:none !important; }
+}
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+  <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  </a>
+  <div class="school-brand">
+    <div class="brand-mark" id="topbarBrandMark">KP</div>
+    <div>
+      <div class="sb-t1">Kingsville #7 &middot; Careysburg</div>
+      <div class="sb-t2">Kingsville Public School</div>
+    </div>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="page-title-wrap">
+    <div class="eyebrow">Super Admin Console</div>
+    <div class="page-title">Certificate Designer</div>
+  </div>
+  <div class="profile-chip" style="cursor:default;" title="Super Admin session">
+    <div class="av-init">SA</div>
+    <div>
+      <div class="pn">Super Admin</div>
+      <div class="pr">Full design control</div>
+    </div>
+  </div>
+</header>
+
+<div class="content">
+
+  <div class="scope-banner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+    <div>
+      <div class="sb-t">Designing the School-Wide Certificate of Completion Template</div>
+      <div class="sb-s">Everything on this certificate &mdash; the organization identity, logo, address, wording, colors and signatures &mdash; is controlled from this panel. Only a <b class="sa">Super Admin</b> can edit this template, and changes apply to every certificate generated.</div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <h2>Certificate of Completion Template</h2>
+      <p>Configure the template on the left. The live preview on the right always reflects the exact certificate that will be printed for students.</p>
+    </div>
+  </div>
+
+  <div class="designer-grid">
+
+    <!-- ============ SETTINGS PANEL ============ -->
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Template Settings</h2>
+        <p>Every field below is reflected instantly in the preview</p>
+      </div>
+      <div class="panel-body">
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>Branding &amp; Identity</div>
+          <div class="field"><label>Organization / School Name</label><input type="text" id="f-org" value="Restoring Hope Foundation"></div>
+          <div class="field"><label>Address Line 1</label><input type="text" id="f-addr1" value="Kollieman Town Community, Bentol City, Rural"></div>
+          <div class="field"><label>Address Line 2</label><input type="text" id="f-addr2" value="Montserrdo County - Liberia"></div>
+          <div class="field">
+            <label>Logo</label>
+            <div class="logo-upload">
+              <div class="logo-preview" id="logoPreview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2S19 16.4 19 20"/></svg></div>
+              <div>
+                <button type="button" class="btn btn-ghost btn-sm" id="logoBtn">Upload Logo</button>
+                <input type="file" id="logoFile" accept="image/*" style="display:none;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2a10 10 0 100 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.4-.3-.4-.5-.9-.5-1.4 0-1.1.9-2 2-2H17a3 3 0 003-3c0-5.5-4-8.2-8-8.2z"/></svg>Colors</div>
+          <div class="color-row"><input type="color" id="c-gold" value="#c79a3c"><div><div class="cr-label">Gold Accent</div><div class="cr-sub">Frame, ribbon trim, script name</div></div></div>
+          <div class="color-row"><input type="color" id="c-dark" value="#141414"><div><div class="cr-label">Dark Panel</div><div class="cr-sub">Corner &amp; bottom ribbon shapes</div></div></div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Page Layout &amp; Margin</div>
+          <div class="field"><label>Paper Size (Landscape)</label>
+            <div class="seg" id="seg-size">
+              <button type="button" data-v="a4" class="active">A4</button>
+              <button type="button" data-v="letter">Letter</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Margin</label>
+            <div class="range-row"><input type="range" id="f-margin" min="8" max="60" value="20"><span class="rr-val" id="marginVal">20 px</span></div>
+          </div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Certificate Wording</div>
+          <div class="field"><label>Title</label><input type="text" id="f-title" value="Certificate"></div>
+          <div class="field"><label>Subtitle</label><input type="text" id="f-subtitle" value="Of Completion"></div>
+          <div class="field"><label>&ldquo;Presented to&rdquo; line</label><input type="text" id="f-presented" value="This is proudly presented to:"></div>
+          <div class="field"><label>Bold intro line</label><textarea id="f-boldline" style="min-height:50px;">For successfully completing the educational programme of Restoring Hope Foundation Orphanage Home.</textarea></div>
+          <div class="field"><label>Body paragraph</label><textarea id="f-body" style="min-height:80px;">In recognition of your dedication, perseverance, and commitment to learning. We congratulate you on this achievement and wish you continued success in all your future endeavors.</textarea></div>
+          <div class="row2">
+            <div class="field"><label>Awarded &ldquo;day&rdquo;</label><input type="text" id="f-day" value="10th"></div>
+            <div class="field"><label>Awarded &ldquo;month, year&rdquo;</label><input type="text" id="f-monthyear" value="July, 2026"></div>
+          </div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Signatures</div>
+          <div class="row2">
+            <div class="field"><label>Left name</label><input type="text" id="f-sig1name" value="Mr. Henry K. Baysah"></div>
+            <div class="field"><label>Left role</label><input type="text" id="f-sig1role" value="Principal, RHF"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>Right name</label><input type="text" id="f-sig2name" value="Mr. Fomba S. Varfee"></div>
+            <div class="field"><label>Right role</label><input type="text" id="f-sig2role" value="Registrar, RHF"></div>
+          </div>
+        </div>
+
+      </div>
+      <div class="panel-foot">
+        <button type="button" class="btn btn-ghost" id="resetBtn">Reset Defaults</button>
+        <button type="button" class="btn btn-primary" id="saveBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg>
+          Save Template
+        </button>
+      </div>
+    </div>
+
+    <!-- ============ PREVIEW ============ -->
+    <div>
+      <div class="preview-toolbar">
+        <div class="pt-l">Live preview &middot; sample recipient name shown for illustration only</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button type="button" class="btn btn-ghost btn-sm" id="printBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+            Print / Save PDF
+          </button>
+          <div class="zoom-tabs" id="zoomTabs">
+            <button data-z="0.6">60%</button>
+            <button data-z="0.8" class="active">80%</button>
+            <button data-z="1">100%</button>
+          </div>
+        </div>
+      </div>
+      <div class="preview-stage">
+        <div class="cert-wrap" id="certWrap">
+          <div class="c2-page" id="certPage"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-ribbon">
+    <b>Kingsville Public School</b> &middot; Kingsville #7, Careysburg District &middot; Super Admin Console
+  </div>
+
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================= STATE ============================= */
+const defaults = {
+  org:'Kingsville Public School',
+  addr1:'Kingsville #7 Community, Careysburg District',
+  addr2:'Montserrado County - Liberia',
+  logo:'../assets/images/img-4c3ee99153e1e3ab.webp',
+  colorGold:'#c79a3c', colorDark:'#141414',
+  size:'a4', margin:20,
+  title:'Certificate', subtitle:'Of Completion',
+  presented:'This is proudly presented to:',
+  boldLine:'For successfully completing the educational programme of Kingsville Public School.',
+  body:'In recognition of your dedication, perseverance, and commitment to learning. We congratulate you on this achievement and wish you continued success in all your future endeavors.',
+  day:'10th', monthYear:'July, 2026',
+  sig1name:'Mr. Henry K. Baysah', sig1role:'Principal',
+  sig2name:'Mr. Fomba S. Varfee', sig2role:'Registrar'
+};
+let state = JSON.parse(JSON.stringify(defaults));
+const sample = { name:'Emmanuel Ricks' };
+
+/* ============================= ICONS ============================= */
+const userIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2S19 16.4 19 20"/></svg>';
+
+/* ============================= STAR BADGE POINTS ============================= */
+function starPoints(cx, cy, outerR, innerR, n){
+  const pts = [];
+  for(let i=0;i<n*2;i++){
+    const r = i % 2 === 0 ? outerR : innerR;
+    const angle = Math.PI * i / n - Math.PI/2;
+    pts.push((cx + r*Math.cos(angle)).toFixed(1)+','+(cy + r*Math.sin(angle)).toFixed(1));
+  }
+  return pts.join(' ');
+}
+
+function buildBadgeSVG(gold, dark){
+  return '<svg viewBox="0 0 200 200" width="130" height="130">' +
+    '<polygon points="'+starPoints(100,100,96,80,20)+'" fill="'+dark+'"/>' +
+    '<circle cx="100" cy="100" r="70" fill="'+gold+'"/>' +
+    '<circle cx="100" cy="100" r="60" fill="#fff"/>' +
+    '</svg>';
+}
+
+/* ============================= CORNER / RIBBON SHAPES ============================= */
+function buildCornerSVG(dark, gold){
+  return '<svg viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%;">' +
+    '<polygon points="420,0 420,340 90,0" fill="'+dark+'"/>' +
+    '<polygon points="420,60 420,240 220,60" fill="none" stroke="'+gold+'" stroke-width="4"/>' +
+    '<polygon points="220,0 340,0 150,150" fill="'+dark+'" opacity="0.85"/>' +
+    '</svg>';
+}
+
+function buildRibbonSVG(dark, gold){
+  return '<svg viewBox="0 0 1000 150" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:100%;">' +
+    '<path d="M0,90 C220,60 380,120 620,85 C780,65 900,100 1000,75 L1000,150 L0,150 Z" fill="'+dark+'"/>' +
+    '<path d="M0,90 C220,60 380,120 620,85 C780,65 900,100 1000,75" fill="none" stroke="'+gold+'" stroke-width="5"/>' +
+    '<path d="M0,102 C220,72 380,132 620,97 C780,77 900,112 1000,87" fill="none" stroke="'+gold+'" stroke-width="2" opacity="0.7"/>' +
+    '</svg>';
+}
+
+/* ============================= RENDER ============================= */
+function renderCertificate(){
+  const page = document.getElementById('certPage');
+  page.className = 'c2-page size-'+state.size;
+  page.style.setProperty('--c2-gold', state.colorGold);
+  page.style.setProperty('--c2-margin', state.margin+'px');
+
+  const logoHtml = state.logo ? '<img class="logo-img" src="'+state.logo+'">' : '';
+
+  page.innerHTML = `
+    <div class="c2-corner">${buildCornerSVG(state.colorDark, state.colorGold)}</div>
+    <div class="c2-ribbon">${buildRibbonSVG(state.colorDark, state.colorGold)}</div>
+    <div class="c2-frame"></div>
+    <div class="c2-content">
+      <div class="c2-head">
+        <div class="c2-badge">${buildBadgeSVG(state.colorGold, state.colorDark)}${logoHtml}</div>
+        <div class="c2-head-text">
+          <div class="c2-org">${state.org.toUpperCase()}</div>
+          <div class="c2-addr">${state.addr1}<br>${state.addr2}</div>
+        </div>
+      </div>
+      <div class="c2-titlewrap">
+        <div class="c2-title">${state.title}</div>
+        <div class="c2-subtitle">${state.subtitle.toUpperCase()}</div>
+        <div class="c2-presented">${state.presented}</div>
+      </div>
+      <div class="c2-name">${sample.name}</div>
+      <div class="c2-name-line"></div>
+      <div class="c2-bold-line">${state.boldLine}</div>
+      <div class="c2-body">${state.body} Awarded this <b>${state.day}</b> day of <b>${state.monthYear}</b></div>
+      <div class="c2-sigrow">
+        <div class="c2-sig"><div class="sline"></div><div class="sname">${state.sig1name}</div><div class="srole">${state.sig1role}</div></div>
+        <div class="c2-sig"><div class="sline"></div><div class="sname">${state.sig2name}</div><div class="srole">${state.sig2role}</div></div>
+      </div>
+    </div>`;
+}
+
+function syncTopbarLogo(){
+  document.getElementById('topbarBrandMark').innerHTML = state.logo ? '<img src="'+state.logo+'">' : 'KP';
+}
+
+function renderPreview(){
+  renderCertificate();
+  syncTopbarLogo();
+}
+
+/* ============================= BIND FIELDS ============================= */
+function bindText(id, key){ document.getElementById(id).addEventListener('input', e => { state[key] = e.target.value; renderPreview(); }); }
+bindText('f-org','org'); bindText('f-addr1','addr1'); bindText('f-addr2','addr2');
+bindText('f-title','title'); bindText('f-subtitle','subtitle'); bindText('f-presented','presented');
+bindText('f-boldline','boldLine'); bindText('f-body','body');
+bindText('f-day','day'); bindText('f-monthyear','monthYear');
+bindText('f-sig1name','sig1name'); bindText('f-sig1role','sig1role');
+bindText('f-sig2name','sig2name'); bindText('f-sig2role','sig2role');
+
+document.getElementById('c-gold').addEventListener('input', e => { state.colorGold = e.target.value; renderPreview(); });
+document.getElementById('c-dark').addEventListener('input', e => { state.colorDark = e.target.value; renderPreview(); });
+
+document.getElementById('seg-size').addEventListener('click', e => {
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#seg-size button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  state.size = btn.dataset.v; renderPreview();
+});
+document.getElementById('f-margin').addEventListener('input', e => {
+  state.margin = +e.target.value;
+  document.getElementById('marginVal').textContent = state.margin+' px';
+  renderPreview();
+});
+document.getElementById('printBtn').addEventListener('click', () => { window.print(); });
+
+document.getElementById('logoBtn').addEventListener('click', () => document.getElementById('logoFile').click());
+document.getElementById('logoFile').addEventListener('change', e => {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    state.logo = ev.target.result;
+    document.getElementById('logoPreview').innerHTML = '<img src="'+state.logo+'">';
+    renderPreview();
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ============================= ZOOM ============================= */
+document.getElementById('zoomTabs').addEventListener('click', e => {
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#zoomTabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('certWrap').style.transform = 'scale('+btn.dataset.z+')';
+});
+document.getElementById('certWrap').style.transform = 'scale(0.8)';
+
+/* ============================= TOAST ============================= */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>'+msg+'</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+
+/* ============================= SAVE / RESET =============================
+   Persisted for real via the shared Supabase-backed key/value store
+   (js/supabase-api.js's KPS.kv, aliased to window.storage) so the template
+   survives reloads and is genuinely shared school-wide across every device,
+   not just kept in this tab's memory. */
+const CERT_TEMPLATE_KEY = 'certificate-template:kingsville';
+let savedSnapshot = JSON.parse(JSON.stringify(state));
+
+async function loadSavedTemplate(){
+  try{
+    if (window.storage && window.storage.get){
+      const r = await window.storage.get(CERT_TEMPLATE_KEY, true);
+      if (r && r.value){
+        const saved = JSON.parse(r.value);
+        state = Object.assign(JSON.parse(JSON.stringify(defaults)), saved);
+        savedSnapshot = JSON.parse(JSON.stringify(state));
+      }
+    }
+  }catch(e){ /* nothing saved yet — using defaults */ }
+}
+
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  savedSnapshot = JSON.parse(JSON.stringify(state));
+  try{
+    if (window.storage && window.storage.set) await window.storage.set(CERT_TEMPLATE_KEY, JSON.stringify(savedSnapshot), true);
+    showToast('Certificate template saved &middot; applied school-wide for all future certificates.');
+  }catch(e){
+    showToast('Could not save — the database did not confirm it.');
+  }
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  state = JSON.parse(JSON.stringify(defaults));
+  syncFieldsFromState();
+  showToast('Template reset to the default Restoring Hope Foundation design.');
+});
+
+function syncFieldsFromState(){
+  document.getElementById('f-org').value = state.org;
+  document.getElementById('f-addr1').value = state.addr1;
+  document.getElementById('f-addr2').value = state.addr2;
+  document.getElementById('f-title').value = state.title;
+  document.getElementById('f-subtitle').value = state.subtitle;
+  document.getElementById('f-presented').value = state.presented;
+  document.getElementById('f-boldline').value = state.boldLine;
+  document.getElementById('f-body').value = state.body;
+  document.getElementById('f-day').value = state.day;
+  document.getElementById('f-monthyear').value = state.monthYear;
+  document.getElementById('f-sig1name').value = state.sig1name;
+  document.getElementById('f-sig1role').value = state.sig1role;
+  document.getElementById('f-sig2name').value = state.sig2name;
+  document.getElementById('f-sig2role').value = state.sig2role;
+  document.getElementById('c-gold').value = state.colorGold;
+  document.getElementById('c-dark').value = state.colorDark;
+  document.getElementById('f-margin').value = state.margin;
+  document.getElementById('marginVal').textContent = state.margin+' px';
+  document.querySelectorAll('#seg-size button').forEach(b=>b.classList.toggle('active', b.dataset.v===state.size));
+  document.getElementById('logoPreview').innerHTML = state.logo ? '<img src="'+state.logo+'">' : userIcon;
+  renderPreview();
+}
+
+/* ============================= INIT ============================= */
+(async function init(){
+  await loadSavedTemplate();
+  syncFieldsFromState();
+})();
+</script>
+</body>
+</html>

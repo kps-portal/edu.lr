@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Scholarship Recommendations</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --gold-soft:#fbe4b3;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;gap:12px;}
+  header.topbar .kps-logo{height:32px;width:32px;object-fit:contain;border-radius:6px;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .left .page-label{font-weight:400;font-size:11.5px;opacity:.75;letter-spacing:.4px;margin-left:2px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .live-pill{
+    display:flex;align-items:center;gap:6px;background:rgba(30,132,73,.18);
+    border:1px solid rgba(90,220,150,.4);color:#bdf5d3;border-radius:20px;
+    padding:4px 10px;font-size:10.5px;font-weight:700;letter-spacing:.4px;
+  }
+  header.topbar .live-pill .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:pulseDot 1.8s infinite;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55);}70%{box-shadow:0 0 0 7px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
+
+  .notice-strip{
+    background:var(--gold-soft);border-bottom:1px solid #ecd090;color:#5c3c0c;
+    font-size:12px;font-weight:600;text-align:center;padding:8px 16px;line-height:1.5;
+  }
+  .notice-strip b{color:#3a2205;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1240px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,32px) clamp(20px,4vw,32px) clamp(16px,3vh,28px);text-align:left;}
+
+  .page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:clamp(10px,2vh,16px);flex-wrap:wrap;}
+  .page-head .id{display:flex;align-items:center;gap:16px;}
+  .seal-stage{position:relative;width:56px;height:56px;flex-shrink:0;}
+  .seal-stage img.seal{height:56px;width:56px;object-fit:contain;border-radius:10px;background:#fff;padding:3px;box-shadow:0 6px 16px rgba(11,23,48,.2), 0 0 0 3px #fff, 0 0 0 4px var(--line);}
+  .page-head h1{font-size:clamp(16px,3vh,19px);color:var(--navy);font-weight:800;line-height:1.35;letter-spacing:.2px;}
+  .page-head h1 .school-line{display:block;color:var(--crimson);font-size:clamp(12.5px,2.4vh,13.5px);font-weight:700;margin-top:2px;}
+  .db-status{font-size:11px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px;}
+  .db-status .n{color:var(--navy);font-weight:800;}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:0 0 clamp(14px,2.6vh,20px);border-radius:2px;}
+
+  .layout{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start;}
+  @media (max-width:960px){.layout{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(14px,2.4vh,18px);}
+  .panel h2{font-size:11.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;}
+  .panel h2 .num{width:18px;height:18px;border-radius:5px;background:var(--navy);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+  .find-row{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:var(--panel);}
+  .find-row .fr-info{display:flex;flex-direction:column;min-width:0;}
+  .find-row .fr-name{font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .find-row .fr-meta{font-size:10.5px;color:var(--muted);}
+  .find-row button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;}
+  .find-row button:hover{background:#eef0f6;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field label .hint{font-weight:400;text-transform:none;color:var(--muted);font-size:10px;letter-spacing:0;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(8px,1.5vh,10px) 12px;border:1px solid var(--line);border-radius:4px;
+    font-size:13.5px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:64px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .field input[readonly]{background:var(--panel);color:var(--muted);font-weight:700;}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  @media (max-width:720px){.compose-grid,.grid3{grid-template-columns:1fr;}}
+  .radio-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px;}
+  .radio-row label{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink);text-transform:none;letter-spacing:0;}
+  .radio-row input{width:auto;}
+  .cond{display:none;}
+  .cond.show{display:block;}
+
+  .topbar-actions{display:flex;gap:8px;}
+  .topbar-actions button{
+    background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.35);
+    border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .topbar-actions button.gold{background:var(--gold);border-color:var(--gold);color:#3a2600;}
+  .topbar-actions button:hover{background:rgba(255,255,255,.18);}
+  .topbar-actions button.gold:hover{filter:brightness(0.96);}
+  .topbar-actions button.danger{border-color:rgba(255,140,140,.6);color:#ffd7d7;}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--navy-deep);color:#fff;border:1px solid var(--gold);
+    border-radius:8px;padding:11px 20px;font-size:13px;font-weight:600;
+    box-shadow:0 10px 30px rgba(11,23,48,.35);opacity:0;pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;z-index:999;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{border-color:var(--danger);}
+
+  /* ---------- Directory (database view, on-screen only) ---------- */
+  .directory-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .directory-toolbar span{font-size:11.5px;color:var(--muted);}
+
+  .db-table-wrap{border:1px solid var(--line);border-radius:8px;overflow:auto;background:#fff;}
+  table.db-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.db-table th{
+    background:var(--navy);color:#fff;text-align:left;padding:9px 12px;font-size:10.5px;
+    text-transform:uppercase;letter-spacing:.4px;font-weight:800;position:sticky;top:0;
+  }
+  table.db-table td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  table.db-table tr:last-child td{border-bottom:none;}
+  table.db-table tr:hover td{background:var(--panel);}
+  table.db-table td.name{font-weight:700;color:var(--ink);}
+  table.db-table td.muted{color:var(--muted);}
+  .status-pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;}
+  .status-pill.active{background:#e3f6ea;color:var(--ok);}
+  .status-pill.pending{background:var(--gold-soft);color:#8a5a06;}
+  .status-pill.withdrawn{background:#fdecea;color:var(--danger);}
+  .status-pill.graduated{background:#e7edfb;color:var(--navy);}
+  .row-actions{display:flex;gap:6px;}
+  .row-actions button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:4px 9px;font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .row-actions button:hover{background:#eef0f6;}
+  .row-actions button.del{border-color:var(--danger);color:var(--danger);}
+  .row-actions button.save{border-color:var(--ok);color:var(--ok);opacity:.4;pointer-events:none;}
+  .row-actions button.save.active{opacity:1;pointer-events:auto;background:var(--ok);color:#fff;}
+  .row-actions button.save.active:hover{filter:brightness(1.08);}
+  table.db-table tr.dirty td{background:#fffdf5;}
+  table.db-table tr.dirty td:first-child{box-shadow:inset 3px 0 0 var(--gold);}
+  td.cell-edit input, td.cell-edit select{
+    width:100%;border:1px solid transparent;background:transparent;border-radius:4px;
+    padding:5px 6px;font-size:12.5px;font-family:inherit;color:var(--ink);
+  }
+  td.cell-edit input:hover, td.cell-edit select:hover{border-color:var(--line);background:#fff;}
+  td.cell-edit input:focus, td.cell-edit select:focus{outline:none;border-color:var(--crimson);background:#fff;box-shadow:0 0 0 2px rgba(200,16,46,.08);}
+  td.cell-edit.name input{font-weight:700;}
+  .db-empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:12.5px;font-style:italic;}
+  .db-summary{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px;}
+  .db-summary .stat{border:1px solid var(--line);border-radius:8px;padding:10px 16px;background:var(--panel);min-width:110px;}
+  .db-summary .stat .n{font-size:20px;font-weight:800;color:var(--navy);}
+  .db-summary .stat .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:700;}
+
+  .active-badge{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#e7edfb;border:1px solid #c7d5f5;border-radius:8px;padding:9px 13px;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:16px;}
+  .active-badge button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+
+  /* ---------- Top search panel ---------- */
+  .top-search{
+    background:linear-gradient(180deg,#f8fafc 0%,#fff 100%);
+    border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;margin-bottom:clamp(14px,2.6vh,20px);
+    box-shadow:0 2px 10px rgba(11,23,48,.05);
+  }
+  .top-search .ts-head{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+  .top-search .ts-head .num{width:20px;height:20px;border-radius:6px;background:var(--crimson);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .top-search .ts-head h2{font-size:12.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;}
+  .top-search .ts-head .ts-sub{font-size:11px;color:var(--muted);font-weight:500;margin-left:auto;text-transform:none;letter-spacing:0;}
+  .top-search .ts-bar{display:flex;gap:10px;align-items:center;}
+  .top-search .ts-bar input{
+    flex:1;padding:11px 14px;border:1.5px solid var(--line);border-radius:8px;
+    font-size:14px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .top-search .ts-bar input:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 3px rgba(200,16,46,.08);}
+  .top-search .ts-icon{width:38px;height:38px;border-radius:8px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  #findResults{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;margin-top:10px;}
+  #findResults.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  @media (max-width:720px){#findResults.grid2{grid-template-columns:1fr;}}
+
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left">
+    <img class="kps-logo" id="topbarKpsLogo" alt="Kingsville Public School logo">
+    <div>
+      <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+      <span class="page-label">Office of the Registrar · Scholarship Recommendations</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="live-pill no-print"><span class="dot"></span>RECOMMENDATION DATABASE · ACTIVE</div>
+    <div class="topbar-actions">
+      <button id="newBtn">New Recommendation</button>
+      <button id="saveBtn" class="gold">Save to Database</button>
+    </div>
+    <img class="moe-mini" id="topbarMoeLogo" alt="Ministry of Education seal">
+  </div>
+</header>
+
+<div class="notice-strip">
+  <b>Registrar use only:</b> this record is stored in the school recommendation database and is not designed to be printed. Records can be searched by student name, recommendation number, or recommender, and updated at any time by the Registrar.
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+
+      <div class="page-head">
+        <div class="id">
+          <div class="seal-stage"><img class="seal" id="cardSeal" alt="School seal"></div>
+          <h1>Scholarship Recommendation Record<span class="school-line">Kingsville Public High School — Office of the Registrar</span></h1>
+        </div>
+        <div class="db-status">Records in database: <span class="n" id="progressBadge">0</span></div>
+      </div>
+      <div class="subtitle-rule"></div>
+
+      <div class="top-search" id="findPanel">
+        <div class="ts-head">
+          <span class="num">&#128269;</span>
+          <h2>Search the Database</h2>
+          <span class="ts-sub">by student name, recommendation number, or recommender</span>
+        </div>
+        <div class="ts-bar">
+          <span class="ts-icon">&#128269;</span>
+          <input id="findInput" type="text" placeholder="e.g. Doe, KPS-REC-000002, or a recommender's name">
+        </div>
+        <div id="findResults" class="grid2" style="display:none;"></div>
+        <p id="findEmpty" style="font-size:11.5px;color:var(--muted);font-style:italic;margin-top:10px;">Recommendation records are stored in this device/browser's local database.</p>
+      </div>
+
+      <div class="layout">
+
+        <!-- FORM COLUMN -->
+        <div>
+
+          <div id="activeBadgeWrap"></div>
+
+          <div class="panel">
+            <h2><span class="num">1</span>Recommendation Details</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Recommendation number</label><input id="recNumber" type="text" readonly placeholder="Assigned on save"></div>
+              <div class="field"><label>Submission date</label><input id="recDate" type="date"></div>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>Recommendation status</label>
+              <select id="recStatus"><option>Draft</option><option>Submitted</option><option>Under Review</option><option>Approved</option><option>Rejected</option></select>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">2</span>Student Identification</h2>
+            <div class="field"><label>Student ID#</label><input id="stuId" type="text"></div>
+            <div class="grid3">
+              <div class="field"><label>Last name</label><input id="lastName" type="text"></div>
+              <div class="field"><label>First name</label><input id="firstName" type="text"></div>
+              <div class="field"><label>Middle name</label><input id="middleName" type="text"></div>
+            </div>
+            <div class="compose-grid">
+              <div class="field"><label>Grade level</label><input id="gradeLevel" type="text" placeholder="e.g. Grade 9"></div>
+              <div class="field"><label>Class / section</label><input id="classSection" type="text" placeholder="e.g. 9A"></div>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>Academic year</label><input id="academicYear" type="text" placeholder="e.g. 2025/2026"></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">3</span>Linked Scholarship Application</h2>
+            <div class="field"><label>Scholarship name / program</label><input id="schName" type="text" placeholder="e.g. Kingsville Merit Scholarship"></div>
+            <div class="field" style="margin-bottom:0;"><label>Related application reference # <span class="hint">(optional)</span></label><input id="appRefNo" type="text" placeholder="e.g. KPS-SCH-000002"></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">4</span>Recommender Information</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Recommender name</label><input id="recommenderName" type="text"></div>
+              <div class="field"><label>Title / position</label><input id="recommenderTitle" type="text" placeholder="e.g. Homeroom Teacher"></div>
+            </div>
+            <div class="compose-grid">
+              <div class="field"><label>Relationship to student</label>
+                <select id="relationship"><option>Teacher</option><option>Coach</option><option>Employer</option><option>Community Leader</option><option>Other</option></select>
+              </div>
+              <div class="field"><label>Years known student</label><input id="yearsKnown" type="text" placeholder="e.g. 2 years"></div>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>Recommender contact <span class="hint">(phone or email)</span></label><input id="recommenderContact" type="text"></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">5</span>Recommendation Content</h2>
+            <div class="field"><label>Overall rating</label>
+              <select id="rating"><option>Excellent</option><option>Good</option><option>Average</option><option>Below Average</option></select>
+            </div>
+            <div class="field"><label>Strengths / qualities highlighted</label><textarea id="strengths" placeholder="e.g. leadership, academic diligence, community involvement"></textarea></div>
+            <div class="field"><label>Recommendation statement</label><textarea id="statement" placeholder="Full recommendation statement from the recommender" style="min-height:110px;"></textarea></div>
+            <div class="field"><label>Recommends without reservation?</label>
+              <div class="radio-row">
+                <label><input type="radio" name="wouldRecommend" value="Yes"> Yes</label>
+                <label><input type="radio" name="wouldRecommend" value="No"> No</label>
+              </div>
+            </div>
+            <div class="field cond" id="reservationField" style="margin-bottom:0;"><label>Explain reservations</label><textarea id="reservationDetail"></textarea></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">6</span>Registrar Administration</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Reviewed by (Registrar)</label><input id="reviewedBy" type="text"></div>
+              <div class="field"><label>Last updated by (Registrar)</label><input id="updatedBy" type="text" readonly></div>
+            </div>
+            <div class="field"><label>Last updated date</label><input id="updatedDate" type="text" readonly></div>
+            <div class="field" style="margin-bottom:0;"><label>Internal notes</label><textarea id="notes" placeholder="Registrar notes — not visible to students or recommenders"></textarea></div>
+          </div>
+
+        </div>
+
+        <!-- DATABASE / DIRECTORY COLUMN -->
+        <div>
+          <div class="panel">
+            <h2><span class="num">&#128193;</span>Recommendation Database</h2>
+            <div class="db-summary">
+              <div class="stat"><div class="n" id="statTotal">0</div><div class="l">Total</div></div>
+              <div class="stat"><div class="n" id="statDraft">0</div><div class="l">Draft</div></div>
+              <div class="stat"><div class="n" id="statSubmitted">0</div><div class="l">Submitted</div></div>
+              <div class="stat"><div class="n" id="statApproved">0</div><div class="l">Approved</div></div>
+              <div class="stat"><div class="n" id="statRejected">0</div><div class="l">Rejected</div></div>
+            </div>
+            <div class="directory-toolbar">
+              <span>Edit a student's name, scholarship, recommender, or status directly in the table below, then click Save.</span>
+            </div>
+            <div class="db-table-wrap">
+              <table class="db-table">
+                <thead>
+                  <tr>
+                    <th>Rec. Number</th>
+                    <th>Student</th>
+                    <th>Scholarship</th>
+                    <th>Recommender</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="dbTableBody"></tbody>
+              </table>
+              <div class="db-empty" id="dbEmpty">No recommendation records saved yet. Fill in the form and click "Save to Database".</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(async function(){
+  const auth = await KPS.requireRole(['registrar', 'super_admin']);
+  if (!auth || !auth.user) return;
+  const sbc = () => window.sb;
+
+  function el(id){ return document.getElementById(id); }
+  function val(id){ return el(id).value.trim(); }
+  function setVal(id, v){ el(id).textContent = v || '—'; }
+  function setInput(id, v){ el(id).value = v || ''; }
+  function radioVal(name){
+    const r = document.querySelector(`input[name=${name}]:checked`);
+    return r ? r.value : '';
+  }
+  function setRadio(name, value){
+    document.querySelectorAll(`input[name=${name}]`).forEach(r => { r.checked = (r.value === value); });
+  }
+
+  // -------- Logos --------
+    const KPS_LOGO = "../assets/images/img-05ddf6d498159c2e.png";
+    const MOE_SEAL = "../assets/images/img-2c6f3402d893a11c.png";
+  ['topbarKpsLogo','cardSeal'].forEach(id => el(id).src = KPS_LOGO);
+  ['topbarMoeLogo'].forEach(id => el(id).src = MOE_SEAL);
+
+  // -------- Conditional fields --------
+  function wireRadioCond(name, fieldId){
+    document.querySelectorAll(`input[name=${name}]`).forEach(r => {
+      r.addEventListener('change', () => {
+        el(fieldId).classList.toggle('show', r.value === 'No' && r.checked);
+      });
+    });
+  }
+  wireRadioCond('wouldRecommend', 'reservationField');
+
+  // -------- Database (public.scholarship_recommendations, live Supabase) --------
+  // rec_number is now assigned server-side by a real sequence (see
+  // 016_addendum_scholarships_wiring.sql) so it's collision-proof across
+  // every registrar - no local counter needed any more.
+  let registryCache = [];
+  function rowToRecord(row){
+    const nameParts = [row.last_name, row.first_name, row.middle_name].filter(Boolean);
+    return {
+      recNumber: row.rec_number, recDate: row.rec_date || '', recStatus: row.rec_status || 'Draft',
+      stuId: row.student_id_no || '',
+      lastName: row.last_name || '', firstName: row.first_name || '', middleName: row.middle_name || '',
+      name: nameParts.join(', '),
+      gradeLevel: row.grade_level || '', classSection: row.class_section || '', academicYear: row.academic_year || '',
+      schName: row.scholarship_name || '', appRefNo: row.app_ref_no || '',
+      recommenderName: row.recommender_name || '', recommenderTitle: row.recommender_title || '',
+      relationship: row.relationship || '', yearsKnown: row.years_known || '', recommenderContact: row.recommender_contact || '',
+      rating: row.rating || '', strengths: row.strengths || '', statement: row.statement || '',
+      wouldRecommend: row.would_recommend || '', reservationDetail: row.reservation_detail || '',
+      reviewedBy: row.reviewed_by || '', updatedBy: row.updated_by || '', updatedDate: row.updated_date || '',
+      notes: row.notes || '',
+    };
+  }
+  function recordToRow(record){
+    return {
+      rec_date: record.recDate || null, rec_status: record.recStatus || 'Draft',
+      student_id_no: record.stuId || null,
+      last_name: record.lastName || null, first_name: record.firstName || null, middle_name: record.middleName || null,
+      grade_level: record.gradeLevel || null, class_section: record.classSection || null, academic_year: record.academicYear || null,
+      scholarship_name: record.schName || null, app_ref_no: record.appRefNo || null,
+      recommender_name: record.recommenderName || null, recommender_title: record.recommenderTitle || null,
+      relationship: record.relationship || null, years_known: record.yearsKnown || null, recommender_contact: record.recommenderContact || null,
+      rating: record.rating || null, strengths: record.strengths || null, statement: record.statement || null,
+      would_recommend: record.wouldRecommend || null, reservation_detail: record.reservationDetail || null,
+      reviewed_by: record.reviewedBy || null, updated_by: record.updatedBy || null, updated_date: record.updatedDate || null,
+      notes: record.notes || null,
+    };
+  }
+  async function loadRegistry(){
+    const { data, error } = await sbc().from('scholarship_recommendations').select('*');
+    if(error){
+      console.error('[scholarships] load failed:', error);
+      showToast('Could not load the scholarship database: ' + error.message, true);
+      registryCache = [];
+      return;
+    }
+    registryCache = (data || []).map(rowToRecord);
+  }
+  function getRegistry(){ return registryCache; }
+
+  function fullNameLine(){
+    const parts = [val('lastName'), val('firstName'), val('middleName')].filter(Boolean);
+    return parts.length ? parts.join(', ') : '';
+  }
+
+  function collectData(){
+    return {
+      recNumber: val('recNumber'),
+      recDate: val('recDate'),
+      recStatus: el('recStatus').value,
+      stuId: val('stuId'),
+      lastName: val('lastName'), firstName: val('firstName'), middleName: val('middleName'),
+      name: fullNameLine(),
+      gradeLevel: val('gradeLevel'), classSection: val('classSection'), academicYear: val('academicYear'),
+      schName: val('schName'), appRefNo: val('appRefNo'),
+      recommenderName: val('recommenderName'), recommenderTitle: val('recommenderTitle'),
+      relationship: el('relationship').value, yearsKnown: val('yearsKnown'), recommenderContact: val('recommenderContact'),
+      rating: el('rating').value, strengths: val('strengths'), statement: val('statement'),
+      wouldRecommend: radioVal('wouldRecommend'), reservationDetail: val('reservationDetail'),
+      reviewedBy: val('reviewedBy'), updatedBy: val('updatedBy'), updatedDate: val('updatedDate'),
+      notes: val('notes'),
+    };
+  }
+
+  function loadRecordIntoForm(record){
+    setInput('recNumber', record.recNumber);
+    setInput('recDate', record.recDate);
+    if(record.recStatus) el('recStatus').value = record.recStatus;
+    setInput('stuId', record.stuId);
+    setInput('lastName', record.lastName); setInput('firstName', record.firstName); setInput('middleName', record.middleName);
+    setInput('gradeLevel', record.gradeLevel); setInput('classSection', record.classSection); setInput('academicYear', record.academicYear);
+    setInput('schName', record.schName); setInput('appRefNo', record.appRefNo);
+    setInput('recommenderName', record.recommenderName); setInput('recommenderTitle', record.recommenderTitle);
+    if(record.relationship) el('relationship').value = record.relationship;
+    setInput('yearsKnown', record.yearsKnown); setInput('recommenderContact', record.recommenderContact);
+    if(record.rating) el('rating').value = record.rating;
+    setInput('strengths', record.strengths); setInput('statement', record.statement);
+    setRadio('wouldRecommend', record.wouldRecommend); setInput('reservationDetail', record.reservationDetail);
+    el('reservationField').classList.toggle('show', record.wouldRecommend === 'No');
+    setInput('reviewedBy', record.reviewedBy); setInput('updatedBy', record.updatedBy); setInput('updatedDate', record.updatedDate);
+    setInput('notes', record.notes);
+    showActiveBadge(record);
+  }
+
+  function clearForm(){
+    document.querySelectorAll('.field input, .field textarea').forEach(n => n.value = '');
+    document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+    el('recStatus').value = 'Draft';
+    el('relationship').value = 'Teacher';
+    el('rating').value = 'Excellent';
+    el('reservationField').classList.remove('show');
+    hideActiveBadge();
+  }
+
+  function showActiveBadge(record){
+    el('activeBadgeWrap').innerHTML = `
+      <div class="active-badge">
+        <span>Editing existing record: ${escapeHtml(record.name || 'Unnamed student')} — ${escapeHtml(record.recNumber || '')}</span>
+        <button type="button" id="stopEditingBtn">Start New Instead</button>
+      </div>`;
+    el('stopEditingBtn').addEventListener('click', () => { clearForm(); showToast('Ready for a new recommendation.'); });
+  }
+  function hideActiveBadge(){ el('activeBadgeWrap').innerHTML = ''; }
+
+  function escapeHtml(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+    }[c]));
+  }
+
+  // -------- Directory table --------
+  function renderDirectory(){
+    const list = getRegistry().slice().sort((a,b) => (b.updatedDate || '').localeCompare(a.updatedDate || ''));
+    const body = el('dbTableBody');
+    const empty = el('dbEmpty');
+
+    el('progressBadge').textContent = list.length;
+    el('statTotal').textContent = list.length;
+    el('statDraft').textContent = list.filter(r => r.recStatus === 'Draft').length;
+    el('statSubmitted').textContent = list.filter(r => r.recStatus === 'Submitted' || r.recStatus === 'Under Review').length;
+    el('statApproved').textContent = list.filter(r => r.recStatus === 'Approved').length;
+    el('statRejected').textContent = list.filter(r => r.recStatus === 'Rejected').length;
+
+    if(!list.length){
+      body.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    const statusOptions = ['Draft','Submitted','Under Review','Approved','Rejected'];
+    body.innerHTML = list.map(r => `
+      <tr data-row="${escapeHtml(r.recNumber)}">
+        <td class="muted">${escapeHtml(r.recNumber || '—')}</td>
+        <td class="cell-edit name"><input type="text" data-field="name" value="${escapeHtml(r.name || '')}" placeholder="Unnamed student"></td>
+        <td class="cell-edit"><input type="text" data-field="schName" value="${escapeHtml(r.schName || '')}"></td>
+        <td class="cell-edit"><input type="text" data-field="recommenderName" value="${escapeHtml(r.recommenderName || '')}"></td>
+        <td class="cell-edit">
+          <select data-field="recStatus">
+            ${statusOptions.map(s => `<option value="${s}" ${(r.recStatus || 'Draft') === s ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>
+        </td>
+        <td class="muted">${escapeHtml(r.updatedBy || '—')}</td>
+        <td>
+          <div class="row-actions">
+            <button type="button" class="save" data-save="${escapeHtml(r.recNumber)}">Save</button>
+            <button type="button" data-edit="${escapeHtml(r.recNumber)}">Full Edit</button>
+            <button type="button" class="del" data-del="${escapeHtml(r.recNumber)}">Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+
+    body.querySelectorAll('tr[data-row]').forEach(row => {
+      row.querySelectorAll('[data-field]').forEach(field => {
+        field.addEventListener('input', () => markRowDirty(row));
+        field.addEventListener('change', () => markRowDirty(row));
+      });
+    });
+    body.querySelectorAll('[data-save]').forEach(btn => {
+      btn.addEventListener('click', () => saveInlineRow(btn.getAttribute('data-save')));
+    });
+    body.querySelectorAll('[data-edit]').forEach(btn => {
+      btn.addEventListener('click', () => loadByRecNumber(btn.getAttribute('data-edit')));
+    });
+    body.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', () => deleteRecord(btn.getAttribute('data-del')));
+    });
+  }
+
+  function markRowDirty(row){
+    row.classList.add('dirty');
+    row.querySelector('[data-save]').classList.add('active');
+  }
+
+  async function saveInlineRow(recNumber){
+    const list = getRegistry();
+    const idx = list.findIndex(r => r.recNumber === recNumber);
+    if(idx < 0) return;
+    const row = document.querySelector(`tr[data-row="${CSS.escape(recNumber)}"]`);
+    if(!row) return;
+
+    const record = { ...list[idx] };
+    const nameVal = row.querySelector('[data-field="name"]').value.trim();
+    record.name = nameVal;
+    const nameParts = nameVal.split(',').map(p => p.trim()).filter(Boolean);
+    record.lastName = nameParts[0] || '';
+    record.firstName = nameParts[1] || '';
+    record.middleName = nameParts[2] || '';
+    record.schName = row.querySelector('[data-field="schName"]').value.trim();
+    record.recommenderName = row.querySelector('[data-field="recommenderName"]').value.trim();
+    record.recStatus = row.querySelector('[data-field="recStatus"]').value;
+    record.updatedBy = record.updatedBy || 'Registrar';
+    record.updatedDate = new Date().toISOString().slice(0,10);
+
+    try{
+      const { error } = await sbc().from('scholarship_recommendations').update(recordToRow(record)).eq('rec_number', recNumber);
+      if(error) throw error;
+      await loadRegistry();
+
+      if(val('recNumber') === recNumber){
+        loadRecordIntoForm(record);
+      }
+
+      renderDirectory();
+      renderFindResults();
+      showToast('Updated ' + (record.name || 'record') + ' in the database.');
+    }catch(err){
+      console.error('[scholarships] inline save failed:', err);
+      showToast('Could not save that row: ' + (err.message || 'unknown error'), true);
+    }
+  }
+
+  function loadByRecNumber(recNumber){
+    const record = getRegistry().find(r => r.recNumber === recNumber);
+    if(!record) return;
+    loadRecordIntoForm(record);
+    el('findInput').value = '';
+    renderFindResults();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('Loaded ' + (record.name || 'record') + ' for editing.');
+  }
+
+  async function deleteRecord(recNumber){
+    if(!confirm('Delete this recommendation from the database? This cannot be undone.')) return;
+    try{
+      const { error } = await sbc().from('scholarship_recommendations').delete().eq('rec_number', recNumber);
+      if(error) throw error;
+      await loadRegistry();
+      renderDirectory();
+      if(val('recNumber') === recNumber){ clearForm(); }
+      showToast('Record deleted from the database.');
+    }catch(err){
+      console.error('[scholarships] delete failed:', err);
+      showToast('Could not delete that record: ' + (err.message || 'unknown error'), true);
+    }
+  }
+
+  // -------- Search --------
+  function renderFindResults(){
+    const q = val('findInput').toLowerCase();
+    const box = el('findResults');
+    const empty = el('findEmpty');
+    if(!q){
+      box.style.display = 'none';
+      empty.style.display = 'block';
+      empty.textContent = "Recommendation records are stored in the school's live database.";
+      return;
+    }
+    const results = getRegistry().filter(r =>
+      (r.name || '').toLowerCase().includes(q) ||
+      (r.recNumber || '').toLowerCase().includes(q) ||
+      (r.recommenderName || '').toLowerCase().includes(q) ||
+      (r.stuId || '').toLowerCase().includes(q));
+    if(!results.length){
+      box.style.display = 'none';
+      empty.style.display = 'block';
+      empty.textContent = 'No recommendation records match that search.';
+      return;
+    }
+    empty.style.display = 'none';
+    box.style.display = 'flex';
+    box.innerHTML = results.slice(0, 12).map(r => `
+      <div class="find-row">
+        <div class="fr-info">
+          <span class="fr-name">${escapeHtml(r.name || 'Unnamed student')}</span>
+          <span class="fr-meta">${escapeHtml(r.recNumber || '')}${r.recommenderName ? ' \u00b7 ' + escapeHtml(r.recommenderName) : ''}</span>
+        </div>
+        <button type="button" data-load="${escapeHtml(r.recNumber)}">Edit</button>
+      </div>`).join('');
+    box.querySelectorAll('[data-load]').forEach(btn => {
+      btn.addEventListener('click', () => loadByRecNumber(btn.getAttribute('data-load')));
+    });
+  }
+  el('findInput').addEventListener('input', renderFindResults);
+
+  // -------- Toast --------
+  function showToast(msg, isErr){
+    const t = el('toast');
+    t.textContent = msg;
+    t.classList.toggle('err', !!isErr);
+    t.classList.add('show');
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  // -------- Save / Update --------
+  el('saveBtn').addEventListener('click', async () => {
+    if(!val('lastName') && !val('firstName')){
+      showToast('Please enter at least the student\u2019s name before saving.', true);
+      return;
+    }
+    if(!val('recommenderName')){
+      showToast('Please enter the recommender\u2019s name before saving.', true);
+      return;
+    }
+    if(!val('reviewedBy') && !val('recNumber')){
+      showToast('Please enter the Registrar\u2019s name in "Reviewed by" before saving.', true);
+      return;
+    }
+
+    const recNumber = val('recNumber');
+    const isNew = !recNumber;
+    if(!val('recDate')){
+      setInput('recDate', new Date().toISOString().slice(0,10));
+    }
+    setInput('updatedBy', val('reviewedBy') || val('updatedBy') || 'Registrar');
+    setInput('updatedDate', new Date().toISOString().slice(0,10));
+
+    const data = collectData();
+    const btn = el('saveBtn');
+    const original = btn.textContent;
+    btn.disabled = true;
+    try{
+      if(isNew){
+        const row = recordToRow(data);
+        row.created_by = auth.user.id;
+        const { data: inserted, error } = await sbc().from('scholarship_recommendations').insert(row).select().single();
+        if(error) throw error;
+        setInput('recNumber', inserted.rec_number);
+        data.recNumber = inserted.rec_number;
+      } else {
+        const { error } = await sbc().from('scholarship_recommendations').update(recordToRow(data)).eq('rec_number', recNumber);
+        if(error) throw error;
+      }
+      await loadRegistry();
+      renderDirectory();
+      showActiveBadge(data);
+      showToast(isNew
+        ? 'Saved to database as ' + data.recNumber + '.'
+        : 'Recommendation record updated.');
+    }catch(err){
+      console.error('[scholarships] save failed:', err);
+      showToast('Could not save that record: ' + (err.message || 'unknown error'), true);
+    }finally{
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  });
+
+  el('newBtn').addEventListener('click', () => {
+    if(!confirm('Start a new recommendation? Unsaved changes to the current record will be lost.')) return;
+    clearForm();
+    showToast('Ready for a new recommendation.');
+  });
+
+  // ---------------- Init ----------------
+  el('recStatus').value = 'Draft';
+  await loadRegistry();
+  renderDirectory();
+  renderFindResults();
+})();
+</script>
+
+</body>
+</html>

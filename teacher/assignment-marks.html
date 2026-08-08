@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>Kingsville Public School — Assignment Marks Sheet</title>
+<style>
+  :root{
+    --red:#a3181c;
+    --red-bright:#d31f24;
+    --gold:#d4af37;
+    --gold-light:#f4e5a3;
+    --ink:#1a1a1a;
+    --line:#000;
+    --paper:#ffffff;
+    --grey-band:#e9e9e9;
+    --lock-green:#1f7a3d;
+    --lock-red:#a3181c;
+    --glow:rgba(163,24,28,.45);
+    --glow-gold:rgba(212,175,55,.65);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(163,24,28,.06), transparent 60%),
+      #f2f2f0;
+    margin:0;
+    padding:24px 12px 60px;
+  }
+  .sheet{
+    position:relative;
+    max-width:920px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:26px 34px 38px;
+    border:1px solid transparent;
+    border-radius:6px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    isolation:isolate;
+  }
+  /* Premium animated gold/crimson glowing frame */
+  .sheet::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:8px;
+    padding:2px;
+    background:conic-gradient(from var(--frame-angle,0deg),
+      var(--gold), var(--red-bright), var(--gold-light), var(--red), var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    z-index:-1;
+    animation: frame-spin 7s linear infinite;
+    filter:drop-shadow(0 0 6px var(--glow-gold));
+  }
+  @property --frame-angle{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:0deg;
+  }
+  @keyframes frame-spin{
+    to{ --frame-angle:360deg; }
+  }
+  .letterhead{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:3px double #333;
+    padding-bottom:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  /* subtle shimmer sweep across the letterhead */
+  .letterhead::after{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:40%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.35), transparent);
+    animation: sweep 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{ left:-60%; }
+    45%{ left:120%; }
+    100%{ left:120%; }
+  }
+  .letterhead img{
+    height:64px;
+    width:64px;
+    object-fit:contain;
+    flex-shrink:0;
+    border-radius:50%;
+    background:#fff;
+    padding:3px;
+    box-shadow:
+      0 0 0 2px var(--gold),
+      0 0 10px 2px var(--glow-gold);
+    animation: crest-glow 2.6s ease-in-out infinite;
+  }
+  @keyframes crest-glow{
+    0%, 100%{
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 8px 1px var(--glow-gold);
+    }
+    50%{
+      box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 0 18px 6px var(--glow-gold);
+    }
+  }
+  .letterhead .headtext{
+    flex:1;
+    text-align:center;
+  }
+  .school-name{
+    font-weight:800;
+    font-size:26px;
+    letter-spacing:.5px;
+    margin:0 0 4px;
+    background:linear-gradient(100deg,
+      var(--red) 0%, var(--gold) 22%, var(--red-bright) 45%,
+      var(--gold-light) 60%, var(--red) 82%, var(--gold) 100%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 14px rgba(163,24,28,.18);
+    animation: text-shine 5s linear infinite;
+  }
+  @keyframes text-shine{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:250% 50%; }
+  }
+  .sub{ font-weight:700; font-size:13px; margin:0; color:#333; }
+  .motto{ font-style:italic; font-size:12.5px; color:#555; margin-top:2px; }
+
+  .master-title{
+    color:var(--red);
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:1px;
+    margin:8px 0 6px;
+    text-align:center;
+    text-shadow:0 0 10px rgba(163,24,28,.15);
+  }
+  .band{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(180deg,var(--grey-band),#f4f4f2);
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    color:var(--red);
+    padding:7px 0;
+    margin:4px 0 16px;
+    letter-spacing:2px;
+    border-radius:3px;
+    box-shadow:inset 0 0 0 1px rgba(212,175,55,.35), 0 0 10px rgba(163,24,28,.08);
+  }
+  .band::before{
+    content:"";
+    position:absolute;
+    top:0; left:-40%;
+    width:25%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.55), transparent);
+    animation: sweep 4.5s ease-in-out infinite;
+    animation-delay:1s;
+    pointer-events:none;
+  }
+  .year-input{
+    font-family:inherit;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:2px;
+    color:var(--red);
+    background:transparent;
+    border:none;
+    border-bottom:1px dashed rgba(163,24,28,.5);
+    text-align:center;
+    width:110px;
+    padding:0 2px;
+  }
+  .year-input::placeholder{
+    color:rgba(163,24,28,.45);
+  }
+  .year-input:focus{
+    outline:none;
+    border-bottom:1px solid var(--red);
+    text-shadow:0 0 8px rgba(212,175,55,.5);
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 22px;
+    font-size:14px;
+    margin-bottom:18px;
+    align-items:baseline;
+  }
+  .meta-row label{ font-weight:700; white-space:nowrap; }
+  .meta-row input{
+    border:none;
+    border-bottom:1px solid #333;
+    font-family:inherit;
+    font-style:italic;
+    font-size:14px;
+    padding:2px 4px;
+    background:transparent;
+    min-width:140px;
+  }
+  .meta-row input:disabled{ color:#333; opacity:1; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  th,td{
+    border:1px solid var(--line);
+    padding:5px 6px;
+    text-align:center;
+  }
+  th{ background:#f6f6f6; font-size:12px; }
+  td.name{ text-align:left; }
+  tr:nth-child(even) td{ background:#fbfbfb; }
+
+  input.name-input{
+    width:100%;
+    border:1px solid #bbb;
+    font-family:inherit;
+    padding:3px 4px;
+    border-radius:3px;
+    text-align:left;
+  }
+  select.sex-input{
+    width:100%;
+    border:1px solid #bbb;
+    font-family:inherit;
+    padding:3px 2px;
+    border-radius:3px;
+    text-align:center;
+  }
+  input.att-input{
+    width:56px;
+    border:1px solid #bbb;
+    text-align:center;
+    font-family:inherit;
+    padding:3px 2px;
+    border-radius:3px;
+  }
+  input:disabled, select:disabled{
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--ink);
+    font-weight:600;
+  }
+  input:focus, select:focus{ outline:2px solid var(--red); }
+
+  .empty-row td{
+    color:#999;
+    font-style:italic;
+    padding:14px 6px;
+  }
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .status-pill{
+    font-size:13px;
+    font-weight:700;
+    padding:5px 12px;
+    border-radius:20px;
+    color:#fff;
+  }
+  .status-pill.locked{ background:var(--lock-red); }
+  .status-pill.unlocked{ background:var(--lock-green); }
+
+  button{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    padding:7px 14px;
+    border-radius:5px;
+    border:1px solid var(--red);
+    background:#fff;
+    color:var(--red);
+    cursor:pointer;
+    transition:box-shadow .25s ease, transform .15s ease, background .2s ease, color .2s ease;
+  }
+  button:hover{
+    background:var(--red);
+    color:#fff;
+    box-shadow:0 0 12px 2px var(--glow);
+    transform:translateY(-1px);
+  }
+  button:active{ transform:translateY(0); }
+  button.subtle{
+    border-color:#999; color:#444; font-weight:600;
+  }
+  button.subtle:hover{ background:#444; color:#fff; }
+  button:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .row-actions{ display:flex; gap:6px; justify-content:center; }
+  .row-actions button{ padding:3px 6px; font-size:11px; }
+
+  .foot-actions{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:16px; flex-wrap:wrap; gap:10px;
+  }
+  .max-field{ font-size:13px; display:flex; align-items:center; gap:6px; }
+  .max-field input{ width:50px; text-align:center; border:1px solid #bbb; border-radius:3px; padding:3px; }
+  .save-note{ font-size:12px; color:#666; min-height:16px; }
+
+  /* Premium action buttons (Save / Download / Print / Submit) */
+  button.premium{
+    position:relative;
+    color:#fff;
+    border:none;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--gold) 100%);
+    background-size:220% 100%;
+    background-position:0% 50%;
+    box-shadow:0 0 8px 1px var(--glow-gold);
+    padding:8px 16px;
+  }
+  button.premium:hover{
+    background-position:100% 50%;
+    box-shadow:0 0 14px 3px var(--glow-gold);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+  button.premium.submit{
+    background:linear-gradient(100deg, var(--lock-green) 0%, #2fae5c 45%, var(--gold) 100%);
+    background-size:220% 100%;
+  }
+  .action-row{
+    display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
+  }
+
+  /* Grade columns that are locked (not editable in this Assignment-marks sheet) */
+  input.grade-locked, input.grade-locked:disabled{
+    background:#f0f0ee;
+    color:#999;
+    border:1px solid #ddd;
+    text-align:center;
+    cursor:not-allowed;
+  }
+  input.assign-input{
+    background:#fffdf4;
+    border:1px solid var(--gold);
+    text-align:center;
+    font-weight:700;
+    color:var(--red);
+  }
+  input.assign-input:focus{ outline:2px solid var(--red); }
+  td.total-cell{
+    font-weight:800;
+    color:var(--red);
+    text-align:center;
+    background:#fbf6e6;
+  }
+
+  .submitted-banner{
+    display:none;
+    text-align:center;
+    font-weight:800;
+    letter-spacing:1px;
+    color:#fff;
+    background:var(--lock-green);
+    border-radius:4px;
+    padding:6px 0;
+    margin-bottom:12px;
+  }
+  .submitted .submitted-banner{ display:block; }
+  .submitted input, .submitted select, .submitted button#addRowBtn, .submitted button[data-remove]{
+    pointer-events:none;
+    opacity:.6;
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .sheet{ box-shadow:none; border:1px solid #999; }
+    .sheet::before{ display:none; }
+    .toolbar, .action-row, .row-actions, #addRowBtn, .save-note{ display:none !important; }
+  }
+
+  @media (max-width:640px){
+    .school-name{ font-size:20px; }
+    .sheet{ padding:16px; }
+    .letterhead img{ height:44px; width:44px; }
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="sheet" id="sheet">
+
+  <div class="submitted-banner" id="submittedBanner">✓ SUBMITTED — Sheet locked. Click "Unlock" to make further changes.</div>
+
+  <div class="letterhead">
+    <img src="../assets/images/img-1005aedff1a0c5ea.png" alt="Kingsville Public High School crest">
+    <div class="headtext">
+      <p class="school-name">Kingsville Public High School</p>
+      <p class="sub">Kingsville Township, Careysburg District &middot; Montserrado County, Liberia</p>
+      <p class="motto">Motto: "Knowledge Is Power"</p>
+    </div>
+    <img src="../assets/images/img-a7df6c3d8d6e390b.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+
+  <p class="master-title">TEACHER'S ASSIGNMENT MARKS SHEET</p>
+  <div class="band">ACADEMIC&nbsp;YEAR:&nbsp;<input id="academicYear" class="year-input" type="text" placeholder="2025–2026" aria-label="Academic Year"></div>
+
+  <div class="meta-row">
+    <span><label>Teacher's Name:</label> <input id="teacherName" disabled></span>
+    <span><label>Class &amp; Subject:</label>
+      <select id="assignmentSelect" style="min-width:220px;"></select>
+    </span>
+  </div>
+  <p id="noAssignmentNote" style="display:none; text-align:center; font-weight:700; color:var(--red); margin:8px 0;">
+    You have no class/subject assigned yet. Ask your Super Admin to assign you to a class and subject.
+  </p>
+
+  <div class="toolbar">
+    <div style="display:flex; gap:8px;" id="rosterNote"></div>
+    <div class="action-row">
+      <button class="premium" onclick="saveData()">💾 Save</button>
+      <button class="premium" onclick="downloadCSV()">⬇ Download</button>
+      <button class="premium" onclick="window.print()">🖨 Print</button>
+      <button class="premium submit" id="submitBtn" onclick="submitSheet()">✓ Submit</button>
+      <button class="subtle" id="unlockBtn" onclick="unlockSheet()" style="display:none;">🔓 Unlock</button>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:36px;">ID</th>
+        <th style="width:auto; text-align:left;">Students Name</th>
+        <th style="width:44px;">Sex</th>
+        <th style="width:52px;">CP</th>
+        <th style="width:58px; background:#fbf6e6;">Assign.</th>
+        <th style="width:52px;">Quiz&nbsp;1</th>
+        <th style="width:52px;">Quiz&nbsp;2</th>
+        <th style="width:56px;">Project</th>
+        <th style="width:56px;">Attend</th>
+        <th style="width:56px;">Practical</th>
+        <th style="width:60px;">Periodic Test</th>
+        <th style="width:60px;">CA</th>
+        <th style="width:70px;">Total Points</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <div class="foot-actions">
+    <div class="max-field">
+      <label for="maxPoints">Assignment out of:</label>
+      <input id="maxPoints" type="number" min="1">
+    </div>
+    <div class="save-note" id="saveNote"></div>
+  </div>
+
+  <div class="back-row" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:13px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <a href="dashboard.html" style="color:var(--red);text-decoration:none;font-weight:600;">Back to Dashboard</a>
+  </div>
+
+</div>
+
+<script>
+const COMPONENT = "assignment";
+
+// Real component values that exist in the shared `marks` table (see
+// 000_MASTER_SCHEMA.sql / 003_addendum_subjects_wiring.sql). Columns in
+// this sheet that belong to OTHER teacher marks-entry pages are shown
+// read-only here, sourced from the same real `marks` rows those pages
+// write, matched on (student_id, class_subject_teacher_id, component).
+// "cp", "quiz2", "project" and "attend" have no dedicated component in
+// the schema (this sheet never invented one) so they always render "—".
+const READ_ONLY_COMPONENT_MAP = { ca: "ca", quiz1: "quiz", practical: "practical", periodic: "exam" };
+const LOCKED_COLS = ["cp","quiz1","quiz2","project","attend","practical","periodic","ca"];
+
+let auth = null;            // { user, profile } for the signed-in teacher
+let assignments = [];       // this teacher's class_subject_teachers rows
+let currentCst = null;      // the selected assignment row
+let state = {
+  academicYear: "2025–2026",
+  maxPoints: 30,
+  submitted: false,
+  students: []
+};
+
+function noteEl(){ return document.getElementById('saveNote'); }
+function metaKey(){ return currentCst ? ("assignment-marks:meta:" + currentCst.id) : null; }
+
+function assignmentLabel(a){
+  const cls = a.sections && a.sections.classes ? a.sections.classes.name : "";
+  const sec = a.sections ? a.sections.name : "";
+  const subj = a.subjects ? a.subjects.name : "(no subject)";
+  return [cls, sec].filter(Boolean).join(" ") + " — " + subj;
+}
+
+/** Expands this teacher's class_subject_teachers rows into one live,
+ * section-scoped assignment each. A row assigned at the whole-grade
+ * level (section_id = null — e.g. created from Super Admin > Subjects,
+ * which only asks for a Grade Level, not a section) is expanded here
+ * into one virtual assignment per real section under that class, so
+ * the roster still auto-loads from actual enrollment
+ * (students.section_id) instead of requiring the Super Admin to
+ * re-assign per section. Saving still writes against the same
+ * underlying class_subject_teachers.id no matter which expanded
+ * section is being viewed, so it stays one assignment record. */
+async function expandTeacherAssignments(teacherId){
+  const [{ data: direct, error: e1 }, { data: gradeLevel, error: e2 }] = await Promise.all([
+    sb.from("class_subject_teachers")
+      .select("id, section_id, subject_id, sections(name, classes(name)), subjects(name)")
+      .eq("teacher_id", teacherId)
+      .not("section_id", "is", null),
+    sb.from("class_subject_teachers")
+      .select("id, class_id, subject_id, classes(name), subjects(name)")
+      .eq("teacher_id", teacherId)
+      .is("section_id", null)
+      .not("class_id", "is", null)
+  ]);
+  if (e1) console.error("[assignment-marks] loadAssignments (direct)", e1);
+  if (e2) console.error("[assignment-marks] loadAssignments (grade-level)", e2);
+
+  const out = (direct || []).map(a => ({ ...a, optKey: a.id }));
+
+  const gl = gradeLevel || [];
+  if (gl.length){
+    const classIds = [...new Set(gl.map(r => r.class_id))];
+    const { data: sections, error: e3 } = await sb.from("sections")
+      .select("id, name, class_id")
+      .in("class_id", classIds);
+    if (e3) console.error("[assignment-marks] loadAssignments (sections)", e3);
+    (sections || []).forEach(sec => {
+      gl.filter(r => r.class_id === sec.class_id).forEach(r => {
+        out.push({
+          id: r.id,
+          section_id: sec.id,
+          subject_id: r.subject_id,
+          subjects: r.subjects,
+          sections: { name: sec.name, classes: r.classes },
+          optKey: r.id + "::" + sec.id
+        });
+      });
+    });
+  }
+  return out;
+}
+
+/** Loads which class(es)/subject(s) the Super Admin has assigned this
+ * teacher to teach (class_subject_teachers), for the assignment picker. */
+async function loadAssignments(){
+  assignments = await expandTeacherAssignments(auth.user.id);
+
+  const sel = document.getElementById('assignmentSelect');
+  sel.innerHTML = "";
+  assignments.forEach((a, i) => {
+    const opt = document.createElement('option');
+    opt.value = a.optKey;
+    opt.textContent = assignmentLabel(a);
+    sel.appendChild(opt);
+  });
+
+  document.getElementById('noAssignmentNote').style.display = assignments.length ? "none" : "";
+  document.getElementById('sheet').style.display = assignments.length ? "" : "none";
+
+  if (assignments.length){
+    currentCst = assignments[0];
+    sel.value = currentCst.optKey;
+    await loadRosterAndMarks();
+  }
+}
+
+/** Pulls the real student roster for the selected section (auto — no
+ * manual "Add student"), plus any marks already saved for it. */
+async function loadRosterAndMarks(){
+  noteEl().textContent = "Loading roster…";
+
+  const { data: students, error: sErr } = await sb
+    .from("students")
+    .select("id, student_id, full_name, gender")
+    .eq("section_id", currentCst.section_id)
+    .eq("status", "active")
+    .order("full_name", { ascending: true });
+  if (sErr) { console.error("[assignment-marks] students", sErr); noteEl().textContent = "Could not load roster."; return; }
+
+  const ids = (students || []).map(s => s.id);
+  let marksRows = [];
+  if (ids.length){
+    const { data, error: mErr } = await sb
+      .from("marks")
+      .select("student_id, component, score, max_score, needs_revision, revision_note")
+      .eq("class_subject_teacher_id", currentCst.id)
+      .in("student_id", ids);
+    if (mErr) console.error("[assignment-marks] marks", mErr);
+    else marksRows = data || [];
+  }
+
+  // Load per-sheet settings (max points / submitted lock) — a small
+  // shared setting, not the roster itself, which is always live.
+  let meta = { academicYear: state.academicYear, maxPoints: 30, submitted: false };
+  try {
+    const r = await window.storage.get(metaKey(), true);
+    if (r && r.value) meta = Object.assign(meta, JSON.parse(r.value));
+  } catch (e) { /* no saved settings yet for this assignment */ }
+  state.academicYear = meta.academicYear;
+  state.maxPoints = meta.maxPoints;
+  state.submitted = meta.submitted;
+
+  state.students = (students || []).map(s => {
+    const forStudent = marksRows.filter(m => m.student_id === s.id);
+    const valueFor = (component) => {
+      const row = forStudent.find(m => m.component === component);
+      return row && row.score !== null && row.score !== undefined ? row.score : "";
+    };
+    const rec = {
+      studentId: s.id,
+      no: s.student_id,
+      name: s.full_name,
+      sex: s.gender === "female" || s.gender === "F" ? "F" : "M",
+      assign: valueFor(COMPONENT),
+      needsRevision: !!forStudent.find(m => m.needs_revision),
+      revisionNote: (forStudent.find(m => m.needs_revision) || {}).revision_note || ""
+    };
+    LOCKED_COLS.forEach(col => {
+      rec[col] = READ_ONLY_COMPONENT_MAP[col] ? valueFor(READ_ONLY_COMPONENT_MAP[col]) : "";
+    });
+    return rec;
+  });
+
+  document.getElementById('rosterNote').textContent =
+    state.students.length + " student" + (state.students.length === 1 ? "" : "s") + " enrolled in this class";
+
+  noteEl().textContent = "";
+  render();
+}
+
+/** Saves the sheet's settings (max points / submitted lock) plus every
+ * "Assign." score into the real `marks` table. */
+async function saveData(){
+  if (!currentCst) return;
+  noteEl().textContent = "Saving…";
+  try{
+    await window.storage.set(metaKey(), JSON.stringify({
+      academicYear: state.academicYear, maxPoints: state.maxPoints, submitted: state.submitted
+    }), true);
+
+    const rows = state.students
+      .filter(s => s.assign !== "" && s.assign !== null && s.assign !== undefined)
+      .map(s => ({
+        student_id: s.studentId,
+        subject_id: currentCst.subject_id,
+        class_subject_teacher_id: currentCst.id,
+        component: COMPONENT,
+        semester: "",
+        score: Number(s.assign),
+        max_score: Number(state.maxPoints) || 100,
+        entered_by: auth.user.id,
+        // This sheet is a teacher working sheet only — Assignment marks
+        // never auto-publish to a student and never reach the Principal's
+        // approval queue. Only the Master Grade Sheet (teacher/grades.html)
+        // is Principal-approved and student-visible; see migration 032.
+        published: false,
+        needs_revision: false,
+        revision_note: null
+      }));
+
+    if (rows.length){
+      const { error } = await sb.from("marks")
+        .upsert(rows, { onConflict: "student_id,class_subject_teacher_id,component,semester" });
+      if (error) throw error;
+    }
+
+    noteEl().textContent = "Saved ✓";
+    setTimeout(()=>{ if (noteEl().textContent === "Saved ✓") noteEl().textContent = ""; }, 1500);
+  }catch(e){
+    console.error("[assignment-marks] save", e);
+    noteEl().textContent = "Save failed — check your connection.";
+  }
+}
+
+function onFieldChange(field, value){
+  state[field] = value;
+  saveData();
+}
+
+function onAssignChange(idx, value){
+  const max = Number(state.maxPoints) || 0;
+  let v = value === "" ? "" : Math.max(0, Math.min(max, Number(value) || 0));
+  state.students[idx].assign = v;
+  saveData();
+  render();
+}
+
+function rowTotal(s){
+  const cols = LOCKED_COLS.concat(["assign"]);
+  let sum = 0, any = false;
+  cols.forEach(c=>{
+    const v = Number(s[c]);
+    if(s[c] !== "" && !isNaN(v)){ sum += v; any = true; }
+  });
+  return any ? sum : "";
+}
+
+function render(){
+  document.getElementById('teacherName').value = (auth.profile && auth.profile.full_name) || "";
+  document.getElementById('academicYear').value = state.academicYear;
+  document.getElementById('maxPoints').value = state.maxPoints;
+
+  const sheetEl = document.getElementById('sheet');
+  sheetEl.classList.toggle('submitted', !!state.submitted);
+  document.getElementById('submitBtn').style.display = state.submitted ? 'none' : '';
+  document.getElementById('unlockBtn').style.display = state.submitted ? '' : 'none';
+
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = "";
+
+  if(state.students.length === 0){
+    const tr = document.createElement('tr');
+    tr.className = "empty-row";
+    tr.innerHTML = `<td colspan="13">No students found in this class section yet — ask your Super Admin to enrol students into this class.</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+
+  state.students.forEach((s, idx)=>{
+    const tr = document.createElement('tr');
+    const lockedCell = (val)=> `<td><input class="grade-locked" type="text" value="${val===""?"":val}" placeholder="—" disabled></td>`;
+    tr.innerHTML = `
+      <td>${s.no}</td>
+      <td class="name">${s.name}${s.needsRevision ? `<div style="font-size:10px;color:#a3181c;font-weight:700;margin-top:2px;">&#9888; Sent back by Principal${s.revisionNote ? ': ' + String(s.revisionNote).replace(/[<>&]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c])) : ''}</div>` : ''}</td>
+      <td>${s.sex}</td>
+      ${lockedCell(s.cp)}
+      <td><input class="assign-input" type="number" min="0" max="${state.maxPoints}"
+            value="${s.assign}" data-idx="${idx}" ${state.submitted?"disabled":""}></td>
+      ${lockedCell(s.quiz1)}
+      ${lockedCell(s.quiz2)}
+      ${lockedCell(s.project)}
+      ${lockedCell(s.attend)}
+      ${lockedCell(s.practical)}
+      ${lockedCell(s.periodic)}
+      ${lockedCell(s.ca)}
+      <td class="total-cell">${rowTotal(s)}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('input.assign-input').forEach(inp=>{
+    inp.addEventListener('change', e=>{
+      onAssignChange(Number(e.target.dataset.idx), e.target.value);
+    });
+  });
+}
+
+function submitSheet(){
+  if(state.students.length===0){ alert("No students on this sheet yet."); return; }
+  if(!confirm("Submit this Assignment marks sheet? Students will immediately see these scores on their dashboard, and it will be locked from further editing until unlocked.")) return;
+  state.submitted = true;
+  saveData();
+  render();
+}
+
+function unlockSheet(){
+  if(!confirm("Unlock the sheet for editing?")) return;
+  state.submitted = false;
+  saveData();
+  render();
+}
+
+function downloadCSV(){
+  const headers = ["ID","Student's Name","Sex","CP","Assign.","Quiz 1","Quiz 2","Project","Attend","Practical","Periodic Test","CA","Total Points"];
+  const rows = state.students.map(s=>[
+    s.no, s.name, s.sex, s.cp, s.assign, s.quiz1, s.quiz2, s.project, s.attend, s.practical, s.periodic, s.ca, rowTotal(s)
+  ]);
+  const esc = (v)=> `"${String(v===undefined||v===null?"":v).replace(/"/g,'""')}"`;
+  const lines = [headers.map(esc).join(","), ...rows.map(r=>r.map(esc).join(","))];
+  const csv = lines.join("\r\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const label = currentCst ? assignmentLabel(currentCst) : "class";
+  const safeClass = label.replace(/[^a-z0-9]+/gi,"_");
+  const safeYear = (state.academicYear || "year").replace(/[^a-z0-9]+/gi,"_");
+  a.href = url;
+  a.download = `Assignment-Marks_${safeClass}_${safeYear}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('academicYear').addEventListener('change', e=>onFieldChange('academicYear', e.target.value));
+document.getElementById('maxPoints').addEventListener('change', e=>onFieldChange('maxPoints', Number(e.target.value)||30));
+document.getElementById('assignmentSelect').addEventListener('change', async e=>{
+  currentCst = assignments.find(a => a.optKey === e.target.value) || null;
+  if (currentCst) await loadRosterAndMarks();
+});
+
+(async function init(){
+  auth = await KPS.requireRole(['teacher']);
+  if (!auth || !auth.user) return; // requireRole already redirected
+  await loadAssignments();
+})();
+</script>
+</body>
+</html>

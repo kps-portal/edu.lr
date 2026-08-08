@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Staff Evaluation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;justify-content:center;gap:12px;}
+  header.topbar .left img{height:28px;width:28px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .kps-logo{height:30px;width:30px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+
+  .ticker-bar{
+    background:#fff4d6;border-bottom:1px solid #ecd9a0;
+    display:flex;align-items:center;overflow:hidden;flex-shrink:0;
+    height:clamp(30px,4.2vh,36px);
+  }
+  .ticker-label{
+    flex-shrink:0;display:flex;align-items:center;gap:6px;
+    background:var(--crimson);color:#fff;font-size:11px;font-weight:800;
+    letter-spacing:.4px;text-transform:uppercase;height:100%;padding:0 14px;white-space:nowrap;
+  }
+  .ticker-label svg{width:13px;height:13px;flex-shrink:0;}
+  .ticker-viewport{flex:1;overflow:hidden;position:relative;height:100%;}
+  .ticker-track{
+    display:flex;align-items:center;gap:56px;position:absolute;white-space:nowrap;
+    height:100%;will-change:transform;animation:tickerScroll 30s linear infinite;
+  }
+  .ticker-viewport:hover .ticker-track{animation-play-state:paused;}
+  .ticker-track span{font-size:12.5px;color:var(--ink);font-weight:600;}
+  .ticker-track span.pinned::before{content:"📌 ";}
+  @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  .ticker-bar.ticker-empty .ticker-track{animation:none;position:static;}
+  .ticker-bar.ticker-empty .ticker-track span{color:var(--muted);font-weight:400;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1060px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;max-height:100%;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,38px) clamp(20px,7vw,36px) clamp(16px,3vh,30px);text-align:left;}
+  .seal-stage{position:relative;width:clamp(70px,12vh,110px);height:clamp(70px,12vh,110px);margin:0 auto clamp(8px,2vh,14px);display:flex;align-items:center;justify-content:center;}
+  .card img.seal{position:relative;z-index:2;height:clamp(60px,10vh,92px);width:clamp(60px,10vh,92px);object-fit:contain;border-radius:50%;background:#fff;padding:4px;box-shadow:0 10px 22px rgba(11,23,48,.25), 0 0 0 4px #fff;}
+  .card h1{font-size:clamp(14.5px,3vh,16.5px);color:var(--navy);font-weight:700;line-height:1.45;margin-bottom:6px;letter-spacing:.2px;text-align:center;}
+  .card h1 .school-line{color:var(--crimson);font-size:clamp(13px,2.7vh,15px);}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:clamp(8px,2vh,14px) auto clamp(12px,3vh,22px);border-radius:2px;}
+
+  .section-tabs{display:flex;gap:6px;background:#f1f1ef;border-radius:8px;padding:4px;margin-bottom:clamp(16px,2.6vh,22px);}
+  .section-tabs button{flex:1;border:none;background:transparent;padding:10px 14px;border-radius:6px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .section-tabs button.active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(11,23,48,.15);}
+  .section-tabs button svg{width:15px;height:15px;}
+  .stat-section{display:none;}
+  .stat-section.active{display:block;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(9px,1.6vh,11px) 13px;border:1px solid var(--line);border-radius:4px;
+    font-size:14px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:90px;}
+  .field textarea.memo-body{min-height:180px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .compose-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+  @media (max-width:720px){.compose-grid, .compose-grid.cols-3{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(16px,2.6vh,22px);}
+  .panel h2{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+  .panel h3{font-size:12.5px;font-weight:700;color:var(--navy);margin:16px 0 10px;letter-spacing:.2px;}
+  p.table-hint{font-size:11.5px;color:var(--muted);margin:-4px 0 8px;}
+
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:clamp(14px,2.4vh,20px);}
+  select.scope-select{padding:7px 11px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:#fff;color:var(--ink);}
+  button.refresh-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+  button.refresh-btn:hover{background:#fafafa;}
+  button.refresh-btn svg{width:14px;height:14px;}
+  button.refresh-btn.spinning svg{animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:clamp(18px,3vh,26px);}
+  @media (max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;box-shadow:0 2px 6px rgba(11,23,48,.05);}
+  .kpi-label{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);}
+  .kpi-value{font-size:26px;font-weight:800;color:var(--navy);margin-top:4px;line-height:1.1;}
+  .kpi-value.danger{color:var(--danger);}
+  .kpi-value.ok{color:var(--ok);}
+
+  .table-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .table-filters{display:flex;flex-wrap:wrap;gap:8px;flex:1;}
+  .table-filters input{max-width:240px;}
+  .table-filters select{padding:9px 11px;border:1px solid var(--line);border-radius:4px;font-size:13px;background:#fff;color:var(--ink);}
+  button.export-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;padding:9px 13px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  button.export-btn:hover{background:#fafafa;}
+
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:10px;vertical-align:middle;}
+  .badge.pass{background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .badge.fail{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .badge.role{background:#eef1fb;color:var(--navy);border:1px solid #dbe1f5;}
+  .badge.pending{background:#fff4d6;color:#8a6d1a;border:1px solid #ecd9a0;}
+
+  .request-list{display:flex;flex-direction:column;gap:10px;}
+  .request-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;display:flex;flex-direction:column;gap:6px;position:relative;}
+  .request-card.approved{border-left:4px solid var(--ok);}
+  .request-card.rejected{border-left:4px solid var(--danger);}
+  .request-card.pending{border-left:4px solid var(--gold);}
+  .request-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .request-title{font-size:14.5px;font-weight:700;color:var(--navy);}
+  .request-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .request-fees{font-size:12.5px;color:var(--ink);}
+  .request-actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;}
+  button.btn-ghost{border:none;background:none;color:var(--navy);font-weight:600;font-size:12px;cursor:pointer;padding:3px 6px;}
+  button.btn-ghost:hover{text-decoration:underline;}
+  button.btn-ghost.danger{color:var(--danger);}
+  button.btn-ghost.accent{color:var(--crimson);}
+
+  button.btn-primary{padding:10px 20px;border:none;border-radius:4px;background:var(--crimson);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;transition:background .15s;}
+  button.btn-primary:hover{background:var(--crimson-dark);}
+  button.btn-secondary{padding:10px 20px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13.5px;cursor:pointer;}
+  button.btn-secondary:hover{background:#fafafa;}
+  button.btn-generate{padding:10px 20px;border:1px solid var(--navy);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+  button.btn-generate:hover{background:var(--navy);color:#fff;}
+  button.btn-generate svg{width:15px;height:15px;}
+  .compose-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap;}
+
+  .checklist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .checklist label{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink);font-weight:400;text-transform:none;}
+  .checklist input{width:17px;height:17px;accent-color:var(--ok);}
+
+  .back-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:clamp(10px,2vh,16px);font-size:13px;}
+  .back-row a{color:var(--navy);text-decoration:none;font-weight:600;}
+  .back-row a:hover{text-decoration:underline;}
+  .back-row svg{width:14px;height:14px;flex-shrink:0;}
+
+  .msg{margin-top:clamp(8px,1.6vh,14px);font-size:12.5px;padding:9px 11px;border-radius:4px;display:none;text-align:left;}
+  .msg.err{display:block;background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .msg.ok{display:block;background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .empty-state{font-size:12.5px;color:var(--muted);text-align:center;padding:18px 4px;}
+  .updated-note{font-size:11px;color:var(--muted);text-align:right;margin-top:8px;}
+
+  footer.site-footer{background:var(--navy-deep);color:#c9d2e8;font-size:11px;text-align:center;padding:clamp(8px,1.4vh,12px) 10px;border-top:2px solid var(--gold);flex-shrink:0;}
+  footer.site-footer .footer-line-1{font-weight:600;letter-spacing:.2px;}
+  footer.site-footer .footer-line-2{margin-top:3px;font-size:10.5px;color:var(--gold);letter-spacing:.3px;}
+
+  /* ===== Edit modal ===== */
+  .edit-overlay{position:fixed;inset:0;background:rgba(11,23,48,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
+  .edit-overlay.open{display:flex;}
+  .edit-modal{width:100%;max-width:820px;max-height:90vh;overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 20px 50px rgba(11,23,48,.3);padding:22px;}
+  .edit-modal h3{font-size:15px;color:var(--navy);margin-bottom:14px;}
+
+  /* ===== Shared generated-document overlay ===== */
+  .doc-overlay{position:fixed;inset:0;background:rgba(11,23,48,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:16px;}
+  .doc-overlay.open{display:flex;}
+  .doc-modal{width:100%;max-width:820px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 24px 60px rgba(11,23,48,.35);}
+  .doc-paper{padding:clamp(20px,4vw,40px);font-family:Georgia,"Times New Roman",serif;color:#111;}
+  .doc-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:14px clamp(18px,4vw,34px);border-top:1px solid var(--line);background:var(--panel);border-radius:0 0 10px 10px;font-family:"Segoe UI",Arial,sans-serif;}
+  button.btn-share, button.btn-download, button.btn-print, button.btn-doc-delete{padding:10px 18px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-share:hover, button.btn-download:hover{background:#fafafa;}
+  button.btn-print{border:none;background:var(--navy);color:#fff;}
+  button.btn-print:hover{background:var(--navy-deep);}
+  button.btn-doc-delete{border:1px solid #f6c9c4;color:var(--danger);}
+  button.btn-doc-delete:hover{background:#fdecea;}
+
+  /* --- letterhead --- */
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:62px;width:62px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:22px;font-weight:800;color:var(--navy);letter-spacing:.3px;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-office-row{display:flex;justify-content:space-between;align-items:flex-end;font-size:12.5px;font-style:italic;margin-bottom:16px;}
+  .doc-office-row .doc-date{font-style:normal;}
+  .doc-office-row .doc-date b{border-bottom:1px dotted #333;padding-bottom:1px;}
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:10px;text-transform:uppercase;}
+
+  /* --- memo specific --- */
+  .memo-status-flag{display:inline-block;margin:4px 0 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:4px 12px;border-radius:12px;}
+  .memo-info-grid{margin:14px 0 18px;}
+  .memo-info-row{display:flex;gap:10px;margin-bottom:8px;font-size:13.5px;}
+  .memo-info-row .lbl{font-weight:700;min-width:110px;flex-shrink:0;}
+  .memo-info-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;}
+  .memo-section-title{font-weight:700;font-size:13.5px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.3px;color:#20242e;border-bottom:1px solid #ccc;padding-bottom:4px;}
+  .memo-body-text{font-size:13.5px;line-height:1.85;margin-bottom:10px;text-align:justify;white-space:pre-wrap;}
+  .memo-pin-note{font-size:12px;font-style:italic;color:#8a6d1a;margin:6px 0 4px;}
+  .memo-signoff{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin:30px 0 10px;}
+  @media (max-width:600px){.memo-signoff{grid-template-columns:1fr;}}
+  .memo-signoff div{font-size:12.5px;}
+  .memo-signoff .sig-script{font-family:"Brush Script MT",cursive;font-size:20px;margin-bottom:-6px;min-height:24px;}
+  .memo-signoff .sig-name{border-top:1px solid #333;padding-top:4px;font-weight:700;}
+  .memo-signoff .sig-title{color:#555;font-size:11px;}
+  .memo-note{font-size:11.5px;color:#333;margin-top:20px;line-height:1.6;}
+  .memo-ref{font-size:11.5px;margin-top:10px;font-weight:700;}
+
+  @media print{
+    body *{visibility:hidden;}
+    .doc-overlay.open, .doc-overlay.open *{visibility:visible;}
+    .doc-overlay.open{position:absolute;inset:auto;background:none;padding:0;display:block !important;}
+    .doc-overlay.open .doc-modal{position:absolute;top:0;left:0;max-width:100%;max-height:none;box-shadow:none;border-radius:0;overflow:visible;}
+    .doc-actions{display:none !important;}
+  }
+
+  /* ===== Staff Evaluation specific ===== */
+  .progress-wrap{margin-bottom:18px;}
+  .progress-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .progress-head span{font-size:11.5px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.3px;}
+  .progress-head b{font-size:12.5px;color:var(--muted);font-weight:600;text-transform:none;letter-spacing:0;}
+  .progress-track{height:9px;background:#eee;border-radius:5px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--crimson),var(--gold));transition:width .25s;border-radius:5px;}
+
+  .accordion-cat{border:1px solid var(--line);border-radius:8px;margin-bottom:10px;overflow:hidden;background:#fff;}
+  .accordion-cat-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:#fafaf9;cursor:pointer;user-select:none;}
+  .accordion-cat-head:hover{background:#f4f4f2;}
+  .accordion-cat-title{font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:9px;flex:1;}
+  .accordion-cat-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;font-size:10.5px;font-weight:800;flex-shrink:0;}
+  .accordion-cat-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .accordion-cat-count{font-size:10.5px;color:var(--muted);font-weight:600;}
+  .accordion-cat-badge{font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:10px;background:#eef1fb;color:var(--navy);white-space:nowrap;}
+  .accordion-cat-chevron{width:16px;height:16px;flex-shrink:0;transition:transform .2s;color:var(--muted);}
+  .accordion-cat.open .accordion-cat-chevron{transform:rotate(180deg);}
+  .accordion-cat-body{display:none;padding:6px 16px 16px;}
+  .accordion-cat.open .accordion-cat-body{display:block;}
+
+  .q-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:9px 0;border-bottom:1px solid var(--line);}
+  .q-row:last-of-type{border-bottom:none;}
+  .q-num{font-size:11px;color:var(--muted);font-weight:700;width:20px;flex-shrink:0;}
+  .q-text{flex:1 1 240px;font-size:12.5px;color:var(--ink);line-height:1.4;}
+  .q-scale{display:flex;gap:9px;flex-wrap:wrap;flex-shrink:0;}
+  .q-scale label{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;color:var(--muted);font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.2px;width:38px;}
+  .q-scale input{width:15px;height:15px;accent-color:var(--crimson);cursor:pointer;}
+
+  .cat-comment-field{margin-top:10px;}
+  .cat-comment-field label{display:block;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;}
+  .cat-comment-field textarea{width:100%;min-height:56px;padding:8px 11px;border:1px solid var(--line);border-radius:4px;font-size:12.5px;font-family:inherit;resize:vertical;}
+  .cat-comment-field textarea:focus{outline:none;border-color:var(--crimson);}
+
+  .overall-panel{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+  .overall-score-display{display:flex;align-items:center;gap:16px;}
+  .overall-score-num{font-size:34px;font-weight:800;color:var(--navy);line-height:1;}
+  .overall-score-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+  .rating-pill{font-size:11.5px;font-weight:800;padding:6px 15px;border-radius:14px;text-transform:uppercase;letter-spacing:.4px;display:inline-block;}
+  .rating-pill.dist{background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .rating-pill.prof{background:#eef1fb;color:var(--navy);border:1px solid #dbe1f5;}
+  .rating-pill.dev{background:#fff4d6;color:#8a6d1a;border:1px solid #ecd9a0;}
+  .rating-pill.unsat{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .rating-pill.pending{background:#f1f1ef;color:var(--muted);border:1px solid var(--line);}
+
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+  .bar-label{width:220px;flex-shrink:0;font-size:11.5px;color:var(--ink);font-weight:600;}
+  .bar-track{flex:1;height:13px;background:#eee;border-radius:7px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:7px;}
+  .bar-pct{width:42px;flex-shrink:0;text-align:right;font-size:11px;font-weight:800;color:var(--navy);}
+
+  .rating-filter-row{display:flex;flex-wrap:wrap;gap:8px;}
+  select.rating-select{padding:7px 11px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:#fff;color:var(--ink);}
+
+  @media (max-width:640px){
+    .q-scale{gap:6px;}
+    .q-scale label{width:32px;font-size:8px;}
+    .bar-label{width:130px;font-size:10.5px;}
+  }
+
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left" id="topbarCrestWrap">
+    <img class="kps-logo" id="topbarKpsLogo" alt="Kingsville Public School logo">
+    <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+  </div>
+  <img class="moe-mini" id="topbarMoeLogo" alt="Ministry of Education seal">
+</header>
+
+<div class="ticker-bar" id="tickerBar">
+  <div class="ticker-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Staff Evaluations — Confidential
+  </div>
+  <div class="ticker-viewport">
+    <div class="ticker-track" id="tickerTrack">
+      <span>Loading recent evaluations&hellip;</span>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+      <div class="seal-stage">
+        <img class="seal" id="cardSeal" alt="School seal">
+      </div>
+      <h1>Staff Evaluation<br><span class="school-line">Kingsville Public High School</span></h1>
+      <div class="subtitle-rule"></div>
+
+      <div class="section-tabs" id="sectionTabs">
+        <button data-section="compose" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          New Evaluation
+        </button>
+        <button data-section="manage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M3 12h18M3 19h18"/></svg>
+          All Evaluations
+        </button>
+      </div>
+
+      <!-- ================= COMPOSE SECTION ================= -->
+      <section class="stat-section active" id="composeSection">
+        <div class="panel">
+          <h2 id="composeHeading">New Staff Evaluation</h2>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newStaffName">Staff Name</label>
+              <input id="newStaffName" type="text" placeholder="e.g. James K. Toe" autocomplete="off" maxlength="150">
+            </div>
+            <div class="field">
+              <label for="newPosition">Position / Subject Taught</label>
+              <input id="newPosition" type="text" placeholder="e.g. Mathematics Teacher, Grade 10" autocomplete="off" maxlength="150">
+            </div>
+            <div class="field">
+              <label for="newDepartment">Department</label>
+              <input id="newDepartment" type="text" placeholder="e.g. Science &amp; Mathematics" autocomplete="off" maxlength="150">
+            </div>
+          </div>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newTerm">Academic Term / Year</label>
+              <input id="newTerm" type="text" placeholder="e.g. 2025/2026 — Second Semester" autocomplete="off" maxlength="150">
+            </div>
+            <div class="field">
+              <label for="newEvalDate">Evaluation Date</label>
+              <input id="newEvalDate" type="date">
+            </div>
+            <div class="field">
+              <label for="newEvaluatorName">Evaluator Name</label>
+              <input id="newEvaluatorName" type="text" placeholder="e.g. Principal Kollie" autocomplete="off" maxlength="150">
+            </div>
+          </div>
+
+          <div class="compose-grid">
+            <div class="field">
+              <label for="newEvaluatorTitle">Evaluator Title / Office</label>
+              <input id="newEvaluatorTitle" type="text" placeholder="e.g. Principal, Kingsville Public High School" autocomplete="off" maxlength="150">
+            </div>
+            <div class="field">
+              <label for="newObservationType">Evaluation Type</label>
+              <select id="newObservationType">
+                <option value="scheduled">Scheduled Observation</option>
+                <option value="unscheduled">Unscheduled/Walkthrough Observation</option>
+                <option value="end_of_term">End-of-Term Review</option>
+                <option value="annual">Annual Performance Review</option>
+                <option value="follow_up">Follow-up Evaluation</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Evaluation Criteria</h2>
+          <p class="table-hint">Rate each item on the 5-point scale below. Select N/A for items that do not apply to this staff member's role.</p>
+
+          <div class="progress-wrap">
+            <div class="progress-head">
+              <span>Overall Progress</span>
+              <b id="progressLabel">0 of 100 answered</b>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+          </div>
+
+          <div id="categoriesContainer"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Overall Summary</h2>
+          <div class="overall-panel">
+            <div class="overall-score-display">
+              <div>
+                <div class="overall-score-num" id="overallScoreNum">—</div>
+                <div class="overall-score-sub">Overall Score</div>
+              </div>
+              <span class="rating-pill pending" id="overallRatingPill">Not Yet Rated</span>
+            </div>
+          </div>
+          <div class="field" style="margin-top:16px;">
+            <label for="newOverallComments">Overall Comments &amp; Recommendations</label>
+            <textarea id="newOverallComments" class="memo-body" placeholder="Summarize overall performance, strengths, areas for growth, and any recommendations…" maxlength="4000"></textarea>
+          </div>
+
+          <div class="compose-actions">
+            <button class="btn-secondary" id="clearComposeBtn" type="button">Clear</button>
+            <button class="btn-generate" id="generateReportBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/><path d="M9 11h6"/></svg>
+              Generate Report
+            </button>
+            <button class="btn-primary" id="postRequestBtn" type="button">Save Evaluation</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MANAGE SECTION ================= -->
+      <section class="stat-section" id="manageSection">
+
+        <div class="toolbar">
+          <div class="rating-filter-row">
+            <select class="rating-select" id="manageRatingFilter">
+              <option value="">All ratings</option>
+              <option value="Distinguished">Distinguished (90–100%)</option>
+              <option value="Proficient">Proficient (75–89%)</option>
+              <option value="Developing">Developing (60–74%)</option>
+              <option value="Unsatisfactory">Unsatisfactory (&lt;60%)</option>
+            </select>
+          </div>
+          <button class="refresh-btn" id="manageRefreshBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Evaluations</div>
+            <div class="kpi-value" id="kpiTotal">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Average Score</div>
+            <div class="kpi-value" id="kpiAverage">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Distinguished Ratings</div>
+            <div class="kpi-value ok" id="kpiDistinguished">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Issued This Month</div>
+            <div class="kpi-value" id="kpiThisMonth">—</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Staff Evaluations</h2>
+          <div class="table-toolbar">
+            <div class="table-filters">
+              <input id="manageSearch" type="text" placeholder="Search by staff name, position, or term…" autocomplete="off">
+            </div>
+            <button class="export-btn" id="manageExportBtn">Export CSV</button>
+          </div>
+          <div class="request-list" id="requestList">
+            <div class="empty-state">Loading…</div>
+          </div>
+          <div class="updated-note" id="manageUpdatedNote">&nbsp;</div>
+        </div>
+      </section>
+
+      <div class="back-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <a href="dashboard.html">Back to Principal Dashboard</a>
+      </div>
+
+      <div class="msg" id="msgBox"></div>
+
+    </div>
+  </div>
+</main>
+
+<!-- ================= EVALUATION REPORT MODAL ================= -->
+<div class="doc-overlay" id="reportOverlay">
+  <div class="doc-modal">
+    <div class="doc-paper">
+      <div class="doc-letterhead">
+        <img id="rSchoolLogo" src="" alt="School logo">
+        <div class="doc-headtext">
+          <div class="school-name">Kingsville Public High School</div>
+          <div class="school-address">
+            Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia<br>
+            Office of the Principal
+          </div>
+        </div>
+        <img id="rMoeLogo" src="" alt="Ministry of Education seal">
+      </div>
+      <div class="doc-office-row">
+        <span>Office of the Principal — Staff Performance Evaluation</span>
+        <span class="doc-date">Date: <b id="rDate">—</b></span>
+      </div>
+
+      <div class="doc-banner">Staff Performance Evaluation Report</div>
+      <div style="text-align:center;"><span class="rating-pill pending" id="rRatingPill">Not Yet Rated</span></div>
+
+      <div class="memo-info-grid">
+        <div class="memo-info-row"><span class="lbl">STAFF NAME:</span><span class="val" id="rStaffName">—</span></div>
+        <div class="memo-info-row"><span class="lbl">POSITION:</span><span class="val" id="rPosition">—</span></div>
+        <div class="memo-info-row"><span class="lbl">DEPARTMENT:</span><span class="val" id="rDepartment">—</span></div>
+        <div class="memo-info-row"><span class="lbl">TERM/YEAR:</span><span class="val" id="rTerm">—</span></div>
+        <div class="memo-info-row"><span class="lbl">EVALUATION TYPE:</span><span class="val" id="rObsType">—</span></div>
+        <div class="memo-info-row"><span class="lbl">OVERALL SCORE:</span><span class="val" id="rOverallScore">—</span></div>
+      </div>
+
+      <div class="memo-section-title">Category Breakdown</div>
+      <div id="rCategoryBars"></div>
+
+      <div class="memo-section-title">Category Comments</div>
+      <div id="rCategoryComments" class="memo-body-text">No category-specific comments were provided.</div>
+
+      <div class="memo-section-title">Overall Comments &amp; Recommendations</div>
+      <div class="memo-body-text" id="rOverallComments">—</div>
+
+      <div class="memo-signoff">
+        <div>
+          <div class="sig-script">Sincerely,</div>
+          <div class="sig-name" id="rEvaluatorName">&nbsp;</div>
+          <div class="sig-title" id="rEvaluatorTitle">Principal, Kingsville Public High School</div>
+        </div>
+        <div>
+          <div class="sig-script">&nbsp;</div>
+          <div class="sig-name" id="rStaffSignName">&nbsp;</div>
+          <div class="sig-title">Staff Member (Acknowledgement of Receipt)</div>
+        </div>
+      </div>
+
+      <p class="memo-ref" id="rRef">Reference: —</p>
+    </div>
+    <div class="doc-actions">
+      <button class="btn-share" id="rShareBtn" type="button">Share</button>
+      <button class="btn-download" id="rDownloadBtn" type="button">Download</button>
+      <button class="btn-print" id="rPrintBtn" type="button">Print</button>
+      <button class="btn-doc-delete" id="rDeleteBtn" type="button">Delete</button>
+      <button class="btn-secondary" id="rCloseBtn" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-line-1">© <span id="year"></span> Kingsville Public High School</div>
+  <div class="footer-line-2">Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia</div>
+  <div class="footer-line-2">Developed by Mr. Fomba S. Varfee</div>
+</footer>
+
+<script>
+  const KPS_LOGO_SRC = "../assets/images/img-63d9fc79f267bd59.png";
+  const MOE_LOGO_SRC = "../assets/images/img-738ccabf41d2ffd8.png";
+
+  document.getElementById("topbarKpsLogo").src = KPS_LOGO_SRC;
+  document.getElementById("topbarMoeLogo").src = MOE_LOGO_SRC;
+  document.getElementById("cardSeal").src = KPS_LOGO_SRC;
+  // sb comes from the shared client in js/supabase-config.js
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const SCHOOL_NAME = "Kingsville Public High School";
+  const SCHOOL_ADDRESS = "Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia";
+
+  /* =========================================================================
+     EVALUATION CRITERIA DATA
+     10 categories x 10 questions = 100 questions total.
+     Defined as data (not hardcoded HTML) so the form, scoring, progress bar,
+     and report can all be generated dynamically.
+  ========================================================================= */
+  const CATEGORIES = [{"key": "instructional_planning", "label": "Instructional Planning & Delivery", "questions": ["Develops clear, standards-aligned lesson objectives", "Prepares lesson plans in advance and submits them on time", "Organizes instructional content in a logical, sequential manner", "Delivers instruction clearly and at an appropriate pace", "Uses a variety of teaching methods and strategies", "Incorporates real-world examples and applications", "Adjusts instruction based on lesson pacing and time constraints", "Demonstrates strong command of subject matter", "Sets clear expectations for student learning outcomes", "Aligns lessons with the school's curriculum and standards"]}, {"key": "classroom_management", "label": "Classroom Management", "questions": ["Establishes and maintains clear classroom rules and routines", "Manages student behavior effectively and fairly", "Maximizes instructional time by minimizing disruptions", "Creates a safe and orderly classroom environment", "Responds to disciplinary issues promptly and appropriately", "Maintains consistency in enforcing classroom expectations", "Organizes classroom space and materials effectively", "Transitions smoothly between activities", "Builds a positive classroom climate and culture", "Addresses conflicts among students constructively"]}, {"key": "student_engagement", "label": "Student Engagement & Differentiation", "questions": ["Engages students actively in the learning process", "Differentiates instruction to meet diverse learning needs", "Provides appropriate support for struggling learners", "Challenges high-achieving students appropriately", "Uses questioning techniques that promote critical thinking", "Encourages student participation and collaboration", "Adapts instruction for students with special needs/IEPs", "Fosters student independence and self-directed learning", "Uses varied groupings (pairs, teams, individual work) effectively", "Recognizes and accommodates different learning styles"]}, {"key": "assessment_feedback", "label": "Assessment & Feedback", "questions": ["Uses formative assessments to monitor student progress", "Provides timely and constructive feedback to students", "Designs assessments aligned with learning objectives", "Maintains accurate and up-to-date grade records", "Uses assessment data to inform instructional decisions", "Communicates assessment criteria clearly to students", "Grades student work fairly and consistently", "Provides opportunities for student self-assessment", "Returns graded work within a reasonable timeframe", "Uses a variety of assessment methods (quizzes, projects, tests)"]}, {"key": "professionalism_ethics", "label": "Professionalism & Ethics", "questions": ["Demonstrates integrity and ethical conduct", "Maintains confidentiality of student and staff information", "Follows the school's code of conduct and policies", "Demonstrates respect toward students, staff, and parents", "Dresses and presents in a professional manner", "Handles disagreements and conflicts professionally", "Takes responsibility for own actions and decisions", "Maintains appropriate boundaries with students", "Models positive behavior and professionalism for students", "Exercises sound judgment in professional matters"]}, {"key": "communication_collaboration", "label": "Communication & Collaboration", "questions": ["Communicates effectively with students", "Communicates effectively with parents/guardians", "Collaborates well with colleagues and administration", "Participates actively in staff meetings and committees", "Responds promptly to emails, memos, and requests", "Shares resources and best practices with colleagues", "Provides clear and timely updates to the administration", "Builds positive relationships with the school community", "Listens actively and considers others' perspectives", "Communicates student progress and concerns effectively"]}, {"key": "attendance_reliability", "label": "Punctuality, Attendance & Reliability", "questions": ["Arrives to school and class on time", "Maintains regular and consistent attendance", "Submits required reports and paperwork on time", "Follows proper procedures for reporting absences", "Meets deadlines for administrative tasks", "Is present and prepared for scheduled duties", "Notifies administration promptly of any delays or issues", "Remains available during required working hours", "Attends required professional meetings and trainings", "Demonstrates overall dependability and reliability"]}, {"key": "technology_resources", "label": "Use of Technology & Resources", "questions": ["Effectively integrates technology into instruction", "Uses instructional materials and resources efficiently", "Maintains and cares for school equipment and supplies", "Uses the school's learning management system/dashboard effectively", "Adapts to new technology tools as needed", "Uses digital resources to support differentiated instruction", "Troubleshoots basic technology issues independently", "Ensures appropriate and safe use of technology by students", "Keeps digital records organized and accessible", "Explores innovative uses of technology to enhance learning"]}, {"key": "professional_growth", "label": "Professional Growth & Development", "questions": ["Participates in professional development opportunities", "Seeks feedback to improve teaching practice", "Reflects on and adjusts teaching practices over time", "Stays current with best practices in education", "Sets and pursues professional growth goals", "Applies new strategies learned from training sessions", "Mentors or supports colleagues when appropriate", "Demonstrates openness to constructive criticism", "Pursues further education or certifications when relevant", "Contributes to school improvement initiatives"]}, {"key": "compliance_policies", "label": "Compliance with Policies & Procedures", "questions": ["Follows school policies regarding student discipline", "Complies with health and safety regulations", "Adheres to grading and reporting policies", "Follows proper procedures for field trips/off-campus activities", "Complies with Ministry of Education guidelines and standards", "Maintains required documentation and records", "Follows emergency and safety drill procedures", "Adheres to school dress code and conduct policies", "Complies with data privacy and confidentiality requirements", "Supports and upholds school mission and values"]}];
+
+  const SCALE = [
+    { value: 5, label: "Excellent" },
+    { value: 4, label: "Proficient" },
+    { value: 3, label: "Satisfactory" },
+    { value: 2, label: "Needs Impr." },
+    { value: 1, label: "Unsatisfactory" },
+    { value: "na", label: "N/A" }
+  ];
+
+  const OBS_TYPE_LABEL = {
+    scheduled: "Scheduled Observation",
+    unscheduled: "Unscheduled/Walkthrough Observation",
+    end_of_term: "End-of-Term Review",
+    annual: "Annual Performance Review",
+    follow_up: "Follow-up Evaluation"
+  };
+
+  function escapeHtml(str) {
+    return String(str ?? "").replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+  function fmtDate(iso) {
+    if (!iso) return "—";
+    return new Date(iso).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+  }
+  function downloadCsv(filename, headers, rows) {
+    const lines = [headers.join(",")];
+    for (const row of rows) {
+      lines.push(row.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","));
+    }
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  const msgBox = document.getElementById("msgBox");
+  function showMsg(text, type) { msgBox.textContent = text; msgBox.className = "msg " + type; }
+  function clearMsg() { msgBox.className = "msg"; msgBox.textContent = ""; }
+
+  function ratingForScore(pct) {
+    if (pct === null) return { label: "Not Yet Rated", cls: "pending" };
+    if (pct >= 90) return { label: "Distinguished", cls: "dist" };
+    if (pct >= 75) return { label: "Proficient", cls: "prof" };
+    if (pct >= 60) return { label: "Developing", cls: "dev" };
+    return { label: "Unsatisfactory", cls: "unsat" };
+  }
+  function barColorForScore(pct) {
+    if (pct === null) return "#ccc";
+    if (pct >= 90) return "#1e8449";
+    if (pct >= 75) return "#122148";
+    if (pct >= 60) return "#f2a71b";
+    return "#c0392b";
+  }
+
+  // ================= Section tab switching =================
+  document.getElementById("sectionTabs").addEventListener("click", e => {
+    const btn = e.target.closest("button[data-section]");
+    if (!btn) return;
+    document.querySelectorAll("#sectionTabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".stat-section").forEach(s => s.classList.remove("active"));
+    document.getElementById(btn.dataset.section + "Section").classList.add("active");
+    if (btn.dataset.section === "manage") loadEvaluations();
+  });
+
+  /* =========================================================================
+     STAFF EVALUATIONS
+     Assumes a table `staff_evaluations`:
+     id, staff_name, position, department, term, evaluation_date,
+     evaluator_name, evaluator_title, observation_type,
+     answers (jsonb), category_scores (jsonb), category_comments (jsonb),
+     overall_score numeric, overall_rating text, overall_comments text,
+     created_at
+  ========================================================================= */
+
+  let evaluations = [];
+  let answers = {};       // "{catIndex}_{qIndex}" -> 5|4|3|2|1|"na"
+  let catComments = {};   // catIndex -> string
+  let editingId = null;
+
+  // ---------- Build the criteria accordion dynamically ----------
+  const categoriesContainer = document.getElementById("categoriesContainer");
+
+  function buildCategoriesHtml() {
+    return CATEGORIES.map((cat, ci) => {
+      const rows = cat.questions.map((q, qi) => {
+        const scaleHtml = SCALE.map(s => `
+          <label>
+            <input type="radio" name="ans_${ci}_${qi}" value="${s.value}" data-cat="${ci}" data-q="${qi}">
+            ${s.label}
+          </label>`).join("");
+        return `
+        <div class="q-row">
+          <span class="q-num">${qi + 1}.</span>
+          <span class="q-text">${escapeHtml(q)}</span>
+          <div class="q-scale">${scaleHtml}</div>
+        </div>`;
+      }).join("");
+
+      return `
+      <div class="accordion-cat" id="cat-${ci}" data-cat="${ci}">
+        <div class="accordion-cat-head" data-toggle="${ci}">
+          <div class="accordion-cat-title">
+            <span class="accordion-cat-num">${ci + 1}</span>
+            <span>${escapeHtml(cat.label)}</span>
+          </div>
+          <div class="accordion-cat-right">
+            <span class="accordion-cat-count" id="cat-count-${ci}">0/10 answered</span>
+            <span class="accordion-cat-badge" id="cat-badge-${ci}">—</span>
+            <svg class="accordion-cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div class="accordion-cat-body">
+          ${rows}
+          <div class="cat-comment-field">
+            <label for="cat-comment-${ci}">Category Comments (optional)</label>
+            <textarea id="cat-comment-${ci}" data-cat="${ci}" placeholder="Notes specific to ${escapeHtml(cat.label)}…" maxlength="1000"></textarea>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  categoriesContainer.innerHTML = buildCategoriesHtml();
+
+  // Accordion open/close (first category open by default)
+  document.getElementById("cat-0").classList.add("open");
+  categoriesContainer.addEventListener("click", e => {
+    const head = e.target.closest(".accordion-cat-head");
+    if (!head) return;
+    head.closest(".accordion-cat").classList.toggle("open");
+  });
+
+  // Track answers via delegation
+  categoriesContainer.addEventListener("change", e => {
+    const input = e.target;
+    if (input.matches('input[type="radio"]')) {
+      const ci = input.dataset.cat, qi = input.dataset.q;
+      answers[`${ci}_${qi}`] = input.value === "na" ? "na" : Number(input.value);
+      updateAll();
+    } else if (input.matches("textarea[data-cat]")) {
+      catComments[input.dataset.cat] = input.value;
+    }
+  });
+
+  function computeCategoryScore(ci) {
+    const cat = CATEGORIES[ci];
+    let sum = 0, count = 0, answeredTotal = 0;
+    cat.questions.forEach((_, qi) => {
+      const v = answers[`${ci}_${qi}`];
+      if (v === undefined) return;
+      answeredTotal++;
+      if (v !== "na") { sum += v; count++; }
+    });
+    const pct = count > 0 ? (sum / (count * 5)) * 100 : null;
+    return { pct, count, answeredTotal, total: cat.questions.length };
+  }
+
+  function computeOverall() {
+    let sum = 0, count = 0, answeredTotal = 0, totalQuestions = 0;
+    CATEGORIES.forEach((cat, ci) => {
+      totalQuestions += cat.questions.length;
+      cat.questions.forEach((_, qi) => {
+        const v = answers[`${ci}_${qi}`];
+        if (v === undefined) return;
+        answeredTotal++;
+        if (v !== "na") { sum += v; count++; }
+      });
+    });
+    const pct = count > 0 ? (sum / (count * 5)) * 100 : null;
+    return { pct, answeredTotal, totalQuestions };
+  }
+
+  function updateAll() {
+    // Per-category badges
+    CATEGORIES.forEach((cat, ci) => {
+      const { pct, answeredTotal, total } = computeCategoryScore(ci);
+      const badge = document.getElementById(`cat-badge-${ci}`);
+      const count = document.getElementById(`cat-count-${ci}`);
+      count.textContent = `${answeredTotal}/${total} answered`;
+      badge.textContent = pct === null ? "—" : Math.round(pct) + "%";
+      badge.style.background = pct === null ? "#eef1fb" : barColorForScore(pct) + "22";
+      badge.style.color = pct === null ? "var(--navy)" : barColorForScore(pct);
+    });
+
+    // Overall
+    const overall = computeOverall();
+    const progressFill = document.getElementById("progressFill");
+    const progressLabel = document.getElementById("progressLabel");
+    const pctAnswered = Math.round((overall.answeredTotal / overall.totalQuestions) * 100);
+    progressFill.style.width = pctAnswered + "%";
+    progressLabel.textContent = `${overall.answeredTotal} of ${overall.totalQuestions} answered`;
+
+    const overallScoreNum = document.getElementById("overallScoreNum");
+    const overallRatingPill = document.getElementById("overallRatingPill");
+    overallScoreNum.textContent = overall.pct === null ? "—" : Math.round(overall.pct) + "%";
+    const rating = ratingForScore(overall.pct);
+    overallRatingPill.textContent = rating.label;
+    overallRatingPill.className = "rating-pill " + rating.cls;
+  }
+
+  updateAll();
+
+  // ---------- Compose section: staff info fields ----------
+  const newStaffName = document.getElementById("newStaffName");
+  const newPosition = document.getElementById("newPosition");
+  const newDepartment = document.getElementById("newDepartment");
+  const newTerm = document.getElementById("newTerm");
+  const newEvalDate = document.getElementById("newEvalDate");
+  const newEvaluatorName = document.getElementById("newEvaluatorName");
+  const newEvaluatorTitle = document.getElementById("newEvaluatorTitle");
+  const newObservationType = document.getElementById("newObservationType");
+  const newOverallComments = document.getElementById("newOverallComments");
+  const postBtn = document.getElementById("postRequestBtn");
+  const clearBtn = document.getElementById("clearComposeBtn");
+  const composeHeading = document.getElementById("composeHeading");
+
+  function resetAnswerInputs() {
+    categoriesContainer.querySelectorAll('input[type="radio"]').forEach(el => { el.checked = false; });
+    categoriesContainer.querySelectorAll("textarea[data-cat]").forEach(el => { el.value = ""; });
+    answers = {};
+    catComments = {};
+    updateAll();
+  }
+
+  function clearCompose() {
+    editingId = null;
+    composeHeading.textContent = "New Staff Evaluation";
+    postBtn.textContent = "Save Evaluation";
+    newStaffName.value = ""; newPosition.value = ""; newDepartment.value = "";
+    newTerm.value = ""; newEvalDate.value = "";
+    newEvaluatorName.value = ""; newEvaluatorTitle.value = "";
+    newObservationType.value = "scheduled";
+    newOverallComments.value = "";
+    resetAnswerInputs();
+    document.querySelectorAll(".accordion-cat").forEach((el, i) => el.classList.toggle("open", i === 0));
+  }
+  clearBtn.addEventListener("click", clearCompose);
+
+  function buildAnswerPayloadPieces() {
+    const category_scores = {};
+    const category_comments = {};
+    CATEGORIES.forEach((cat, ci) => {
+      const { pct, answeredTotal, total } = computeCategoryScore(ci);
+      category_scores[cat.key] = { percent: pct === null ? null : Math.round(pct * 10) / 10, answered: answeredTotal, total };
+      const comment = (catComments[ci] || "").trim();
+      if (comment) category_comments[cat.key] = comment;
+    });
+    const overall = computeOverall();
+    const rating = ratingForScore(overall.pct);
+
+    // answers keyed by category key + question index for portability
+    const answersOut = {};
+    CATEGORIES.forEach((cat, ci) => {
+      cat.questions.forEach((q, qi) => {
+        const v = answers[`${ci}_${qi}`];
+        if (v !== undefined) answersOut[`${cat.key}__q${qi + 1}`] = v;
+      });
+    });
+
+    return {
+      answers: answersOut,
+      category_scores,
+      category_comments,
+      overall_score: overall.pct === null ? null : Math.round(overall.pct * 10) / 10,
+      overall_rating: overall.pct === null ? null : rating.label,
+      answeredTotal: overall.answeredTotal
+    };
+  }
+
+  function composePayload() {
+    const pieces = buildAnswerPayloadPieces();
+    return {
+      staff_name: newStaffName.value.trim(),
+      position: newPosition.value.trim(),
+      department: newDepartment.value.trim(),
+      term: newTerm.value.trim(),
+      evaluation_date: newEvalDate.value || null,
+      evaluator_name: newEvaluatorName.value.trim(),
+      evaluator_title: newEvaluatorTitle.value.trim(),
+      observation_type: newObservationType.value,
+      answers: pieces.answers,
+      category_scores: pieces.category_scores,
+      category_comments: pieces.category_comments,
+      overall_score: pieces.overall_score,
+      overall_rating: pieces.overall_rating,
+      overall_comments: newOverallComments.value.trim()
+    };
+  }
+
+  postBtn.addEventListener("click", async () => {
+    clearMsg();
+    const payload = composePayload();
+    if (!payload.staff_name) { showMsg("Please enter the staff member's name.", "err"); return; }
+    if (!payload.position) { showMsg("Please enter the staff member's position or subject taught.", "err"); return; }
+    if (!payload.evaluation_date) { showMsg("Please choose the evaluation date.", "err"); return; }
+    if (!payload.evaluator_name) { showMsg("Please enter the evaluator's name.", "err"); return; }
+    const pieces = buildAnswerPayloadPieces();
+    if (pieces.answeredTotal === 0) { showMsg("Please answer at least one evaluation question.", "err"); return; }
+
+    postBtn.disabled = true;
+    let error;
+    if (editingId) {
+      ({ error } = await sb.from("staff_evaluations").update(payload).eq("id", editingId));
+    } else {
+      ({ error } = await sb.from("staff_evaluations").insert(payload));
+    }
+    postBtn.disabled = false;
+
+    if (error) { showMsg("Couldn't save evaluation: " + error.message, "err"); return; }
+    showMsg(editingId ? "Staff evaluation updated." : "Staff evaluation saved.", "ok");
+    clearCompose();
+    loadEvaluations();
+  });
+
+  // ---------- Manage / list ----------
+  const manageRatingFilter = document.getElementById("manageRatingFilter");
+  const manageSearch = document.getElementById("manageSearch");
+  const manageRefreshBtn = document.getElementById("manageRefreshBtn");
+  const manageUpdatedNote = document.getElementById("manageUpdatedNote");
+  const requestList = document.getElementById("requestList");
+
+  async function loadEvaluations() {
+    clearMsg();
+    manageRefreshBtn.classList.add("spinning");
+
+    const { data, error } = await sb
+      .from("staff_evaluations")
+      .select("id, staff_name, position, department, term, evaluation_date, evaluator_name, evaluator_title, observation_type, answers, category_scores, category_comments, overall_score, overall_rating, overall_comments, created_at")
+      .order("created_at", { ascending: false })
+      .limit(500);
+
+    manageRefreshBtn.classList.remove("spinning");
+
+    if (error) {
+      showMsg("Couldn't load evaluations: " + error.message, "err");
+      evaluations = [];
+    } else {
+      evaluations = data || [];
+    }
+
+    renderKpis();
+    renderList();
+    renderTicker();
+    manageUpdatedNote.textContent = "Last updated " + new Date().toLocaleTimeString();
+  }
+
+  // Confidential by design: the ticker summarizes ratings and positions
+  // only — never a staff member's name — so it stays safe for a shared
+  // front-office screen while still surfacing recent activity to staff.
+  function renderTicker() {
+    const tickerBar = document.getElementById("tickerBar");
+    const tickerTrack = document.getElementById("tickerTrack");
+    const recent = evaluations.slice(0, 15);
+
+    if (!recent.length) {
+      tickerBar.classList.add("ticker-empty");
+      tickerTrack.innerHTML = "<span>No staff evaluations have been recorded yet.</span>";
+      return;
+    }
+
+    tickerBar.classList.remove("ticker-empty");
+    const items = recent.map(r => {
+      const parts = [r.position || "Staff", r.overall_rating || "Pending", r.evaluation_date ? "Evaluated " + fmtDate(r.evaluation_date) : null].filter(Boolean);
+      return `<span>${escapeHtml(parts.join(" — "))}</span>`;
+    });
+    tickerTrack.innerHTML = items.join("") + items.join("");
+    const seconds = Math.max(20, Math.min(120, recent.length * 8 + 12));
+    tickerTrack.style.animationDuration = seconds + "s";
+  }
+
+  function renderKpis() {
+    const now = new Date();
+    const thisMonth = evaluations.filter(r => {
+      if (!r.evaluation_date) return false;
+      const d = new Date(r.evaluation_date);
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    }).length;
+    const scored = evaluations.filter(r => typeof r.overall_score === "number");
+    const avg = scored.length ? (scored.reduce((s, r) => s + r.overall_score, 0) / scored.length) : null;
+
+    document.getElementById("kpiTotal").textContent = evaluations.length || "—";
+    document.getElementById("kpiAverage").textContent = avg === null ? "—" : Math.round(avg) + "%";
+    document.getElementById("kpiDistinguished").textContent = evaluations.filter(r => r.overall_rating === "Distinguished").length || "—";
+    document.getElementById("kpiThisMonth").textContent = thisMonth || "—";
+  }
+
+  function filteredEvaluations() {
+    const term = manageSearch.value.trim().toLowerCase();
+    const rating = manageRatingFilter.value;
+    return evaluations.filter(r => {
+      if (rating && r.overall_rating !== rating) return false;
+      if (term && !`${r.staff_name} ${r.position} ${r.term}`.toLowerCase().includes(term)) return false;
+      return true;
+    });
+  }
+
+  const RATING_BADGE_CLASS = { Distinguished: "pass", Proficient: "role", Developing: "pending", Unsatisfactory: "fail" };
+
+  function renderList() {
+    const rows = filteredEvaluations();
+    if (!rows.length) {
+      requestList.innerHTML = '<div class="empty-state">No staff evaluations match.</div>';
+      return;
+    }
+    requestList.innerHTML = rows.map(r => {
+      const ratingBadgeClass = RATING_BADGE_CLASS[r.overall_rating] || "role";
+      return `
+      <div class="request-card" data-id="${r.id}">
+        <div class="request-top">
+          <div>
+            <div class="request-title">${escapeHtml(r.staff_name || "Unnamed Staff")} — ${escapeHtml(r.position || "—")}</div>
+            <div class="request-meta">
+              <span class="badge ${ratingBadgeClass}">${escapeHtml(r.overall_rating || "Pending")}</span>
+              ${typeof r.overall_score === "number" ? " · " + Math.round(r.overall_score) + "%" : ""}
+              ${r.department ? " · " + escapeHtml(r.department) : ""}
+              ${r.term ? " · " + escapeHtml(r.term) : ""}
+              ${r.evaluation_date ? " · " + fmtDate(r.evaluation_date) : ""}
+            </div>
+          </div>
+        </div>
+        <div class="request-fees">${OBS_TYPE_LABEL[r.observation_type] || "Evaluation"} — Evaluated by ${escapeHtml(r.evaluator_name || "—")}</div>
+        <div class="request-actions">
+          <button class="btn-ghost accent" data-action="report" data-id="${r.id}">View Report</button>
+          <button class="btn-ghost" data-action="edit" data-id="${r.id}">Edit</button>
+          <button class="btn-ghost danger" data-action="delete" data-id="${r.id}">Delete</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  manageSearch.addEventListener("input", renderList);
+  manageRatingFilter.addEventListener("change", renderList);
+  manageRefreshBtn.addEventListener("click", loadEvaluations);
+
+  document.getElementById("manageExportBtn").addEventListener("click", () => {
+    const rows = filteredEvaluations();
+    if (!rows.length) { showMsg("Nothing to export.", "err"); return; }
+    downloadCsv(
+      `kingsville-staff-evaluations-${new Date().toISOString().slice(0, 10)}.csv`,
+      ["Staff Name", "Position", "Department", "Term", "Evaluation Date", "Evaluation Type", "Evaluator", "Overall Score", "Overall Rating", "Overall Comments"],
+      rows.map(r => [r.staff_name, r.position, r.department, r.term, r.evaluation_date, OBS_TYPE_LABEL[r.observation_type] || r.observation_type, r.evaluator_name, r.overall_score, r.overall_rating, r.overall_comments])
+    );
+  });
+
+  // ---------- Edit: reload record into the compose form ----------
+  function openEditInCompose(r) {
+    editingId = r.id;
+    composeHeading.textContent = "Edit Staff Evaluation";
+    postBtn.textContent = "Update Evaluation";
+
+    newStaffName.value = r.staff_name || "";
+    newPosition.value = r.position || "";
+    newDepartment.value = r.department || "";
+    newTerm.value = r.term || "";
+    newEvalDate.value = r.evaluation_date || "";
+    newEvaluatorName.value = r.evaluator_name || "";
+    newEvaluatorTitle.value = r.evaluator_title || "";
+    newObservationType.value = r.observation_type || "scheduled";
+    newOverallComments.value = r.overall_comments || "";
+
+    resetAnswerInputs();
+    const ans = r.answers || {};
+    CATEGORIES.forEach((cat, ci) => {
+      cat.questions.forEach((q, qi) => {
+        const key = `${cat.key}__q${qi + 1}`;
+        if (ans[key] !== undefined) {
+          const val = ans[key];
+          const input = categoriesContainer.querySelector(`input[name="ans_${ci}_${qi}"][value="${val}"]`);
+          if (input) { input.checked = true; answers[`${ci}_${qi}`] = val === "na" ? "na" : Number(val); }
+        }
+      });
+      const comment = (r.category_comments || {})[cat.key];
+      if (comment) {
+        catComments[ci] = comment;
+        const ta = document.getElementById(`cat-comment-${ci}`);
+        if (ta) ta.value = comment;
+      }
+    });
+    updateAll();
+
+    document.querySelectorAll("#sectionTabs button").forEach(b => b.classList.remove("active"));
+    document.querySelector('#sectionTabs button[data-section="compose"]').classList.add("active");
+    document.querySelectorAll(".stat-section").forEach(s => s.classList.remove("active"));
+    document.getElementById("composeSection").classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ---------- List action delegation ----------
+  requestList.addEventListener("click", async e => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const r = evaluations.find(x => String(x.id) === String(id));
+    if (!r) return;
+    const action = btn.dataset.action;
+
+    if (action === "edit") { openEditInCompose(r); return; }
+
+    if (action === "report") { openReport(r); return; }
+
+    if (action === "delete") {
+      if (!confirm("Delete this staff evaluation? This cannot be undone.")) return;
+      const { error } = await sb.from("staff_evaluations").delete().eq("id", id);
+      if (error) { showMsg("Couldn't delete evaluation: " + error.message, "err"); return; }
+      showMsg("Staff evaluation deleted.", "ok");
+      loadEvaluations();
+    }
+  });
+
+  // ---------- Report generation ----------
+  const reportOverlay = document.getElementById("reportOverlay");
+  let currentReportRequest = null;
+  let refCounter = 1;
+
+  function nextRef(prefix) {
+    const n = String(refCounter++).padStart(4, "0");
+    return `${prefix}-${new Date().getFullYear()}-${n}`;
+  }
+
+  document.getElementById("generateReportBtn").addEventListener("click", () => {
+    clearMsg();
+    const payload = composePayload();
+    if (!payload.staff_name) { showMsg("Please enter the staff member's name before generating.", "err"); return; }
+    if (!payload.position) { showMsg("Please enter the staff member's position before generating.", "err"); return; }
+    const pieces = buildAnswerPayloadPieces();
+    if (pieces.answeredTotal === 0) { showMsg("Please answer at least one evaluation question before generating.", "err"); return; }
+    openReport(Object.assign({ id: editingId }, payload));
+  });
+
+  function buildCategoryBarsHtml(categoryScores) {
+    return CATEGORIES.map(cat => {
+      const cs = (categoryScores || {})[cat.key];
+      const pct = cs && cs.percent !== null && cs.percent !== undefined ? cs.percent : null;
+      const color = barColorForScore(pct);
+      const width = pct === null ? 0 : Math.max(2, Math.min(100, pct));
+      return `
+      <div class="bar-row">
+        <div class="bar-label">${escapeHtml(cat.label)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${width}%;background:${color};"></div></div>
+        <div class="bar-pct">${pct === null ? "—" : Math.round(pct) + "%"}</div>
+      </div>`;
+    }).join("");
+  }
+
+  function buildCategoryCommentsHtml(categoryComments) {
+    const entries = Object.entries(categoryComments || {});
+    if (!entries.length) return null;
+    return entries.map(([key, comment]) => {
+      const cat = CATEGORIES.find(c => c.key === key);
+      const label = cat ? cat.label : key;
+      return `<p style="margin-bottom:8px;"><b>${escapeHtml(label)}:</b> ${escapeHtml(comment)}</p>`;
+    }).join("");
+  }
+
+  function openReport(r) {
+    currentReportRequest = r;
+    document.getElementById("rSchoolLogo").src = KPS_LOGO_SRC;
+    document.getElementById("rMoeLogo").src = MOE_LOGO_SRC;
+    document.getElementById("rDate").textContent = fmtDate(r.evaluation_date || new Date().toISOString());
+    document.getElementById("rStaffName").textContent = r.staff_name || "—";
+    document.getElementById("rPosition").textContent = r.position || "—";
+    document.getElementById("rDepartment").textContent = r.department || "—";
+    document.getElementById("rTerm").textContent = r.term || "—";
+    document.getElementById("rObsType").textContent = OBS_TYPE_LABEL[r.observation_type] || r.observation_type || "—";
+    document.getElementById("rOverallScore").textContent = typeof r.overall_score === "number" ? Math.round(r.overall_score) + "%" : "—";
+
+    const pill = document.getElementById("rRatingPill");
+    const rating = ratingForScore(typeof r.overall_score === "number" ? r.overall_score : null);
+    pill.textContent = r.overall_rating || rating.label;
+    pill.className = "rating-pill " + rating.cls;
+
+    document.getElementById("rCategoryBars").innerHTML = buildCategoryBarsHtml(r.category_scores);
+
+    const commentsHtml = buildCategoryCommentsHtml(r.category_comments);
+    document.getElementById("rCategoryComments").innerHTML = commentsHtml || "No category-specific comments were provided.";
+
+    document.getElementById("rOverallComments").textContent = r.overall_comments || "—";
+
+    document.getElementById("rEvaluatorName").textContent = r.evaluator_name || "\u00A0";
+    document.getElementById("rEvaluatorTitle").textContent = r.evaluator_title || "Principal, Kingsville Public High School";
+    document.getElementById("rStaffSignName").textContent = r.staff_name || "\u00A0";
+    document.getElementById("rRef").textContent = "Reference: " + nextRef("EVAL");
+
+    document.getElementById("rDeleteBtn").style.display = r && r.id ? "" : "none";
+    reportOverlay.classList.add("open");
+  }
+
+  function closeReport() { reportOverlay.classList.remove("open"); currentReportRequest = null; }
+  document.getElementById("rCloseBtn").addEventListener("click", closeReport);
+  reportOverlay.addEventListener("click", e => { if (e.target === reportOverlay) closeReport(); });
+
+  // ---------- share / download / print / delete ----------
+  function docPlainText() {
+    const catLines = CATEGORIES.map(cat => {
+      const cs = (currentReportRequest.category_scores || {})[cat.key];
+      const pct = cs && cs.percent !== null && cs.percent !== undefined ? Math.round(cs.percent) + "%" : "—";
+      return `  ${cat.label}: ${pct}`;
+    });
+    return [
+      SCHOOL_NAME.toUpperCase(), SCHOOL_ADDRESS, "STAFF PERFORMANCE EVALUATION REPORT — CONFIDENTIAL", "",
+      "STAFF NAME: " + document.getElementById("rStaffName").textContent,
+      "POSITION: " + document.getElementById("rPosition").textContent,
+      "DEPARTMENT: " + document.getElementById("rDepartment").textContent,
+      "TERM/YEAR: " + document.getElementById("rTerm").textContent,
+      "EVALUATION TYPE: " + document.getElementById("rObsType").textContent,
+      "OVERALL SCORE: " + document.getElementById("rOverallScore").textContent,
+      "OVERALL RATING: " + document.getElementById("rRatingPill").textContent, "",
+      "CATEGORY BREAKDOWN:", ...catLines, "",
+      "OVERALL COMMENTS & RECOMMENDATIONS:", document.getElementById("rOverallComments").textContent, "",
+      "Sincerely,", document.getElementById("rEvaluatorName").textContent, document.getElementById("rEvaluatorTitle").textContent, "",
+      document.getElementById("rRef").textContent
+    ].join("\n");
+  }
+
+  function docFilenameBase() {
+    const name = (document.getElementById("rStaffName").textContent || "staff") + "-evaluation";
+    const safe = name.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+    return "staff-evaluation-" + safe;
+  }
+
+  document.getElementById("rShareBtn").addEventListener("click", async () => {
+    const text = docPlainText();
+    const title = "Staff Evaluation — " + document.getElementById("rStaffName").textContent;
+    if (navigator.share) {
+      try { await navigator.share({ title, text }); } catch (err) { /* cancelled */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      showMsg("Sharing isn't available on this device, so the report was copied to your clipboard instead.", "ok");
+    } catch (err) {
+      window.open("mailto:?subject=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(text), "_blank");
+    }
+  });
+
+  document.getElementById("rDownloadBtn").addEventListener("click", () => {
+    const paper = reportOverlay.querySelector(".doc-paper").outerHTML;
+    const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>${escapeHtml(docFilenameBase())}</title>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;padding:24px;background:#f2f2f0;font-family:Georgia,"Times New Roman",serif;color:#111;}
+  .doc-paper{max-width:820px;margin:0 auto;background:#fff;padding:32px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);}
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:62px;width:62px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:22px;font-weight:800;color:#122148;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-office-row{display:flex;justify-content:space-between;font-size:12.5px;font-style:italic;margin-bottom:16px;}
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:10px;text-transform:uppercase;}
+  .rating-pill{display:inline-block;margin:4px 0 14px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;padding:5px 15px;border-radius:14px;}
+  .rating-pill.dist{background:#eafaf1;color:#1e8449;border:1px solid #b9e6c9;}
+  .rating-pill.prof{background:#eef1fb;color:#122148;border:1px solid #dbe1f5;}
+  .rating-pill.dev{background:#fff4d6;color:#8a6d1a;border:1px solid #ecd9a0;}
+  .rating-pill.unsat{background:#fdecea;color:#c0392b;border:1px solid #f6c9c4;}
+  .rating-pill.pending{background:#f1f1ef;color:#7a7f8a;border:1px solid #e3e2df;}
+  .memo-info-grid{margin:14px 0 18px;}
+  .memo-info-row{display:flex;gap:10px;margin-bottom:8px;font-size:13.5px;}
+  .memo-info-row .lbl{font-weight:700;min-width:140px;flex-shrink:0;}
+  .memo-info-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;}
+  .memo-section-title{font-weight:700;font-size:13.5px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.3px;color:#20242e;border-bottom:1px solid #ccc;padding-bottom:4px;}
+  .memo-body-text{font-size:13.5px;line-height:1.85;margin-bottom:10px;text-align:justify;white-space:pre-wrap;}
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-family:Arial,sans-serif;}
+  .bar-label{width:220px;flex-shrink:0;font-size:11.5px;color:#20242e;font-weight:600;}
+  .bar-track{flex:1;height:13px;background:#eee;border-radius:7px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:7px;}
+  .bar-pct{width:42px;flex-shrink:0;text-align:right;font-size:11px;font-weight:800;color:#122148;}
+  .memo-signoff{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin:30px 0 10px;}
+  .memo-signoff div{font-size:12.5px;}
+  .memo-signoff .sig-script{font-family:"Brush Script MT",cursive;font-size:20px;margin-bottom:-6px;min-height:24px;}
+  .memo-signoff .sig-name{border-top:1px solid #333;padding-top:4px;font-weight:700;}
+  .memo-signoff .sig-title{color:#555;font-size:11px;}
+  .memo-ref{font-size:11.5px;margin-top:10px;font-weight:700;}
+</style></head><body>${paper}</body></html>`;
+    const blob = new Blob([html], { type: "text/html;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = docFilenameBase() + ".html";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("rPrintBtn").addEventListener("click", () => window.print());
+
+  document.getElementById("rDeleteBtn").addEventListener("click", async () => {
+    if (!currentReportRequest || !currentReportRequest.id) return;
+    if (!confirm("Delete this evaluation? This cannot be undone.")) return;
+    const { error } = await sb.from("staff_evaluations").delete().eq("id", currentReportRequest.id);
+    if (error) { showMsg("Couldn't delete evaluation: " + error.message, "err"); return; }
+    showMsg("Staff evaluation deleted.", "ok");
+    reportOverlay.classList.remove("open");
+    currentReportRequest = null;
+    loadEvaluations();
+  });
+
+  // ================= Initial load =================
+  loadEvaluations();
+</script>
+
+<!-- KPS ERP Core -->
+
+</body>
+</html>

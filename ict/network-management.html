@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand img{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; object-fit:cover; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.school-brand img{ width:46px; height:46px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+@media (max-width:880px){
+  .school-brand .sb-t2{ display:none; }
+  .topbar-divider{ display:none; }
+}
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER (ICT signature element) ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* chart bars */
+.chart-bars{ display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:10px; }
+.chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.chart-bar{ width:100%; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--gold-light), var(--gold-deep)); position:relative; transition:filter .15s; }
+.chart-bar:hover{ filter:brightness(1.08); }
+.chart-bar.alt{ background:linear-gradient(180deg, #9FB6E0, var(--navy-3)); }
+.chart-lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+.chart-legend{ display:flex; gap:16px; margin-top:6px; font-size:11.5px; color:var(--muted); }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.chip-dot{ width:8px; height:8px; border-radius:2px; }
+
+/* feed / lists */
+.feed-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px dashed var(--line); }
+.feed-item:last-child{ border-bottom:none; }
+.feed-dot{ width:32px; height:32px; border-radius:9px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex:none; }
+.feed-dot svg{ width:15px; height:15px; color:var(--crimson); }
+.feed-dot.gold svg{ color:var(--gold-deep); }
+.feed-dot.navy svg{ color:var(--navy-3); }
+.feed-text{ font-size:13px; font-weight:600; }
+.feed-sub{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.feed-time{ margin-left:auto; font-size:11px; color:var(--muted); white-space:nowrap; }
+
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+.progress-track{ height:6px; border-radius:20px; background:var(--line); overflow:hidden; flex:1; }
+.progress-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); }
+.progress-fill.ok{ background:linear-gradient(90deg, #8FD8AC, var(--success)); }
+.progress-fill.warn{ background:linear-gradient(90deg, var(--gold-light), var(--warn)); }
+.progress-fill.bad{ background:linear-gradient(90deg, #F0A7AE, var(--danger)); }
+
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.health-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; padding:7px 0; }
+.health-row .hb{ flex:1; height:7px; background:var(--line); border-radius:20px; overflow:hidden; }
+.health-row .hb i{ display:block; height:100%; border-radius:20px; }
+.health-row .hv{ width:74px; text-align:right; font-weight:700; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+button.pill:hover{ filter:brightness(0.96); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* Module placeholder cards */
+.module-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.module-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.module-ic{ width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.module-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.module-card h4{ margin:0; font-size:14.5px; }
+.module-card p{ margin:0; font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* Device status card (network) */
+.device-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
+.device-top{ display:flex; align-items:center; justify-content:space-between; }
+.device-ic{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.device-ic svg{ width:19px; height:19px; }
+.device-name{ font-weight:700; font-size:13.5px; margin-top:2px; }
+.device-meta{ font-size:11.5px; color:var(--muted); }
+
+/* Restricted note */
+.restricted-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#FBE6E6; border:1px solid #F3C7CB; margin-top:14px; }
+.restricted-note svg{ width:16px; height:16px; color:var(--danger); flex:none; margin-top:1px; }
+.restricted-note div{ font-size:12px; color:#7A2530; line-height:1.55; }
+.restricted-note b{ color:var(--danger); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field input[type=text], .field input[type=password], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.settings-list .row-line{ align-items:flex-start; }
+.settings-list .rl-name{ font-size:13.5px; }
+.settings-list .rl-sub{ margin-top:2px; max-width:52ch; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .bento{ grid-template-columns:1fr; }
+  .grid-3,.grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .tbl-actions, .toolbar, .tabs, .toast-wrap, .modal-backdrop, .footer-ribbon, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .view{ display:none !important; }
+  .view.active{ display:block !important; }
+  .card, .stat-card, .module-card, .device-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid,.grid-3,.grid-2,.grid-4{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+
+/* ============================= FORM-SPECIFIC (Create User / Registration) ============================= */
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:700; color:var(--muted); border:none; background:transparent; }
+.role-tab svg{ width:16px; height:16px; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.form-shell{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; }
+.form-head{ padding:22px 26px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; }
+.form-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.form-head h2{ color:#fff; margin:0 0 4px; font-size:20px; }
+.form-head p{ margin:0; color:rgba(255,255,255,.65); font-size:12.6px; max-width:60ch; }
+.form-body{ padding:26px; display:flex; flex-direction:column; gap:26px; }
+
+.fsection{ border:1px dashed var(--line); border-radius:14px; padding:20px 22px; }
+.fsection-title{ display:flex; align-items:center; gap:10px; margin:0 0 16px; font-size:14px; font-weight:800; color:var(--navy); }
+.fsection-title .num{ width:24px; height:24px; border-radius:8px; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex:none; }
+
+.fgrid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+.fgrid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+.fgrid.cols-4{ grid-template-columns:repeat(4, 1fr); }
+.fspan-2{ grid-column:span 2; }
+.fspan-3{ grid-column:span 3; }
+
+.field .hint{ font-size:10.8px; color:var(--muted); font-weight:500; }
+.field .err{ font-size:10.8px; color:var(--danger); font-weight:700; display:none; }
+.field.invalid input, .field.invalid select, .field.invalid textarea{ border-color:var(--danger); background:#FEF4F4; }
+.field.invalid .err{ display:block; }
+.field.valid input, .field.valid select{ border-color:#9CD3AF; }
+
+.field input[type=text], .field input[type=email], .field input[type=tel], .field input[type=password],
+.field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit;
+  background:var(--paper); width:100%; transition:border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); }
+.field textarea{ resize:vertical; min-height:70px; }
+
+.dob-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+.radio-row, .check-row{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
+.radio-opt, .check-opt{ display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; cursor:pointer; }
+.radio-opt input, .check-opt input{ width:16px; height:16px; accent-color:var(--crimson-bright); cursor:pointer; }
+
+.role-fields{ display:none; }
+.role-fields.active{ display:block; }
+
+table.qual{ width:100%; border-collapse:collapse; font-size:12.6px; }
+table.qual th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:8px 10px; border-bottom:2px solid var(--line); }
+table.qual td{ padding:7px 10px; border-bottom:1px solid var(--line); }
+table.qual input{ border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-size:12.6px; width:100%; font-family:inherit; }
+table.qual tr:last-child td{ border-bottom:none; }
+
+.role-pill-preview{ display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:20px; font-size:11.5px; font-weight:800; }
+
+.form-foot{ padding:20px 26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:#FBF8F0; }
+.form-foot .fp-note{ font-size:11.8px; color:var(--muted); max-width:52ch; }
+.form-actions{ display:flex; gap:10px; }
+
+@media (max-width: 900px){
+  .fgrid, .fgrid.cols-2, .fgrid.cols-4{ grid-template-columns:1fr; }
+  .dob-row{ grid-template-columns:1fr 1fr 1fr; }
+}
+
+</style>
+<style>
+.app{ display:block; grid-template-columns:none; min-height:100vh; }
+.main{ min-width:0; }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<style>
+/* ============================= DEVICE MANAGEMENT — EXTRA COMPONENTS ============================= */
+
+/* Connection status badge (shared pattern) */
+.conn-badge{ display:inline-flex; align-items:center; gap:7px; padding:6px 13px; border-radius:20px; font-size:11.5px; font-weight:700; border:1px solid var(--line); background:var(--paper); }
+.conn-dot{ width:8px; height:8px; border-radius:50%; background:var(--muted); flex:none; }
+.conn-badge.checking .conn-dot{ background:var(--gold); animation:pulse 1.4s infinite; }
+.conn-badge.online .conn-dot{ background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; }
+.conn-badge.online{ color:var(--success); border-color:#C7E6D1; background:#EEF8F1; }
+.conn-badge.offline .conn-dot{ background:var(--danger); }
+.conn-badge.offline{ color:var(--danger); border-color:#F3C7CB; background:#FDEEEF; }
+
+.db-warning{ display:flex; align-items:flex-start; gap:12px; padding:14px 18px; border-radius:14px; background:#FDEEEF; border:1px solid #F3C7CB; margin-bottom:20px; }
+.db-warning svg{ width:18px; height:18px; color:var(--danger); flex:none; margin-top:2px; }
+.db-warning .dw-t{ font-size:12.8px; font-weight:800; color:#7A2530; }
+.db-warning .dw-s{ font-size:12px; color:#7A2530; margin-top:3px; line-height:1.55; }
+.db-warning code{ background:rgba(200,20,48,.1); padding:1px 6px; border-radius:5px; font-family:'IBM Plex Mono',monospace; font-size:11px; }
+
+/* Stat card skeleton (numbers not yet loaded) */
+.stat-num.skeleton{ display:inline-block; width:70px; height:26px; border-radius:6px; background:linear-gradient(90deg, #F3EEDF 25%, #EDE6D0 37%, #F3EEDF 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+@keyframes shimmer{ 0%{background-position:100% 50%;} 100%{background-position:0 50%;} }
+
+/* Detail rows */
+.detail-list{ display:flex; flex-direction:column; }
+.detail-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 0; border-bottom:1px solid var(--line); }
+.detail-row:last-child{ border-bottom:none; }
+.detail-label{ font-size:12.5px; font-weight:700; color:var(--muted); min-width:160px; }
+.detail-value-wrap{ display:flex; align-items:center; gap:10px; flex:1; justify-content:flex-end; }
+.detail-value{ font-family:'IBM Plex Mono',monospace; font-size:12.6px; color:var(--ink); }
+.detail-value.skeleton{ display:inline-block; width:120px; height:14px; border-radius:4px; background:linear-gradient(90deg, #F3EEDF 25%, #EDE6D0 37%, #F3EEDF 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+.icon-mini-btn{ width:26px; height:26px; border-radius:7px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; flex:none; }
+.icon-mini-btn svg{ width:13px; height:13px; color:var(--muted); }
+.icon-mini-btn:hover{ border-color:var(--gold); }
+.status-pill{ display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:800; }
+.status-pill.ok{ background:#E4F3E9; color:var(--success); }
+.status-pill.bad{ background:#FBE6E6; color:var(--danger); }
+.status-pill.warn{ background:#FBEED2; color:var(--gold-deep); }
+.status-pill.unknown{ background:#EFEAE0; color:var(--muted); }
+
+.readonly-note{ display:inline-flex; align-items:center; gap:5px; margin-left:auto; font-size:10.5px; font-weight:700; color:var(--muted); text-transform:none; letter-spacing:0; }
+.readonly-note svg{ width:12px; height:12px; }
+
+/* Device inventory table */
+.table-list-wrap{ overflow-x:auto; }
+table.devtable{ width:100%; border-collapse:collapse; font-size:12.6px; }
+table.devtable th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:9px 12px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.devtable td{ padding:10px 12px; border-bottom:1px solid var(--line); white-space:nowrap; }
+table.devtable tr:last-child td{ border-bottom:none; }
+table.devtable tr:hover td{ background:#FBF8F0; }
+.tbl-name{ font-weight:700; font-family:'IBM Plex Mono',monospace; font-size:12px; }
+.tbl-actions{ display:flex; gap:6px; }
+
+/* Device / alert list rows (bento card) */
+.device-row{ display:flex; align-items:center; gap:14px; padding:13px 0; border-bottom:1px solid var(--line); }
+.device-row:last-child{ border-bottom:none; }
+.device-row-ic{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; flex:none; }
+.device-row-ic svg{ width:16px; height:16px; color:#fff; }
+.device-row-meta{ flex:1; min-width:0; }
+.device-row-name{ font-size:12.8px; font-weight:700; }
+.device-row-sub{ font-size:11px; color:var(--muted); margin-top:1px; }
+.device-row-actions{ display:flex; gap:8px; flex:none; }
+
+/* Danger zone */
+.danger-zone{ background:#FEF6F6; border:1.5px solid #F3C7CB; border-radius:16px; overflow:hidden; }
+.danger-zone .form-head{ background:linear-gradient(135deg, var(--danger), #8C1120); }
+.danger-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 22px; border-bottom:1px solid #F3C7CB; }
+.danger-row:last-child{ border-bottom:none; }
+.danger-copy .dr-t{ font-size:13.5px; font-weight:800; color:#7A2530; }
+.danger-copy .dr-s{ font-size:12px; color:#8a4a52; margin-top:3px; max-width:56ch; line-height:1.5; }
+.btn-danger{ background:linear-gradient(135deg, var(--crimson-bright), #8C1120); color:#fff; box-shadow:0 10px 22px -10px rgba(140,17,32,.55); }
+.btn-danger:hover{ box-shadow:0 14px 26px -10px rgba(140,17,32,.65); }
+
+.confirm-modal .modal-head{ background:linear-gradient(135deg, var(--crimson-bright), #8C1120); }
+.confirm-input{ border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:'IBM Plex Mono',monospace; width:100%; }
+
+.empty-state.small{ padding:30px 20px; }
+.empty-state.small svg{ width:32px; height:32px; }
+
+.settings-jump{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
+.jump-pill{ display:flex; align-items:center; gap:7px; padding:8px 15px; border-radius:20px; font-size:12px; font-weight:700; color:var(--navy); background:var(--paper); border:1px solid var(--line); transition:border-color .15s, background .15s; }
+.jump-pill:hover{ border-color:var(--gold); background:#FBF4E6; }
+.jump-pill svg{ width:14px; height:14px; }
+
+/* Maintenance action rows */
+.switch-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid var(--line); }
+.switch-copy{ flex:1; min-width:0; }
+.sw-name{ font-size:13.5px; font-weight:700; }
+.sw-sub{ font-size:11.8px; color:var(--muted); margin-top:2px; line-height:1.5; max-width:56ch; }
+
+/* Add device modal form grid */
+.modal-body .fgrid-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:520px){ .modal-body .fgrid-2{ grid-template-columns:1fr; } }
+</style>
+
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+  <main class="main">
+    <header class="topbar">
+      <div class="school-brand">
+        <img src="../assets/images/img-d93654d2446562d6.jpg" alt="Kingsville Public School crest">
+        <div>
+          <div class="sb-t1">Kingsville #7 &middot; Careysburg</div>
+          <div class="sb-t2">Kingsville Public School</div>
+        </div>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia &middot; Ministry of Education</div>
+        <div class="page-title">Network</div>
+      </div>
+      <div id="connBadge" class="conn-badge checking">
+        <span class="conn-dot"></span>
+        <span id="connBadgeText">Connecting to network inventory&hellip;</span>
+      </div>
+      <button type="button" class="btn btn-ghost" id="openAddDeviceBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Register Network Device
+      </button>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="view active" id="view-devices">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div>
+            <div class="sb-t">Live Network Console</div>
+            <div class="sb-s">This screen talks directly to the school&rsquo;s network inventory system &mdash; every figure, network device row and alert listed below is fetched live. There is no sample or placeholder data anywhere on this page. Only <b class="sa">Super Administrator</b> accounts can reach this console, and every remote action here is <b class="sa">audit-logged</b>.</div>
+          </div>
+        </div>
+
+        <div id="devWarning" class="db-warning" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+          <div>
+            <div class="dw-t">Not connected to the live network inventory yet</div>
+            <div class="dw-s" id="devWarningText">This page could not load the network inventory from Supabase. No figures, network devices or alerts have been loaded &mdash; nothing below is fabricated. Make sure you are signed in with an ICT / Super Admin account and that <code style="font-family:'IBM Plex Mono',monospace;">supabase/migrations/024_addendum_network_management_wiring.sql</code> has been run against your project.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Network Management</h2>
+            <p>Inventory, status, remote actions and maintenance for every router, switch, access point and firewall deployed across Kingsville Public High School.</p>
+          </div>
+        </div>
+
+        <div class="settings-jump">
+          <a class="jump-pill" href="#sec-overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>Overview</a>
+          <a class="jump-pill" href="#sec-register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Register</a>
+          <a class="jump-pill" href="#sec-inventory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg>Inventory</a>
+          <a class="jump-pill" href="#sec-remote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg>Remote &amp; Alerts</a>
+          <a class="jump-pill" href="#sec-maintenance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 1 1-5.4 5.4L3 18l3 3l6.3-6.3a4 4 0 0 1 5.4-5.4z"/></svg>Maintenance</a>
+          <a class="jump-pill" href="#sec-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>Danger Zone</a>
+        </div>
+
+        <!-- SECTION: Overview stat cards -->
+        <div id="sec-overview" class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg></div>
+              <span class="status-pill unknown" id="devicesStatusPill">&mdash;</span>
+            </div>
+            <div class="stat-num skeleton" id="statTotalDevices">&nbsp;</div>
+            <div class="stat-label">Total Network Devices</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+            </div>
+            <div class="stat-num skeleton" id="statOnline">&nbsp;</div>
+            <div class="stat-label">Online Now</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic navy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+            </div>
+            <div class="stat-num skeleton" id="statOffline">&nbsp;</div>
+            <div class="stat-label">Offline / Unreachable</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div>
+            </div>
+            <div class="stat-num skeleton" id="statNeedsAttention">&nbsp;</div>
+            <div class="stat-label">Needs Attention</div>
+          </div>
+        </div>
+
+        <!-- SECTION 1: Register device -->
+        <div class="form-shell" id="sec-register" style="margin-bottom:22px;">
+          <div class="form-head">
+            <h2>Register a Network Device</h2>
+            <p>Kingsville Public High School &middot; Super Administrator Console &middot; adds a device to the live network inventory API</p>
+          </div>
+          <div class="form-body">
+            <div class="fsection">
+              <div class="fsection-title"><span class="num">1</span> Network Device Details</div>
+              <div class="fgrid">
+                <div class="field">
+                  <label for="regName">Device name</label>
+                  <input type="text" id="regName" placeholder="e.g. Library Core Switch">
+                </div>
+                <div class="field">
+                  <label for="regAssetTag">Asset tag</label>
+                  <input type="text" id="regAssetTag" placeholder="e.g. KPS-NET-0104">
+                </div>
+                <div class="field">
+                  <label for="regType">Device type</label>
+                  <select id="regType">
+                    <option value="">Select type&hellip;</option>
+                    <option value="Router">Router</option>
+                    <option value="Switch">Switch</option>
+                    <option value="AccessPoint">Wireless Access Point</option>
+                    <option value="Firewall">Firewall</option>
+                    <option value="Modem">Modem / ONT</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="fgrid" style="margin-top:16px;">
+                <div class="field">
+                  <label for="regAssigned">Assigned to (closet / rack)</label>
+                  <input type="text" id="regAssigned" placeholder="e.g. Main IDF / Rack 2, Unit 4">
+                </div>
+                <div class="field">
+                  <label for="regSerial">Serial number</label>
+                  <input type="text" id="regSerial" placeholder="Manufacturer serial number">
+                </div>
+                <div class="field">
+                  <label for="regLocation">Location / IP address</label>
+                  <input type="text" id="regLocation" placeholder="e.g. Main Campus, 10.20.0.4">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-foot">
+            <div class="fp-note">New network devices are written to the live inventory the moment you submit &mdash; there is no draft or staging step. Double-check the asset tag and IP address before saving.</div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-ghost" id="regClearBtn">Clear</button>
+              <button type="button" class="btn btn-primary" id="regSubmitBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                Register Network Device
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Inventory -->
+        <div class="card" id="sec-inventory" style="margin-bottom:22px;">
+          <div class="card-head">
+            <h3>Network Inventory</h3>
+            <button type="button" class="btn btn-ghost btn-sm" id="refreshDevicesBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+              Refresh
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="toolbar">
+              <div class="search-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input type="text" id="deviceSearch" placeholder="Search by name, tag or IP address&hellip;">
+              </div>
+              <select class="filter" id="deviceTypeFilter">
+                <option value="">All types</option>
+                <option value="Router">Router</option>
+                <option value="Switch">Switch</option>
+                <option value="AccessPoint">Access Point</option>
+                <option value="Firewall">Firewall</option>
+                <option value="Modem">Modem / ONT</option>
+                <option value="Other">Other</option>
+              </select>
+              <select class="filter" id="deviceStatusFilter">
+                <option value="">All statuses</option>
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
+                <option value="attention">Needs attention</option>
+              </select>
+            </div>
+            <div class="table-list-wrap">
+              <table class="devtable">
+                <thead>
+                  <tr><th>Device</th><th>Type</th><th>Location</th><th>Status</th><th>Last Seen</th><th></th></tr>
+                </thead>
+                <tbody id="devicesBody">
+                  <tr><td colspan="6">
+                    <div class="empty-state small">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg>
+                      <h4>Waiting for inventory connection</h4>
+                      <p>Network device list will appear here once Supabase is reachable and this account has ICT access.</p>
+                    </div>
+                  </td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: Alerts + Compliance -->
+        <div class="bento" id="sec-remote" style="margin-bottom:22px;">
+          <div class="card">
+            <div class="card-head">
+              <h3>Recent Network Alerts</h3>
+              <a class="see-all" href="security.html">Security Center &rarr;</a>
+            </div>
+            <div class="card-body" id="alertsList">
+              <div class="empty-state small">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+                <h4>No alert data loaded</h4>
+                <p>Recent network alerts will list here once the inventory API is reachable.</p>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Network Health</h3></div>
+            <div class="card-body">
+              <div class="detail-list">
+                <div class="detail-row">
+                  <span class="detail-label">Online Rate</span>
+                  <div class="detail-value-wrap"><span class="detail-value skeleton" id="complianceUpdated">&nbsp;</span></div>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Needs Attention</span>
+                  <div class="detail-value-wrap"><span class="detail-value skeleton" id="compliancePending">&nbsp;</span></div>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Offline &gt; 7 Days</span>
+                  <div class="detail-value-wrap"><span class="detail-value skeleton" id="complianceStale">&nbsp;</span></div>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Last Inventory Update</span>
+                  <div class="detail-value-wrap"><span class="detail-value skeleton" id="complianceNextSync">&nbsp;</span></div>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary" id="syncNowBtn" style="margin-top:16px; width:100%; justify-content:center;" disabled title="Topology sync talks to physical network hardware, which this Supabase-only setup has no way to reach.">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+                Sync Topology Now
+              </button>
+              <div style="margin-top:8px; font-size:11.5px; color:var(--muted); line-height:1.5;">Topology sync requires a physical network agent this Supabase-only setup doesn&rsquo;t have &mdash; disabled rather than faked.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: Maintenance -->
+        <div class="card" id="sec-maintenance" style="margin-bottom:22px;">
+          <div class="card-head"><h3>Maintenance &amp; Remote Actions</h3></div>
+          <div class="card-body">
+            <div class="settings-list">
+              <div class="switch-row">
+                <div class="switch-copy">
+                  <div class="sw-name">Push Firmware Updates</div>
+                  <div class="sw-sub">Sends pending firmware updates to every router, switch, access point and firewall currently online. Requires a physical network agent this Supabase-only setup doesn&rsquo;t have &mdash; disabled rather than faked.</div>
+                </div>
+                <button type="button" class="btn btn-navy btn-sm" id="pushUpdatesBtn" disabled title="Requires a physical network agent not available in this setup.">Run</button>
+              </div>
+              <div class="switch-row">
+                <div class="switch-copy">
+                  <div class="sw-name">Run Network-wide Diagnostic Scan</div>
+                  <div class="sw-sub">Triggers an on-demand connectivity and health diagnostic on every managed network device. Requires a physical network agent this Supabase-only setup doesn&rsquo;t have &mdash; disabled rather than faked.</div>
+                </div>
+                <button type="button" class="btn btn-navy btn-sm" id="scanBtn" disabled title="Requires a physical network agent not available in this setup.">Run</button>
+              </div>
+              <div class="switch-row" style="border-bottom:none;">
+                <div class="switch-copy">
+                  <div class="sw-name">Re-check IP Assignments</div>
+                  <div class="sw-sub">Verifies that every device&rsquo;s reported IP address matches what is recorded in the inventory database. Requires a physical network agent this Supabase-only setup doesn&rsquo;t have &mdash; disabled rather than faked.</div>
+                </div>
+                <button type="button" class="btn btn-navy btn-sm" id="recheckTagsBtn" disabled title="Requires a physical network agent not available in this setup.">Run</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: Danger Zone -->
+        <div class="danger-zone" id="sec-danger">
+          <div class="form-head">
+            <h2>Danger Zone</h2>
+            <p>These actions affect physical network hardware in the field and cannot be undone remotely. Every attempt is logged with your account, IP address and timestamp.</p>
+          </div>
+          <div class="danger-row">
+            <div class="danger-copy">
+              <div class="dr-t">Reboot a Network Device</div>
+              <div class="dr-s">Power-cycles a single router, switch, access point or firewall the next time it checks in. Requires a physical network agent this Supabase-only setup doesn&rsquo;t have &mdash; disabled rather than faked.</div>
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" id="wipeDeviceBtn" disabled title="Requires a physical network agent not available in this setup.">Reboot Device&hellip;</button>
+          </div>
+          <div class="danger-row">
+            <div class="danger-copy">
+              <div class="dr-t">Bulk Decommission Offline Network Gear</div>
+              <div class="dr-s">Marks every network device offline for more than 90 days as decommissioned in the live database and removes them from active inventory counts. Rows are kept for history, not deleted.</div>
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" id="decommissionBtn">Decommission&hellip;</button>
+          </div>
+          <div class="danger-row">
+            <div class="danger-copy">
+              <div class="dr-t">Factory Reset Entire Network</div>
+              <div class="dr-s">Queues a factory reset command for every managed router, switch, access point and firewall in the inventory. Requires a physical network agent this Supabase-only setup doesn&rsquo;t have &mdash; disabled rather than faked.</div>
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" id="resetFleetBtn" disabled title="Requires a physical network agent not available in this setup.">Reset Network&hellip;</button>
+          </div>
+        </div>
+
+        <div class="allowed-note" id="noFakeDataNote">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          <div><b>No sample data policy:</b> every number, network device row and alert on this page is loaded live from the network inventory API. Nothing is hardcoded, and destructive actions always require typed confirmation before they run.</div>
+        </div>
+
+      </section>
+
+      <div class="footer-ribbon">
+        <img class="footer-crest" src="../assets/images/img-d93654d2446562d6.jpg" alt="">
+        Kingsville Public High School &middot; Super Administrator Console &middot; <b>Knowledge is Power</b> &middot; Kingsville #7, Careysburg District
+        <img class="footer-crest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+        Republic of Liberia &middot; Ministry of Education
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- Add Device Modal -->
+<div class="modal-backdrop" id="addDeviceModalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Register a Network Device</h3>
+      <button type="button" id="addDeviceModalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label for="modalDeviceName">Device name</label>
+        <input type="text" id="modalDeviceName" placeholder="e.g. Library Core Switch">
+      </div>
+      <div class="fgrid-2">
+        <div class="field">
+          <label for="modalAssetTag">Asset tag</label>
+          <input type="text" id="modalAssetTag" placeholder="KPS-NET-0104">
+        </div>
+        <div class="field">
+          <label for="modalDeviceType">Type</label>
+          <select id="modalDeviceType">
+            <option value="">Select&hellip;</option>
+            <option value="Router">Router</option>
+            <option value="Switch">Switch</option>
+            <option value="AccessPoint">Access Point</option>
+            <option value="Firewall">Firewall</option>
+            <option value="Modem">Modem / ONT</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="modalAssigned">Assigned to</label>
+        <input type="text" id="modalAssigned" placeholder="Closet, rack or room">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" id="addDeviceModalCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="addDeviceModalSubmit">Register</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal-backdrop" id="confirmModalBackdrop">
+  <div class="modal confirm-modal">
+    <div class="modal-head">
+      <h3 id="confirmModalTitle">Confirm dangerous action</h3>
+      <button type="button" id="confirmModalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmModalBody" style="margin:0; font-size:13px; color:var(--ink); line-height:1.6;"></p>
+      <div class="field" id="confirmModalTagField" style="display:none;">
+        <label>Asset tag</label>
+        <input type="text" class="confirm-input" id="confirmModalTagInput" placeholder="e.g. KPS-DSK-0104" autocomplete="off">
+      </div>
+      <div class="field">
+        <label id="confirmModalLabel">Type CONFIRM to proceed</label>
+        <input type="text" class="confirm-input" id="confirmModalInput" placeholder="CONFIRM" autocomplete="off">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" id="confirmModalCancel">Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirmModalProceed" disabled>Proceed</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+
+<script>
+/* =====================================================================================
+   NETWORK MANAGEMENT — LIVE SUPABASE INTEGRATION
+   =====================================================================================
+   This page talks directly to Supabase (window.sb, initialised in
+   js/supabase-config.js) — there is no fake REST API layer here anymore.
+   Every stat, network device row and alert below comes from a live query
+   against public.network_devices / public.network_alerts. If a query fails
+   (not signed in, RLS denies access because the account isn't ICT/Super
+   Admin, or the migration below hasn't been run yet) the page shows an
+   honest "not connected" state instead of fabricating numbers.
+
+   Schema this page expects:
+     supabase/migrations/000_MASTER_SCHEMA.sql            (base tables)
+     supabase/migrations/024_addendum_network_management_wiring.sql
+       (adds asset_tag / assigned_to / serial_number / last_seen_at /
+        archived_at to network_devices, plus the network_alerts table)
+
+   Actions that require real network hardware (Sync Topology, Push Firmware
+   Updates, Diagnostic Scan, Re-check IP Assignments, Reboot Device, Factory
+   Reset) are disabled in the markup with an honest explanation — this
+   Supabase-only setup has no way to actually reach physical routers and
+   switches. Bulk Decommission IS wired for real, since marking rows
+   archived is a genuine database operation.
+   ===================================================================================== */
+
+const TABLE = 'network_devices';
+const ALERTS_TABLE = 'network_alerts';
+
+/* ---------- Connection status UI ---------- */
+const connBadge = document.getElementById('connBadge');
+const connBadgeText = document.getElementById('connBadgeText');
+const devWarning = document.getElementById('devWarning');
+const devWarningText = document.getElementById('devWarningText');
+
+function setConnStatus(state, text){
+  connBadge.className = 'conn-badge ' + state;
+  connBadgeText.textContent = text;
+}
+function showDevWarning(show, detail){
+  devWarning.style.display = show ? 'flex' : 'none';
+  if(detail) devWarningText.textContent = detail;
+}
+function setStatusPill(el, ok, okText, badText){
+  el.className = 'status-pill ' + (ok ? 'ok' : 'bad');
+  el.textContent = ok ? okText : badText;
+}
+
+function fmtNumber(n){ return n === undefined || n === null ? '\u2014' : Number(n).toLocaleString(); }
+function fmtPct(n){ return n === undefined || n === null ? '\u2014' : Number(n).toFixed(1) + '%'; }
+function fmtDateTime(iso){
+  if(!iso) return '\u2014';
+  try{ return new Date(iso).toLocaleString(); }catch(e){ return iso; }
+}
+function fmtRelative(iso){
+  if(!iso) return '\u2014';
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.round(diff / 60000);
+  if(mins < 1) return 'just now';
+  if(mins < 60) return mins + ' min ago';
+  const hrs = Math.round(mins / 60);
+  if(hrs < 24) return hrs + ' hr ago';
+  return Math.round(hrs / 24) + ' d ago';
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function clearSkeletons(){
+  document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
+}
+function debounce(fn, ms){
+  let t;
+  return function(...args){ clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); };
+}
+
+/* ---------- Live data cache ---------- */
+let allDevices = [];
+
+/* ---------- Load: devices (also drives the overview stat cards) ---------- */
+function renderStats(devices){
+  const total = devices.length;
+  const online = devices.filter(d => d.status === 'online').length;
+  const offline = devices.filter(d => d.status === 'offline').length;
+  const attention = devices.filter(d => d.status === 'attention').length;
+
+  document.getElementById('statTotalDevices').textContent = fmtNumber(total);
+  document.getElementById('statOnline').textContent = fmtNumber(online);
+  document.getElementById('statOffline').textContent = fmtNumber(offline);
+  document.getElementById('statNeedsAttention').textContent = fmtNumber(attention);
+  setStatusPill(document.getElementById('devicesStatusPill'), true, 'Live', 'Live');
+}
+
+function statusPillFor(status){
+  if(status === 'online') return '<span class="status-pill ok">Online</span>';
+  if(status === 'attention') return '<span class="status-pill warn">Needs attention</span>';
+  return '<span class="status-pill bad">Offline</span>';
+}
+
+function renderDevicesTable(devices){
+  const tbody = document.getElementById('devicesBody');
+  if(!devices || devices.length === 0){
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state small"><h4>No network devices found</h4><p>The inventory connected but returned no matching devices.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = devices.map(d => `
+    <tr>
+      <td>
+        <div class="tbl-name">${escapeHtml(d.name || '\u2014')}</div>
+        <div style="font-size:10.8px; color:var(--muted); font-family:'IBM Plex Mono',monospace;">${escapeHtml(d.asset_tag || '\u2014')}</div>
+      </td>
+      <td>${escapeHtml(d.device_type || '\u2014')}</td>
+      <td>${escapeHtml(d.location || d.assigned_to || d.ip_address || '\u2014')}</td>
+      <td>${statusPillFor(d.status)}</td>
+      <td>${fmtRelative(d.last_seen_at || d.updated_at)}</td>
+      <td class="tbl-actions">
+        <button type="button" class="icon-mini-btn" title="Lock device" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        </button>
+        <button type="button" class="icon-mini-btn" title="View details" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </td>
+    </tr>`).join('');
+}
+
+function filterAndRenderTable(){
+  const q = document.getElementById('deviceSearch').value.trim().toLowerCase();
+  const type = document.getElementById('deviceTypeFilter').value;
+  const status = document.getElementById('deviceStatusFilter').value;
+
+  let rows = allDevices;
+  if(type) rows = rows.filter(d => d.device_type === type);
+  if(status) rows = rows.filter(d => d.status === status);
+  if(q){
+    rows = rows.filter(d =>
+      (d.name || '').toLowerCase().includes(q) ||
+      (d.asset_tag || '').toLowerCase().includes(q) ||
+      (d.ip_address || '').toLowerCase().includes(q)
+    );
+  }
+  renderDevicesTable(rows);
+}
+
+async function loadDevices(){
+  setConnStatus('checking', 'Connecting to network inventory\u2026');
+  try{
+    if(!window.sb) throw new Error('Supabase client not initialised — check js/supabase-config.js');
+
+    const { data, error } = await window.sb
+      .from(TABLE)
+      .select('*')
+      .is('archived_at', null)
+      .order('updated_at', { ascending: false })
+      .limit(1000);
+    if(error) throw error;
+
+    allDevices = data || [];
+    setConnStatus('online', 'Connected \u00b7 live data');
+    showDevWarning(false);
+    renderStats(allDevices);
+    filterAndRenderTable();
+    clearSkeletons();
+  }catch(err){
+    allDevices = [];
+    setConnStatus('offline', 'Inventory not connected');
+    showDevWarning(true, 'This page could not load the network inventory from Supabase (' + (err.message || err) + '). No figures, network devices or alerts have been loaded \u2014 nothing below is fabricated. Make sure you are signed in with an ICT / Super Admin account and that supabase/migrations/024_addendum_network_management_wiring.sql has been run against your project.');
+    document.getElementById('devicesBody').innerHTML = '<tr><td colspan="6"><div class="empty-state small"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg><h4>Waiting for inventory connection</h4><p>Network device list will appear here once Supabase is reachable and this account has ICT access.</p></div></td></tr>';
+    ['statTotalDevices','statOnline','statOffline','statNeedsAttention'].forEach(id => { document.getElementById(id).textContent = '\u2014'; });
+  }
+}
+
+document.getElementById('deviceSearch').addEventListener('input', debounce(filterAndRenderTable, 200));
+document.getElementById('deviceTypeFilter').addEventListener('change', filterAndRenderTable);
+document.getElementById('deviceStatusFilter').addEventListener('change', filterAndRenderTable);
+document.getElementById('refreshDevicesBtn').addEventListener('click', loadAll);
+
+/* ---------- Load: alerts + network health (both derived from live rows) ---------- */
+function renderHealthCard(devices){
+  const total = devices.length;
+  const online = devices.filter(d => d.status === 'online').length;
+  const attention = devices.filter(d => d.status === 'attention').length;
+  const staleCutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const stale = devices.filter(d => d.status === 'offline' && new Date(d.last_seen_at || d.updated_at).getTime() < staleCutoff).length;
+  const lastUpdate = devices.reduce((max, d) => {
+    const t = new Date(d.updated_at || d.created_at).getTime();
+    return t > max ? t : max;
+  }, 0);
+
+  document.getElementById('complianceUpdated').textContent = total ? fmtPct((online / total) * 100) : '\u2014';
+  document.getElementById('compliancePending').textContent = fmtNumber(attention);
+  document.getElementById('complianceStale').textContent = fmtNumber(stale);
+  document.getElementById('complianceNextSync').textContent = lastUpdate ? fmtDateTime(new Date(lastUpdate).toISOString()) : '\u2014';
+  ['complianceUpdated','compliancePending','complianceStale','complianceNextSync'].forEach(id => document.getElementById(id).classList.remove('skeleton'));
+}
+
+async function loadAlerts(){
+  const list = document.getElementById('alertsList');
+  let explicitAlerts = [];
+  try{
+    const { data, error } = await window.sb
+      .from(ALERTS_TABLE)
+      .select('id, message, severity, created_at')
+      .order('created_at', { ascending: false })
+      .limit(15);
+    if(error) throw error;
+    explicitAlerts = data || [];
+  }catch(err){
+    /* fine — alerts table may be empty or unreachable; derived alerts below still work */
+  }
+
+  const derived = allDevices
+    .filter(d => d.status === 'offline' || d.status === 'attention')
+    .map(d => ({
+      id: 'derived-' + d.id,
+      message: (d.status === 'offline' ? `${d.name} is currently offline` : `${d.name} needs attention`) + (d.location ? ` (${d.location})` : ''),
+      created_at: d.last_seen_at || d.updated_at,
+    }));
+
+  const merged = [...explicitAlerts, ...derived]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 20);
+
+  if(merged.length === 0){
+    list.innerHTML = '<div class="empty-state small"><h4>No alerts</h4><p>Nothing needs your attention right now.</p></div>';
+  }else{
+    list.innerHTML = merged.map(a => `
+      <div class="device-row">
+        <div class="device-row-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div>
+        <div class="device-row-meta">
+          <div class="device-row-name">${escapeHtml(a.message || 'Network alert')}</div>
+          <div class="device-row-sub">${fmtDateTime(a.created_at)}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  renderHealthCard(allDevices);
+}
+
+async function loadAll(){
+  await loadDevices();
+  await loadAlerts();
+}
+
+/* ---------- Toast ---------- */
+function showToast(msg, isError){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  if(isError) t.style.borderLeftColor = 'var(--danger)';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4600);
+}
+
+/* ---------- Register device (shared by inline form + modal) ---------- */
+function clearRegForm(){
+  ['regName','regAssetTag','regAssigned','regSerial','regLocation'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('regType').value = '';
+}
+document.getElementById('regClearBtn').addEventListener('click', clearRegForm);
+
+async function submitNewDevice({ name, assetTag, type, assignedTo, serial, location }, btn){
+  if(!name){
+    showToast('Device name is required.', true);
+    return false;
+  }
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = 'Saving\u2026';
+  try{
+    const { data: userData } = await window.sb.auth.getUser();
+    const ipMatch = (location || '').match(/\b\d{1,3}(\.\d{1,3}){3}\b/);
+
+    const { error } = await window.sb.from(TABLE).insert({
+      name,
+      asset_tag: assetTag || null,
+      device_type: type || null,
+      assigned_to: assignedTo || null,
+      serial_number: serial || null,
+      location: location || null,
+      ip_address: ipMatch ? ipMatch[0] : null,
+      status: 'online',
+      last_seen_at: new Date().toISOString(),
+      created_by: (userData && userData.user) ? userData.user.id : null,
+    });
+    if(error) throw error;
+
+    showToast('Network device registered.');
+    await loadAll();
+    return true;
+  }catch(err){
+    showToast('Registration failed: ' + (err.message || err), true);
+    return false;
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+document.getElementById('regSubmitBtn').addEventListener('click', async function(){
+  const ok = await submitNewDevice({
+    name: document.getElementById('regName').value.trim(),
+    assetTag: document.getElementById('regAssetTag').value.trim(),
+    type: document.getElementById('regType').value,
+    assignedTo: document.getElementById('regAssigned').value.trim(),
+    serial: document.getElementById('regSerial').value.trim(),
+    location: document.getElementById('regLocation').value.trim(),
+  }, this);
+  if(ok) clearRegForm();
+});
+
+/* ---------- Register device (modal, quick add from topbar) ---------- */
+const addModal = document.getElementById('addDeviceModalBackdrop');
+document.getElementById('openAddDeviceBtn').addEventListener('click', function(){
+  addModal.classList.add('open');
+});
+function closeAddModal(){ addModal.classList.remove('open'); }
+document.getElementById('addDeviceModalClose').addEventListener('click', closeAddModal);
+document.getElementById('addDeviceModalCancel').addEventListener('click', closeAddModal);
+addModal.addEventListener('click', function(e){ if(e.target === addModal) closeAddModal(); });
+
+document.getElementById('addDeviceModalSubmit').addEventListener('click', async function(){
+  const ok = await submitNewDevice({
+    name: document.getElementById('modalDeviceName').value.trim(),
+    assetTag: document.getElementById('modalAssetTag').value.trim(),
+    type: document.getElementById('modalDeviceType').value,
+    assignedTo: document.getElementById('modalAssigned').value.trim(),
+  }, this);
+  if(ok){
+    ['modalDeviceName','modalAssetTag','modalAssigned'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('modalDeviceType').value = '';
+    closeAddModal();
+  }
+});
+
+/* ---------- Destructive action: confirmation modal ----------
+   Only "Bulk Decommission" is wired here — it's the one danger-zone action
+   that's a pure database write. Reboot / Factory Reset are disabled in the
+   markup because they'd need a real network agent this setup doesn't have. */
+const modal = document.getElementById('confirmModalBackdrop');
+const modalTitle = document.getElementById('confirmModalTitle');
+const modalBody = document.getElementById('confirmModalBody');
+const modalLabel = document.getElementById('confirmModalLabel');
+const modalInput = document.getElementById('confirmModalInput');
+const modalProceed = document.getElementById('confirmModalProceed');
+const modalTagField = document.getElementById('confirmModalTagField');
+let pendingAction = null;
+
+function openConfirmModal({ title, body, phrase, action }){
+  modalTitle.textContent = title;
+  modalBody.textContent = body;
+  modalLabel.textContent = 'Type ' + phrase + ' to proceed';
+  modalInput.placeholder = phrase;
+  modalInput.value = '';
+  modalTagField.style.display = 'none';
+  modalProceed.disabled = true;
+  pendingAction = { phrase, action };
+  modal.classList.add('open');
+  modalInput.focus();
+}
+function closeConfirmModal(){
+  modal.classList.remove('open');
+  pendingAction = null;
+}
+function checkProceedEnabled(){
+  modalProceed.disabled = !pendingAction || modalInput.value.trim() !== pendingAction.phrase;
+}
+modalInput.addEventListener('input', checkProceedEnabled);
+document.getElementById('confirmModalClose').addEventListener('click', closeConfirmModal);
+document.getElementById('confirmModalCancel').addEventListener('click', closeConfirmModal);
+modal.addEventListener('click', function(e){ if(e.target === modal) closeConfirmModal(); });
+
+modalProceed.addEventListener('click', async function(){
+  if(!pendingAction) return;
+  modalProceed.disabled = true;
+  modalProceed.textContent = 'Working\u2026';
+  try{
+    const count = await pendingAction.action();
+    showToast(typeof count === 'number' ? `Done \u2014 ${count} device(s) affected.` : 'Action completed.');
+    closeConfirmModal();
+    await loadAll();
+  }catch(err){
+    showToast('Action failed: ' + (err.message || err), true);
+  }finally{
+    modalProceed.textContent = 'Proceed';
+  }
+});
+
+async function doBulkDecommission(){
+  const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+  const { data, error } = await window.sb
+    .from(TABLE)
+    .update({ archived_at: new Date().toISOString() })
+    .eq('status', 'offline')
+    .lt('last_seen_at', cutoff)
+    .is('archived_at', null)
+    .select('id');
+  if(error) throw error;
+  return data ? data.length : 0;
+}
+
+document.getElementById('decommissionBtn').addEventListener('click', function(){
+  openConfirmModal({
+    title: 'Bulk decommission offline network gear',
+    body: 'This marks every non-archived network device that has been offline for more than 90 days as decommissioned in the live database and removes them from active inventory counts. Rows are kept for history, not deleted.',
+    phrase: 'DECOMMISSION',
+    action: doBulkDecommission,
+  });
+});
+
+/* ---------- Init ---------- */
+loadAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Class Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+.app{ display:block; min-height:100vh; }
+.main{ min-width:0; }
+
+/* -------- Main -------- */
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.school-brand img{ width:46px; height:46px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:260px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+
+/* Role tabs */
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:9px 15px; border-radius:10px; font-size:12.6px; font-weight:700; color:var(--muted); border:none; background:transparent; white-space:nowrap; }
+.role-tab svg{ width:15px; height:15px; flex:none; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.form-shell{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; }
+.form-head{ padding:22px 26px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; }
+.form-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.form-head h2{ color:#fff; margin:0 0 4px; font-size:20px; }
+.form-head p{ margin:0; color:rgba(255,255,255,.65); font-size:12.6px; max-width:70ch; }
+.form-body{ padding:26px; }
+
+.perm-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+table.perm{ width:100%; border-collapse:collapse; font-size:13px; }
+table.perm thead th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:800; padding:12px 16px; border-bottom:2px solid var(--line); background:#FBF8F0; white-space:nowrap; }
+table.perm tbody td{ padding:11px 16px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.perm tbody tr:last-child td{ border-bottom:none; }
+table.perm tbody tr:hover{ background:#FBF4E6; }
+.perm-mod-ic{ width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; flex:none; }
+.perm-mod-ic svg{ width:14px; height:14px; color:#fff; }
+.perm-mod{ display:flex; align-items:center; gap:11px; }
+.perm-mod-name{ font-weight:700; font-size:13px; }
+.perm-mod-sub{ font-size:11.2px; color:var(--muted); margin-top:1px; }
+
+.level-select{
+  border:1px solid var(--line); border-radius:20px; padding:7px 30px 7px 13px; font-size:12px; font-weight:700;
+  font-family:inherit; background:var(--paper) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%237A7064" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right 9px center / 13px;
+  appearance:none; -webkit-appearance:none; cursor:pointer; min-width:118px; transition:border-color .15s;
+}
+.level-select:focus{ outline:none; border-color:var(--gold-deep); }
+.level-select.lvl-none{ color:var(--muted); border-color:var(--line); }
+.level-select.lvl-view{ color:var(--navy-3); border-color:#B9C6E8; background-color:#EEF1FA; }
+.level-select.lvl-edit{ color:var(--gold-deep); border-color:#EAD2A1; background-color:#FBF1DD; }
+.level-select.lvl-full{ color:var(--success); border-color:#A9D9BC; background-color:#E4F3E9; }
+
+.role-summary{ display:flex; align-items:center; gap:14px; padding:16px 26px; background:#FBF8F0; border-top:1px solid var(--line); flex-wrap:wrap; }
+.role-summary .rs-av{ width:42px; height:42px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:15px; flex:none; }
+.role-summary .rs-name{ font-weight:700; font-size:14.5px; }
+.role-summary .rs-sub{ font-size:11.8px; color:var(--muted); margin-top:1px; }
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.form-foot{ padding:20px 26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:#FBF8F0; }
+.form-foot .fp-note{ font-size:11.8px; color:var(--muted); max-width:56ch; }
+.form-actions{ display:flex; gap:10px; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+@media (max-width:880px){
+  .search-pill{ display:none; }
+  .school-brand .sb-t2{ display:none; }
+  .topbar-divider{ display:none; }
+}
+
+/* ============================= ACADEMIC YEAR SPECIFIC ============================= */
+.stat-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:24px; }
+.stat-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.stat-ic{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.stat-ic svg{ width:16px; height:16px; color:var(--gold-light); }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.gold svg{ color:#fff; }
+.stat-ic.crimson{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.stat-ic.crimson svg{ color:#fff; }
+.stat-num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; line-height:1; }
+.stat-label{ font-size:11.8px; color:var(--muted); margin-top:5px; }
+
+.term-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+table.term{ width:100%; border-collapse:collapse; font-size:13px; }
+table.term thead th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:800; padding:12px 16px; border-bottom:2px solid var(--line); background:#FBF8F0; white-space:nowrap; }
+table.term tbody td{ padding:11px 16px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.term tbody tr:last-child td{ border-bottom:none; }
+table.term tbody tr:hover{ background:#FBF4E6; }
+.term-name{ font-weight:700; font-size:13px; }
+.term-dates{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.icon-btn{ width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:inline-flex; align-items:center; justify-content:center; }
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn svg{ width:13px; height:13px; }
+.row-actions{ display:flex; gap:6px; }
+
+.past-years-wrap{ display:flex; flex-direction:column; gap:12px; }
+.past-year-row{ display:flex; align-items:center; gap:16px; background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px 20px; box-shadow:var(--shadow-sm); flex-wrap:wrap; }
+.py-ic{ width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, #A6A090, #7A7064); display:flex; align-items:center; justify-content:center; flex:none; }
+.py-ic svg{ width:19px; height:19px; color:#fff; }
+.py-main{ flex:1; min-width:180px; }
+.py-year{ font-family:'Fraunces',serif; font-weight:700; font-size:16px; }
+.py-sub{ font-size:11.8px; color:var(--muted); margin-top:2px; }
+.py-meta{ display:flex; gap:20px; flex-wrap:wrap; }
+.py-meta-item{ text-align:center; }
+.py-meta-num{ font-family:'Fraunces',serif; font-weight:700; font-size:16px; }
+.py-meta-lab{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:34px; height:34px; margin-bottom:10px; opacity:.5; }
+.empty-state h4{ margin:0 0 4px; font-size:14.5px; color:var(--ink); }
+.empty-state p{ margin:0; font-size:12.5px; }
+
+.restricted-note{ display:flex; gap:12px; padding:14px 18px; border-radius:14px; background:#FBF8F0; border:1px solid var(--line); margin-top:26px; font-size:12px; color:var(--muted); line-height:1.6; }
+.restricted-note svg{ width:17px; height:17px; color:var(--gold-deep); flex:none; margin-top:1px; }
+.restricted-note b{ color:var(--ink); }
+
+/* Modals */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,6,.55); backdrop-filter:blur(2px); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:rise .25s ease; }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--line); }
+.modal-head h3{ margin:0; font-size:16.5px; }
+.modal-head button{ width:30px; height:30px; border-radius:9px; border:1px solid var(--line); background:transparent; display:flex; align-items:center; justify-content:center; }
+.modal-head button svg{ width:14px; height:14px; }
+.modal-body{ padding:22px 24px; display:flex; flex-direction:column; gap:16px; }
+.modal-foot{ padding:18px 24px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; background:#FBF8F0; }
+.field label{ display:block; font-size:11.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.field input, .field select, .field textarea{ width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 13px; font-size:13.5px; font-family:inherit; color:var(--ink); background:var(--paper); }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); }
+.field textarea{ resize:vertical; }
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.danger-zone{ margin-top:22px; padding:18px 22px; border-radius:14px; background:#FBEEEE; border:1px solid #F3C7CB; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.danger-zone .dz-t{ font-size:13px; font-weight:700; color:var(--crimson-deep); }
+.danger-zone .dz-s{ font-size:11.8px; color:var(--muted); margin-top:2px; max-width:52ch; }
+.btn-danger{ background:linear-gradient(135deg, var(--danger), #8C0F26); color:#fff; }
+.btn-danger:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.5); }
+
+@media (max-width:980px){
+  .stat-grid{ grid-template-columns:1fr 1fr; }
+}
+@media (max-width:640px){
+  .stat-grid{ grid-template-columns:1fr; }
+  .field-row{ grid-template-columns:1fr; }
+}
+
+/* ============================= CLASSES SPECIFIC ============================= */
+.stat-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:24px; }
+.stat-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.stat-ic{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.stat-ic svg{ width:16px; height:16px; color:var(--gold-light); }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.gold svg{ color:#fff; }
+.stat-ic.crimson{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.stat-ic.crimson svg{ color:#fff; }
+.stat-num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; line-height:1; }
+.stat-label{ font-size:11.8px; color:var(--muted); margin-top:5px; }
+
+.class-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(268px, 1fr)); gap:16px; }
+.class-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:var(--shadow-sm); position:relative; overflow:hidden; transition:transform .15s, box-shadow .15s; cursor:pointer; }
+.class-card:hover{ transform:translateY(-2px); box-shadow:0 16px 30px -14px rgba(20,10,10,.3); border-color:var(--gold); }
+.class-card::before{ content:""; position:absolute; right:-30px; top:-30px; width:110px; height:110px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.cc-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:14px; }
+.cc-level{ font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--gold-deep); font-weight:800; }
+.cc-name{ font-family:'Fraunces',serif; font-size:19px; font-weight:700; margin-top:2px; }
+.cc-subject{ font-size:12px; color:var(--muted); margin-top:2px; }
+.cc-menu{ width:28px; height:28px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; flex:none; }
+.cc-menu svg{ width:14px; height:14px; }
+.cc-teacher{ display:flex; align-items:center; gap:9px; padding:10px 0; border-top:1px dashed var(--line); margin-top:6px; }
+.cc-teacher .tav{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12.5px; flex:none; }
+.cc-teacher.unassigned .tav{ background:linear-gradient(135deg, #B8AF9E, #8C8272); }
+.cc-teacher .tn{ font-size:12.8px; font-weight:700; }
+.cc-teacher .tr{ font-size:10.8px; color:var(--muted); }
+.cc-bottom{ display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+.cc-count{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); font-weight:600; }
+.cc-count svg{ width:14px; height:14px; }
+.empty-state{ text-align:center; padding:60px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--line); margin-bottom:12px; }
+.empty-state .es-t{ font-family:'Fraunces',serif; font-size:17px; color:var(--ink); margin-bottom:4px; }
+.empty-state .es-s{ font-size:12.8px; max-width:40ch; margin:0 auto; }
+
+.roster-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+table.roster{ width:100%; border-collapse:collapse; font-size:13px; }
+table.roster thead th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:800; padding:12px 16px; border-bottom:2px solid var(--line); background:#FBF8F0; white-space:nowrap; }
+table.roster tbody td{ padding:10px 16px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.roster tbody tr:last-child td{ border-bottom:none; }
+table.roster tbody tr:hover{ background:#FBF4E6; }
+.stu-name-cell{ display:flex; align-items:center; gap:10px; }
+.stu-av{ width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; color:#fff; flex:none; }
+.stu-av.m{ background:linear-gradient(135deg, #3E6FB0, #22315C); }
+.stu-av.f{ background:linear-gradient(135deg, #C86E9A, #8E2F58); }
+.stu-name{ font-weight:700; font-size:13px; }
+.stu-id{ font-size:11px; color:var(--muted); margin-top:1px; }
+.sex-pill{ display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:10.8px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; }
+.sex-pill.m{ background:#E4E9F4; color:var(--navy-3); }
+.sex-pill.f{ background:#FBE6F1; color:#8E2F58; }
+.grade-input{ width:78px; border:1.5px solid var(--line); border-radius:9px; padding:7px 10px; font-size:13.5px; font-weight:700; font-family:inherit; text-align:center; background:var(--paper); text-transform:uppercase; transition:border-color .15s, box-shadow .15s; }
+.grade-input:focus{ outline:none; border-color:var(--gold-deep); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.grade-input.filled{ border-color:#A9D9BC; background:#F1FAF4; color:var(--success); }
+.grade-saved-tag{ font-size:10.5px; color:var(--success); font-weight:700; display:flex; align-items:center; gap:4px; margin-top:3px; }
+.grade-saved-tag svg{ width:10px; height:10px; }
+.remove-stu-btn{ width:28px; height:28px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:inline-flex; align-items:center; justify-content:center; color:var(--danger); }
+.remove-stu-btn:hover{ border-color:var(--danger); background:#FBE6E6; }
+.remove-stu-btn svg{ width:13px; height:13px; }
+
+.roster-panel-head{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
+.roster-panel-title{ display:flex; align-items:center; gap:12px; }
+.rp-badge{ width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Fraunces',serif; font-weight:700; font-size:16px; flex:none; }
+.rp-t1{ font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--gold-deep); font-weight:700; }
+.rp-t2{ font-family:'Fraunces',serif; font-size:20px; font-weight:700; }
+.rp-t3{ font-size:12px; color:var(--muted); margin-top:1px; }
+
+.add-student-row{ display:flex; gap:10px; margin-bottom:16px; align-items:center; flex-wrap:wrap; }
+.add-student-row select{ flex:1; min-width:220px; border:1px solid var(--line); border-radius:10px; padding:10px 13px; font-size:13.5px; font-family:inherit; background:var(--paper); }
+.add-student-row select:focus{ outline:none; border-color:var(--gold-deep); }
+
+.viewer-bar{ display:flex; align-items:center; gap:12px; background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:22px; box-shadow:var(--shadow-sm); flex-wrap:wrap; }
+.viewer-bar label{ font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+.viewer-bar select{ border:1px solid var(--line); border-radius:10px; padding:8px 30px 8px 12px; font-size:13px; font-weight:700; font-family:inherit; background:var(--paper) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%237A7064" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right 10px center / 13px; appearance:none; -webkit-appearance:none; cursor:pointer; min-width:220px; }
+.viewer-bar select:focus{ outline:none; border-color:var(--gold-deep); }
+
+.tdash-class-card{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow-sm); cursor:pointer; transition:transform .15s, border-color .15s; }
+.tdash-class-card:hover{ transform:translateY(-2px); border-color:var(--gold); }
+.tdash-class-card.selected{ border-color:var(--crimson); box-shadow:0 0 0 3px rgba(200,20,40,.12); }
+.tdash-class-card .tc-name{ font-family:'Fraunces',serif; font-weight:700; font-size:16px; }
+.tdash-class-card .tc-sub{ font-size:11.6px; color:var(--muted); margin-top:2px; }
+.tdash-class-card .tc-meta{ display:flex; align-items:center; gap:6px; margin-top:10px; font-size:11.5px; color:var(--gold-deep); font-weight:700; }
+.tdash-class-card .tc-meta svg{ width:13px; height:13px; }
+
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:9px 15px; border-radius:10px; font-size:12.6px; font-weight:700; color:var(--muted); border:none; background:transparent; white-space:nowrap; }
+.role-tab svg{ width:15px; height:15px; flex:none; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.icon-btn{ width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:inline-flex; align-items:center; justify-content:center; }
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn svg{ width:13px; height:13px; }
+.row-actions{ display:flex; gap:6px; }
+
+.report-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:linear-gradient(90deg, rgba(46,125,79,.07), rgba(217,138,36,.07)); border:1px solid #CDE7D7; margin-top:16px; }
+.report-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.report-note span{ font-size:12px; color:var(--muted); line-height:1.5; }
+.report-note b{ color:var(--success); }
+
+@media (max-width:880px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .class-grid{ grid-template-columns:1fr; }
+}
+</style>
+
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="app">
+  <main class="main">
+
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="school-brand">
+        <img src="../assets/images/img-32d08477299d907c.jpg" alt="Kingsville Public School crest">
+        <div>
+          <div class="sb-t1">Kingsville #7 &middot; Careysburg</div>
+          <div class="sb-t2">Kingsville Public School</div>
+        </div>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Super Admin Console</div>
+        <div class="page-title">Class Management</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search classes, teachers&hellip;">
+      </div>
+      <button type="button" class="btn btn-primary" id="addClassBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        New Class
+      </button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="role-tabs" id="mainRoleTabs">
+        <button type="button" class="role-tab active" data-view="admin">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>
+          Manage Classes
+        </button>
+        <button type="button" class="role-tab" data-view="teacher">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.42A12.02 12.02 0 0121 15.5V19a2 2 0 01-2 2H5a2 2 0 01-2-2v-3.5c0-1.66.5-3.2 1.34-4.5"/></svg>
+          Teacher Dashboard
+        </button>
+      </div>
+
+      <!-- ================= ADMIN: MANAGE CLASSES ================= -->
+      <section class="view active" id="view-admin">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+          <div>
+            <div class="sb-t">Managing School Classes &amp; Teacher Assignments</div>
+            <div class="sb-s">Create classes, assign a teacher to each one, and enroll students. Once a teacher assigns a grade to a student here, it flows straight through to that student's <b class="sa">Report Card</b> automatically.</div>
+          </div>
+        </div>
+
+        <div class="stat-grid" id="statGrid">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg></div>
+            </div>
+            <div class="stat-num" id="statClasses">&mdash;</div>
+            <div class="stat-label">Total Classes</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+            </div>
+            <div class="stat-num" id="statTeachers">&mdash;</div>
+            <div class="stat-label">Teachers Assigned</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic crimson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg></div>
+            </div>
+            <div class="stat-num" id="statStudents">&mdash;</div>
+            <div class="stat-label">Students Enrolled</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            </div>
+            <div class="stat-num" id="statGraded">&mdash;</div>
+            <div class="stat-label">Grades Recorded</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>All Classes</h2>
+            <p>Every class currently set up for the school. Click a class to open its roster and enter grades.</p>
+          </div>
+        </div>
+
+        <div class="class-grid" id="classGrid">
+          <!-- class cards render here -->
+        </div>
+
+        <div class="empty-state" id="classesEmptyState" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>
+          <div class="es-t">No classes yet</div>
+          <div class="es-s">Create your first class and assign a teacher to start building rosters and recording grades.</div>
+        </div>
+
+        <!-- ===== ROSTER PANEL (shown when a class is opened) ===== -->
+        <div id="rosterPanelWrap" style="display:none; margin-top:32px;">
+          <div class="form-shell">
+            <div class="form-head" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+              <div class="roster-panel-title" style="align-items:center;">
+                <div class="rp-badge" id="rpBadge">&mdash;</div>
+                <div>
+                  <div class="rp-t1" style="color:var(--gold-light);" id="rpLevel">&mdash;</div>
+                  <div class="rp-t2" style="color:#fff;" id="rpName">&mdash;</div>
+                  <div class="rp-t3" style="color:rgba(255,255,255,.65);" id="rpMeta">&mdash;</div>
+                </div>
+              </div>
+              <button type="button" class="btn btn-ghost" id="closeRosterBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                Close Roster
+              </button>
+            </div>
+            <div class="form-body">
+
+              <div class="add-student-row">
+                <select id="addStudentSelect">
+                  <option value="">Add a student to this class&hellip;</option>
+                </select>
+                <button type="button" class="btn btn-primary" id="addStudentBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+                  Add to Class
+                </button>
+              </div>
+
+              <div class="roster-table-wrap">
+                <table class="roster">
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      <th>Sex</th>
+                      <th>Grade</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="rosterTableBody">
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="empty-state" id="rosterEmptyState" style="display:none; padding:40px 20px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <div class="es-t">No students enrolled yet</div>
+                <div class="es-s">Use the box above to add students to this class roster.</div>
+              </div>
+
+              <div class="report-note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                <span>Grades entered here are saved directly to each student's record. As soon as you hit <b>Save Grades</b>, they appear on that student's Report Card &mdash; no extra step needed.</span>
+              </div>
+
+            </div>
+            <div class="form-foot">
+              <div class="fp-note" id="rosterSaveHint">Grades save individually as soon as you leave a field, or hit Save Grades to save them all at once.</div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-ghost" id="refreshRosterBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+                  Refresh
+                </button>
+                <button type="button" class="btn btn-primary" id="saveGradesBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+                  Save Grades
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-ribbon">
+          <b>Kingsville Public School</b> &middot; Kingsville #7, Careysburg District &middot; Super Admin Console
+        </div>
+
+      </section>
+
+      <!-- ================= TEACHER DASHBOARD ================= -->
+      <section class="view" id="view-teacher">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.42A12.02 12.02 0 0121 15.5V19a2 2 0 01-2 2H5a2 2 0 01-2-2v-3.5c0-1.66.5-3.2 1.34-4.5"/></svg>
+          <div>
+            <div class="sb-t">This Is What Every Teacher Sees When They Sign In</div>
+            <div class="sb-s">A teacher only ever sees the classes assigned to them, with a roster of the students registered in that class. Entering a grade next to a student's name saves it straight to their <b class="sa">Report Card</b>.</div>
+          </div>
+        </div>
+
+        <div class="viewer-bar">
+          <label for="teacherViewerSelect">Previewing as teacher</label>
+          <select id="teacherViewerSelect"></select>
+          <span class="fp-note" style="margin-left:4px;">(Super Admin preview only &mdash; a real teacher account only ever sees their own classes.)</span>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>My Classes</h2>
+            <p id="teacherClassesSub">Classes assigned to this teacher.</p>
+          </div>
+        </div>
+
+        <div class="class-grid" id="teacherClassGrid"></div>
+
+        <div class="empty-state" id="teacherEmptyState" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+          <div class="es-t">No classes assigned</div>
+          <div class="es-s">This teacher hasn't been assigned to any class yet. Assign them from Manage Classes.</div>
+        </div>
+
+        <div id="teacherRosterWrap" style="display:none; margin-top:28px;">
+          <div class="form-shell">
+            <div class="form-head" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+              <div class="roster-panel-title" style="align-items:center;">
+                <div class="rp-badge" id="trpBadge">&mdash;</div>
+                <div>
+                  <div class="rp-t1" style="color:var(--gold-light);" id="trpLevel">&mdash;</div>
+                  <div class="rp-t2" style="color:#fff;" id="trpName">&mdash;</div>
+                  <div class="rp-t3" style="color:rgba(255,255,255,.65);" id="trpMeta">&mdash;</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-body">
+              <div class="roster-table-wrap">
+                <table class="roster">
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      <th>Sex</th>
+                      <th>Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody id="teacherRosterTableBody"></tbody>
+                </table>
+              </div>
+              <div class="empty-state" id="teacherRosterEmptyState" style="display:none; padding:40px 20px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <div class="es-t">No students in this class yet</div>
+                <div class="es-s">Ask the Super Admin to add students to this class roster.</div>
+              </div>
+              <div class="report-note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                <span>Grades you enter here are saved to each student instantly and will show up on their Report Card.</span>
+              </div>
+            </div>
+            <div class="form-foot">
+              <div class="fp-note">Every grade saves automatically when you leave the field.</div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-primary" id="teacherSaveGradesBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+                  Save Grades
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-ribbon">
+          <b>Kingsville Public School</b> &middot; Kingsville #7, Careysburg District &middot; Teacher Dashboard Preview
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- New / Edit Class modal -->
+    <div class="modal-backdrop" id="classModalBackdrop">
+      <div class="modal">
+        <div class="modal-head">
+          <h3 id="classModalTitle">New Class</h3>
+          <button type="button" id="classModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="clsName">Class name</label>
+            <input type="text" id="clsName" placeholder="e.g. Grade 7A">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="clsLevel">Level / Grade</label>
+              <select id="clsLevel">
+                <option>Kindergarten</option>
+                <option>Grade 1</option>
+                <option>Grade 2</option>
+                <option>Grade 3</option>
+                <option>Grade 4</option>
+                <option>Grade 5</option>
+                <option>Grade 6</option>
+                <option selected>Grade 7</option>
+                <option>Grade 8</option>
+                <option>Grade 9</option>
+                <option>Grade 10</option>
+                <option>Grade 11</option>
+                <option>Grade 12</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="clsSubject">Subject</label>
+              <input type="text" id="clsSubject" placeholder="e.g. Mathematics">
+            </div>
+          </div>
+          <div class="field">
+            <label for="clsTeacher">Assign teacher</label>
+            <select id="clsTeacher">
+              <option value="">Unassigned</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="clsTerm">Term</label>
+            <select id="clsTerm">
+              <option>First Term</option>
+              <option>Second Term</option>
+              <option>Third Term</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="classCancelBtn">Cancel</button>
+          <button type="button" class="btn btn-primary" id="classConfirmBtn">Save Class</button>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="classEditingId" value="">
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATABASE WIRING (Supabase)
+   This screen renders only what the database returns — nothing is seeded
+   or hard-coded. No more fake `/api/...` calls.
+
+   A "class card" here (e.g. "Grade 7A · Mathematics · First Term ·
+   Ms. Doe") is a row in `class_subject_teachers` — the real schema's
+   (section, subject, teacher, academic_year) assignment — scoped to
+   whichever `academic_years` row has is_current = true. `classes` +
+   `sections` back the level/section split, `subjects` backs the subject,
+   `students.section_id` is the roster, and `marks` (component='overall',
+   examination_id null) backs the single grade box shown on the roster.
+
+   Requires supabase/migrations/002_addendum_classes_wiring.sql to have
+   been run (adds class_subject_teachers.term and marks.grade_label).
+   ========================================================================= */
+const sbc = () => window.sb;
+let currentYear = null;   // cached academic_years row where is_current = true
+let currentUserId = null; // for marks.entered_by
+
+async function getCurrentYear(){
+  if(currentYear) return currentYear;
+  const { data, error } = await sbc().from('academic_years').select('*').eq('is_current', true).maybeSingle();
+  if(error){ console.error('Failed to load current academic year', error); return null; }
+  currentYear = data || null;
+  return currentYear;
+}
+
+async function findOrCreateClass(name){
+  const { data: existing, error } = await sbc().from('classes').select('id').ilike('name', name).maybeSingle();
+  if(error) throw error;
+  if(existing) return existing.id;
+  const { data: created, error: cErr } = await sbc().from('classes').insert({ name }).select('id').single();
+  if(cErr) throw cErr;
+  return created.id;
+}
+async function findOrCreateSection(classId, label){
+  const { data: existing, error } = await sbc().from('sections').select('id').eq('class_id', classId).ilike('name', label).maybeSingle();
+  if(error) throw error;
+  if(existing) return existing.id;
+  const { data: created, error: cErr } = await sbc().from('sections').insert({ class_id: classId, name: label }).select('id').single();
+  if(cErr) throw cErr;
+  return created.id;
+}
+async function findOrCreateSubject(name){
+  const { data: existing, error } = await sbc().from('subjects').select('id').ilike('name', name).maybeSingle();
+  if(error) throw error;
+  if(existing) return existing.id;
+  const { data: created, error: cErr } = await sbc().from('subjects').insert({ name }).select('id').single();
+  if(cErr) throw cErr;
+  return created.id;
+}
+
+/** Reads the single "overall" grade box for a set of students in one subject. */
+async function loadOverallGrades(studentIds, subjectId){
+  const out = {};
+  if(!studentIds.length) return out;
+  const { data, error } = await sbc().from('marks')
+    .select('student_id, score, grade_label')
+    .eq('subject_id', subjectId).eq('component', 'overall').is('examination_id', null)
+    .in('student_id', studentIds);
+  if(error) throw error;
+  (data || []).forEach(m => { out[m.student_id] = m.grade_label || (m.score !== null && m.score !== undefined ? String(m.score) : ''); });
+  return out;
+}
+/** Writes the single "overall" grade box for one (student, subject) pair. */
+async function saveMark(studentId, subjectId, gradeText){
+  const trimmed = (gradeText || '').trim();
+  const numeric = trimmed !== '' && !isNaN(Number(trimmed)) ? Number(trimmed) : null;
+  const { data: existing, error: findErr } = await sbc().from('marks').select('id')
+    .eq('student_id', studentId).eq('subject_id', subjectId).eq('component', 'overall').is('examination_id', null)
+    .maybeSingle();
+  if(findErr) throw findErr;
+  if(existing){
+    const { error } = await sbc().from('marks').update({ grade_label: trimmed || null, score: numeric }).eq('id', existing.id);
+    if(error) throw error;
+  } else {
+    const { error } = await sbc().from('marks').insert({
+      student_id: studentId, subject_id: subjectId, examination_id: null, component: 'overall',
+      grade_label: trimmed || null, score: numeric, entered_by: currentUserId
+    });
+    if(error) throw error;
+  }
+}
+
+/* ---------- Shared helpers ---------- */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function initials(name){
+  if(!name) return '?';
+  const parts = String(name).trim().split(/\s+/);
+  return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '?';
+}
+async function readJson(res){
+  if(!res.ok) throw new Error('Request failed with status ' + res.status);
+  return res.json();
+}
+
+/* ---------- State (populated only from the database) ---------- */
+let classes = [];
+let teachers = [];
+let students = []; // { id, name, sex, sectionId }
+let currentRosterClassId = null;
+let currentRoster = [];
+
+let teacherViewId = null;
+let teacherClasses = [];
+let teacherSelectedClassId = null;
+let teacherRoster = [];
+
+/* =========================================================================
+   ROLE TABS (Manage Classes  <->  Teacher Dashboard)
+   ========================================================================= */
+document.querySelectorAll('#mainRoleTabs .role-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#mainRoleTabs .role-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const view = tab.dataset.view;
+    document.getElementById('view-admin').classList.toggle('active', view === 'admin');
+    document.getElementById('view-teacher').classList.toggle('active', view === 'teacher');
+    if(view === 'teacher' && teachers.length && !teacherViewId){
+      document.getElementById('teacherViewerSelect').value = teachers[0].id;
+      teacherViewId = teachers[0].id;
+      loadTeacherClasses();
+    }
+  });
+});
+
+/* =========================================================================
+   LOAD: teachers & students (used across both views)
+   ========================================================================= */
+async function loadTeachers(){
+  try{
+    const { data, error } = await sbc().from('profiles').select('id, full_name').eq('role', 'teacher').order('full_name');
+    if(error) throw error;
+    teachers = (data || []).map(t => ({ id: t.id, name: t.full_name }));
+  }catch(err){
+    console.error('Failed to load teachers', err);
+    showToast('Could not reach the database to load teachers.');
+    teachers = [];
+  }
+  const clsSelect = document.getElementById('clsTeacher');
+  clsSelect.innerHTML = '<option value="">Unassigned</option>' +
+    teachers.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+
+  const viewerSelect = document.getElementById('teacherViewerSelect');
+  viewerSelect.innerHTML = teachers.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+  if(teachers.length){
+    teacherViewId = teachers[0].id;
+    viewerSelect.value = teacherViewId;
+  }
+}
+document.getElementById('teacherViewerSelect').addEventListener('change', (e) => {
+  teacherViewId = e.target.value;
+  teacherSelectedClassId = null;
+  document.getElementById('teacherRosterWrap').style.display = 'none';
+  loadTeacherClasses();
+});
+
+async function loadStudents(){
+  try{
+    const { data, error } = await sbc().from('students').select('id, full_name, gender, section_id').eq('status', 'active').order('full_name');
+    if(error) throw error;
+    students = (data || []).map(s => ({ id: s.id, name: s.full_name, sex: s.gender, sectionId: s.section_id }));
+  }catch(err){
+    console.error('Failed to load students', err);
+    showToast('Could not reach the database to load students.');
+    students = [];
+  }
+}
+
+/* =========================================================================
+   ADMIN: LOAD & RENDER CLASSES
+   ========================================================================= */
+async function loadClasses(){
+  try{
+    const cy = await getCurrentYear();
+    if(!cy){
+      classes = [];
+      showToast('Set a current Academic Year first (Super Admin → Academic Year) before adding classes.');
+      renderClasses(); refreshStats();
+      return;
+    }
+    const { data, error } = await sbc().from('class_subject_teachers')
+      .select('id, term, section_id, subject_id, teacher_id, sections(id,name,classes(id,name)), subjects(id,name), profiles(id,full_name)')
+      .eq('academic_year_id', cy.id);
+    if(error) throw error;
+    const rows = data || [];
+
+    const studentsBySection = {};
+    students.forEach(s => { if(s.sectionId){ (studentsBySection[s.sectionId] = studentsBySection[s.sectionId] || []).push(s); } });
+
+    const subjectIds = [...new Set(rows.map(r => r.subject_id).filter(Boolean))];
+    let gradedMap = {};
+    if(subjectIds.length){
+      const { data: markRows, error: mErr } = await sbc().from('marks')
+        .select('student_id, subject_id, score, grade_label')
+        .in('subject_id', subjectIds).eq('component', 'overall').is('examination_id', null);
+      if(mErr) throw mErr;
+      const studentSection = {};
+      students.forEach(s => { studentSection[s.id] = s.sectionId; });
+      (markRows || []).forEach(m => {
+        if(m.score === null && !m.grade_label) return;
+        const secId = studentSection[m.student_id];
+        if(!secId) return;
+        const key = secId + '|' + m.subject_id;
+        gradedMap[key] = (gradedMap[key] || 0) + 1;
+      });
+    }
+
+    classes = rows.map(r => {
+      const key = r.section_id + '|' + r.subject_id;
+      return {
+        id: r.id,
+        name: (r.sections && r.sections.classes ? r.sections.classes.name : '') + (r.sections ? r.sections.name : ''),
+        level: r.sections && r.sections.classes ? r.sections.classes.name : '',
+        subject: r.subjects ? r.subjects.name : '',
+        term: r.term || '',
+        teacherId: r.teacher_id || '',
+        teacherName: r.profiles ? r.profiles.full_name : '',
+        sectionId: r.section_id,
+        subjectId: r.subject_id,
+        studentCount: (studentsBySection[r.section_id] || []).length,
+        gradedCount: gradedMap[key] || 0
+      };
+    });
+  }catch(err){
+    console.error('Failed to load classes', err);
+    showToast('Could not reach the database to load classes.');
+    classes = [];
+  }
+  renderClasses();
+  refreshStats();
+}
+
+function renderClasses(){
+  const grid = document.getElementById('classGrid');
+  const empty = document.getElementById('classesEmptyState');
+  const q = (document.getElementById('globalSearch').value || '').toLowerCase();
+  const filtered = classes.filter(c =>
+    !q || (c.name||'').toLowerCase().includes(q) || (c.teacherName||'').toLowerCase().includes(q) || (c.subject||'').toLowerCase().includes(q)
+  );
+
+  if(!filtered.length){
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = filtered.map(c => `
+    <div class="class-card" data-id="${c.id}">
+      <div class="cc-top">
+        <div>
+          <div class="cc-level">${escapeHtml(c.level || 'Class')}</div>
+          <div class="cc-name">${escapeHtml(c.name)}</div>
+          <div class="cc-subject">${escapeHtml(c.subject || 'General')} &middot; ${escapeHtml(c.term || '')}</div>
+        </div>
+        <div class="row-actions">
+          <button type="button" class="cc-menu edit-class-btn" data-id="${c.id}" title="Edit class">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+          <button type="button" class="cc-menu delete-class-btn" data-id="${c.id}" title="Delete class" style="color:var(--danger);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="cc-teacher ${c.teacherId ? '' : 'unassigned'}">
+        <div class="tav">${c.teacherId ? initials(c.teacherName) : '&mdash;'}</div>
+        <div>
+          <div class="tn">${c.teacherId ? escapeHtml(c.teacherName) : 'No teacher assigned'}</div>
+          <div class="tr">${c.teacherId ? 'Class Teacher' : 'Assign one to enable grading'}</div>
+        </div>
+      </div>
+      <div class="cc-bottom">
+        <div class="cc-count">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          ${c.studentCount || 0} student${(c.studentCount||0) === 1 ? '' : 's'}
+        </div>
+        <div class="cc-count">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          ${c.gradedCount || 0} graded
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.class-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if(e.target.closest('.edit-class-btn') || e.target.closest('.delete-class-btn')) return;
+      openRoster(card.dataset.id);
+    });
+  });
+  grid.querySelectorAll('.edit-class-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const cls = classes.find(c => String(c.id) === String(btn.dataset.id));
+      if(cls) openClassModal(cls);
+    });
+  });
+  grid.querySelectorAll('.delete-class-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const cls = classes.find(c => String(c.id) === String(btn.dataset.id));
+      if(cls) deleteClass(cls);
+    });
+  });
+}
+
+function refreshStats(){
+  document.getElementById('statClasses').textContent = classes.length;
+  document.getElementById('statTeachers').textContent = new Set(classes.filter(c => c.teacherId).map(c => c.teacherId)).size;
+  document.getElementById('statStudents').textContent = classes.reduce((sum, c) => sum + (c.studentCount || 0), 0);
+  document.getElementById('statGraded').textContent = classes.reduce((sum, c) => sum + (c.gradedCount || 0), 0);
+}
+
+/* ---------- Global search ---------- */
+document.getElementById('globalSearch').addEventListener('input', () => renderClasses());
+
+/* =========================================================================
+   ADD / EDIT CLASS MODAL
+   ========================================================================= */
+const classModalBackdrop = document.getElementById('classModalBackdrop');
+function openClassModal(existing){
+  document.getElementById('classModalTitle').textContent = existing ? 'Edit Class' : 'New Class';
+  document.getElementById('classConfirmBtn').textContent = existing ? 'Save Changes' : 'Save Class';
+  document.getElementById('classEditingId').value = existing ? existing.id : '';
+  document.getElementById('clsName').value = existing ? existing.name : '';
+  document.getElementById('clsLevel').value = existing ? (existing.level || 'Grade 7') : 'Grade 7';
+  document.getElementById('clsSubject').value = existing ? (existing.subject || '') : '';
+  document.getElementById('clsTeacher').value = existing ? (existing.teacherId || '') : '';
+  document.getElementById('clsTerm').value = existing ? (existing.term || 'First Term') : 'First Term';
+  classModalBackdrop.classList.add('open');
+}
+document.getElementById('addClassBtn').addEventListener('click', () => openClassModal(null));
+document.getElementById('classModalClose').addEventListener('click', () => classModalBackdrop.classList.remove('open'));
+document.getElementById('classCancelBtn').addEventListener('click', () => classModalBackdrop.classList.remove('open'));
+classModalBackdrop.addEventListener('click', (e) => { if(e.target === classModalBackdrop) classModalBackdrop.classList.remove('open'); });
+
+document.getElementById('classConfirmBtn').addEventListener('click', async () => {
+  const name = document.getElementById('clsName').value.trim();
+  const level = document.getElementById('clsLevel').value;
+  const subject = document.getElementById('clsSubject').value.trim();
+  const teacherId = document.getElementById('clsTeacher').value || null;
+  const term = document.getElementById('clsTerm').value;
+  const editingId = document.getElementById('classEditingId').value;
+  if(!name){ showToast('Give the class a name first, e.g. Grade 7A.'); return; }
+  if(!subject){ showToast('Give the class a subject, e.g. Mathematics.'); return; }
+
+  try{
+    const cy = await getCurrentYear();
+    if(!cy){ showToast('Set a current Academic Year first (Super Admin → Academic Year).'); return; }
+
+    // "Grade 7A" split into class "Grade 7" (from the Level dropdown) and
+    // section label "A" (whatever's left of the typed name after that).
+    let sectionLabel = name;
+    if(name.toLowerCase().startsWith(level.toLowerCase())){
+      sectionLabel = name.slice(level.length).trim();
+    }
+    if(!sectionLabel) sectionLabel = 'A';
+
+    const classId = await findOrCreateClass(level);
+    const sectionId = await findOrCreateSection(classId, sectionLabel);
+    const subjectId = await findOrCreateSubject(subject);
+    const patch = { section_id: sectionId, subject_id: subjectId, teacher_id: teacherId, term, academic_year_id: cy.id };
+
+    if(editingId){
+      const { error } = await sbc().from('class_subject_teachers').update(patch).eq('id', editingId);
+      if(error) throw error;
+      showToast(name + ' updated.');
+    } else {
+      const { error } = await sbc().from('class_subject_teachers').upsert(patch, { onConflict: 'section_id,subject_id,academic_year_id' });
+      if(error) throw error;
+      showToast(name + ' created and ready for enrollment.');
+    }
+    classModalBackdrop.classList.remove('open');
+    await loadClasses();
+  }catch(err){
+    console.error('Failed to save class', err);
+    showToast('Could not save that class — the database did not confirm it.');
+  }
+});
+
+async function deleteClass(cls){
+  if(!confirm(`Delete "${cls.name}"? This removes the class-subject-teacher assignment (students and their records are kept).`)) return;
+  try{
+    const { error } = await sbc().from('class_subject_teachers').delete().eq('id', cls.id);
+    if(error) throw error;
+    showToast(cls.name + ' deleted.');
+    if(String(currentRosterClassId) === String(cls.id)){
+      document.getElementById('rosterPanelWrap').style.display = 'none';
+      currentRosterClassId = null;
+    }
+    await loadClasses();
+  }catch(err){
+    console.error('Failed to delete class', err);
+    showToast('Could not delete that class — the database did not confirm it.');
+  }
+}
+
+/* =========================================================================
+   ADMIN: ROSTER + GRADES PANEL
+   ========================================================================= */
+async function openRoster(classId){
+  currentRosterClassId = classId;
+  const cls = classes.find(c => String(c.id) === String(classId));
+  if(!cls) return;
+
+  document.getElementById('rosterPanelWrap').style.display = 'block';
+  document.getElementById('rpBadge').textContent = initials(cls.name);
+  document.getElementById('rpLevel').textContent = cls.level || 'Class';
+  document.getElementById('rpName').textContent = cls.name;
+  document.getElementById('rpMeta').textContent = `${cls.subject || 'General'} · ${cls.term || ''} · Teacher: ${cls.teacherName || 'Unassigned'}`;
+
+  document.getElementById('rosterPanelWrap').scrollIntoView({ behavior:'smooth', block:'start' });
+  await loadRoster();
+  populateAddStudentSelect();
+}
+
+async function loadRoster(){
+  if(!currentRosterClassId) return;
+  const cls = classes.find(c => String(c.id) === String(currentRosterClassId));
+  if(!cls) return;
+  try{
+    const { data: secStudents, error } = await sbc().from('students')
+      .select('id, full_name, gender').eq('section_id', cls.sectionId).eq('status', 'active').order('full_name');
+    if(error) throw error;
+    const ids = (secStudents || []).map(s => s.id);
+    const grades = await loadOverallGrades(ids, cls.subjectId);
+    currentRoster = (secStudents || []).map(s => ({ studentId: s.id, name: s.full_name, sex: s.gender, grade: grades[s.id] || '' }));
+  }catch(err){
+    console.error('Failed to load roster', err);
+    showToast('Could not load the roster for this class.');
+    currentRoster = [];
+  }
+  renderRoster();
+  populateAddStudentSelect();
+}
+
+function renderRoster(){
+  const tbody = document.getElementById('rosterTableBody');
+  const empty = document.getElementById('rosterEmptyState');
+  if(!currentRoster.length){
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = currentRoster.map(s => {
+    const sexClass = (s.sex || '').toUpperCase().startsWith('F') ? 'f' : 'm';
+    const sexLabel = (s.sex || '').toUpperCase().startsWith('F') ? 'Female' : 'Male';
+    return `
+    <tr data-student-id="${s.studentId}">
+      <td>
+        <div class="stu-name-cell">
+          <div class="stu-av ${sexClass}">${initials(s.name)}</div>
+          <div>
+            <div class="stu-name">${escapeHtml(s.name)}</div>
+            <div class="stu-id">ID ${escapeHtml(String(s.studentId))}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="sex-pill ${sexClass}">${sexLabel}</span></td>
+      <td>
+        <input type="text" class="grade-input roster-grade-input ${s.grade ? 'filled' : ''}" maxlength="3"
+               value="${escapeHtml(s.grade || '')}" placeholder="&mdash;" data-student-id="${s.studentId}">
+      </td>
+      <td>
+        <button type="button" class="remove-stu-btn remove-roster-btn" data-student-id="${s.studentId}" title="Remove from class">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.roster-grade-input').forEach(inp => {
+    inp.addEventListener('change', () => {
+      inp.classList.toggle('filled', !!inp.value.trim());
+      saveOneGrade(inp.dataset.studentId, inp.value.trim());
+    });
+  });
+  tbody.querySelectorAll('.remove-roster-btn').forEach(btn => {
+    btn.addEventListener('click', () => removeFromRoster(btn.dataset.studentId));
+  });
+}
+
+function populateAddStudentSelect(){
+  const sel = document.getElementById('addStudentSelect');
+  const enrolledIds = new Set(currentRoster.map(s => String(s.studentId)));
+  const available = students.filter(s => !enrolledIds.has(String(s.id)));
+  sel.innerHTML = '<option value="">Add a student to this class&hellip;</option>' +
+    available.map(s => `<option value="${s.id}">${escapeHtml(s.name)} (${(s.sex||'').toUpperCase().startsWith('F') ? 'F' : 'M'})</option>`).join('');
+}
+
+document.getElementById('addStudentBtn').addEventListener('click', async () => {
+  const sel = document.getElementById('addStudentSelect');
+  const studentId = sel.value;
+  if(!studentId){ showToast('Choose a student to add first.'); return; }
+  if(!currentRosterClassId) return;
+  const cls = classes.find(c => String(c.id) === String(currentRosterClassId));
+  if(!cls) return;
+  try{
+    const { error } = await sbc().from('students').update({ section_id: cls.sectionId }).eq('id', studentId);
+    if(error) throw error;
+    const cy = await getCurrentYear();
+    if(cy){
+      await sbc().from('enrollments').upsert(
+        { student_id: studentId, section_id: cls.sectionId, academic_year_id: cy.id },
+        { onConflict: 'student_id,academic_year_id' }
+      );
+    }
+    showToast('Student added to the class.');
+    await loadStudents();
+    await loadRoster();
+    await loadClasses();
+  }catch(err){
+    console.error('Failed to add student', err);
+    showToast('Could not add that student — the database did not confirm it.');
+  }
+});
+
+async function removeFromRoster(studentId){
+  if(!currentRosterClassId) return;
+  try{
+    const { error } = await sbc().from('students').update({ section_id: null }).eq('id', studentId);
+    if(error) throw error;
+    showToast('Student removed from the class.');
+    await loadStudents();
+    await loadRoster();
+    await loadClasses();
+  }catch(err){
+    console.error('Failed to remove student', err);
+    showToast('Could not remove that student — the database did not confirm it.');
+  }
+}
+
+async function saveOneGrade(studentId, grade){
+  if(!currentRosterClassId) return;
+  const cls = classes.find(c => String(c.id) === String(currentRosterClassId));
+  if(!cls) return;
+  try{
+    await saveMark(studentId, cls.subjectId, grade);
+    showToast('Grade saved — now showing on the report card.');
+    await loadClasses();
+  }catch(err){
+    console.error('Failed to save grade', err);
+    showToast('Could not save that grade — the database did not confirm it.');
+  }
+}
+
+document.getElementById('saveGradesBtn').addEventListener('click', async () => {
+  if(!currentRosterClassId) return;
+  const cls = classes.find(c => String(c.id) === String(currentRosterClassId));
+  if(!cls) return;
+  const rows = Array.from(document.querySelectorAll('#rosterTableBody .roster-grade-input')).map(inp => ({
+    studentId: inp.dataset.studentId, grade: inp.value.trim()
+  }));
+  try{
+    for(const r of rows){ await saveMark(r.studentId, cls.subjectId, r.grade); }
+    showToast('All grades saved and posted to report cards.');
+    await loadClasses();
+  }catch(err){
+    console.error('Failed to save grades', err);
+    showToast('Could not save grades — the database did not confirm it.');
+  }
+});
+
+document.getElementById('refreshRosterBtn').addEventListener('click', () => loadRoster());
+document.getElementById('closeRosterBtn').addEventListener('click', () => {
+  document.getElementById('rosterPanelWrap').style.display = 'none';
+  currentRosterClassId = null;
+});
+
+/* =========================================================================
+   TEACHER DASHBOARD
+   ========================================================================= */
+async function loadTeacherClasses(){
+  const grid = document.getElementById('teacherClassGrid');
+  const empty = document.getElementById('teacherEmptyState');
+  document.getElementById('teacherRosterWrap').style.display = 'none';
+  teacherSelectedClassId = null;
+  if(!teacherViewId){ grid.innerHTML = ''; empty.style.display = 'block'; return; }
+
+  const teacherName = teachers.find(t => String(t.id) === String(teacherViewId))?.name || 'this teacher';
+  document.getElementById('teacherClassesSub').textContent = `Classes assigned to ${teacherName}.`;
+
+  try{
+    if(!classes.length) await loadClasses();
+    teacherClasses = classes.filter(c => String(c.teacherId) === String(teacherViewId));
+  }catch(err){
+    console.error('Failed to load teacher classes', err);
+    teacherClasses = [];
+  }
+  renderTeacherClasses();
+}
+
+function renderTeacherClasses(){
+  const grid = document.getElementById('teacherClassGrid');
+  const empty = document.getElementById('teacherEmptyState');
+  if(!teacherClasses.length){
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  grid.innerHTML = teacherClasses.map(c => `
+    <div class="tdash-class-card ${String(c.id) === String(teacherSelectedClassId) ? 'selected' : ''}" data-id="${c.id}">
+      <div class="tc-name">${escapeHtml(c.name)}</div>
+      <div class="tc-sub">${escapeHtml(c.subject || 'General')} &middot; ${escapeHtml(c.level || '')} &middot; ${escapeHtml(c.term || '')}</div>
+      <div class="tc-meta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        ${c.studentCount || 0} student${(c.studentCount||0) === 1 ? '' : 's'} &middot; open roster
+      </div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.tdash-class-card').forEach(card => {
+    card.addEventListener('click', () => openTeacherRoster(card.dataset.id));
+  });
+}
+
+async function openTeacherRoster(classId){
+  teacherSelectedClassId = classId;
+  renderTeacherClasses();
+  const cls = teacherClasses.find(c => String(c.id) === String(classId));
+  if(!cls) return;
+
+  document.getElementById('teacherRosterWrap').style.display = 'block';
+  document.getElementById('trpBadge').textContent = initials(cls.name);
+  document.getElementById('trpLevel').textContent = cls.level || 'Class';
+  document.getElementById('trpName').textContent = cls.name;
+  document.getElementById('trpMeta').textContent = `${cls.subject || 'General'} · ${cls.term || ''}`;
+  document.getElementById('teacherRosterWrap').scrollIntoView({ behavior:'smooth', block:'start' });
+
+  await loadTeacherRoster();
+}
+
+async function loadTeacherRoster(){
+  if(!teacherSelectedClassId) return;
+  const cls = teacherClasses.find(c => String(c.id) === String(teacherSelectedClassId));
+  if(!cls) return;
+  try{
+    const { data: secStudents, error } = await sbc().from('students')
+      .select('id, full_name, gender').eq('section_id', cls.sectionId).eq('status', 'active').order('full_name');
+    if(error) throw error;
+    const ids = (secStudents || []).map(s => s.id);
+    const grades = await loadOverallGrades(ids, cls.subjectId);
+    teacherRoster = (secStudents || []).map(s => ({ studentId: s.id, name: s.full_name, sex: s.gender, grade: grades[s.id] || '' }));
+  }catch(err){
+    console.error('Failed to load teacher roster', err);
+    teacherRoster = [];
+  }
+  renderTeacherRoster();
+}
+
+function renderTeacherRoster(){
+  const tbody = document.getElementById('teacherRosterTableBody');
+  const empty = document.getElementById('teacherRosterEmptyState');
+  if(!teacherRoster.length){
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = teacherRoster.map(s => {
+    const sexClass = (s.sex || '').toUpperCase().startsWith('F') ? 'f' : 'm';
+    const sexLabel = (s.sex || '').toUpperCase().startsWith('F') ? 'Female' : 'Male';
+    return `
+    <tr data-student-id="${s.studentId}">
+      <td>
+        <div class="stu-name-cell">
+          <div class="stu-av ${sexClass}">${initials(s.name)}</div>
+          <div class="stu-name">${escapeHtml(s.name)}</div>
+        </div>
+      </td>
+      <td><span class="sex-pill ${sexClass}">${sexLabel}</span></td>
+      <td>
+        <input type="text" class="grade-input teacher-grade-input ${s.grade ? 'filled' : ''}" maxlength="3"
+               value="${escapeHtml(s.grade || '')}" placeholder="&mdash;" data-student-id="${s.studentId}">
+      </td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.teacher-grade-input').forEach(inp => {
+    inp.addEventListener('change', async () => {
+      inp.classList.toggle('filled', !!inp.value.trim());
+      const cls = teacherClasses.find(c => String(c.id) === String(teacherSelectedClassId));
+      if(!cls) return;
+      try{
+        await saveMark(inp.dataset.studentId, cls.subjectId, inp.value.trim());
+        const studentName = (teacherRoster.find(s => String(s.studentId) === inp.dataset.studentId) || {}).name || 'student';
+        showToast('Grade saved to ' + '\u201C' + studentName + '\u201D' + '\u2019s report card.');
+      }catch(err){
+        console.error('Failed to save grade', err);
+        showToast('Could not save that grade — the database did not confirm it.');
+      }
+    });
+  });
+}
+
+document.getElementById('teacherSaveGradesBtn').addEventListener('click', async () => {
+  if(!teacherSelectedClassId) return;
+  const cls = teacherClasses.find(c => String(c.id) === String(teacherSelectedClassId));
+  if(!cls) return;
+  const rows = Array.from(document.querySelectorAll('#teacherRosterTableBody .teacher-grade-input')).map(inp => ({
+    studentId: inp.dataset.studentId, grade: inp.value.trim()
+  }));
+  try{
+    for(const r of rows){ await saveMark(r.studentId, cls.subjectId, r.grade); }
+    showToast('All grades saved and posted to report cards.');
+  }catch(err){
+    console.error('Failed to save grades', err);
+    showToast('Could not save grades — the database did not confirm it.');
+  }
+});
+
+/* ---------- Initial load: everything comes from the database ---------- */
+(async function init(){
+  const { user, profile } = await KPS.requireRole(['super_admin']);
+  if(!user) return;
+  currentUserId = user.id;
+  await Promise.all([loadTeachers(), loadStudents()]);
+  await loadClasses();
+})();
+</script>
+
+</body>
+</html>

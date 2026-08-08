@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Verify Your Identity</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html,body{height:100%;}
+  body{background:var(--panel);min-height:100dvh;display:flex;flex-direction:column;color:var(--ink);}
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(6px,1.5vh,9px) 22px;
+    border-bottom:2px solid var(--gold);
+  }
+  header.topbar .left{display:flex;align-items:center;gap:10px;}
+  header.topbar .left b{font-weight:800;font-size:clamp(11px,3.2vw,13.5px);letter-spacing:.6px;white-space:nowrap;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+
+  main{flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(10px,3vh,30px) 16px;overflow-y:auto;}
+  .card{
+    width:100%;max-width:400px;max-height:calc(100dvh - 24px);overflow-y:auto;
+    background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);border-radius:12px 12px 0 0;}
+  .card .body{padding:clamp(18px,4vh,38px) clamp(20px,6vw,36px) clamp(16px,3vh,30px);text-align:center;}
+
+  .seal-stage{position:relative;width:clamp(78px,16vh,110px);height:clamp(78px,16vh,110px);margin:0 auto clamp(8px,2vh,14px);display:flex;align-items:center;justify-content:center;}
+  .seal-glow{
+    position:absolute;inset:-16px;border-radius:50%;
+    background:radial-gradient(circle, rgba(242,167,27,.4) 0%, rgba(200,16,46,.16) 45%, transparent 72%);
+    filter:blur(6px);
+    animation:sealPulseGlow 3.4s ease-in-out infinite;
+  }
+  .seal-ring{
+    position:absolute;inset:-7px;border-radius:50%;
+    background:conic-gradient(from 0deg, var(--gold), #fff3d6, var(--crimson), var(--gold), var(--crimson), #fff3d6, var(--gold));
+    -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+    mask:radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+    animation:sealRotateRing 7s linear infinite;
+  }
+  .card img.seal{
+    position:relative;z-index:2;height:clamp(58px,13vh,88px);width:clamp(58px,13vh,88px);object-fit:contain;border-radius:50%;
+    background:#fff;padding:4px;
+    box-shadow:0 10px 22px rgba(11,23,48,.26), 0 0 0 4px #fff;
+    animation:sealEntrance .9s cubic-bezier(.2,.8,.2,1);
+  }
+  .seal-shine{position:absolute;z-index:3;inset:4px;border-radius:50%;overflow:hidden;pointer-events:none;}
+  .seal-shine::after{
+    content:"";position:absolute;top:-60%;left:-60%;width:40%;height:220%;
+    background:linear-gradient(75deg, transparent 40%, rgba(255,255,255,.85) 50%, transparent 60%);
+    animation:sealShineSweep 3.6s ease-in-out infinite;animation-delay:1s;
+  }
+  @keyframes sealPulseGlow{0%,100%{opacity:.55;transform:scale(1);}50%{opacity:1;transform:scale(1.1);}}
+  @keyframes sealRotateRing{to{transform:rotate(360deg);}}
+  @keyframes sealEntrance{from{opacity:0;transform:scale(.6) rotate(-10deg);}to{opacity:1;transform:scale(1) rotate(0);}}
+  @keyframes sealShineSweep{0%{left:-60%;}30%{left:130%;}100%{left:130%;}}
+
+  .card h1{
+    font-size:clamp(14px,3.6vh,16.5px);color:var(--navy);font-weight:700;line-height:1.4;margin-bottom:6px;letter-spacing:.2px;
+  }
+  .card h1 .school-line{color:var(--crimson);font-size:clamp(13px,3.2vh,15px);}
+  .card .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:clamp(8px,2vh,14px) auto clamp(10px,2.4vh,18px);border-radius:2px;}
+  .card p.sub{color:var(--muted);font-size:12.5px;margin-bottom:20px;line-height:1.5;}
+  .card p.sub b{color:var(--ink);}
+
+  .otp-field{margin-bottom:16px;}
+  .otp-field input{
+    width:100%;text-align:center;padding:clamp(10px,2vh,13px) 10px;
+    border:1.5px solid var(--line);border-radius:6px;
+    font-size:24px;letter-spacing:10px;font-weight:700;color:var(--navy);
+    background:#fdfcf9;
+  }
+  .otp-field input:focus{outline:none;border-color:var(--crimson);background:#fff;}
+  .otp-field input::placeholder{letter-spacing:10px;font-weight:400;color:#c7cad0;}
+
+  button#verifyBtn{
+    width:100%;padding:clamp(10px,1.8vh,12px);border:none;border-radius:4px;
+    background:var(--crimson);color:#fff;font-weight:700;font-size:14.5px;cursor:pointer;
+    transition:background .15s;
+  }
+  button#verifyBtn:hover{background:var(--crimson-dark);}
+  button#verifyBtn:disabled{opacity:.6;cursor:not-allowed;}
+
+  a.back-link{
+    display:block;margin-top:clamp(12px,2.4vh,18px);font-size:13px;color:var(--navy);text-decoration:none;font-weight:600;
+  }
+  a.back-link:hover{text-decoration:underline;}
+
+  .msg{margin-top:14px;font-size:12.5px;padding:9px 11px;border-radius:4px;display:none;text-align:left;}
+  .msg.err{display:block;background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .msg.ok{display:block;background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+
+  .help-note{margin-top:18px;font-size:11px;color:var(--muted);line-height:1.6;border-top:1px solid var(--line);padding-top:14px;}
+
+  footer.site-footer{
+    background:var(--navy-deep);color:#c9d2e8;font-size:11px;text-align:center;padding:12px 10px;
+    border-top:2px solid var(--gold);
+  }
+  footer.site-footer .footer-line-1{font-weight:600;letter-spacing:.2px;}
+  footer.site-footer .footer-line-2{margin-top:3px;font-size:10.5px;color:var(--gold);letter-spacing:.3px;}
+</style>
+<link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 0;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/supabase-api.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/kps-core.js"></script>
+<script src="js/module-registry.js"></script>
+<script src="js/permissions.js"></script>
+<script src="js/relationships.js"></script>
+<script src="js/workflow.js"></script>
+<script src="js/forms.js"></script>
+<script src="js/app.js"></script>
+<script src="js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+  <div class="left"><b>KINGSVILLE PUBLIC HIGH SCHOOL</b></div>
+  <img class="moe-mini" src="assets/images/img-c4fe6fce0514ab8d.png" alt="Ministry of Education seal">
+</header>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+      <div class="seal-stage">
+        <div class="seal-glow"></div>
+        <div class="seal-ring"></div>
+        <img class="seal" src="assets/images/img-382a5ec339393563.png" alt="School seal">
+        <div class="seal-shine"></div>
+      </div>
+
+      <h1>Two-Factor Verification<br><span class="school-line">Kingsville Public High School</span></h1>
+      <div class="subtitle-rule"></div>
+      <p class="sub" id="introText">Enter the 6-digit code from your authenticator app to finish signing in.</p>
+
+      <div class="otp-field">
+        <input id="otpCode" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="······" autocomplete="one-time-code">
+      </div>
+
+      <button id="verifyBtn">Verify &amp; Continue</button>
+
+      <div class="msg" id="msgBox"></div>
+
+      <a class="back-link" href="login.html" id="backLink">Cancel and return to Login</a>
+
+      <div class="help-note">
+        Lost access to your authenticator app? Contact the Super Administrator or ICT
+        to have two-factor authentication reset on your account.
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-line-1">© <span id="year"></span> Kingsville Public High School</div>
+  <div class="footer-line-2">Developed by Mr. Fomba S. Varfee</div>
+</footer>
+
+<script>
+  const sb = KPS.sb;
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const otpInput   = document.getElementById("otpCode");
+  const verifyBtn  = document.getElementById("verifyBtn");
+  const msgBox     = document.getElementById("msgBox");
+  const introText  = document.getElementById("introText");
+
+  let factorId = null;
+
+  function showMsg(text, type) {
+    msgBox.textContent = text;
+    msgBox.className = "msg " + type;
+  }
+
+  // ------------------------------------------------------------------
+  // This page only ever runs right after a real password sign-in
+  // (see login.html). If there's no live Supabase session, there is
+  // nothing to verify — send the person back to Login instead of
+  // showing a form that can't possibly succeed.
+  // ------------------------------------------------------------------
+  (async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    // Real Supabase MFA — no simulated / fake codes. This reads the
+    // account's actual enrolled, verified TOTP factor.
+    const { data: factorsData, error: factorsErr } = await sb.auth.mfa.listFactors();
+    const verifiedTotp = factorsData?.totp?.find(f => f.status === "verified");
+
+    if (factorsErr || !verifiedTotp) {
+      showMsg("Two-factor authentication could not be started on this account. Contact ICT or the Super Administrator.", "err");
+      verifyBtn.disabled = true;
+      return;
+    }
+
+    factorId = verifiedTotp.id;
+    otpInput.focus();
+  })();
+
+  otpInput.addEventListener("input", () => {
+    otpInput.value = otpInput.value.replace(/\D/g, "").slice(0, 6);
+  });
+
+  async function handleVerify() {
+    const code = otpInput.value.trim();
+    msgBox.className = "msg";
+
+    if (!factorId) {
+      showMsg("No verification method is available on this account.", "err");
+      return;
+    }
+    if (code.length !== 6) {
+      showMsg("Enter the full 6-digit code.", "err");
+      return;
+    }
+
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = "Verifying…";
+
+    const { data, error } = await sb.auth.mfa.challengeAndVerify({ factorId, code });
+
+    if (error) {
+      showMsg("Incorrect or expired code. Try again.", "err");
+      otpInput.value = "";
+      otpInput.focus();
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = "Verify & Continue";
+      return;
+    }
+
+    // Verified — now finish exactly the same role/workflow checks
+    // login.html applies, since this is the second half of one sign-in.
+    const { profile } = await KPS.getSessionProfile();
+
+    if (!profile || profile.is_active === false) {
+      showMsg("This account cannot sign in. Contact the school administrator.", "err");
+      await sb.auth.signOut();
+      verifyBtn.disabled = false; verifyBtn.textContent = "Verify & Continue";
+      return;
+    }
+
+    if (profile.must_change_password) {
+      window.location.href = "change-password.html?first=1";
+      return;
+    }
+
+    const target = await KPS.getUserDashboard();
+    if (!target) {
+      showMsg("This account cannot sign in. Contact the school administrator.", "err");
+      await sb.auth.signOut();
+      verifyBtn.disabled = false; verifyBtn.textContent = "Verify & Continue";
+      return;
+    }
+
+    showMsg("Verified. Loading your dashboard…", "ok");
+    window.location.href = target;
+  }
+
+  document.getElementById("backLink").addEventListener("click", async (e) => {
+    e.preventDefault();
+    await sb.auth.signOut();
+    window.location.href = "login.html";
+  });
+
+  verifyBtn.addEventListener("click", handleVerify);
+  otpInput.addEventListener("keydown", e => { if (e.key === "Enter") handleVerify(); });
+</script>
+</body>
+</html>

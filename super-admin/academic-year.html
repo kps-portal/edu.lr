@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Academic Year Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+.app{ display:block; min-height:100vh; }
+.main{ min-width:0; }
+
+/* -------- Main -------- */
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.school-brand img{ width:46px; height:46px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:260px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+
+/* Role tabs */
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:9px 15px; border-radius:10px; font-size:12.6px; font-weight:700; color:var(--muted); border:none; background:transparent; white-space:nowrap; }
+.role-tab svg{ width:15px; height:15px; flex:none; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.form-shell{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; }
+.form-head{ padding:22px 26px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; }
+.form-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.form-head h2{ color:#fff; margin:0 0 4px; font-size:20px; }
+.form-head p{ margin:0; color:rgba(255,255,255,.65); font-size:12.6px; max-width:70ch; }
+.form-body{ padding:26px; }
+
+.perm-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+table.perm{ width:100%; border-collapse:collapse; font-size:13px; }
+table.perm thead th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:800; padding:12px 16px; border-bottom:2px solid var(--line); background:#FBF8F0; white-space:nowrap; }
+table.perm tbody td{ padding:11px 16px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.perm tbody tr:last-child td{ border-bottom:none; }
+table.perm tbody tr:hover{ background:#FBF4E6; }
+.perm-mod-ic{ width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; flex:none; }
+.perm-mod-ic svg{ width:14px; height:14px; color:#fff; }
+.perm-mod{ display:flex; align-items:center; gap:11px; }
+.perm-mod-name{ font-weight:700; font-size:13px; }
+.perm-mod-sub{ font-size:11.2px; color:var(--muted); margin-top:1px; }
+
+.level-select{
+  border:1px solid var(--line); border-radius:20px; padding:7px 30px 7px 13px; font-size:12px; font-weight:700;
+  font-family:inherit; background:var(--paper) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%237A7064" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right 9px center / 13px;
+  appearance:none; -webkit-appearance:none; cursor:pointer; min-width:118px; transition:border-color .15s;
+}
+.level-select:focus{ outline:none; border-color:var(--gold-deep); }
+.level-select.lvl-none{ color:var(--muted); border-color:var(--line); }
+.level-select.lvl-view{ color:var(--navy-3); border-color:#B9C6E8; background-color:#EEF1FA; }
+.level-select.lvl-edit{ color:var(--gold-deep); border-color:#EAD2A1; background-color:#FBF1DD; }
+.level-select.lvl-full{ color:var(--success); border-color:#A9D9BC; background-color:#E4F3E9; }
+
+.role-summary{ display:flex; align-items:center; gap:14px; padding:16px 26px; background:#FBF8F0; border-top:1px solid var(--line); flex-wrap:wrap; }
+.role-summary .rs-av{ width:42px; height:42px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:15px; flex:none; }
+.role-summary .rs-name{ font-weight:700; font-size:14.5px; }
+.role-summary .rs-sub{ font-size:11.8px; color:var(--muted); margin-top:1px; }
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.form-foot{ padding:20px 26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:#FBF8F0; }
+.form-foot .fp-note{ font-size:11.8px; color:var(--muted); max-width:56ch; }
+.form-actions{ display:flex; gap:10px; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+@media (max-width:880px){
+  .search-pill{ display:none; }
+  .school-brand .sb-t2{ display:none; }
+  .topbar-divider{ display:none; }
+}
+
+/* ============================= ACADEMIC YEAR SPECIFIC ============================= */
+.stat-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:24px; }
+.stat-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.stat-ic{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.stat-ic svg{ width:16px; height:16px; color:var(--gold-light); }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.gold svg{ color:#fff; }
+.stat-ic.crimson{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.stat-ic.crimson svg{ color:#fff; }
+.stat-num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; line-height:1; }
+.stat-label{ font-size:11.8px; color:var(--muted); margin-top:5px; }
+
+.term-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+table.term{ width:100%; border-collapse:collapse; font-size:13px; }
+table.term thead th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:800; padding:12px 16px; border-bottom:2px solid var(--line); background:#FBF8F0; white-space:nowrap; }
+table.term tbody td{ padding:11px 16px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.term tbody tr:last-child td{ border-bottom:none; }
+table.term tbody tr:hover{ background:#FBF4E6; }
+.term-name{ font-weight:700; font-size:13px; }
+.term-dates{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.icon-btn{ width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:inline-flex; align-items:center; justify-content:center; }
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn svg{ width:13px; height:13px; }
+.row-actions{ display:flex; gap:6px; }
+
+.past-years-wrap{ display:flex; flex-direction:column; gap:12px; }
+.past-year-row{ display:flex; align-items:center; gap:16px; background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px 20px; box-shadow:var(--shadow-sm); flex-wrap:wrap; }
+.py-ic{ width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, #A6A090, #7A7064); display:flex; align-items:center; justify-content:center; flex:none; }
+.py-ic svg{ width:19px; height:19px; color:#fff; }
+.py-main{ flex:1; min-width:180px; }
+.py-year{ font-family:'Fraunces',serif; font-weight:700; font-size:16px; }
+.py-sub{ font-size:11.8px; color:var(--muted); margin-top:2px; }
+.py-meta{ display:flex; gap:20px; flex-wrap:wrap; }
+.py-meta-item{ text-align:center; }
+.py-meta-num{ font-family:'Fraunces',serif; font-weight:700; font-size:16px; }
+.py-meta-lab{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:34px; height:34px; margin-bottom:10px; opacity:.5; }
+.empty-state h4{ margin:0 0 4px; font-size:14.5px; color:var(--ink); }
+.empty-state p{ margin:0; font-size:12.5px; }
+
+.restricted-note{ display:flex; gap:12px; padding:14px 18px; border-radius:14px; background:#FBF8F0; border:1px solid var(--line); margin-top:26px; font-size:12px; color:var(--muted); line-height:1.6; }
+.restricted-note svg{ width:17px; height:17px; color:var(--gold-deep); flex:none; margin-top:1px; }
+.restricted-note b{ color:var(--ink); }
+
+/* Modals */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,6,.55); backdrop-filter:blur(2px); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:rise .25s ease; }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--line); }
+.modal-head h3{ margin:0; font-size:16.5px; }
+.modal-head button{ width:30px; height:30px; border-radius:9px; border:1px solid var(--line); background:transparent; display:flex; align-items:center; justify-content:center; }
+.modal-head button svg{ width:14px; height:14px; }
+.modal-body{ padding:22px 24px; display:flex; flex-direction:column; gap:16px; }
+.modal-foot{ padding:18px 24px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; background:#FBF8F0; }
+.field label{ display:block; font-size:11.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.field input, .field select, .field textarea{ width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 13px; font-size:13.5px; font-family:inherit; color:var(--ink); background:var(--paper); }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); }
+.field textarea{ resize:vertical; }
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.danger-zone{ margin-top:22px; padding:18px 22px; border-radius:14px; background:#FBEEEE; border:1px solid #F3C7CB; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.danger-zone .dz-t{ font-size:13px; font-weight:700; color:var(--crimson-deep); }
+.danger-zone .dz-s{ font-size:11.8px; color:var(--muted); margin-top:2px; max-width:52ch; }
+.btn-danger{ background:linear-gradient(135deg, var(--danger), #8C0F26); color:#fff; }
+.btn-danger:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.5); }
+
+@media (max-width:980px){
+  .stat-grid{ grid-template-columns:1fr 1fr; }
+}
+@media (max-width:640px){
+  .stat-grid{ grid-template-columns:1fr; }
+  .field-row{ grid-template-columns:1fr; }
+}
+
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+  <main class="main">
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="school-brand">
+        <img src="../assets/images/img-32d08477299d907c.jpg" alt="Kingsville Public School crest">
+        <div>
+          <div class="sb-t1">Kingsville #7 &middot; Careysburg</div>
+          <div class="sb-t2">Kingsville Public School</div>
+        </div>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Super Admin Console</div>
+        <div class="page-title">Academic Year Management</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search academic years, terms&hellip;">
+      </div>
+      <button type="button" class="btn btn-ghost" id="addPastYearBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/></svg>
+        Add Past Year
+      </button>
+      <button type="button" class="btn btn-primary" id="addYearBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        New Academic Year
+      </button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="view active" id="view-academic-year">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+          <div>
+            <div class="sb-t">Managing School Academic Years &amp; Terms</div>
+            <div class="sb-s">The active academic year and its terms drive attendance capture, grading periods, report cards, promotion, and enrollment across the whole system. Closing a year moves it into the <b class="sa">Past Academic Years</b> archive below &mdash; only a <b class="sa">Super Admin</b> can create, edit, or close an academic year.</div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></div>
+            </div>
+            <div class="stat-num" id="statActiveYear">&ndash;</div>
+            <div class="stat-label">Active academic year</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
+            </div>
+            <div class="stat-num" id="statTermCount">&ndash;</div>
+            <div class="stat-label">Terms in active year</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic crimson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+            </div>
+            <div class="stat-num" id="statDaysLeft">&ndash;</div>
+            <div class="stat-label">Days left in current term</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg></div>
+            </div>
+            <div class="stat-num" id="statPastYears">&ndash;</div>
+            <div class="stat-label">Past academic years on record</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Active Academic Year</h2>
+            <p>Set the school year dates and its term structure. This is what every module &mdash; attendance, grading, promotion, and fee cycles &mdash; reads from.</p>
+          </div>
+        </div>
+
+        <div class="form-shell" id="activeYearShell">
+          <div class="form-head">
+            <h2 id="activeYearTitle">Loading academic year&hellip;</h2>
+            <p>Kingsville Public School &middot; Super Administrator Console &middot; editing the <b style="color:#fff;">currently active</b> academic year</p>
+          </div>
+
+          <div class="form-body">
+            <div class="field-row" style="margin-bottom:18px;">
+              <div class="field">
+                <label for="yearStart">Academic year starts</label>
+                <input type="date" id="yearStart">
+              </div>
+              <div class="field">
+                <label for="yearEnd">Academic year ends</label>
+                <input type="date" id="yearEnd">
+              </div>
+            </div>
+
+            <div class="term-table-wrap">
+              <table class="term">
+                <thead>
+                  <tr><th style="width:26%">Term</th><th style="width:34%">Dates</th><th>Status</th><th style="text-align:right;">Actions</th></tr>
+                </thead>
+                <tbody id="termTableBody"></tbody>
+              </table>
+            </div>
+            <div style="margin-top:14px;">
+              <button type="button" class="btn btn-ghost btn-sm" id="addTermBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                Add Term
+              </button>
+            </div>
+          </div>
+
+          <div class="role-summary">
+            <div class="rs-av" id="rsAvatar">AY</div>
+            <div>
+              <div class="rs-name" id="rsName">Loading&hellip;</div>
+              <div class="rs-sub" id="rsSub">3 terms configured</div>
+            </div>
+            <span class="pill green" style="margin-left:auto;">&nbsp;Active</span>
+            <span class="pill navy" id="rsCurrentTerm">&nbsp;Current term</span>
+          </div>
+
+          <div class="form-foot">
+            <div class="fp-note">Discarding restores the last saved configuration for this academic year &mdash; unsaved changes will be lost.</div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-ghost" id="resetBtn">Discard Changes</button>
+              <button type="button" class="btn btn-primary" id="saveBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg>
+                Save Academic Year
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" id="activeYearEmpty" style="display:none; background:var(--paper); border:1px solid var(--line); border-radius:18px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+          <h4>No academic year configured yet</h4>
+          <p>Nothing has been saved to the database for the active academic year. Use &ldquo;New Academic Year&rdquo; above to create the first one.</p>
+        </div>
+
+        <div class="danger-zone" id="dangerZone">
+          <div>
+            <div class="dz-t">Close &amp; Archive This Academic Year</div>
+            <div class="dz-s">Locks every term, freezes grading and attendance, and moves this year into Past Academic Years. This cannot be undone from here.</div>
+          </div>
+          <button type="button" class="btn btn-danger" id="closeYearBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></svg>
+            Close Academic Year
+          </button>
+        </div>
+
+        <div class="section-head" style="margin-top:34px;">
+          <div>
+            <h2>Past Academic Years</h2>
+            <p>Every academic year you close, or add manually, is written permanently to the database &mdash; there is no limit on how many years back the archive can hold. Click any record to correct its figures.</p>
+          </div>
+        </div>
+
+        <div class="past-years-wrap" id="pastYearsWrap"></div>
+        <div class="empty-state" id="pastYearsEmpty" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+          <h4>No past academic years yet</h4>
+          <p>Once you close the active year, or add one manually, it will appear here.</p>
+        </div>
+
+        <div class="restricted-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div><b>Access restriction:</b> Every role reads the active academic year and its terms as read-only context inside their own dashboard &mdash; report cards, attendance, invoices, and promotion all key off this record. Only the Super Administrator can create a new academic year, edit term dates, close/archive a year, or add a historical year to the record.</div>
+        </div>
+
+        <div class="footer-ribbon">
+          <img src="../assets/images/img-32d08477299d907c.jpg" class="mono" style="width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:-4px;margin:0 6px;">
+          <b>Kingsville Public School</b> &middot; Kingsville #7, Careysburg District &middot; Super Admin Console
+        </div>
+
+      </section>
+    </div>
+
+    <!-- New Academic Year modal -->
+    <div class="modal-backdrop" id="newYearModalBackdrop">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>New Academic Year</h3>
+          <button type="button" id="newYearModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="newYearName">Academic year</label>
+            <input type="text" id="newYearName" placeholder="e.g. 2026/2027">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="newYearStart">Starts</label>
+              <input type="date" id="newYearStart">
+            </div>
+            <div class="field">
+              <label for="newYearEnd">Ends</label>
+              <input type="date" id="newYearEnd">
+            </div>
+          </div>
+          <div class="field">
+            <label for="newYearTerms">Number of terms</label>
+            <select id="newYearTerms">
+              <option value="2">2 Semesters</option>
+              <option value="3" selected>3 Terms</option>
+              <option value="4">4 Quarters</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="newYearCancelBtn">Cancel</button>
+          <button type="button" class="btn btn-primary" id="newYearConfirmBtn">Create Academic Year</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Term modal -->
+    <div class="modal-backdrop" id="addTermModalBackdrop">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>Add Term</h3>
+          <button type="button" id="addTermModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="newTermName">Term name</label>
+            <input type="text" id="newTermName" placeholder="e.g. Third Term">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="newTermStart">Starts</label>
+              <input type="date" id="newTermStart">
+            </div>
+            <div class="field">
+              <label for="newTermEnd">Ends</label>
+              <input type="date" id="newTermEnd">
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="addTermCancelBtn">Cancel</button>
+          <button type="button" class="btn btn-primary" id="addTermConfirmBtn">Add Term</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Past Academic Year modal -->
+    <div class="modal-backdrop" id="addPastYearModalBackdrop">
+      <div class="modal">
+        <div class="modal-head">
+          <h3 id="pastYearModalTitle">Add Past Academic Year</h3>
+          <button type="button" id="addPastYearModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="pyName">Academic year</label>
+            <input type="text" id="pyName" placeholder="e.g. 2021/2022">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="pyTerms">Terms</label>
+              <input type="number" id="pyTerms" min="1" max="6" value="3">
+            </div>
+            <div class="field">
+              <label for="pyEnrollment">Total enrollment</label>
+              <input type="number" id="pyEnrollment" min="0" placeholder="e.g. 812">
+            </div>
+          </div>
+          <div class="field">
+            <label for="pyClosed">Closed on</label>
+            <input type="date" id="pyClosed">
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="addPastYearCancelBtn">Cancel</button>
+          <button type="button" class="btn btn-primary" id="addPastYearConfirmBtn">Add to Archive</button>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="pastYearEditingId" value="">
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATABASE WIRING (Supabase)
+   Backs directly onto `academic_years` + `semesters` (real tables in
+   000_MASTER_SCHEMA.sql) and `enrollments` for live headcounts. No mock
+   or placeholder data — everything below is a real sb.from(...) call.
+   ========================================================================= */
+const sbc = () => window.sb;
+
+function termStatusOf(sem){
+  if (sem.is_current) return 'current';
+  const today = new Date().toISOString().slice(0,10);
+  return sem.end_date < today ? 'completed' : 'upcoming';
+}
+function rowToYear(row, semesters){
+  return {
+    id: row.id,
+    name: row.name,
+    start: row.start_date,
+    end: row.end_date,
+    terms: (semesters || []).map(s => ({
+      id: s.id, name: s.name, start: s.start_date, end: s.end_date, status: termStatusOf(s)
+    })).sort((a,b) => (a.start || '').localeCompare(b.start || ''))
+  };
+}
+
+/* ---------- Toast ---------- */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtDate(iso){
+  if(!iso) return '&mdash;';
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+/* ---------- State (populated only from the API — never pre-filled) ---------- */
+let activeYear = null;          // { id, name, start, end, terms:[...] } or null until loaded
+let savedActiveYear = null;
+let pastYears = [];             // grows without limit — whatever the database returns
+let pastYearsTotal = 0;
+let pastSearchTerm = '';
+
+const STATUS_LABEL = { completed:'Completed', current:'Current', upcoming:'Upcoming' };
+const STATUS_PILL = { completed:'grey', current:'green', upcoming:'gold' };
+
+/* ---------- Load: active academic year ---------- */
+async function loadActiveYear(){
+  try{
+    const { data: yearRow, error: yErr } = await sbc().from('academic_years').select('*').eq('is_current', true).maybeSingle();
+    if (yErr) throw yErr;
+    if (!yearRow){
+      activeYear = null; savedActiveYear = null;
+    } else {
+      const { data: sems, error: sErr } = await sbc().from('semesters').select('*').eq('academic_year_id', yearRow.id);
+      if (sErr) throw sErr;
+      activeYear = rowToYear(yearRow, sems);
+      savedActiveYear = JSON.parse(JSON.stringify(activeYear));
+    }
+  }catch(err){
+    console.error('Failed to load active academic year', err);
+    activeYear = null;
+    savedActiveYear = null;
+    showToast('Could not reach the database for the active academic year.');
+  }
+  renderActiveYear();
+  refreshStats();
+}
+
+/* ---------- Load: past academic years ---------- */
+async function loadPastYears(){
+  try{
+    let query = sbc().from('academic_years').select('*').eq('is_current', false);
+    if (pastSearchTerm) query = query.ilike('name', '%' + pastSearchTerm + '%');
+    const { data: rows, error } = await query.order('start_date', { ascending: false });
+    if (error) throw error;
+
+    pastYears = await Promise.all((rows || []).map(async (y) => {
+      const [{ count: termCount }, { count: enrollCount }] = await Promise.all([
+        sbc().from('semesters').select('id', { count: 'exact', head: true }).eq('academic_year_id', y.id),
+        sbc().from('enrollments').select('id', { count: 'exact', head: true }).eq('academic_year_id', y.id)
+      ]);
+      return {
+        id: y.id,
+        name: y.name,
+        terms: termCount || y.archived_term_count || 0,
+        enrollment: enrollCount || y.archived_enrollment_count || 0,
+        closed: y.end_date
+      };
+    }));
+    pastYearsTotal = pastYears.length;
+  }catch(err){
+    console.error('Failed to load past academic years', err);
+    pastYears = [];
+    pastYearsTotal = 0;
+    showToast('Could not reach the database for past academic years.');
+  }
+  renderPastYears();
+  refreshStats();
+}
+
+/* ---------- Stats ---------- */
+function refreshStats(){
+  document.getElementById('statActiveYear').textContent = activeYear ? activeYear.name : 'None set';
+  document.getElementById('statTermCount').textContent = activeYear ? activeYear.terms.length : '0';
+  document.getElementById('statPastYears').textContent = pastYearsTotal;
+
+  const current = activeYear ? activeYear.terms.find(t => t.status === 'current') : null;
+  if(current){
+    const end = new Date(current.end + 'T00:00:00');
+    const today = new Date();
+    const diff = Math.max(0, Math.ceil((end - today) / 86400000));
+    document.getElementById('statDaysLeft').textContent = diff;
+  } else {
+    document.getElementById('statDaysLeft').textContent = '\u2013';
+  }
+}
+
+/* ---------- Render active year header/table ---------- */
+function renderActiveYear(){
+  const formShell = document.getElementById('activeYearShell');
+  const emptyState = document.getElementById('activeYearEmpty');
+  const dangerZone = document.getElementById('dangerZone');
+
+  if(!activeYear){
+    formShell.style.display = 'none';
+    emptyState.style.display = '';
+    dangerZone.style.display = 'none';
+    return;
+  }
+  formShell.style.display = '';
+  emptyState.style.display = 'none';
+  dangerZone.style.display = '';
+
+  document.getElementById('activeYearTitle').textContent = activeYear.name + ' Academic Year';
+  document.getElementById('rsName').textContent = activeYear.name + ' Academic Year';
+  document.getElementById('rsSub').textContent = activeYear.terms.length + ' terms configured';
+  document.getElementById('yearStart').value = activeYear.start || '';
+  document.getElementById('yearEnd').value = activeYear.end || '';
+
+  const current = activeYear.terms.find(t => t.status === 'current');
+  document.getElementById('rsCurrentTerm').innerHTML = '&nbsp;' + (current ? escapeHtml(current.name) : 'No current term set');
+
+  const tbody = document.getElementById('termTableBody');
+  tbody.innerHTML = '';
+
+  if(!activeYear.terms.length){
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted); padding:24px;">No terms configured yet. Use &ldquo;Add Term&rdquo; below.</td></tr>';
+  }
+
+  activeYear.terms.forEach((t, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="term-name">' + escapeHtml(t.name) + '</td>' +
+      '<td class="term-dates">' + fmtDate(t.start) + ' &ndash; ' + fmtDate(t.end) + '</td>' +
+      '<td><span class="pill ' + (STATUS_PILL[t.status] || 'grey') + '">&nbsp;' + (STATUS_LABEL[t.status] || t.status) + '</span></td>' +
+      '<td style="text-align:right;">' +
+        '<div class="row-actions" style="justify-content:flex-end;">' +
+          '<button type="button" class="icon-btn set-current-btn" data-i="' + i + '" title="Set as current term"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></button>' +
+          '<button type="button" class="icon-btn remove-term-btn" data-i="' + i + '" title="Remove term"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+        '</div>' +
+      '</td>';
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('.set-current-btn').forEach(b => b.addEventListener('click', () => {
+    const i = Number(b.dataset.i);
+    activeYear.terms.forEach((t, j) => { t.status = j === i ? 'current' : (j < i ? 'completed' : 'upcoming'); });
+    renderActiveYear();
+    refreshStats();
+    showToast(activeYear.terms[i].name + ' set as the current term. Remember to save.');
+  }));
+  tbody.querySelectorAll('.remove-term-btn').forEach(b => b.addEventListener('click', () => {
+    const i = Number(b.dataset.i);
+    const removed = activeYear.terms.splice(i, 1)[0];
+    renderActiveYear();
+    refreshStats();
+    showToast(removed.name + ' removed. Remember to save.');
+  }));
+
+  refreshStats();
+}
+
+/* ---------- Render past years (unlimited history) ---------- */
+function renderPastYears(){
+  const wrap = document.getElementById('pastYearsWrap');
+  const empty = document.getElementById('pastYearsEmpty');
+  wrap.innerHTML = '';
+
+  if(!pastYears.length){
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const sorted = [...pastYears].sort((a,b) => String(b.name).localeCompare(String(a.name)));
+  sorted.forEach(y => {
+    const row = document.createElement('div');
+    row.className = 'past-year-row';
+    row.innerHTML =
+      '<div class="py-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></div>' +
+      '<div class="py-main">' +
+        '<div class="py-year">' + escapeHtml(y.name) + ' Academic Year</div>' +
+        '<div class="py-sub">Closed &amp; archived ' + fmtDate(y.closed) + '</div>' +
+      '</div>' +
+      '<div class="py-meta">' +
+        '<div class="py-meta-item"><div class="py-meta-num">' + y.terms + '</div><div class="py-meta-lab">Terms</div></div>' +
+        '<div class="py-meta-item"><div class="py-meta-num">' + Number(y.enrollment || 0).toLocaleString() + '</div><div class="py-meta-lab">Enrolled</div></div>' +
+      '</div>' +
+      '<span class="pill grey">&nbsp;Archived</span>' +
+      '<div class="row-actions">' +
+        '<button type="button" class="icon-btn edit-past-btn" title="Edit this record"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>' +
+        '<button type="button" class="icon-btn delete-past-btn" title="Delete this record"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+      '</div>';
+    row.querySelector('.edit-past-btn').addEventListener('click', () => openPastYearModal(y));
+    row.querySelector('.delete-past-btn').addEventListener('click', () => deletePastYear(y));
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------- Save / Discard active year ---------- */
+document.getElementById('yearStart').addEventListener('change', (e) => { if(activeYear) activeYear.start = e.target.value; });
+document.getElementById('yearEnd').addEventListener('change', (e) => { if(activeYear) activeYear.end = e.target.value; });
+
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  if(!activeYear) return;
+  try{
+    await sbc().from('academic_years').update({
+      start_date: activeYear.start, end_date: activeYear.end
+    }).eq('id', activeYear.id).throwOnError();
+
+    const priorIds = new Set((savedActiveYear ? savedActiveYear.terms : []).map(t => t.id).filter(Boolean));
+    const keptIds = new Set();
+
+    for (const t of activeYear.terms){
+      const patch = { name: t.name, start_date: t.start, end_date: t.end, is_current: t.status === 'current' };
+      if (t.id){
+        keptIds.add(t.id);
+        await sbc().from('semesters').update(patch).eq('id', t.id).throwOnError();
+      } else {
+        const { data, error } = await sbc().from('semesters').insert({ ...patch, academic_year_id: activeYear.id }).select().single();
+        if (error) throw error;
+        t.id = data.id;
+        keptIds.add(data.id);
+      }
+    }
+    const removedIds = [...priorIds].filter(id => !keptIds.has(id));
+    if (removedIds.length){
+      await sbc().from('semesters').delete().in('id', removedIds).throwOnError();
+    }
+
+    savedActiveYear = JSON.parse(JSON.stringify(activeYear));
+    showToast('Academic year saved to the database \u00b7 every module now reads these dates and terms.');
+  }catch(err){
+    console.error('Failed to save active academic year', err);
+    showToast('Could not save \u2014 the database did not confirm the update.');
+  }
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(!savedActiveYear) return;
+  activeYear = JSON.parse(JSON.stringify(savedActiveYear));
+  renderActiveYear();
+  showToast('Changes discarded \u2014 reverted to the last saved academic year.');
+});
+
+/* ---------- Close & archive active year ---------- */
+document.getElementById('closeYearBtn').addEventListener('click', async () => {
+  if(!activeYear) return;
+  try{
+    await sbc().from('academic_years').update({ is_current: false }).eq('id', activeYear.id).throwOnError();
+    showToast(activeYear.name + ' closed and permanently archived in Past Academic Years.');
+    activeYear = null;
+    savedActiveYear = null;
+    await loadActiveYear();
+    await loadPastYears();
+  }catch(err){
+    console.error('Failed to close academic year', err);
+    showToast('Could not close the year \u2014 the database did not confirm it.');
+  }
+});
+
+/* ---------- New Academic Year modal ---------- */
+const newYearModalBackdrop = document.getElementById('newYearModalBackdrop');
+document.getElementById('addYearBtn').addEventListener('click', () => newYearModalBackdrop.classList.add('open'));
+document.getElementById('newYearModalClose').addEventListener('click', () => newYearModalBackdrop.classList.remove('open'));
+document.getElementById('newYearCancelBtn').addEventListener('click', () => newYearModalBackdrop.classList.remove('open'));
+newYearModalBackdrop.addEventListener('click', (e) => { if(e.target === newYearModalBackdrop) newYearModalBackdrop.classList.remove('open'); });
+
+document.getElementById('newYearConfirmBtn').addEventListener('click', async () => {
+  const name = document.getElementById('newYearName').value.trim();
+  const start = document.getElementById('newYearStart').value;
+  const end = document.getElementById('newYearEnd').value;
+  const termCount = Number(document.getElementById('newYearTerms').value);
+  if(!name || !start || !end){ showToast('Fill in the year name and both dates first.'); return; }
+
+  const termLabels = termCount === 2 ? ['First Semester','Second Semester'] : termCount === 4 ? ['First Quarter','Second Quarter','Third Quarter','Fourth Quarter'] : ['First Term','Second Term','Third Term'];
+  const startD = new Date(start + 'T00:00:00');
+  const endD = new Date(end + 'T00:00:00');
+  const spanDays = Math.max(termCount, Math.round((endD - startD) / 86400000));
+  const chunk = Math.floor(spanDays / termCount);
+  const newTerms = termLabels.map((label, i) => {
+    const tStart = new Date(startD.getTime() + i * chunk * 86400000);
+    const tEnd = new Date(startD.getTime() + ((i+1) * chunk - 1) * 86400000);
+    return { name:label, start:tStart.toISOString().slice(0,10), end:tEnd.toISOString().slice(0,10), status: i === 0 ? 'current' : 'upcoming' };
+  });
+
+  try{
+    // Only one academic year may be current at a time (DB constraint) —
+    // demote whichever one is current now, if any.
+    await sbc().from('academic_years').update({ is_current: false }).eq('is_current', true);
+
+    const { data: yearRow, error: yErr } = await sbc().from('academic_years')
+      .insert({ name, start_date: start, end_date: end, is_current: true })
+      .select().single();
+    if (yErr) throw yErr;
+
+    const semRows = newTerms.map(t => ({
+      academic_year_id: yearRow.id, name: t.name, start_date: t.start, end_date: t.end, is_current: t.status === 'current'
+    }));
+    const { data: sems, error: sErr } = await sbc().from('semesters').insert(semRows).select();
+    if (sErr) throw sErr;
+
+    activeYear = rowToYear(yearRow, sems);
+    savedActiveYear = JSON.parse(JSON.stringify(activeYear));
+    renderActiveYear();
+    document.getElementById('newYearName').value = '';
+    document.getElementById('newYearStart').value = '';
+    document.getElementById('newYearEnd').value = '';
+    newYearModalBackdrop.classList.remove('open');
+    showToast(name + ' created in the database and set as the active academic year.');
+  }catch(err){
+    console.error('Failed to create academic year', err);
+    showToast('Could not create the academic year \u2014 the database did not confirm it.');
+  }
+});
+
+/* ---------- Add Term modal ---------- */
+const addTermModalBackdrop = document.getElementById('addTermModalBackdrop');
+document.getElementById('addTermBtn').addEventListener('click', () => {
+  if(!activeYear){ showToast('Create an academic year first.'); return; }
+  addTermModalBackdrop.classList.add('open');
+});
+document.getElementById('addTermModalClose').addEventListener('click', () => addTermModalBackdrop.classList.remove('open'));
+document.getElementById('addTermCancelBtn').addEventListener('click', () => addTermModalBackdrop.classList.remove('open'));
+addTermModalBackdrop.addEventListener('click', (e) => { if(e.target === addTermModalBackdrop) addTermModalBackdrop.classList.remove('open'); });
+
+document.getElementById('addTermConfirmBtn').addEventListener('click', () => {
+  const name = document.getElementById('newTermName').value.trim();
+  const start = document.getElementById('newTermStart').value;
+  const end = document.getElementById('newTermEnd').value;
+  if(!name || !start || !end){ showToast('Give the term a name and both dates first.'); return; }
+  activeYear.terms.push({ name, start, end, status:'upcoming' });
+  document.getElementById('newTermName').value = '';
+  document.getElementById('newTermStart').value = '';
+  document.getElementById('newTermEnd').value = '';
+  addTermModalBackdrop.classList.remove('open');
+  renderActiveYear();
+  showToast('Term added. Remember to Save Academic Year.');
+});
+
+/* ---------- Add / Edit Past Academic Year modal (same modal, two modes) ---------- */
+const pastYearModalBackdrop = document.getElementById('addPastYearModalBackdrop');
+const pastYearModalTitle = document.getElementById('pastYearModalTitle');
+const pastYearConfirmBtn = document.getElementById('addPastYearConfirmBtn');
+const pastYearEditingId = document.getElementById('pastYearEditingId');
+
+function openPastYearModal(existing){
+  if(existing){
+    pastYearModalTitle.textContent = 'Edit Past Academic Year';
+    pastYearConfirmBtn.textContent = 'Save Changes';
+    pastYearEditingId.value = existing.id;
+    document.getElementById('pyName').value = existing.name;
+    document.getElementById('pyTerms').value = existing.terms;
+    document.getElementById('pyEnrollment').value = existing.enrollment;
+    document.getElementById('pyClosed').value = existing.closed;
+  } else {
+    pastYearModalTitle.textContent = 'Add Past Academic Year';
+    pastYearConfirmBtn.textContent = 'Add to Archive';
+    pastYearEditingId.value = '';
+    document.getElementById('pyName').value = '';
+    document.getElementById('pyTerms').value = 3;
+    document.getElementById('pyEnrollment').value = '';
+    document.getElementById('pyClosed').value = '';
+  }
+  pastYearModalBackdrop.classList.add('open');
+}
+
+document.getElementById('addPastYearBtn').addEventListener('click', () => openPastYearModal(null));
+document.getElementById('addPastYearModalClose').addEventListener('click', () => pastYearModalBackdrop.classList.remove('open'));
+document.getElementById('addPastYearCancelBtn').addEventListener('click', () => pastYearModalBackdrop.classList.remove('open'));
+pastYearModalBackdrop.addEventListener('click', (e) => { if(e.target === pastYearModalBackdrop) pastYearModalBackdrop.classList.remove('open'); });
+
+pastYearConfirmBtn.addEventListener('click', async () => {
+  const name = document.getElementById('pyName').value.trim();
+  const terms = Number(document.getElementById('pyTerms').value) || 0;
+  const enrollment = Number(document.getElementById('pyEnrollment').value) || 0;
+  const closed = document.getElementById('pyClosed').value;
+  if(!name){ showToast('Give the academic year a name first, e.g. 2020/2021.'); return; }
+  const editingId = pastYearEditingId.value;
+
+  try{
+    if(editingId){
+      await sbc().from('academic_years').update({
+        name, end_date: closed,
+        archived_term_count: terms, archived_enrollment_count: enrollment
+      }).eq('id', editingId).throwOnError();
+      showToast(name + ' updated in the archive.');
+    } else {
+      // Manually-logged historical year (no per-term rows) — approximate a
+      // 1-year span ending on the given "closed" date since only that date
+      // is collected in this form.
+      const closedD = new Date(closed + 'T00:00:00');
+      const startApprox = isNaN(closedD) ? closed : new Date(closedD.getFullYear() - 1, closedD.getMonth(), closedD.getDate()).toISOString().slice(0,10);
+      await sbc().from('academic_years').insert({
+        name, start_date: startApprox, end_date: closed, is_current: false,
+        archived_term_count: terms, archived_enrollment_count: enrollment
+      }).throwOnError();
+      showToast(name + ' added to the permanent archive.');
+    }
+    pastYearModalBackdrop.classList.remove('open');
+    await loadPastYears();
+  }catch(err){
+    console.error('Failed to save past academic year', err);
+    showToast('Could not save that record \u2014 the database did not confirm it.');
+  }
+});
+
+async function deletePastYear(y){
+  try{
+    await sbc().from('academic_years').delete().eq('id', y.id).throwOnError();
+    showToast(y.name + ' removed from the archive.');
+    await loadPastYears();
+  }catch(err){
+    console.error('Failed to delete past academic year', err);
+    showToast('Could not delete that record \u2014 the database did not confirm it.');
+  }
+}
+
+/* ---------- Global search ---------- */
+let searchDebounce;
+document.getElementById('globalSearch').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('#termTableBody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+  pastSearchTerm = e.target.value.trim();
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => loadPastYears(), 300);
+});
+
+/* ---------- Initial load: everything comes from the database ---------- */
+loadActiveYear();
+loadPastYears();
+</script>
+</body>
+</html>

@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Reports</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  /* ===== Slim top bar — brand only, nothing else ===== */
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);
+    flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;gap:10px;}
+  header.topbar .left img{height:28px;width:28px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .right{display:flex;align-items:center;gap:12px;}
+  /* Same back-button pattern used on every super-admin page: a circular
+     icon button in the top bar (left of the crest) that returns to the
+     role's own dashboard. Colours adapted to this page's crimson/navy/gold
+     theme instead of the super-admin paper theme. */
+  a.icon-btn{
+    width:30px;height:30px;border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.08);border:1px solid rgba(242,167,27,.55);
+    color:#fff;text-decoration:none;
+    transition:background .15s,border-color .15s,transform .1s;
+  }
+  a.icon-btn:hover{background:rgba(255,255,255,.18);border-color:var(--gold);}
+  a.icon-btn:active{transform:scale(.92);}
+  a.icon-btn svg{width:16px;height:16px;}
+
+  /* ===== Centered single login card ===== */
+  main{
+    flex:1;display:flex;align-items:flex-start;justify-content:center;
+    padding:clamp(10px,3vh,30px) 16px;
+    min-height:0;
+    overflow-y:auto;
+  }
+  .card{
+    width:100%;max-width:920px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);
+    overflow:hidden;
+    max-height:100%;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,38px) clamp(20px,7vw,36px) clamp(16px,3vh,30px);text-align:center;}
+  .seal-stage{position:relative;width:clamp(84px,16vh,150px);height:clamp(84px,16vh,150px);margin:0 auto clamp(8px,2vh,16px);display:flex;align-items:center;justify-content:center;}
+  .seal-glow{
+    position:absolute;inset:-18px;border-radius:50%;
+    background:radial-gradient(circle, rgba(242,167,27,.45) 0%, rgba(200,16,46,.18) 45%, transparent 72%);
+    filter:blur(7px);
+    animation:sealPulseGlow 3.4s ease-in-out infinite;
+  }
+  .seal-ring{
+    position:absolute;inset:-8px;border-radius:50%;
+    background:conic-gradient(from 0deg, var(--gold), #fff3d6, var(--crimson), var(--gold), var(--crimson), #fff3d6, var(--gold));
+    -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+    mask:radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+    animation:sealRotateRing 7s linear infinite;
+  }
+  .card img.seal{
+    position:relative;z-index:2;height:clamp(66px,12.6vh,118px);width:clamp(66px,12.6vh,118px);object-fit:contain;border-radius:50%;
+    background:#fff;padding:4px;
+    box-shadow:0 12px 26px rgba(11,23,48,.28), 0 0 0 4px #fff;
+    animation:sealEntrance .9s cubic-bezier(.2,.8,.2,1);
+  }
+  .seal-shine{
+    position:absolute;z-index:3;inset:4px;border-radius:50%;overflow:hidden;pointer-events:none;
+  }
+  .seal-shine::after{
+    content:"";position:absolute;top:-60%;left:-60%;width:40%;height:220%;
+    background:linear-gradient(75deg, transparent 40%, rgba(255,255,255,.85) 50%, transparent 60%);
+    animation:sealShineSweep 3.6s ease-in-out infinite;
+    animation-delay:1s;
+  }
+  @keyframes sealPulseGlow{0%,100%{opacity:.55;transform:scale(1);}50%{opacity:1;transform:scale(1.1);}}
+  @keyframes sealRotateRing{to{transform:rotate(360deg);}}
+  @keyframes sealEntrance{from{opacity:0;transform:scale(.6) rotate(-10deg);}to{opacity:1;transform:scale(1) rotate(0);}}
+  @keyframes sealShineSweep{0%{left:-60%;}30%{left:130%;}100%{left:130%;}}
+  .card h1{
+    font-size:clamp(14.5px,3vh,16.5px);color:var(--navy);font-weight:700;line-height:1.45;margin-bottom:6px;letter-spacing:.2px;
+  }
+  .card h1 .school-line{color:var(--crimson);font-size:clamp(13px,2.7vh,15px);}
+  .card .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:clamp(8px,2vh,14px) auto clamp(12px,3vh,22px);border-radius:2px;}
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field input{
+    width:100%;padding:clamp(9px,1.6vh,11px) 13px;border:1px solid var(--line);border-radius:4px;
+    font-size:16px;background:#fff;color:var(--ink);
+  }
+  .field input:focus{outline:none;border-color:var(--crimson);}
+  .field input::placeholder{color:#9a9ea6;}
+
+  .captcha-box{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    border:1px solid var(--line);border-radius:4px;background:#fafafa;
+    padding:clamp(7px,1.6vh,10px) 12px;margin:clamp(10px,2vh,16px) 0;
+  }
+  .captcha-left{display:flex;align-items:center;gap:10px;font-size:13.5px;color:#333;}
+  .captcha-left input[type="checkbox"]{width:18px;height:18px;accent-color:var(--crimson);}
+  .captcha-badge{font-size:10px;color:#9a9ea6;line-height:1.2;text-align:center;}
+
+  button#loginBtn{
+    width:100%;padding:clamp(10px,1.8vh,12px);border:none;border-radius:4px;
+    background:var(--crimson);color:#fff;font-weight:700;font-size:14.5px;cursor:pointer;
+    transition:background .15s;
+  }
+  button#loginBtn:hover{background:var(--crimson-dark);}
+  button#loginBtn:disabled{opacity:.6;cursor:not-allowed;}
+
+  .divider{display:flex;align-items:center;gap:10px;margin:clamp(10px,2.2vh,18px) 0 clamp(8px,1.6vh,14px);color:#b3b6bc;font-size:11px;}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line);}
+
+  button#msBtn{
+    width:100%;padding:clamp(8px,1.6vh,10px);border:1px solid var(--line);border-radius:4px;
+    background:#fff;font-weight:600;font-size:13.5px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:10px;color:#333;
+  }
+  button#msBtn:hover{background:#fafafa;}
+  .ms-logo{width:16px;height:16px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1px;}
+  .ms-logo i{display:block;}
+  .ms-logo i:nth-child(1){background:#f25022;}
+  .ms-logo i:nth-child(2){background:#7fba00;}
+  .ms-logo i:nth-child(3){background:#00a4ef;}
+  .ms-logo i:nth-child(4){background:#ffb900;}
+
+  a.forgot{
+    display:block;margin-top:clamp(10px,2vh,16px);font-size:13px;color:var(--navy);text-decoration:none;font-weight:600;
+  }
+  a.forgot:hover{text-decoration:underline;}
+
+  .msg{margin-top:clamp(8px,1.6vh,14px);font-size:12.5px;padding:9px 11px;border-radius:4px;display:none;text-align:left;}
+  .msg.err{display:block;background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .msg.ok{display:block;background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+
+  footer.site-footer{
+    background:var(--navy-deep);
+    color:#c9d2e8;font-size:11px;text-align:center;padding:clamp(8px,1.4vh,12px) 10px;
+    border-top:2px solid var(--gold);
+    flex-shrink:0;
+  }
+  footer.site-footer .footer-line-1{font-weight:600;letter-spacing:.2px;}
+  footer.site-footer .footer-line-2{margin-top:3px;font-size:10.5px;color:var(--gold);letter-spacing:.3px;}
+
+  .card .body p.instructions{
+    font-size:13px;color:var(--muted);line-height:1.55;margin:0 0 20px;
+  }
+  .card .body p.instructions b{color:var(--ink);font-weight:600;}
+  .back-row{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    margin-top:clamp(10px,2vh,16px);font-size:13px;
+  }
+  .back-row a{color:var(--navy);text-decoration:none;font-weight:600;}
+  .back-row a:hover{text-decoration:underline;}
+  .back-row svg{width:14px;height:14px;flex-shrink:0;}
+  .success-icon{
+    width:56px;height:56px;margin:0 auto 14px;border-radius:50%;
+    background:#eafaf1;display:flex;align-items:center;justify-content:center;
+  }
+  .success-icon svg{width:28px;height:28px;}
+
+  .field .pw-wrap{position:relative;}
+  .field .pw-wrap input{padding-right:40px;}
+  .field .pw-toggle{
+    position:absolute;top:50%;right:11px;transform:translateY(-50%);
+    background:none;border:none;padding:2px;cursor:pointer;color:#9a9ea6;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .field .pw-toggle:hover{color:#333;}
+  .field .pw-toggle svg{width:18px;height:18px;}
+
+  .strength-meter{display:flex;gap:4px;margin:8px 0 4px;}
+  .strength-meter i{flex:1;height:4px;border-radius:2px;background:var(--line);transition:background .2s;}
+  .strength-label{font-size:11px;color:var(--muted);margin-bottom:4px;text-align:left;min-height:14px;}
+
+  .req-list{list-style:none;text-align:left;font-size:12px;color:var(--muted);margin:2px 0 16px;padding:0;}
+  .req-list li{position:relative;padding-left:18px;line-height:1.7;}
+  .req-list li::before{
+    content:"";position:absolute;left:0;top:6px;width:9px;height:9px;border-radius:50%;
+    border:1.5px solid #c7cad0;background:#fff;
+  }
+  .req-list li.ok{color:var(--ok);}
+  .req-list li.ok::before{background:var(--ok);border-color:var(--ok);}
+
+  /* ===== Reports dashboard additions ===== */
+  .card .body{text-align:left;}
+  .card .body .seal-stage{margin-left:auto;margin-right:auto;}
+  .card .body h1, .card .body .subtitle-rule{text-align:center;}
+  .card .body h1{margin-left:auto;margin-right:auto;}
+  .card .body > .subtitle-rule{margin-left:auto;margin-right:auto;}
+
+  .toolbar{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;
+    margin-bottom:clamp(14px,2.4vh,20px);
+  }
+  .range-tabs{display:flex;gap:6px;background:#f1f1ef;border-radius:6px;padding:3px;}
+  .range-tabs button{
+    border:none;background:transparent;padding:6px 12px;border-radius:5px;font-size:12.5px;font-weight:600;
+    color:var(--muted);cursor:pointer;transition:background .15s,color .15s;
+  }
+  .range-tabs button.active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(11,23,48,.15);}
+  button.refresh-btn{
+    border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;
+    padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;
+  }
+  button.refresh-btn:hover{background:#fafafa;}
+  button.refresh-btn svg{width:14px;height:14px;}
+  button.refresh-btn.spinning svg{animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .kpi-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:clamp(18px,3vh,26px);
+  }
+  @media (max-width:720px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi-card{
+    border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;
+    box-shadow:0 2px 6px rgba(11,23,48,.05);
+  }
+  .kpi-label{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);}
+  .kpi-value{font-size:28px;font-weight:800;color:var(--navy);margin-top:4px;line-height:1.1;}
+  .kpi-value.danger{color:var(--danger);}
+  .kpi-value.ok{color:var(--ok);}
+  .kpi-sub{font-size:11.5px;color:var(--muted);margin-top:3px;}
+
+  .panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:clamp(18px,3vh,26px);}
+  @media (max-width:720px){.panel-grid{grid-template-columns:1fr;}}
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;}
+  .panel h2{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+
+  .bar-chart{display:flex;flex-direction:column;gap:9px;}
+  .bar-row{display:grid;grid-template-columns:88px 1fr 34px;align-items:center;gap:8px;}
+  .bar-row .bar-label{font-size:11.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .bar-track{background:#f1f1ef;border-radius:4px;height:14px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--crimson),var(--gold));transition:width .4s ease;}
+  .bar-fill.navy{background:linear-gradient(90deg,var(--navy),#3a5aa8);}
+  .bar-row .bar-count{font-size:11.5px;font-weight:700;color:var(--ink);text-align:right;}
+
+  .day-chart{display:flex;align-items:flex-end;gap:8px;height:140px;padding-top:6px;}
+  .day-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+  .day-bar{width:100%;max-width:26px;background:linear-gradient(180deg,var(--gold),var(--crimson));border-radius:3px 3px 0 0;min-height:2px;}
+  .day-count{font-size:10.5px;color:var(--muted);margin-bottom:3px;}
+  .day-label{font-size:10px;color:var(--muted);margin-top:6px;}
+
+  .table-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .table-filters{display:flex;flex-wrap:wrap;gap:8px;flex:1;}
+  .table-filters input{max-width:220px;}
+  .table-filters select{
+    padding:9px 11px;border:1px solid var(--line);border-radius:4px;font-size:13px;background:#fff;color:var(--ink);
+  }
+  button.export-btn{
+    border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;
+    padding:9px 13px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  button.export-btn:hover{background:#fafafa;}
+
+  .table-wrap{border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  table.report-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.report-table th{
+    background:var(--panel);text-align:left;padding:9px 12px;font-size:10.5px;font-weight:700;
+    letter-spacing:.3px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);
+    cursor:pointer;white-space:nowrap;user-select:none;
+  }
+  table.report-table th:hover{color:var(--navy);}
+  table.report-table th .sort-arrow{opacity:.4;margin-left:3px;}
+  table.report-table th.sorted .sort-arrow{opacity:1;}
+  table.report-table td{padding:9px 12px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:middle;}
+  table.report-table tr:last-child td{border-bottom:none;}
+  table.report-table tr:hover td{background:#fafafa;}
+  .row-link{font-size:11.5px;color:var(--navy);text-decoration:none;font-weight:600;white-space:nowrap;}
+  .row-link:hover{text-decoration:underline;}
+
+  .badge{
+    display:inline-block;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
+    padding:2px 7px;border-radius:10px;vertical-align:middle;
+  }
+  .badge.locked{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .badge.unlocked{background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .badge.role{background:#eef1fb;color:var(--navy);border:1px solid #dbe1f5;}
+
+  .empty-state{font-size:12.5px;color:var(--muted);text-align:center;padding:18px 4px;}
+  .updated-note{font-size:11px;color:var(--muted);text-align:right;margin-top:8px;}
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+  <div class="left" id="topbarCrestWrap">
+    <a href="dashboard.html" class="icon-btn" title="Back to ICT Dashboard" aria-label="Back to ICT Dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </a>
+    <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+  </div>
+  <img class="moe-mini" src="../assets/images/img-c4fe6fce0514ab8d.png" alt="Ministry of Education seal">
+</header>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+      <div class="seal-stage">
+        <div class="seal-glow"></div>
+        <div class="seal-ring"></div>
+        <img class="seal" src="../assets/images/img-382a5ec339393563.png" alt="School seal">
+        <div class="seal-shine"></div>
+      </div>
+      <h1>Account &amp; Security Reports<br><span class="school-line">Kingsville Public High School</span></h1>
+      <div class="subtitle-rule"></div>
+
+      <div class="toolbar">
+        <div class="range-tabs" id="rangeTabs">
+          <button data-days="1">Today</button>
+          <button data-days="7" class="active">7 Days</button>
+          <button data-days="30">30 Days</button>
+        </div>
+        <button class="refresh-btn" id="refreshBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+          Refresh
+        </button>
+      </div>
+
+      <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Accounts</div>
+          <div class="kpi-value" id="kpiTotal">—</div>
+          <div class="kpi-sub" id="kpiTotalSub">&nbsp;</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Locked Accounts</div>
+          <div class="kpi-value danger" id="kpiLocked">—</div>
+          <div class="kpi-sub" id="kpiLockedSub">&nbsp;</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Failed Logins</div>
+          <div class="kpi-value danger" id="kpiFailed">—</div>
+          <div class="kpi-sub" id="kpiFailedSub">selected range</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Active Today</div>
+          <div class="kpi-value ok" id="kpiActive">—</div>
+          <div class="kpi-sub" id="kpiActiveSub">signed in today</div>
+        </div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="panel">
+          <h2>Locked Accounts by Role</h2>
+          <div class="bar-chart" id="lockedByRoleChart">
+            <div class="empty-state">Loading…</div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Failed Login Attempts</h2>
+          <div class="day-chart" id="failedByDayChart">
+            <div class="empty-state">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Accounts Needing Attention</h2>
+
+        <div class="table-toolbar">
+          <div class="table-filters">
+            <input id="tableSearch" type="text" placeholder="Search by name, email, or ID…" autocomplete="off">
+            <select id="tableRoleFilter">
+              <option value="">All roles</option>
+              <option value="super_admin">Super Admin</option>
+              <option value="principal">Principal</option>
+              <option value="registrar">Registrar</option>
+                            <option value="teacher">Teacher</option>
+              <option value="student">Student</option>
+              <option value="ict">ICT</option>
+            </select>
+            <select id="tableStatusFilter">
+              <option value="">Locked or elevated attempts</option>
+              <option value="locked">Locked only</option>
+              <option value="attempts">Failed attempts only</option>
+            </select>
+          </div>
+          <button class="export-btn" id="exportBtn">Export CSV</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="report-table" id="reportTable">
+            <thead>
+              <tr>
+                <th data-key="full_name">Name <span class="sort-arrow">↕</span></th>
+                <th data-key="email">Email <span class="sort-arrow">↕</span></th>
+                <th data-key="role_code">Role <span class="sort-arrow">↕</span></th>
+                <th data-key="failed_login_attempts">Failed Attempts <span class="sort-arrow">↕</span></th>
+                <th data-key="locked">Status <span class="sort-arrow">↕</span></th>
+                <th data-key="last_failed_at">Last Attempt <span class="sort-arrow">↕</span></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="updated-note" id="updatedNote">&nbsp;</div>
+      </div>
+
+      <div class="back-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <a href="dashboard.html">Back to ICT Dashboard</a>
+      </div>
+
+      <div class="msg" id="msgBox"></div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-line-1">© <span id="year"></span> Kingsville Public High School</div>
+  <div class="footer-line-2">Developed by Mr. Fomba S. Varfee</div>
+</footer>
+
+<script>
+/* ==========================================================================
+   ICT — Account & Security Reports — LIVE SUPABASE WIRING
+   --------------------------------------------------------------------------
+   Every number on this page comes from the real project configured in
+   js/supabase-config.js. No sample/mock data.
+
+   Sources:
+     public.profiles       -> id, full_name, username, student_id, role,
+                               is_active, last_login
+                               ("locked" = is_active = false; there is no
+                               separate status/failed-count column — see
+                               000_MASTER_SCHEMA.sql)
+     public.login_history   -> profile_id, success, created_at
+                               (failed-login counts / "last failed attempt" /
+                               the "Failed Login Attempts" chart are derived
+                               from this table for the selected date range)
+
+   RLS already allows this: "profiles: staff read all" passes for ICT
+   because the seeded role_permissions matrix grants ict both users.create
+   and users.edit, and "login_history: admin read" explicitly includes
+   ict (migration 000_MASTER_SCHEMA.sql, lines ~1144 & ~1149). No new
+   migration is required for this page.
+
+   profiles has no `email` column (email lives on auth.users, which is not
+   readable from the browser — see the note in ict/view-users.html). The
+   "Email" column here is therefore populated with the person's login
+   identifier (username, or Student ID for students) instead.
+   ========================================================================= */
+(function () {
+  "use strict";
+
+  var msgBox = document.getElementById('msgBox');
+  var kpiGrid = document.getElementById('kpiGrid');
+  var rangeTabs = document.getElementById('rangeTabs');
+  var refreshBtn = document.getElementById('refreshBtn');
+  var tableBody = document.getElementById('tableBody');
+  var updatedNote = document.getElementById('updatedNote');
+  var searchInput = document.getElementById('tableSearch');
+  var roleFilterEl = document.getElementById('tableRoleFilter');
+  var statusFilterEl = document.getElementById('tableStatusFilter');
+  var exportBtn = document.getElementById('exportBtn');
+
+  var ROLE_LABELS = {
+    super_admin: 'Super Admin',
+    principal: 'Principal',
+    registrar: 'Registrar',
+    teacher: 'Teacher',
+    student: 'Student',
+    ict: 'ICT'
+  };
+
+  var rangeDays = 7;               // matches the "7 Days" tab marked active in HTML
+  var allProfiles = [];            // raw profiles rows for the current load
+  var failedByProfile = {};        // profile_id -> { count, lastAt }
+  var attentionRows = [];          // rows shown in the table (locked or has failed attempts)
+  var sortState = { key: 'failed_login_attempts', dir: -1 };
+
+  function escapeHtml(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function showMsg(text, isError) {
+    if (!text) { msgBox.className = 'msg'; msgBox.textContent = ''; return; }
+    msgBox.textContent = text;
+    msgBox.className = 'msg ' + (isError ? 'err' : 'ok');
+  }
+
+  function startOfToday() {
+    var d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  function isSameDay(isoString, ref) {
+    if (!isoString) return false;
+    var d = new Date(isoString);
+    return d.getFullYear() === ref.getFullYear() &&
+      d.getMonth() === ref.getMonth() &&
+      d.getDate() === ref.getDate();
+  }
+
+  function downloadCsv(filename, rows, columns) {
+    var header = columns.map(function (c) { return '"' + c.label.replace(/"/g, '""') + '"'; }).join(',');
+    var lines = rows.map(function (r) {
+      return columns.map(function (c) {
+        var v = typeof c.value === 'function' ? c.value(r) : r[c.value];
+        return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+      }).join(',');
+    });
+    var blob = new Blob([header + '\n' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  function renderBarChart(containerId, items, labelFn, valueFn, fillClass) {
+    var el = document.getElementById(containerId);
+    if (!items.length) { el.innerHTML = '<div class="empty-state">No data yet.</div>'; return; }
+    var max = Math.max.apply(null, items.map(valueFn).concat([1]));
+    el.innerHTML = items.map(function (it) {
+      var v = valueFn(it);
+      var pct = max ? Math.max(2, (v / max) * 100) : 0;
+      return '<div class="bar-row">' +
+        '<div class="bar-label">' + escapeHtml(labelFn(it)) + '</div>' +
+        '<div class="bar-track"><div class="bar-fill ' + fillClass + '" style="width:' + pct + '%"></div></div>' +
+        '<div class="bar-count">' + escapeHtml(String(v)) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function renderDayChart(containerId, byDayCounts) {
+    var el = document.getElementById(containerId);
+    var days = Object.keys(byDayCounts).sort();
+    if (!days.length) { el.innerHTML = '<div class="empty-state">No failed logins in this range.</div>'; return; }
+    var max = Math.max.apply(null, days.map(function (d) { return byDayCounts[d]; }).concat([1]));
+    el.innerHTML = days.map(function (d) {
+      var v = byDayCounts[d];
+      var heightPct = Math.max(4, (v / max) * 100);
+      var label = new Date(d + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      return '<div class="day-col">' +
+        '<div class="day-count">' + v + '</div>' +
+        '<div class="day-bar" style="height:' + heightPct + '%"></div>' +
+        '<div class="day-label">' + escapeHtml(label) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  /* ---------------------------------------------------------------------
+     Load everything for the currently selected range straight from
+     Supabase, then render KPIs, charts and the table.
+  --------------------------------------------------------------------- */
+  async function loadReports() {
+    showMsg('', false);
+    try {
+      var sb = window.sb;
+      if (!sb) throw new Error('Supabase client not initialised');
+
+      var cutoffIso = new Date(Date.now() - rangeDays * 86400000).toISOString();
+
+      var profilesPromise = sb.from('profiles')
+        .select('id, full_name, username, student_id, role, is_active, last_login')
+        .order('full_name');
+
+      var failedPromise = sb.from('login_history')
+        .select('profile_id, created_at, success')
+        .eq('success', false)
+        .gte('created_at', cutoffIso)
+        .order('created_at', { ascending: false });
+
+      var results = await Promise.all([profilesPromise, failedPromise]);
+      var profilesRes = results[0];
+      var failedRes = results[1];
+      if (profilesRes.error) throw profilesRes.error;
+      if (failedRes.error) throw failedRes.error;
+
+      allProfiles = profilesRes.data || [];
+      var failedRows = failedRes.data || [];
+
+      failedByProfile = {};
+      failedRows.forEach(function (r) {
+        var cur = failedByProfile[r.profile_id] || { count: 0, lastAt: null };
+        cur.count += 1;
+        if (!cur.lastAt || r.created_at > cur.lastAt) cur.lastAt = r.created_at;
+        failedByProfile[r.profile_id] = cur;
+      });
+
+      renderKpis(failedRows);
+      renderLockedByRoleChart();
+      renderFailedByDayChart(failedRows);
+      buildAttentionRows();
+      renderTable();
+
+      updatedNote.textContent = 'Updated ' + new Date().toLocaleString();
+    } catch (err) {
+      console.error('[ICT reports] loadReports failed', err);
+      showMsg('Could not load live report data: ' + (err && err.message ? err.message : err), true);
+      ['kpiTotal', 'kpiLocked', 'kpiFailed', 'kpiActive'].forEach(function (id) {
+        document.getElementById(id).textContent = '\u2014';
+      });
+      ['lockedByRoleChart', 'failedByDayChart'].forEach(function (id) {
+        document.getElementById(id).innerHTML = '<div class="empty-state">Could not reach the live database.</div>';
+      });
+      tableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Could not load \u2014 check console.</td></tr>';
+    }
+  }
+
+  function renderKpis(failedRows) {
+    var today = startOfToday();
+    var total = allProfiles.length;
+    var locked = allProfiles.filter(function (p) { return p.is_active === false; });
+    var activeToday = allProfiles.filter(function (p) { return isSameDay(p.last_login, today); });
+
+    document.getElementById('kpiTotal').textContent = total;
+    document.getElementById('kpiTotalSub').textContent = 'across all roles';
+
+    document.getElementById('kpiLocked').textContent = locked.length;
+    document.getElementById('kpiLockedSub').textContent = total ? Math.round((locked.length / total) * 100) + '% of total' : '\u00a0';
+
+    document.getElementById('kpiFailed').textContent = failedRows.length;
+
+    document.getElementById('kpiActive').textContent = activeToday.length;
+  }
+
+  function renderLockedByRoleChart() {
+    var locked = allProfiles.filter(function (p) { return p.is_active === false; });
+    var byRole = {};
+    locked.forEach(function (p) { byRole[p.role] = (byRole[p.role] || 0) + 1; });
+    var items = Object.keys(byRole).map(function (k) {
+      return { role: ROLE_LABELS[k] || k, count: byRole[k] };
+    }).sort(function (a, b) { return b.count - a.count; });
+    renderBarChart('lockedByRoleChart', items, function (i) { return i.role; }, function (i) { return i.count; }, '');
+  }
+
+  function renderFailedByDayChart(failedRows) {
+    var byDay = {};
+    failedRows.forEach(function (r) {
+      var d = r.created_at.slice(0, 10);
+      byDay[d] = (byDay[d] || 0) + 1;
+    });
+    renderDayChart('failedByDayChart', byDay);
+  }
+
+  function buildAttentionRows() {
+    attentionRows = allProfiles.map(function (p) {
+      var f = failedByProfile[p.id] || { count: 0, lastAt: null };
+      return {
+        id: p.id,
+        full_name: p.full_name || '(no name)',
+        email: p.username || p.student_id || '\u2014',
+        role_code: p.role,
+        failed_login_attempts: f.count,
+        locked: p.is_active === false,
+        last_failed_at: f.lastAt
+      };
+    }).filter(function (r) { return r.locked || r.failed_login_attempts > 0; });
+  }
+
+  function getFilteredSortedRows() {
+    var q = (searchInput.value || '').trim().toLowerCase();
+    var role = roleFilterEl.value;
+    var status = statusFilterEl.value;
+
+    var rows = attentionRows.filter(function (r) {
+      if (role && r.role_code !== role) return false;
+      if (status === 'locked' && !r.locked) return false;
+      if (status === 'attempts' && r.failed_login_attempts <= 0) return false;
+      if (q) {
+        var hay = (r.full_name + ' ' + r.email + ' ' + r.role_code).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    var key = sortState.key;
+    var dir = sortState.dir;
+    rows.sort(function (a, b) {
+      var av, bv;
+      if (key === 'locked') { av = a.locked ? 1 : 0; bv = b.locked ? 1 : 0; }
+      else { av = a[key]; bv = b[key]; }
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      if (av < bv) return -1 * dir;
+      if (av > bv) return 1 * dir;
+      return 0;
+    });
+    return rows;
+  }
+
+  function fmtDateTime(iso) {
+    if (!iso) return '\u2014';
+    return new Date(iso).toLocaleString();
+  }
+
+  function renderTable() {
+    var rows = getFilteredSortedRows();
+    if (!rows.length) {
+      tableBody.innerHTML = '<tr><td colspan="7" class="empty-state">No accounts currently need attention.</td></tr>';
+      return;
+    }
+    tableBody.innerHTML = rows.map(function (r) {
+      var statusBadge = r.locked
+        ? '<span class="badge locked">Locked</span>'
+        : '<span class="badge unlocked">Active</span>';
+      var roleBadge = '<span class="badge role">' + escapeHtml(ROLE_LABELS[r.role_code] || r.role_code) + '</span>';
+      var actionLink = r.locked
+        ? '<a class="row-link" href="../ict/unlock-account.html">Unlock &rarr;</a>'
+        : '<a class="row-link" href="../ict/unlock-account.html">Review &rarr;</a>';
+      return '<tr>' +
+        '<td>' + escapeHtml(r.full_name) + '</td>' +
+        '<td>' + escapeHtml(r.email) + '</td>' +
+        '<td>' + roleBadge + '</td>' +
+        '<td>' + r.failed_login_attempts + '</td>' +
+        '<td>' + statusBadge + '</td>' +
+        '<td>' + escapeHtml(fmtDateTime(r.last_failed_at)) + '</td>' +
+        '<td>' + actionLink + '</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  /* ---------------------------------------------------------------------
+     Wiring: range tabs, refresh, filters, sorting, CSV export.
+  --------------------------------------------------------------------- */
+  rangeTabs.querySelectorAll('button[data-days]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      rangeDays = parseInt(btn.getAttribute('data-days'), 10) || 7;
+      rangeTabs.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      loadReports();
+    });
+  });
+
+  refreshBtn.addEventListener('click', function () {
+    refreshBtn.classList.add('spinning');
+    loadReports().finally(function () {
+      setTimeout(function () { refreshBtn.classList.remove('spinning'); }, 400);
+    });
+  });
+
+  searchInput.addEventListener('input', renderTable);
+  roleFilterEl.addEventListener('change', renderTable);
+  statusFilterEl.addEventListener('change', renderTable);
+
+  document.querySelectorAll('#reportTable th[data-key]').forEach(function (th) {
+    th.addEventListener('click', function () {
+      var key = th.getAttribute('data-key');
+      if (sortState.key === key) sortState.dir *= -1; else { sortState.key = key; sortState.dir = 1; }
+      document.querySelectorAll('#reportTable th').forEach(function (h) { h.classList.remove('sorted'); });
+      th.classList.add('sorted');
+      renderTable();
+    });
+  });
+
+  exportBtn.addEventListener('click', function () {
+    downloadCsv('ict-account-security-report.csv', getFilteredSortedRows(), [
+      { label: 'Name', value: 'full_name' },
+      { label: 'Username / ID', value: 'email' },
+      { label: 'Role', value: function (r) { return ROLE_LABELS[r.role_code] || r.role_code; } },
+      { label: 'Failed Attempts', value: 'failed_login_attempts' },
+      { label: 'Status', value: function (r) { return r.locked ? 'Locked' : 'Active'; } },
+      { label: 'Last Failed Attempt', value: function (r) { return fmtDateTime(r.last_failed_at); } }
+    ]);
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // This script tag sits at the end of <body>, after every element it
+  // references, so the DOM is already available — kick off the first live
+  // load straight away.
+  loadReports();
+})();
+</script>
+
+</body>
+</html>

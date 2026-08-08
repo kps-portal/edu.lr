@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Graduation Clearance</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;justify-content:center;gap:12px;}
+  header.topbar .left img{height:28px;width:28px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .kps-logo{height:30px;width:30px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+
+  .ticker-bar{
+    background:#fff4d6;border-bottom:1px solid #ecd9a0;
+    display:flex;align-items:center;overflow:hidden;flex-shrink:0;
+    height:clamp(30px,4.2vh,36px);
+  }
+  .ticker-label{
+    flex-shrink:0;display:flex;align-items:center;gap:6px;
+    background:var(--crimson);color:#fff;font-size:11px;font-weight:800;
+    letter-spacing:.4px;text-transform:uppercase;height:100%;padding:0 14px;white-space:nowrap;
+  }
+  .ticker-label svg{width:13px;height:13px;flex-shrink:0;}
+  .ticker-viewport{flex:1;overflow:hidden;position:relative;height:100%;}
+  .ticker-track{
+    display:flex;align-items:center;gap:56px;position:absolute;white-space:nowrap;
+    height:100%;will-change:transform;animation:tickerScroll 30s linear infinite;
+  }
+  .ticker-viewport:hover .ticker-track{animation-play-state:paused;}
+  .ticker-track span{font-size:12.5px;color:var(--ink);font-weight:600;}
+  .ticker-track span.pinned::before{content:"🎓 ";}
+  @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  .ticker-bar.ticker-empty .ticker-track{animation:none;position:static;}
+  .ticker-bar.ticker-empty .ticker-track span{color:var(--muted);font-weight:400;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1040px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;max-height:100%;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,38px) clamp(20px,7vw,36px) clamp(16px,3vh,30px);text-align:left;}
+  .seal-stage{position:relative;width:clamp(70px,12vh,110px);height:clamp(70px,12vh,110px);margin:0 auto clamp(8px,2vh,14px);display:flex;align-items:center;justify-content:center;}
+  .card img.seal{position:relative;z-index:2;height:clamp(60px,10vh,92px);width:clamp(60px,10vh,92px);object-fit:contain;border-radius:50%;background:#fff;padding:4px;box-shadow:0 10px 22px rgba(11,23,48,.25), 0 0 0 4px #fff;}
+  .card h1{font-size:clamp(14.5px,3vh,16.5px);color:var(--navy);font-weight:700;line-height:1.45;margin-bottom:6px;letter-spacing:.2px;text-align:center;}
+  .card h1 .school-line{color:var(--crimson);font-size:clamp(13px,2.7vh,15px);}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:clamp(8px,2vh,14px) auto clamp(12px,3vh,22px);border-radius:2px;}
+
+  .section-tabs{display:flex;gap:6px;background:#f1f1ef;border-radius:8px;padding:4px;margin-bottom:clamp(16px,2.6vh,22px);}
+  .section-tabs button{flex:1;border:none;background:transparent;padding:10px 14px;border-radius:6px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .section-tabs button.active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(11,23,48,.15);}
+  .section-tabs button svg{width:15px;height:15px;}
+  .stat-section{display:none;}
+  .stat-section.active{display:block;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(9px,1.6vh,11px) 13px;border:1px solid var(--line);border-radius:4px;
+    font-size:14px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:90px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .compose-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+  @media (max-width:720px){.compose-grid, .compose-grid.cols-3{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(16px,2.6vh,22px);}
+  .panel h2{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+  .panel h3{font-size:12.5px;font-weight:700;color:var(--navy);margin:16px 0 10px;letter-spacing:.2px;}
+
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:clamp(14px,2.4vh,20px);}
+  select.scope-select{padding:7px 11px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:#fff;color:var(--ink);}
+  button.refresh-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+  button.refresh-btn:hover{background:#fafafa;}
+  button.refresh-btn svg{width:14px;height:14px;}
+  button.refresh-btn.spinning svg{animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:clamp(18px,3vh,26px);}
+  @media (max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;box-shadow:0 2px 6px rgba(11,23,48,.05);}
+  .kpi-label{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);}
+  .kpi-value{font-size:26px;font-weight:800;color:var(--navy);margin-top:4px;line-height:1.1;}
+  .kpi-value.danger{color:var(--danger);}
+  .kpi-value.ok{color:var(--ok);}
+
+  .table-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .table-filters{display:flex;flex-wrap:wrap;gap:8px;flex:1;}
+  .table-filters input{max-width:240px;}
+  .table-filters select{padding:9px 11px;border:1px solid var(--line);border-radius:4px;font-size:13px;background:#fff;color:var(--ink);}
+  button.export-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;padding:9px 13px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  button.export-btn:hover{background:#fafafa;}
+
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:10px;vertical-align:middle;}
+  .badge.pass{background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .badge.fail{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .badge.role{background:#eef1fb;color:var(--navy);border:1px solid #dbe1f5;}
+  .badge.pending{background:#fff4d6;color:#8a6d1a;border:1px solid #ecd9a0;}
+
+  .request-list{display:flex;flex-direction:column;gap:10px;}
+  .request-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;display:flex;flex-direction:column;gap:6px;position:relative;}
+  .request-card.approved{border-left:4px solid var(--ok);}
+  .request-card.rejected{border-left:4px solid var(--danger);}
+  .request-card.pending{border-left:4px solid var(--gold);}
+  .request-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .request-title{font-size:14.5px;font-weight:700;color:var(--navy);}
+  .request-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .request-fees{font-size:12.5px;color:var(--ink);}
+  .request-actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;}
+  button.btn-ghost{border:none;background:none;color:var(--navy);font-weight:600;font-size:12px;cursor:pointer;padding:3px 6px;}
+  button.btn-ghost:hover{text-decoration:underline;}
+  button.btn-ghost.danger{color:var(--danger);}
+  button.btn-ghost.accent{color:var(--crimson);}
+
+  button.btn-primary{padding:10px 20px;border:none;border-radius:4px;background:var(--crimson);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;transition:background .15s;}
+  button.btn-primary:hover{background:var(--crimson-dark);}
+  button.btn-secondary{padding:10px 20px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13.5px;cursor:pointer;}
+  button.btn-secondary:hover{background:#fafafa;}
+  button.btn-generate{padding:10px 20px;border:1px solid var(--navy);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+  button.btn-generate:hover{background:var(--navy);color:#fff;}
+  button.btn-generate svg{width:15px;height:15px;}
+  .compose-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap;}
+
+  .transcript-input-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:8px;}
+  .transcript-input-table th, .transcript-input-table td{border:1px solid var(--line);padding:5px 6px;text-align:center;}
+  .transcript-input-table th{background:var(--panel);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);}
+  .transcript-input-table td:first-child, .transcript-input-table th:first-child{text-align:left;font-weight:600;color:var(--ink);}
+  .transcript-input-table input{width:100%;padding:5px 4px;border:1px solid var(--line);border-radius:3px;font-size:12.5px;text-align:center;}
+  .transcript-input-table tr.avg-row td, .transcript-input-table tr.conduct-row td{background:#fbfbfa;font-weight:700;}
+  .transcript-input-table td.subj-remove{text-align:center;}
+  .transcript-input-table td.subj-remove button{border:none;background:none;color:var(--danger);cursor:pointer;font-weight:700;font-size:14px;}
+  p.table-hint{font-size:11.5px;color:var(--muted);margin:-4px 0 8px;}
+
+  .fee-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;}
+  .fee-table th, .fee-table td{border:1px solid var(--line);padding:7px 8px;}
+  .fee-table th{background:var(--panel);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);text-align:left;}
+  .fee-table input[type="text"]{border:1px solid var(--line);border-radius:3px;padding:6px 8px;width:100%;font-size:13px;}
+  .fee-table input[type="number"]{border:1px solid var(--line);border-radius:3px;padding:6px 8px;width:100px;font-size:13px;}
+  .fee-table input[type="checkbox"]{width:16px;height:16px;accent-color:var(--ok);}
+  .fee-table td.fee-remove{text-align:center;}
+  .fee-table td.fee-remove button{border:none;background:none;color:var(--danger);cursor:pointer;font-weight:700;font-size:14px;}
+  .fee-totals{display:flex;justify-content:flex-end;gap:24px;font-size:12.5px;color:var(--ink);margin-bottom:14px;}
+  .fee-totals b{color:var(--navy);}
+  button.add-row-btn{border:1px dashed var(--line);background:#fff;color:var(--navy);border-radius:4px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:14px;}
+  button.add-row-btn:hover{background:#fafafa;}
+
+  .checklist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .checklist label{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink);font-weight:400;text-transform:none;}
+  .checklist input{width:17px;height:17px;accent-color:var(--ok);}
+
+  .back-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:clamp(10px,2vh,16px);font-size:13px;}
+  .back-row a{color:var(--navy);text-decoration:none;font-weight:600;}
+  .back-row a:hover{text-decoration:underline;}
+  .back-row svg{width:14px;height:14px;flex-shrink:0;}
+
+  .msg{margin-top:clamp(8px,1.6vh,14px);font-size:12.5px;padding:9px 11px;border-radius:4px;display:none;text-align:left;}
+  .msg.err{display:block;background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .msg.ok{display:block;background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .empty-state{font-size:12.5px;color:var(--muted);text-align:center;padding:18px 4px;}
+  .updated-note{font-size:11px;color:var(--muted);text-align:right;margin-top:8px;}
+
+  footer.site-footer{background:var(--navy-deep);color:#c9d2e8;font-size:11px;text-align:center;padding:clamp(8px,1.4vh,12px) 10px;border-top:2px solid var(--gold);flex-shrink:0;}
+  footer.site-footer .footer-line-1{font-weight:600;letter-spacing:.2px;}
+  footer.site-footer .footer-line-2{margin-top:3px;font-size:10.5px;color:var(--gold);letter-spacing:.3px;}
+
+  /* ===== Edit modal ===== */
+  .edit-overlay{position:fixed;inset:0;background:rgba(11,23,48,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
+  .edit-overlay.open{display:flex;}
+  .edit-modal{width:100%;max-width:760px;max-height:90vh;overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 20px 50px rgba(11,23,48,.3);padding:22px;}
+  .edit-modal h3{font-size:15px;color:var(--navy);margin-bottom:14px;}
+
+  /* ===== Shared generated-document overlay ===== */
+  .doc-overlay{position:fixed;inset:0;background:rgba(11,23,48,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:16px;}
+  .doc-overlay.open{display:flex;}
+  .doc-modal{width:100%;max-width:800px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 24px 60px rgba(11,23,48,.35);}
+  .doc-paper{padding:clamp(20px,4vw,40px);font-family:Georgia,"Times New Roman",serif;color:#111;}
+  .doc-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:14px clamp(18px,4vw,34px);border-top:1px solid var(--line);background:var(--panel);border-radius:0 0 10px 10px;font-family:"Segoe UI",Arial,sans-serif;}
+  button.btn-share, button.btn-download, button.btn-print, button.btn-doc-delete{padding:10px 18px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-share:hover, button.btn-download:hover{background:#fafafa;}
+  button.btn-print{border:none;background:var(--navy);color:#fff;}
+  button.btn-print:hover{background:var(--navy-deep);}
+  button.btn-doc-delete{border:1px solid #f6c9c4;color:var(--danger);}
+  button.btn-doc-delete:hover{background:#fdecea;}
+
+  /* --- letterhead shared by both documents --- */
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:62px;width:62px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:22px;font-weight:800;color:var(--navy);letter-spacing:.3px;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-office-row{display:flex;justify-content:space-between;align-items:flex-end;font-size:12.5px;font-style:italic;margin-bottom:16px;}
+  .doc-office-row .doc-date{font-style:normal;}
+  .doc-office-row .doc-date b{border-bottom:1px dotted #333;padding-bottom:1px;}
+
+  /* --- transcript specific --- */
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:16px;text-transform:uppercase;}
+  .doc-student-row{display:flex;gap:10px;margin-bottom:6px;font-size:13.5px;}
+  .doc-student-row .lbl{font-weight:700;min-width:150px;}
+  .doc-student-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;}
+  table.transcript-table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;}
+  table.transcript-table th, table.transcript-table td{border:1px solid #333;padding:6px 10px;text-align:center;}
+  table.transcript-table th{background:#f1f1ef;font-style:italic;}
+  table.transcript-table td:first-child{text-align:left;font-style:italic;}
+  table.transcript-table tr.avg-row td, table.transcript-table tr.conduct-row td{font-weight:700;}
+  .doc-certify-text{font-size:12.5px;line-height:1.7;margin:18px 0 30px;}
+  .doc-certify-text u{text-underline-offset:2px;}
+  .doc-sign-block{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;}
+  .doc-sign-block .sig-name{font-weight:700;font-size:13.5px;}
+  .doc-sign-block .sig-title{font-size:11.5px;letter-spacing:.6px;text-transform:uppercase;}
+  .doc-sign-block .seal-slot{width:96px;height:96px;border-radius:50%;border:2px dashed #999;display:flex;align-items:center;justify-content:center;font-size:9.5px;color:#999;text-align:center;padding:6px;}
+  .doc-sign-block .seal-slot img{width:100%;height:100%;border-radius:50%;object-fit:contain;}
+
+  /* --- clearance letter specific --- */
+  .clearance-title{text-align:center;font-weight:700;font-size:15px;text-decoration:underline;letter-spacing:.3px;margin:6px 0 18px;text-transform:uppercase;}
+  .clearance-to{font-size:13.5px;margin-bottom:4px;}
+  .clearance-track{font-weight:700;font-style:italic;font-size:13.5px;margin-bottom:14px;}
+  .clearance-salutation{font-size:13.5px;margin-bottom:12px;}
+  .clearance-body p{font-size:13.5px;line-height:1.7;margin-bottom:14px;text-align:justify;}
+  .clearance-body b{font-weight:700;}
+  .clearance-list{list-style:none;margin:0 0 16px 4px;padding:0;}
+  .clearance-list li{font-size:13px;line-height:1.9;padding-left:20px;position:relative;}
+  .clearance-list li::before{content:"❖";position:absolute;left:0;top:1px;color:var(--crimson);font-size:11px;}
+  .clearance-list li .fee-outstanding{color:var(--danger);font-weight:700;}
+  .clearance-list li .fee-cleared{color:var(--ok);font-weight:700;}
+  .clearance-signoff{display:flex;justify-content:space-between;gap:30px;margin:28px 0 10px;}
+  .clearance-signoff div{flex:1;font-size:12.5px;}
+  .clearance-signoff .sig-script{font-family:"Brush Script MT",cursive;font-size:22px;margin-bottom:-6px;}
+  .clearance-signoff .sig-name{border-top:1px solid #333;padding-top:4px;font-weight:700;}
+  .clearance-signoff .sig-title{color:#555;font-size:11.5px;}
+  .clearance-note{font-size:11.5px;color:#333;margin-top:20px;line-height:1.6;}
+  .clearance-ref{font-size:11.5px;margin-top:10px;font-weight:700;}
+  .clearance-status-flag{display:inline-block;margin:4px 0 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:4px 12px;border-radius:12px;}
+
+  @media print{
+    body *{visibility:hidden;}
+    .doc-overlay.open, .doc-overlay.open *{visibility:visible;}
+    .doc-overlay.open{position:absolute;inset:auto;background:none;padding:0;display:block !important;}
+    .doc-overlay.open .doc-modal{position:absolute;top:0;left:0;max-width:100%;max-height:none;box-shadow:none;border-radius:0;overflow:visible;}
+    .doc-actions{display:none !important;}
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left" id="topbarCrestWrap">
+    <img class="kps-logo" src="../assets/images/img-63d9fc79f267bd59.png" alt="Kingsville Public School logo">
+    <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+  </div>
+  <img class="moe-mini" src="../assets/images/img-738ccabf41d2ffd8.png" alt="Ministry of Education seal">
+</header>
+
+<div class="ticker-bar" id="tickerBar">
+  <div class="ticker-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5v6"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>
+    Graduation Approval
+  </div>
+  <div class="ticker-viewport">
+    <div class="ticker-track" id="tickerTrack">
+      <span>Loading graduation clearance updates&hellip;</span>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+      <div class="seal-stage">
+        <img class="seal" src="../assets/images/img-63d9fc79f267bd59.png" alt="School seal">
+      </div>
+      <h1>Graduation Clearance<br><span class="school-line">Kingsville Public High School</span></h1>
+      <div class="subtitle-rule"></div>
+
+      <div class="section-tabs" id="sectionTabs">
+        <button data-section="compose" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          New Request
+        </button>
+        <button data-section="manage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M3 12h18M3 19h18"/></svg>
+          All Requests
+        </button>
+      </div>
+
+      <!-- ================= COMPOSE SECTION ================= -->
+      <section class="stat-section active" id="composeSection">
+        <div class="panel">
+          <h2>New Graduation Clearance Request</h2>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newStudentName">Student Name</label>
+              <input id="newStudentName" type="text" placeholder="e.g. Fomba S. Varfee" autocomplete="off" maxlength="150">
+            </div>
+            <div class="field">
+              <label for="newStudentId">Student ID</label>
+              <input id="newStudentId" type="text" placeholder="e.g. KPHS-2026-014" autocomplete="off" maxlength="60">
+            </div>
+            <div class="field">
+              <label for="newGrade">Grade / Class</label>
+              <input id="newGrade" type="text" placeholder="e.g. Grade 12A" autocomplete="off" maxlength="60">
+            </div>
+          </div>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newAcademicYear">Academic Year</label>
+              <input id="newAcademicYear" type="text" placeholder="e.g. 2025/2026" autocomplete="off" maxlength="20">
+            </div>
+            <div class="field">
+              <label for="newTranscriptRef">Transcript Reference</label>
+              <input id="newTranscriptRef" type="text" placeholder="e.g. TR-2026-0141" autocomplete="off" maxlength="60">
+            </div>
+            <div class="field">
+              <label for="newStatus">Decision</label>
+              <select id="newStatus">
+                <option value="pending">Pending Review</option>
+                <option value="approved">Approved for Graduation</option>
+                <option value="rejected">Not Cleared</option>
+              </select>
+            </div>
+          </div>
+
+          <h3>Transcript — Subject Grades</h3>
+          <p class="table-hint">Add or remove subjects to match your school's curriculum.</p>
+          <table class="transcript-input-table" id="transcriptInputTable">
+            <thead>
+              <tr><th>Subject</th><th>10th Grade</th><th>11th Grade</th><th>12th Grade</th><th style="width:36px;"></th></tr>
+            </thead>
+            <tbody id="transcriptInputBody"></tbody>
+            <tfoot>
+              <tr class="avg-row"><td>Average</td><td id="avgCell10">—</td><td id="avgCell11">—</td><td id="avgCell12">—</td><td></td></tr>
+              <tr class="conduct-row">
+                <td>Conduct</td>
+                <td><input type="text" id="conduct10" value="Good"></td>
+                <td><input type="text" id="conduct11" value="Good"></td>
+                <td><input type="text" id="conduct12" value="Good"></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+          <button type="button" class="add-row-btn" id="addSubjectRowBtn">+ Add Subject</button>
+
+          <h3>Graduation Fees &amp; Clearance Items</h3>
+          <table class="fee-table" id="feeTable">
+            <thead>
+              <tr><th>Description</th><th style="width:120px;">Amount (USD)</th><th style="width:70px;">Paid</th><th style="width:40px;"></th></tr>
+            </thead>
+            <tbody id="feeTableBody"></tbody>
+          </table>
+          <button type="button" class="add-row-btn" id="addFeeRowBtn">+ Add Fee Item</button>
+          <div class="fee-totals">
+            <span>Total Due: <b id="feeTotalDue">$0.00</b></span>
+            <span>Outstanding: <b id="feeTotalOutstanding">$0.00</b></span>
+          </div>
+
+          <h3>Clearance Checklist</h3>
+          <div class="checklist" id="clearanceChecklist"></div>
+
+          <div class="compose-grid">
+            <div class="field">
+              <label for="newDecisionNotes">Decision Notes</label>
+              <textarea id="newDecisionNotes" placeholder="Any remarks about this graduation clearance decision…" maxlength="1000"></textarea>
+            </div>
+            <div class="field">
+              <label for="newReviewedBy">Reviewed By (Principal)</label>
+              <input id="newReviewedBy" type="text" placeholder="e.g. Principal Varfee" autocomplete="off" maxlength="100">
+            </div>
+          </div>
+
+          <div class="compose-actions">
+            <button class="btn-secondary" id="clearComposeBtn" type="button">Clear</button>
+            <button class="btn-generate" id="generateTranscriptBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/><path d="M9 11h6"/></svg>
+              Generate Transcript
+            </button>
+            <button class="btn-generate" id="generateClearanceBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5v6"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>
+              Generate Clearance Letter
+            </button>
+            <button class="btn-primary" id="postRequestBtn" type="button">Save Request</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MANAGE SECTION ================= -->
+      <section class="stat-section" id="manageSection">
+
+        <div class="toolbar">
+          <select class="scope-select" id="manageStatusFilter">
+            <option value="">All statuses</option>
+            <option value="pending">Pending Review</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Not Cleared</option>
+          </select>
+          <button class="refresh-btn" id="manageRefreshBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Requests</div>
+            <div class="kpi-value" id="kpiTotal">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Approved</div>
+            <div class="kpi-value ok" id="kpiApproved">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Pending</div>
+            <div class="kpi-value" id="kpiPending">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Not Cleared</div>
+            <div class="kpi-value danger" id="kpiRejected">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Outstanding Fees</div>
+            <div class="kpi-value danger" id="kpiOutstanding">—</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Graduation Clearance Requests</h2>
+          <div class="table-toolbar">
+            <div class="table-filters">
+              <input id="manageSearch" type="text" placeholder="Search by student name, ID, or grade…" autocomplete="off">
+            </div>
+            <button class="export-btn" id="manageExportBtn">Export CSV</button>
+          </div>
+          <div class="request-list" id="requestList">
+            <div class="empty-state">Loading…</div>
+          </div>
+          <div class="updated-note" id="manageUpdatedNote">&nbsp;</div>
+        </div>
+      </section>
+
+      <div class="back-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <a href="dashboard.html">Back to Registrar Dashboard</a>
+      </div>
+
+      <div class="msg" id="msgBox"></div>
+
+    </div>
+  </div>
+</main>
+
+<!-- ================= EDIT MODAL ================= -->
+<div class="edit-overlay" id="editOverlay">
+  <div class="edit-modal">
+    <h3>Edit Graduation Clearance Request</h3>
+
+    <div class="compose-grid cols-3">
+      <div class="field"><label for="editStudentName">Student Name</label><input id="editStudentName" type="text" maxlength="150"></div>
+      <div class="field"><label for="editStudentId">Student ID</label><input id="editStudentId" type="text" maxlength="60"></div>
+      <div class="field"><label for="editGrade">Grade / Class</label><input id="editGrade" type="text" maxlength="60"></div>
+    </div>
+    <div class="compose-grid cols-3">
+      <div class="field"><label for="editAcademicYear">Academic Year</label><input id="editAcademicYear" type="text" maxlength="20"></div>
+      <div class="field"><label for="editTranscriptRef">Transcript Reference</label><input id="editTranscriptRef" type="text" maxlength="60"></div>
+      <div class="field">
+        <label for="editStatus">Decision</label>
+        <select id="editStatus">
+          <option value="pending">Pending Review</option>
+          <option value="approved">Approved for Graduation</option>
+          <option value="rejected">Not Cleared</option>
+        </select>
+      </div>
+    </div>
+
+    <h3>Transcript — Subject Grades</h3>
+    <p class="table-hint">Add or remove subjects to match your school's curriculum.</p>
+    <table class="transcript-input-table" id="editTranscriptTable">
+      <thead><tr><th>Subject</th><th>10th Grade</th><th>11th Grade</th><th>12th Grade</th><th style="width:36px;"></th></tr></thead>
+      <tbody id="editTranscriptBody"></tbody>
+      <tfoot>
+        <tr class="avg-row"><td>Average</td><td id="editAvgCell10">—</td><td id="editAvgCell11">—</td><td id="editAvgCell12">—</td><td></td></tr>
+        <tr class="conduct-row">
+          <td>Conduct</td>
+          <td><input type="text" id="editConduct10"></td>
+          <td><input type="text" id="editConduct11"></td>
+          <td><input type="text" id="editConduct12"></td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+    <button type="button" class="add-row-btn" id="editAddSubjectRowBtn">+ Add Subject</button>
+
+    <h3>Graduation Fees &amp; Clearance Items</h3>
+    <table class="fee-table" id="editFeeTable">
+      <thead><tr><th>Description</th><th style="width:120px;">Amount (USD)</th><th style="width:70px;">Paid</th><th style="width:40px;"></th></tr></thead>
+      <tbody id="editFeeTableBody"></tbody>
+    </table>
+    <button type="button" class="add-row-btn" id="editAddFeeRowBtn">+ Add Fee Item</button>
+    <div class="fee-totals">
+      <span>Total Due: <b id="editFeeTotalDue">$0.00</b></span>
+      <span>Outstanding: <b id="editFeeTotalOutstanding">$0.00</b></span>
+    </div>
+
+    <h3>Clearance Checklist</h3>
+    <div class="checklist" id="editClearanceChecklist"></div>
+
+    <div class="compose-grid">
+      <div class="field"><label for="editDecisionNotes">Decision Notes</label><textarea id="editDecisionNotes" maxlength="1000"></textarea></div>
+      <div class="field"><label for="editReviewedBy">Reviewed By (Principal)</label><input id="editReviewedBy" type="text" maxlength="100"></div>
+    </div>
+
+    <div class="compose-actions">
+      <button class="btn-secondary" id="editCancelBtn" type="button">Cancel</button>
+      <button class="btn-primary" id="editSaveBtn" type="button">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= TRANSCRIPT DOCUMENT MODAL ================= -->
+<div class="doc-overlay" id="transcriptOverlay">
+  <div class="doc-modal">
+    <div class="doc-paper">
+      <div class="doc-letterhead">
+        <img id="tSchoolLogo" src="" alt="School logo">
+        <div class="doc-headtext">
+          <div class="school-name">Kingsville Public High School</div>
+          <div class="school-address">Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia</div>
+        </div>
+        <img id="tMoeLogo" src="" alt="Ministry of Education seal">
+      </div>
+      <div class="doc-office-row">
+        <span>Office of the Principal</span>
+        <span class="doc-date">Date: <b id="tDate">—</b></span>
+      </div>
+
+      <div class="doc-banner">Senior High Official Transcript</div>
+
+      <div class="doc-student-row"><span class="lbl">STUDENT'S NAME:</span><span class="val" id="tStudentName">—</span></div>
+      <div class="doc-student-row"><span class="lbl">STUDENT ID:</span><span class="val" id="tStudentId">—</span></div>
+      <div class="doc-student-row"><span class="lbl">ACADEMIC YEAR:</span><span class="val" id="tAcademicYear">—</span></div>
+
+      <table class="transcript-table" id="tTable">
+        <thead><tr><th>Subject</th><th>10th Grade</th><th>11th Grade</th><th>12th Grade</th></tr></thead>
+        <tbody id="tTableBody"></tbody>
+        <tfoot>
+          <tr class="avg-row"><td>Average</td><td id="tAvg10">—</td><td id="tAvg11">—</td><td id="tAvg12">—</td></tr>
+          <tr class="conduct-row"><td>Conduct</td><td id="tConduct10">—</td><td id="tConduct11">—</td><td id="tConduct12">—</td></tr>
+        </tfoot>
+      </table>
+
+      <div class="doc-certify-text">
+        This Senior High School Official Transcript is given under our hands and seal, this <u id="tDay">&nbsp;&nbsp;&nbsp;&nbsp;</u> day of <u id="tMonth">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>, A.D. 20<u id="tYearShort">&nbsp;&nbsp;</u>.
+      </div>
+
+      <div class="doc-sign-block">
+        <div>
+          <div class="sig-name" id="tPrincipalName">&nbsp;</div>
+          <div class="sig-title">Principal</div>
+        </div>
+        <div class="seal-slot"><img id="tSealImg" src="" alt="Seal"></div>
+      </div>
+    </div>
+
+    <div class="doc-actions">
+      <button class="btn-doc-delete" id="tDeleteBtn" type="button">Delete</button>
+      <button class="btn-share" id="tShareBtn" type="button">Share</button>
+      <button class="btn-download" id="tDownloadBtn" type="button">Download</button>
+      <button class="btn-print" id="tPrintBtn" type="button">Print</button>
+      <button class="btn-secondary" id="tCloseBtn" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CLEARANCE LETTER DOCUMENT MODAL ================= -->
+<div class="doc-overlay" id="clearanceOverlay">
+  <div class="doc-modal">
+    <div class="doc-paper">
+      <div class="doc-letterhead">
+        <img id="cSchoolLogo" src="" alt="School logo">
+        <div class="doc-headtext">
+          <div class="school-name">Kingsville Public High School</div>
+          <div class="school-address">
+            Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia<br>
+            Office of the Principal
+          </div>
+        </div>
+        <img id="cMoeLogo" src="" alt="Ministry of Education seal">
+      </div>
+      <div class="doc-office-row">
+        <span>Office of the Principal</span>
+        <span class="doc-date">Date: <b id="cDate">—</b></span>
+      </div>
+
+      <div class="clearance-title">Graduation Clearance Approval Letter</div>
+      <div style="text-align:center;"><span class="clearance-status-flag" id="cStatusFlag">Pending Review</span></div>
+
+      <div class="clearance-to">Mr. /Mrs. /Ms. <b id="cToName">—</b>:</div>
+      <div class="clearance-track" id="cTrackLine">Grade — Kingsville Public High School</div>
+
+      <div class="clearance-salutation">Dear Mr. /Mrs. /Ms. <span id="cSalutationName">—</span>:</div>
+
+      <div class="clearance-body">
+        <p id="cParaOne">We are pleased to inform you that, according to our records, you have satisfied all academic, financial, and disciplinary requirements for graduation clearance for the <b id="cYearInline">—</b> academic year.</p>
+        <p id="cParaTwo">In view of the foregoing, you are cleared to participate in the Graduation Ceremony and to receive your diploma, subject to the items listed below remaining in good standing:</p>
+      </div>
+
+      <ul class="clearance-list" id="cList"></ul>
+
+      <div class="clearance-body">
+        <p id="cParaNotes" style="display:none;"><b>Remarks:</b> <span id="cNotesText"></span></p>
+      </div>
+
+      <div class="clearance-signoff">
+        <div>
+          <div class="sig-script">Signed</div>
+          <div class="sig-name" id="cReviewedByName">&nbsp;</div>
+          <div class="sig-title">Principal, Kingsville Public High School</div>
+        </div>
+        <div>
+          <div class="sig-script">&nbsp;</div>
+          <div class="sig-name">APPROVED:</div>
+          <div class="sig-title">Principal / Registrar</div>
+        </div>
+      </div>
+
+      <div class="clearance-note">
+        NOTE: This clearance letter must be presented to the Registrar's Office on the day of Commencement.
+        This approval is void if any item listed above becomes outstanding again before the ceremony date.
+      </div>
+      <div class="clearance-ref">Clearance Reference: <span id="cRef">—</span></div>
+    </div>
+
+    <div class="doc-actions">
+      <button class="btn-doc-delete" id="cDeleteBtn" type="button">Delete</button>
+      <button class="btn-share" id="cShareBtn" type="button">Share</button>
+      <button class="btn-download" id="cDownloadBtn" type="button">Download</button>
+      <button class="btn-print" id="cPrintBtn" type="button">Print</button>
+      <button class="btn-secondary" id="cCloseBtn" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-line-1">© <span id="year"></span> Kingsville Public High School</div>
+  <div class="footer-line-2">Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia</div>
+  <div class="footer-line-2">Developed by Mr. Fomba S. Varfee</div>
+</footer>
+
+<!-- KPS ERP Core -->
+
+</body></html>`;
+      const blob = new Blob([html], { type: "text/html;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = docFilenameBase(kind) + ".html";
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    printBtn.addEventListener("click", () => window.print());
+
+    deleteBtn.addEventListener("click", async () => {
+      if (!currentDocRequest || !currentDocRequest.id) return;
+      if (!confirm("Delete this graduation clearance request? This cannot be undone.")) return;
+      const { error } = await sb.from("graduation_requests").delete().eq("id", currentDocRequest.id);
+      if (error) { showMsg("Couldn't delete request: " + error.message, "err"); return; }
+      showMsg("Graduation clearance request deleted.", "ok");
+      overlayEl.classList.remove("open");
+      currentDocRequest = null;
+      loadRequests();
+    });
+  }
+
+  wireDocActions("transcript", transcriptOverlay,
+    document.getElementById("tDeleteBtn"), document.getElementById("tShareBtn"),
+    document.getElementById("tDownloadBtn"), document.getElementById("tPrintBtn"));
+  wireDocActions("clearance", clearanceOverlay,
+    document.getElementById("cDeleteBtn"), document.getElementById("cShareBtn"),
+    document.getElementById("cDownloadBtn"), document.getElementById("cPrintBtn"));
+
+  // ================= Initial load =================
+  loadRequests();
+</script>
+</body>
+</html>

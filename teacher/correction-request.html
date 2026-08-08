@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CorrectionRequests1 - Correction Requests</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ribbon-bg:#f3f2f1;
+    --ribbon-border:#d0d0d0;
+    --blue:#185abd;
+    --blue-dark:#0f3d82;
+    --gold:#c9a227;
+    --gold-bright:#e8c34a;
+    --crimson:#c62828;
+    --ink:#000;
+    --page-shadow:0 0 0 1px #c8c8c8, 0 4px 18px rgba(0,0,0,.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;
+    font-family:"Segoe UI",Calibri,Arial,sans-serif;
+    background:#e9e9e9;
+    color:#1b1b1b;
+  }
+
+  /* ===================== TITLE BAR ===================== */
+  .titlebar{
+    background:var(--blue-dark);color:#fff;font-size:13px;padding:5px 14px;
+    display:flex;align-items:center;gap:8px;user-select:none;
+  }
+  .titlebar .word-icon{
+    width:18px;height:18px;background:#fff;border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--blue-dark);font-weight:800;font-size:12px;
+  }
+  .titlebar .doc-title{font-weight:600;}
+  .titlebar .doc-title[contenteditable]{outline:none;border-bottom:1px dashed transparent;}
+  .titlebar .doc-title[contenteditable]:hover{border-bottom:1px dashed rgba(255,255,255,.5);}
+  .titlebar .badge{
+    margin-left:6px;font-size:10px;letter-spacing:.5px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));
+    color:#3a2c00;padding:2px 8px;border-radius:20px;font-weight:800;text-transform:uppercase;
+    box-shadow:0 0 8px rgba(232,195,74,.7);
+  }
+
+  /* ===================== APP LETTERHEAD BAR ===================== */
+  .app-letterhead{background:linear-gradient(180deg,#ffffff 0%,#fbfaf6 100%);display:flex;flex-direction:column;user-select:none;}
+  .app-letterhead .al-row{display:flex;align-items:center;justify-content:center;gap:20px;padding:10px 20px 8px;}
+  .app-letterhead .al-logo{height:52px;width:52px;flex:0 0 auto;border-radius:50%;object-fit:cover;background:#fff;border:2px solid var(--gold);padding:2px;}
+  .app-letterhead .al-text{text-align:center;}
+  .app-letterhead .al-text .al-name{font-family:'Playfair Display',Georgia,serif;font-size:17pt;font-weight:800;letter-spacing:1px;color:var(--blue-dark);text-transform:uppercase;}
+  .app-letterhead .al-text .al-addr{font-size:9.5pt;color:#4a4a4a;letter-spacing:.3px;margin-top:1px;}
+  .app-letterhead .al-text .al-motto{font-family:'Cormorant Garamond',Georgia,serif;font-size:11pt;font-style:italic;color:#a8791a;margin-top:2px;}
+  .app-letterhead .al-rule{height:3px;background:var(--blue-dark);}
+  .app-letterhead .al-rule-thin{height:1.5px;background:#c9a227;margin-top:2px;}
+
+  /* ===================== PREMIUM ANIMATIONS ===================== */
+  @keyframes logoGlow{0%,100%{box-shadow:0 0 6px rgba(15,61,130,.5);}35%{box-shadow:0 0 16px rgba(201,162,39,.9);}65%{box-shadow:0 0 16px rgba(198,40,40,.7);}}
+  @keyframes ruleShimmer{0%{background-position:0% 0;}100%{background-position:200% 0;}}
+  @keyframes textShimmer{0%{background-position:200% center;}100%{background-position:-200% center;}}
+  @keyframes pulseGlow{0%,100%{box-shadow:0 0 8px rgba(232,195,74,.65),0 0 0 rgba(198,40,40,0);}50%{box-shadow:0 0 22px rgba(232,195,74,1),0 0 14px rgba(198,40,40,.45);}}
+  @keyframes floatUp{0%{transform:translateY(0);}50%{transform:translateY(-3px);}100%{transform:translateY(0);}}
+  @keyframes fadeSlideIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes popIn{0%{opacity:0;transform:scale(.85);}100%{opacity:1;transform:scale(1);}}
+  @keyframes checkPop{0%{transform:scale(0);}60%{transform:scale(1.3);}100%{transform:scale(1);}}
+  @keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(220px) rotate(540deg);opacity:0;}}
+
+  .app-letterhead .al-logo{animation:logoGlow 3.6s ease-in-out infinite;}
+  .app-letterhead .al-rule{background:linear-gradient(90deg,var(--blue-dark) 0%,#c9a227 20%,#c62828 40%,#c9a227 60%,var(--blue-dark) 80%,#c9a227 100%);background-size:220% 100%;animation:ruleShimmer 5s linear infinite;}
+  .app-letterhead .al-rule-thin{background:linear-gradient(90deg,#c9a227 0%,#c62828 50%,#c9a227 100%);background-size:220% 100%;animation:ruleShimmer 5s linear infinite reverse;}
+  .app-letterhead .al-name{background:linear-gradient(100deg,var(--blue-dark) 20%,#c9a227 38%,#c62828 48%,#c9a227 58%,var(--blue-dark) 80%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--blue-dark);animation:textShimmer 6s linear infinite;}
+
+  /* ===================== RIBBON TABS ===================== */
+  .ribbon-tabs{background:var(--blue-dark);display:flex;gap:2px;padding:0 10px;font-size:13px;}
+  .ribbon-tabs button{background:none;border:none;color:#dbe6f7;padding:7px 12px;cursor:pointer;font-size:13px;border-radius:3px 3px 0 0;}
+  .ribbon-tabs button.active{background:var(--ribbon-bg);color:#111;font-weight:600;}
+  .ribbon-tabs button:hover:not(.active){background:rgba(255,255,255,.12);}
+  .ribbon-tabs button.review-tab{color:var(--gold-bright);font-weight:700;}
+
+  /* ===================== RIBBON ===================== */
+  .ribbon{background:var(--ribbon-bg);border-bottom:1px solid var(--ribbon-border);display:flex;align-items:stretch;padding:6px 8px 2px;min-height:78px;}
+  .ribbon-panel{display:none;flex-wrap:wrap;flex:1;align-items:stretch;}
+  .ribbon-panel.active{display:flex;}
+  .ribbon-group{display:flex;flex-direction:column;align-items:center;border-right:1px solid var(--ribbon-border);padding:0 10px;min-width:56px;}
+  .ribbon-group:last-child{border-right:none;}
+  .ribbon-group .row{display:flex;align-items:center;gap:3px;margin-bottom:3px;flex-wrap:wrap;justify-content:center;}
+  .ribbon-group .label{font-size:11px;color:#444;margin-top:auto;padding-top:2px;text-align:center;}
+  .rbtn{border:1px solid transparent;background:none;padding:5px 7px;border-radius:3px;cursor:pointer;font-size:13.5px;color:#222;line-height:1;white-space:nowrap;}
+  .rbtn.big{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 8px;font-size:11px;height:52px;justify-content:center;}
+  .rbtn.big span.ico{font-size:18px;}
+  .rbtn:hover{background:#e3e9f5;border-color:#bcd0ee;}
+  .rbtn.active{background:#cfe0f7;border-color:#8fb6e8;}
+  select.rsel{font-size:12.5px;padding:4px 6px;border:1px solid #c6c6c6;border-radius:3px;background:#fff;}
+  input.rinput{font-size:12.5px;padding:4px 6px;border:1px solid #c6c6c6;border-radius:3px;background:#fff;}
+  #subjectSel{width:150px;}
+  #classSel{width:120px;}
+  #statusFilterSel{width:130px;}
+  .pending-badge{
+    display:flex;align-items:center;gap:5px;background:#fff7e0;color:#8a6100;border:1px solid #f0dca0;
+    padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;
+  }
+
+  .ribbon-actions{margin-left:auto;display:flex;align-items:center;gap:8px;padding:4px 6px;align-self:center;}
+  .ribbon-actions button{background:#fff;border:1px solid #bbb;border-radius:4px;padding:6px 12px;font-size:12.5px;cursor:pointer;color:#222;display:flex;align-items:center;gap:5px;}
+  .ribbon-actions button:hover{background:#f0f0f0;}
+  .review-btn-top{
+    background:linear-gradient(90deg,var(--blue-dark),var(--blue) 55%,var(--blue-dark));background-size:220% auto;
+    border:1px solid #8fb6e8;color:#fff;font-weight:800;padding:9px 16px!important;border-radius:24px!important;
+    font-size:13px!important;animation:textShimmer 7s linear infinite;
+  }
+
+  .msg{text-align:center;font-size:12px;padding:4px;color:#0a6b2c;background:#eafaf0;display:none;}
+  .msg.show{display:block;}
+
+  /* ===================== WORKSPACE / PAGE ===================== */
+  .workspace{padding:22px 0 90px;display:flex;justify-content:center;gap:18px;align-items:flex-start;}
+  .page-wrap{transform-origin:top center;}
+  .page{
+    width:816px;min-height:600px;background:#fff;box-shadow:var(--page-shadow);
+    padding:70px 84px;font-family:Calibri,"Segoe UI",Arial,sans-serif;
+    font-size:12pt;line-height:1.55;color:#000;position:relative;
+  }
+  .a-title{font-family:'Playfair Display',Georgia,serif;font-size:26pt;font-weight:800;color:var(--blue-dark);margin:0 0 4px;outline:none;}
+  .a-sub{color:#a8791a;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:13pt;margin:0 0 16px;outline:none;}
+  .meta-bar{
+    display:flex;flex-wrap:wrap;gap:10px 22px;background:linear-gradient(90deg,#f5f8ff,#fbf7ea);
+    border:1px solid #dfe6f2;border-left:4px solid var(--gold);border-radius:8px;
+    padding:12px 16px;margin-bottom:22px;font-size:11pt;
+  }
+  .meta-bar .m-item{display:flex;flex-direction:column;gap:2px;min-width:110px;}
+  .meta-bar .m-label{font-size:9pt;text-transform:uppercase;letter-spacing:.6px;color:#7a7a7a;font-weight:700;}
+  .meta-bar .m-value{font-weight:700;color:var(--blue-dark);}
+  .page h2.sect{font-size:14pt;color:var(--blue-dark);border-bottom:2px solid var(--gold);display:inline-block;padding-bottom:2px;margin:20px 0 10px;}
+
+  /* ---------- New Request form ---------- */
+  .form-row{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
+  .form-field{flex:1;min-width:180px;display:flex;flex-direction:column;gap:4px;}
+  .form-field label{font-size:9.5pt;text-transform:uppercase;letter-spacing:.5px;color:#7a7a7a;font-weight:700;}
+  .form-field select, .form-field input[type=text], .form-field textarea{
+    font-size:11.5pt;border:1px solid #dfe3ea;border-radius:6px;padding:8px 10px;font-family:inherit;background:#fff;
+  }
+  .form-field textarea{resize:vertical;min-height:70px;}
+  .submit-req-btn{
+    background:linear-gradient(90deg,var(--blue-dark),var(--blue) 55%,var(--blue-dark));background-size:220% auto;
+    border:none;color:#fff;font-weight:800;padding:11px 26px;border-radius:24px;font-size:12.5pt;cursor:pointer;
+    animation:textShimmer 7s linear infinite;
+  }
+  .submit-req-btn:disabled{opacity:.5;cursor:not-allowed;animation:none;}
+  .confirm-card{text-align:center;padding:20px 10px;animation:popIn .3s ease;}
+  .confirm-card .big-check{
+    width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;
+    font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;animation:checkPop .4s ease;
+    box-shadow:0 0 20px rgba(34,197,94,.5);
+  }
+  .confirm-card .ref-id{font-family:monospace;font-size:11pt;background:#f2f4f7;border:1px solid #e2e6ee;border-radius:6px;padding:6px 12px;display:inline-block;margin-top:8px;}
+
+  /* ---------- Status badges ---------- */
+  .status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:14px;font-size:9.5pt;font-weight:700;white-space:nowrap;}
+  .status-badge.pending{background:#fff7e0;color:#8a6100;border:1px solid #f0dca0;}
+  .status-badge.approved{background:#eafaf0;color:#0a6b2c;border:1px solid #b9e6c9;}
+  .status-badge.denied{background:#fdeaea;color:#a11515;border:1px solid #f3c6c6;}
+
+  /* ---------- My Requests list (student) ---------- */
+  .req-list{list-style:none;margin:0;padding:0;}
+  .req-item{border:1px solid #e2e6ee;border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fbfcfe;}
+  .req-item .ri-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+  .req-item .ri-title{font-weight:700;flex:1;}
+  .req-item .ri-meta{font-size:9.5pt;color:#888;}
+  .req-item .ri-note{font-size:10.5pt;color:#444;margin-top:6px;border-top:1px dashed #e2e6ee;padding-top:6px;}
+  .empty-hint{text-align:center;color:#999;padding:30px 0;font-size:11.5pt;}
+
+  /* ---------- Review dashboard (teacher) ---------- */
+  .review-table{width:100%;border-collapse:collapse;font-size:10.8pt;}
+  .review-table th,.review-table td{border:1px solid #e5e8ee;padding:8px 9px;text-align:left;vertical-align:top;}
+  .review-table th{background:#eef3fb;color:var(--blue-dark);}
+  .review-table td.reason-cell{max-width:220px;color:#555;}
+  .review-btn{background:var(--blue-dark);color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:10.5pt;cursor:pointer;}
+  .review-btn:hover{background:var(--blue);}
+
+  /* ===================== SIDE PANEL — CLASS ROSTER ===================== */
+  .side-panel{width:250px;background:#fff;box-shadow:var(--page-shadow);border-radius:8px;padding:16px;display:none;}
+  .side-panel.show{display:block;animation:fadeSlideIn .35s ease;}
+  .side-panel h3{margin:0 0 4px;font-size:13pt;color:var(--blue-dark);font-family:'Playfair Display',Georgia,serif;}
+  .side-panel .sp-sub{font-size:10pt;color:#888;margin-bottom:12px;}
+  .roster-list{list-style:none;margin:0 0 12px;padding:0;max-height:420px;overflow:auto;}
+  .roster-list li{display:flex;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px solid #f0f0f0;font-size:11.5pt;}
+  .avatar{width:28px;height:28px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;}
+  .roster-list .rm-btn{margin-left:auto;background:none;border:none;color:#c62828;cursor:pointer;font-size:14px;}
+  .add-student-row{display:flex;gap:6px;margin-bottom:10px;}
+  .add-student-row input{flex:1;font-size:12px;padding:6px 8px;border:1px solid #c6c6c6;border-radius:4px;}
+  .add-student-row button{background:var(--blue);color:#fff;border:none;border-radius:4px;padding:0 10px;cursor:pointer;font-size:16px;}
+  .sp-count{text-align:center;font-size:10.5pt;color:var(--blue-dark);font-weight:700;background:#eef3fb;padding:6px;border-radius:6px;margin-bottom:10px;}
+
+  /* ===================== STATUS BAR ===================== */
+  .statusbar{position:fixed;left:0;right:0;bottom:0;height:26px;background:var(--blue-dark);color:#dbe6f7;font-size:11.5px;display:flex;align-items:center;padding:0 14px;gap:16px;z-index:50;}
+  .statusbar .live-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:floatUp 1.6s ease-in-out infinite;}
+  .statusbar .credit{padding-left:16px;border-left:1px dashed #6f8bb5;color:#c7d6ee;font-style:italic;}
+  .statusbar .zoom{margin-left:auto;display:flex;align-items:center;gap:6px;}
+  .statusbar input[type=range]{width:100px;}
+
+  /* ===================== DETAIL MODAL ===================== */
+  .overlay{position:fixed;inset:0;background:rgba(10,16,30,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:200;}
+  .overlay.show{display:flex;}
+  .detail-modal{width:480px;max-width:92vw;max-height:88vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.4);padding:0;animation:popIn .28s cubic-bezier(.2,.9,.3,1.2);position:relative;}
+  .detail-modal-head{background:linear-gradient(120deg,var(--blue-dark),#173e78 60%,#0b2a58);color:#fff;padding:22px 24px 18px;border-radius:14px 14px 0 0;position:relative;overflow:hidden;}
+  .detail-modal-head::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(232,195,74,.25) 45%,transparent 60%);background-size:220% 100%;animation:ruleShimmer 3.4s linear infinite;}
+  .detail-modal-head h2{margin:0 0 4px;font-family:'Playfair Display',Georgia,serif;font-size:17pt;position:relative;}
+  .detail-modal-head p{margin:0;font-size:10.5pt;color:#cfe0f7;position:relative;}
+  .detail-modal-body{padding:18px 22px 22px;}
+  .detail-row{display:flex;gap:10px;margin-bottom:10px;font-size:11pt;}
+  .detail-row .dr-label{width:110px;flex:0 0 auto;color:#888;font-size:9.5pt;text-transform:uppercase;letter-spacing:.4px;font-weight:700;padding-top:2px;}
+  .detail-row .dr-value{flex:1;}
+  .detail-modal textarea{width:100%;font-size:11pt;border:1px solid #dfe3ea;border-radius:6px;padding:8px 10px;font-family:inherit;min-height:60px;resize:vertical;}
+  .decision-row{display:flex;gap:10px;margin-top:14px;}
+  .decision-row button{flex:1;border:none;border-radius:8px;padding:10px 0;font-weight:800;font-size:11.5pt;cursor:pointer;}
+  .approve-btn{background:linear-gradient(90deg,#22c55e,#16a34a);color:#fff;}
+  .deny-btn{background:linear-gradient(90deg,var(--crimson),#8f1c1c);color:#fff;}
+  .modal-close{position:absolute;top:12px;right:14px;background:rgba(255,255,255,.15);border:none;color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:14px;}
+  .modal-close:hover{background:rgba(255,255,255,.3);}
+  .confetti-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:14px;}
+  .confetti-piece{position:absolute;top:0;width:8px;height:8px;animation:confettiFall 1.4s ease-in forwards;}
+  .already-decided{text-align:center;padding:8px 0;}
+
+  @media print{
+    .titlebar,.ribbon-tabs,.ribbon,.msg,.statusbar,.side-panel,.overlay{display:none!important;}
+    body{background:#fff;}
+    .workspace{padding:0;display:block;}
+    .page-wrap{transform:none!important;}
+    .page{box-shadow:none;width:auto;min-height:0;padding:0.6in;margin:0;}
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<a href="dashboard.html" class="kps-back-btn" title="Back to Teacher Dashboard" style="position:fixed;top:14px;right:14px;z-index:9999;display:flex;align-items:center;gap:6px;background:#a3181c;color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 14px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.25);font-family:Arial,Helvetica,sans-serif;">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  Back to Dashboard
+</a>
+<style>@media print{ .kps-back-btn{ display:none !important; } }</style>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+  <div class="titlebar">
+    <div class="word-icon">C</div>
+    <div class="doc-title" contenteditable="true" spellcheck="false">Correction Requests</div>
+    <span class="badge">Premium</span>
+  </div>
+
+  <div class="app-letterhead">
+    <div class="al-row">
+      <img class="al-logo" src="../assets/images/img-eb5758904285f52d.png" alt="Ministry of Education, Republic of Liberia seal">
+      <div class="al-text">
+        <div class="al-name">Kingsville Public School</div>
+        <div class="al-addr">Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia</div>
+        <div class="al-motto">"Knowledge Is Power"</div>
+      </div>
+      <img class="al-logo" src="../assets/images/img-382a5ec339393563.png" alt="Kingsville Public School shield logo">
+    </div>
+    <div class="al-rule"></div>
+    <div class="al-rule-thin"></div>
+  </div>
+
+  <div class="ribbon-tabs">
+    <button class="tab-btn active" data-tab="setup">Setup</button>
+    <button class="tab-btn" data-tab="new">Student: New Request</button>
+    <button class="tab-btn review-tab" data-tab="review">✨ Teacher: Review Requests</button>
+  </div>
+
+  <div class="ribbon">
+    <!-- ============ SETUP ============ -->
+    <div class="ribbon-panel active" data-panel="setup">
+      <div class="ribbon-group">
+        <div class="row"><select id="subjectSel" class="rsel">
+          <option>Mathematics</option><option>English Language</option><option>Integrated Science</option>
+          <option>Social Studies</option><option>Civics</option><option>Agriculture</option><option>Reading</option>
+          <option value="__add__">➕ Add Subject…</option>
+        </select></div>
+        <div class="label">Subject</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><select id="classSel" class="rsel">
+          <option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option>
+          <option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option>
+          <option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+        </select></div>
+        <div class="label">Class</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="toggleRosterBtn"><span class="ico">👥</span>Class Roster</button></div>
+        <div class="label">Students</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><span id="pendingBadge" class="pending-badge">⏳ 0 pending</span></div>
+        <div class="label">This class</div>
+      </div>
+    </div>
+
+    <!-- ============ NEW REQUEST (student) ============ -->
+    <div class="ribbon-panel" data-panel="new">
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="clearFormBtn"><span class="ico">🗑</span>Clear Form</button></div>
+        <div class="label">Reset</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><span style="font-size:11px;color:#555;max-width:220px;display:inline-block;">Students: pick your name, describe the issue, and submit. Your teacher will review it.</span></div>
+        <div class="label">How it works</div>
+      </div>
+    </div>
+
+    <!-- ============ REVIEW REQUESTS (teacher) ============ -->
+    <div class="ribbon-panel" data-panel="review">
+      <div class="ribbon-group">
+        <div class="row"><select id="statusFilterSel" class="rsel">
+          <option value="all">All statuses</option>
+          <option value="pending" selected>Pending only</option>
+          <option value="approved">Approved</option>
+          <option value="denied">Denied</option>
+        </select></div>
+        <div class="label">Filter</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="refreshReviewBtn"><span class="ico">🔄</span>Refresh</button></div>
+        <div class="label">Update</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="clearResolvedBtn"><span class="ico">♻</span>Clear Resolved</button></div>
+        <div class="label">Admin</div>
+      </div>
+    </div>
+
+    <div class="ribbon-actions">
+      <button id="printBtn" title="Print">🖨 Print</button>
+      <button class="review-btn-top" id="reviewTabBtnTop">✨ Review Requests</button>
+    </div>
+  </div>
+
+  <div class="msg" id="msgBar"></div>
+
+  <div class="workspace">
+    <div class="page-wrap">
+      <div class="page" id="page">
+        <div class="a-title" id="pageTitle" contenteditable="true">Correction Request Center</div>
+        <div class="a-sub" id="pageSub" contenteditable="true">Ask your teacher to review a grade or answer you believe needs a second look…</div>
+
+        <div class="meta-bar">
+          <div class="m-item"><span class="m-label">Subject</span><span class="m-value" id="metaSubject">—</span></div>
+          <div class="m-item"><span class="m-label">Class</span><span class="m-value" id="metaClass">—</span></div>
+          <div class="m-item"><span class="m-label">Pending</span><span class="m-value" id="metaPending">0</span></div>
+          <div class="m-item"><span class="m-label">Resolved</span><span class="m-value" id="metaResolved">0</span></div>
+        </div>
+
+        <!-- ============ NEW REQUEST VIEW (student) ============ -->
+        <div id="newRequestView">
+          <h2 class="sect">Submit a Correction Request</h2>
+          <div id="requestFormWrap">
+            <div class="form-row">
+              <div class="form-field">
+                <label>Your Name</label>
+                <select id="reqStudentPicker"><option value="">Choose your name…</option></select>
+              </div>
+              <div class="form-field">
+                <label>What is this about?</label>
+                <select id="reqItemType">
+                  <option>Assignment</option><option>Homework</option><option>Quiz / Live Test</option>
+                  <option>Practical</option><option>Project</option><option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Title of the work (e.g. "Fractions Homework #3")</label>
+                <input type="text" id="reqItemTitle" placeholder="Enter the assignment/quiz/practical title…">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Score / grade you received (optional)</label>
+                <input type="text" id="reqCurrentScore" placeholder="e.g. 6/10">
+              </div>
+              <div class="form-field">
+                <label>What you think it should be (optional)</label>
+                <input type="text" id="reqRequestedScore" placeholder="e.g. 8/10">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Explain why you're requesting a correction</label>
+                <textarea id="reqReason" placeholder="e.g. Question 4 was marked wrong but I believe my answer matches the answer key…"></textarea>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:6px;">
+              <button class="submit-req-btn" id="submitReqBtn" disabled>📮 Submit Correction Request</button>
+            </div>
+          </div>
+
+          <div class="confirm-card" id="confirmCard" style="display:none;">
+            <div class="big-check">✓</div>
+            <div style="font-weight:800;font-size:14pt;color:#111;">Request submitted!</div>
+            <div style="color:#666;font-size:10.5pt;margin-top:2px;">Your teacher will review it and you'll see the outcome below.</div>
+            <div class="ref-id" id="confirmRefId">CR-000000</div>
+            <div style="margin-top:14px;"><button class="submit-req-btn" id="newAnotherBtn" style="animation:none;">Submit Another Request</button></div>
+          </div>
+
+          <h2 class="sect" style="margin-top:26px;">My Requests</h2>
+          <ul class="req-list" id="myRequestsList"><li class="empty-hint" style="list-style:none;">Choose your name above to see your requests.</li></ul>
+        </div>
+
+        <!-- ============ REVIEW VIEW (teacher) ============ -->
+        <div id="reviewView" style="display:none;">
+          <h2 class="sect">Correction Requests — <span id="reviewClassLabel">Grade 7</span></h2>
+          <table class="review-table" id="reviewTable">
+            <thead><tr><th>Student</th><th>Item</th><th>Reason</th><th>Requested</th><th>Status</th><th>Submitted</th><th></th></tr></thead>
+            <tbody id="reviewTbody"></tbody>
+          </table>
+          <div class="empty-hint" id="noReviewMsg" style="display:none;">No correction requests for this class yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-panel" id="rosterPanel">
+      <h3>Class Roster</h3>
+      <div class="sp-sub" id="rosterClassLabel">Select a class above</div>
+      <div class="sp-count" id="rosterCount">0 students registered</div>
+      <div class="add-student-row">
+        <input type="text" id="newStudentName" placeholder="Register student name…">
+        <button id="addStudentBtn">+</button>
+      </div>
+      <ul class="roster-list" id="rosterList"></ul>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span class="live-dot"></span>
+    <span id="wordCountLabel">Requests: 0</span>
+    <span class="credit">Developed by Mr. Fomba S. Varfee</span>
+    <div class="zoom">
+      <button id="zoomOutBtn2">−</button>
+      <input type="range" id="zoomRange" min="50" max="200" value="100">
+      <button id="zoomInBtn2">+</button>
+      <span id="zoomLabel">100%</span>
+    </div>
+  </div>
+
+  <!-- ============ DETAIL / DECISION MODAL ============ -->
+  <div class="overlay" id="detailOverlay">
+    <div class="detail-modal">
+      <div class="confetti-layer" id="confettiLayer"></div>
+      <div class="detail-modal-head">
+        <button class="modal-close" id="closeDetailBtn">✕</button>
+        <h2>📝 Review Request</h2>
+        <p id="detailSub">Submitted by —</p>
+      </div>
+      <div class="detail-modal-body">
+        <div class="detail-row"><div class="dr-label">Item</div><div class="dr-value" id="detItem">—</div></div>
+        <div class="detail-row"><div class="dr-label">Subject</div><div class="dr-value" id="detSubject">—</div></div>
+        <div class="detail-row"><div class="dr-label">Current score</div><div class="dr-value" id="detCurrent">—</div></div>
+        <div class="detail-row"><div class="dr-label">Requested</div><div class="dr-value" id="detRequested">—</div></div>
+        <div class="detail-row"><div class="dr-label">Reason</div><div class="dr-value" id="detReason">—</div></div>
+        <div class="detail-row"><div class="dr-label">Status</div><div class="dr-value" id="detStatus">—</div></div>
+
+        <div id="decisionSection">
+          <div class="form-field" style="margin-top:10px;">
+            <label>Note to student (optional)</label>
+            <textarea id="teacherNoteInput" placeholder="e.g. Corrected — question 4 now marked correct."></textarea>
+          </div>
+          <div class="decision-row">
+            <button class="approve-btn" id="approveBtn">✅ Approve Correction</button>
+            <button class="deny-btn" id="denyBtn">✕ Deny Request</button>
+          </div>
+        </div>
+
+        <div id="alreadyDecidedSection" class="already-decided" style="display:none;">
+          <div class="status-badge" id="decidedBadge" style="font-size:12pt;padding:8px 16px;"></div>
+          <div style="color:#666;font-size:10.5pt;margin-top:8px;" id="decidedNote"></div>
+          <div style="margin-top:14px;"><button class="rbtn" id="reopenBtn" style="border:1px solid #ccc;border-radius:8px;padding:8px 16px;">↺ Reopen as Pending</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const page = document.getElementById('page');
+  const pageWrap = document.querySelector('.page-wrap');
+  const msgBar = document.getElementById('msgBar');
+  function showMsg(t){ msgBar.textContent = t; msgBar.classList.add('show'); clearTimeout(showMsg._t); showMsg._t = setTimeout(()=>msgBar.classList.remove('show'), 2800); }
+  function esc(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  /* ---------- Tabs ---------- */
+  const newRequestView = document.getElementById('newRequestView');
+  const reviewView = document.getElementById('reviewView');
+  function activateTab(tabName){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.ribbon-panel').forEach(p=>p.classList.remove('active'));
+    const btn = document.querySelector('.tab-btn[data-tab="'+tabName+'"]');
+    if (btn) btn.classList.add('active');
+    const panel = document.querySelector('.ribbon-panel[data-panel="'+tabName+'"]');
+    if (panel) panel.classList.add('active');
+    if (tabName === 'review'){
+      newRequestView.style.display = 'none';
+      reviewView.style.display = 'block';
+      renderReviewTable();
+    } else {
+      newRequestView.style.display = 'block';
+      reviewView.style.display = 'none';
+    }
+  }
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> activateTab(btn.dataset.tab));
+  });
+  document.getElementById('reviewTabBtnTop').addEventListener('click', ()=> activateTab('review'));
+
+  /* ---------- Meta / subject / class ---------- */
+  function applyMeta(){
+    document.getElementById('metaSubject').textContent = document.getElementById('subjectSel').value;
+    document.getElementById('metaClass').textContent = document.getElementById('classSel').value;
+    document.getElementById('rosterClassLabel').textContent = document.getElementById('classSel').value;
+    document.getElementById('reviewClassLabel').textContent = document.getElementById('classSel').value;
+    renderRoster();
+    populateStudentPicker();
+    renderMyRequests();
+    refreshPendingBadge();
+    if (reviewView.style.display !== 'none') renderReviewTable();
+  }
+  document.getElementById('classSel').addEventListener('change', applyMeta);
+  document.getElementById('subjectSel').addEventListener('change', function(){ if (this.value !== '__add__') applyMeta(); });
+
+  /* ---------- Let teacher add custom subjects ---------- */
+  const subjectSel = document.getElementById('subjectSel');
+  let lastSubjectValue = subjectSel.value;
+  let customSubjects = [];
+
+  function insertSubjectOption(name, select){
+    const addOpt = subjectSel.querySelector('option[value="__add__"]');
+    const opt = document.createElement('option');
+    opt.textContent = name;
+    subjectSel.insertBefore(opt, addOpt);
+    if (select) subjectSel.value = name;
+  }
+
+  async function saveCustomSubjects(){
+    try{ if (window.storage && window.storage.set) await window.storage.set('custom-subjects', JSON.stringify(customSubjects), false); }catch(e){}
+  }
+  async function loadCustomSubjects(){
+    try{
+      if (window.storage && window.storage.get){
+        const r = await window.storage.get('custom-subjects');
+        if (r && r.value){
+          const parsed = JSON.parse(r.value);
+          if (Array.isArray(parsed)) customSubjects = parsed;
+        }
+      }
+    }catch(e){}
+    customSubjects.forEach(name => insertSubjectOption(name, false));
+  }
+
+  function addCustomSubject(){
+    const name = (prompt('New subject name:') || '').trim();
+    if (!name){
+      subjectSel.value = lastSubjectValue;
+      return;
+    }
+    const exists = Array.from(subjectSel.options).some(o => o.value.toLowerCase() === name.toLowerCase() && o.value !== '__add__');
+    if (exists){
+      subjectSel.value = name;
+      lastSubjectValue = name;
+      showMsg(name + ' is already in the subject list.');
+      applyMeta();
+      return;
+    }
+    customSubjects.push(name);
+    insertSubjectOption(name, true);
+    saveCustomSubjects();
+    lastSubjectValue = name;
+    showMsg('Added "' + name + '" to Subjects.');
+    applyMeta();
+  }
+
+  subjectSel.addEventListener('change', function(){
+    if (this.value === '__add__'){ addCustomSubject(); return; }
+    lastSubjectValue = this.value;
+  });
+
+  /* ---------- Class roster — teacher registers students per Grade ---------- */
+  const AVATAR_COLORS = ['#185abd','#c62828','#c9a227','#0a6b2c','#7c3aed','#0891b2','#db2777'];
+  let registers = {};
+  function currentClassName(){ return document.getElementById('classSel').value; }
+  function currentRoster(){ return registers[currentClassName()] || []; }
+  function initials(name){ return name.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase(); }
+  function colorFor(i){ return AVATAR_COLORS[i % AVATAR_COLORS.length]; }
+
+  function renderRoster(){
+    const list = document.getElementById('rosterList');
+    const roster = currentRoster();
+    list.innerHTML = '';
+    if (!roster.length){
+      list.innerHTML = '<li style="opacity:.6;justify-content:center;">No students registered for ' + currentClassName() + ' yet.</li>';
+    } else {
+      roster.forEach((name, i)=>{
+        const li = document.createElement('li');
+        li.innerHTML = '<span class="avatar" style="background:'+colorFor(i)+'">'+initials(name)+'</span><span>'+esc(name)+'</span><button class="rm-btn" data-i="'+i+'">✕</button>';
+        list.appendChild(li);
+      });
+    }
+    document.getElementById('rosterCount').textContent = roster.length + ' student' + (roster.length===1?'':'s') + ' registered';
+    list.querySelectorAll('.rm-btn').forEach(b=> b.addEventListener('click', ()=>{
+      currentRoster().splice(parseInt(b.dataset.i,10),1); renderRoster(); saveRegisters(); populateStudentPicker();
+    }));
+  }
+  async function saveRegisters(){
+    try{ if (window.storage && window.storage.set) await window.storage.set('class-registers', JSON.stringify(registers), false); }catch(e){}
+  }
+  async function loadRegisters(){
+    try{
+      if (window.storage && window.storage.get){
+        const r = await window.storage.get('class-registers');
+        if (r && r.value){ const parsed = JSON.parse(r.value); if (parsed && typeof parsed === 'object') registers = parsed; }
+      }
+    }catch(e){}
+    renderRoster();
+  }
+  document.getElementById('addStudentBtn').addEventListener('click', ()=>{
+    const input = document.getElementById('newStudentName');
+    const name = input.value.trim();
+    if (!name) return;
+    const cls = currentClassName();
+    if (!registers[cls]) registers[cls] = [];
+    registers[cls].push(name);
+    input.value=''; renderRoster(); saveRegisters(); populateStudentPicker();
+    showMsg('Registered ' + name + ' to ' + cls + '.');
+  });
+  document.getElementById('newStudentName').addEventListener('keydown', e=>{ if (e.key==='Enter') document.getElementById('addStudentBtn').click(); });
+  document.getElementById('toggleRosterBtn').addEventListener('click', function(){
+    document.getElementById('rosterPanel').classList.toggle('show');
+    this.classList.toggle('active');
+  });
+
+  /* ---------- Zoom ---------- */
+  let zoom = 100;
+  function applyZoom(){ pageWrap.style.transform = 'scale('+(zoom/100)+')'; document.getElementById('zoomLabel').textContent = zoom+'%'; document.getElementById('zoomRange').value = zoom; }
+  function changeZoom(d){ zoom = Math.max(50, Math.min(200, zoom+d)); applyZoom(); }
+  document.getElementById('zoomInBtn2').addEventListener('click', ()=>changeZoom(10));
+  document.getElementById('zoomOutBtn2').addEventListener('click', ()=>changeZoom(-10));
+  document.getElementById('zoomRange').addEventListener('input', function(){ zoom = parseInt(this.value,10); applyZoom(); });
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  /* ============ CORRECTION REQUESTS — DATA LAYER ============ */
+  function refId(id){ return 'CR-' + id.replace(/[^a-z0-9]/gi,'').slice(-6).toUpperCase(); }
+  function reqKey(id){ return 'correction-request:' + id; }
+
+  async function saveRequest(record){
+    try{ if (window.storage && window.storage.set) await window.storage.set(reqKey(record.id), JSON.stringify(record), true); }catch(e){}
+  }
+  async function fetchAllRequests(){
+    const out = [];
+    try{
+      if (window.storage && window.storage.list && window.storage.get){
+        const listed = await window.storage.list('correction-request:', true);
+        if (listed && listed.keys){
+          for (const k of listed.keys){
+            try{
+              const r = await window.storage.get(k, true);
+              if (r && r.value) out.push(JSON.parse(r.value));
+            }catch(e){}
+          }
+        }
+      }
+    }catch(e){}
+    out.sort((a,b)=> b.submittedAt - a.submittedAt);
+    return out;
+  }
+  async function fetchClassRequests(){
+    const all = await fetchAllRequests();
+    return all.filter(r => r.className === currentClassName());
+  }
+
+  async function refreshPendingBadge(){
+    const rows = await fetchClassRequests();
+    const pending = rows.filter(r=>r.status==='pending').length;
+    const resolved = rows.filter(r=>r.status!=='pending').length;
+    document.getElementById('pendingBadge').textContent = '⏳ ' + pending + ' pending';
+    document.getElementById('metaPending').textContent = pending;
+    document.getElementById('metaResolved').textContent = resolved;
+    document.getElementById('wordCountLabel').textContent = 'Requests: ' + rows.length;
+  }
+
+  /* ---------- New Request form (student) ---------- */
+  function populateStudentPicker(){
+    const sel = document.getElementById('reqStudentPicker');
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">Choose your name…</option>';
+    currentRoster().forEach(name=>{
+      const opt = document.createElement('option'); opt.value = name; opt.textContent = name; sel.appendChild(opt);
+    });
+    if (currentRoster().includes(prev)) sel.value = prev;
+  }
+
+  const submitReqBtn = document.getElementById('submitReqBtn');
+  function checkFormValid(){
+    const name = document.getElementById('reqStudentPicker').value;
+    const title = document.getElementById('reqItemTitle').value.trim();
+    const reason = document.getElementById('reqReason').value.trim();
+    submitReqBtn.disabled = !(name && title && reason);
+  }
+  ['reqStudentPicker','reqItemTitle','reqReason'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', checkFormValid);
+    document.getElementById(id).addEventListener('change', checkFormValid);
+  });
+  document.getElementById('reqStudentPicker').addEventListener('change', renderMyRequests);
+
+  function clearForm(){
+    document.getElementById('reqItemTitle').value = '';
+    document.getElementById('reqCurrentScore').value = '';
+    document.getElementById('reqRequestedScore').value = '';
+    document.getElementById('reqReason').value = '';
+    document.getElementById('reqItemType').value = 'Assignment';
+    checkFormValid();
+  }
+  document.getElementById('clearFormBtn').addEventListener('click', clearForm);
+
+  submitReqBtn.addEventListener('click', async ()=>{
+    const studentName = document.getElementById('reqStudentPicker').value;
+    if (!studentName) return;
+    const id = 'cr' + Date.now().toString(36) + Math.floor(Math.random()*9999);
+    const record = {
+      id,
+      studentName,
+      className: currentClassName(),
+      subject: document.getElementById('subjectSel').value,
+      itemType: document.getElementById('reqItemType').value,
+      itemTitle: document.getElementById('reqItemTitle').value.trim(),
+      currentScore: document.getElementById('reqCurrentScore').value.trim(),
+      requestedScore: document.getElementById('reqRequestedScore').value.trim(),
+      reason: document.getElementById('reqReason').value.trim(),
+      status: 'pending',
+      teacherNote: '',
+      submittedAt: Date.now(),
+      resolvedAt: null
+    };
+    await saveRequest(record);
+    document.getElementById('requestFormWrap').style.display = 'none';
+    document.getElementById('confirmCard').style.display = 'block';
+    document.getElementById('confirmRefId').textContent = refId(id);
+    showMsg('Correction request submitted for ' + studentName + '.');
+    refreshPendingBadge();
+    renderMyRequests();
+  });
+  document.getElementById('newAnotherBtn').addEventListener('click', ()=>{
+    clearForm();
+    document.getElementById('confirmCard').style.display = 'none';
+    document.getElementById('requestFormWrap').style.display = 'block';
+    checkFormValid();
+  });
+
+  async function renderMyRequests(){
+    const list = document.getElementById('myRequestsList');
+    const name = document.getElementById('reqStudentPicker').value;
+    if (!name){
+      list.innerHTML = '<li class="empty-hint" style="list-style:none;">Choose your name above to see your requests.</li>';
+      return;
+    }
+    const all = await fetchClassRequests();
+    const mine = all.filter(r => r.studentName === name);
+    if (!mine.length){
+      list.innerHTML = '<li class="empty-hint" style="list-style:none;">You have not submitted any correction requests yet.</li>';
+      return;
+    }
+    list.innerHTML = '';
+    mine.forEach(r=>{
+      const li = document.createElement('li');
+      li.className = 'req-item';
+      let noteHtml = '';
+      if (r.status !== 'pending' && r.teacherNote){
+        noteHtml = '<div class="ri-note">👩‍🏫 ' + esc(r.teacherNote) + '</div>';
+      }
+      li.innerHTML =
+        '<div class="ri-head"><span class="ri-title">' + esc(r.itemTitle) + '</span>' +
+        '<span class="status-badge ' + r.status + '">' + statusLabel(r.status) + '</span></div>' +
+        '<div class="ri-meta">' + esc(r.itemType) + ' • ' + esc(r.subject) + ' • ' + new Date(r.submittedAt).toLocaleString() + '</div>' +
+        (r.reason ? '<div style="margin-top:6px;color:#444;">' + esc(r.reason) + '</div>' : '') +
+        noteHtml;
+      list.appendChild(li);
+    });
+  }
+
+  function statusLabel(s){
+    if (s === 'approved') return '✓ Approved';
+    if (s === 'denied') return '✕ Denied';
+    return '⏳ Pending';
+  }
+
+  /* ---------- Review dashboard (teacher) ---------- */
+  async function renderReviewTable(){
+    const tbody = document.getElementById('reviewTbody');
+    tbody.innerHTML = '';
+    const filter = document.getElementById('statusFilterSel').value;
+    let rows = await fetchClassRequests();
+    if (filter !== 'all') rows = rows.filter(r => r.status === filter);
+    document.getElementById('noReviewMsg').style.display = rows.length ? 'none' : 'block';
+    rows.forEach(r=>{
+      const tr = document.createElement('tr');
+      const requested = [r.currentScore ? ('had: ' + esc(r.currentScore)) : '', r.requestedScore ? ('wants: ' + esc(r.requestedScore)) : ''].filter(Boolean).join(' → ');
+      tr.innerHTML =
+        '<td>' + esc(r.studentName) + '</td>' +
+        '<td>' + esc(r.itemTitle) + '<br><span style="color:#999;font-size:9.5pt;">' + esc(r.itemType) + '</span></td>' +
+        '<td class="reason-cell">' + esc(r.reason) + '</td>' +
+        '<td>' + (requested || '—') + '</td>' +
+        '<td><span class="status-badge ' + r.status + '">' + statusLabel(r.status) + '</span></td>' +
+        '<td>' + new Date(r.submittedAt).toLocaleDateString() + '</td>' +
+        '<td><button class="review-btn" data-id="' + r.id + '">Open</button></td>';
+      tbody.appendChild(tr);
+    });
+    tbody.querySelectorAll('.review-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=> openDetail(btn.dataset.id));
+    });
+    refreshPendingBadge();
+  }
+  document.getElementById('statusFilterSel').addEventListener('change', renderReviewTable);
+  document.getElementById('refreshReviewBtn').addEventListener('click', renderReviewTable);
+  document.getElementById('clearResolvedBtn').addEventListener('click', async ()=>{
+    if (!confirm('Delete all approved/denied requests for ' + currentClassName() + '? This cannot be undone.')) return;
+    try{
+      if (window.storage && window.storage.list && window.storage.delete && window.storage.get){
+        const listed = await window.storage.list('correction-request:', true);
+        if (listed && listed.keys){
+          for (const k of listed.keys){
+            try{
+              const r = await window.storage.get(k, true);
+              if (r && r.value){
+                const rec = JSON.parse(r.value);
+                if (rec.className === currentClassName() && rec.status !== 'pending') await window.storage.delete(k, true);
+              }
+            }catch(e){}
+          }
+        }
+      }
+      showMsg('Resolved requests cleared for ' + currentClassName() + '.');
+    }catch(e){ showMsg('Could not clear resolved requests.'); }
+    renderReviewTable();
+  });
+
+  /* ---------- Detail / Decision modal ---------- */
+  const detailOverlay = document.getElementById('detailOverlay');
+  const confettiLayer = document.getElementById('confettiLayer');
+  let activeRequestId = null;
+
+  function launchConfetti(){
+    const colors = ['#22c55e','#e8c34a','#0f3d82','#16a34a','#ffffff'];
+    for (let i=0;i<36;i++){
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random()*100 + '%';
+      piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+      piece.style.animationDelay = (Math.random()*0.4) + 's';
+      piece.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+      confettiLayer.appendChild(piece);
+      setTimeout(()=> piece.remove(), 2000);
+    }
+  }
+
+  async function getRequestById(id){
+    try{
+      if (window.storage && window.storage.get){
+        const r = await window.storage.get(reqKey(id), true);
+        if (r && r.value) return JSON.parse(r.value);
+      }
+    }catch(e){}
+    return null;
+  }
+
+  async function openDetail(id){
+    const rec = await getRequestById(id);
+    if (!rec){ showMsg('Could not load that request.'); return; }
+    activeRequestId = id;
+    document.getElementById('detailSub').textContent = 'Submitted by ' + rec.studentName + ' • ' + rec.className;
+    document.getElementById('detItem').textContent = rec.itemTitle + ' (' + rec.itemType + ')';
+    document.getElementById('detSubject').textContent = rec.subject;
+    document.getElementById('detCurrent').textContent = rec.currentScore || '—';
+    document.getElementById('detRequested').textContent = rec.requestedScore || '—';
+    document.getElementById('detReason').textContent = rec.reason || '—';
+    document.getElementById('detStatus').innerHTML = '<span class="status-badge ' + rec.status + '">' + statusLabel(rec.status) + '</span>';
+    document.getElementById('teacherNoteInput').value = '';
+
+    const decisionSection = document.getElementById('decisionSection');
+    const alreadySection = document.getElementById('alreadyDecidedSection');
+    if (rec.status === 'pending'){
+      decisionSection.style.display = 'block';
+      alreadySection.style.display = 'none';
+    } else {
+      decisionSection.style.display = 'none';
+      alreadySection.style.display = 'block';
+      const badge = document.getElementById('decidedBadge');
+      badge.className = 'status-badge ' + rec.status;
+      badge.textContent = statusLabel(rec.status);
+      document.getElementById('decidedNote').textContent = rec.teacherNote ? ('Note to student: ' + rec.teacherNote) : 'No note was left for the student.';
+    }
+    detailOverlay.classList.add('show');
+  }
+  document.getElementById('closeDetailBtn').addEventListener('click', ()=> detailOverlay.classList.remove('show'));
+  detailOverlay.addEventListener('click', (e)=>{ if (e.target === detailOverlay) detailOverlay.classList.remove('show'); });
+
+  async function decide(status){
+    const rec = await getRequestById(activeRequestId);
+    if (!rec) return;
+    rec.status = status;
+    rec.teacherNote = document.getElementById('teacherNoteInput').value.trim();
+    rec.resolvedAt = Date.now();
+    await saveRequest(rec);
+    if (status === 'approved') launchConfetti();
+    showMsg((status === 'approved' ? 'Approved' : 'Denied') + ' ' + rec.studentName + '\u2019s request.');
+    setTimeout(()=> detailOverlay.classList.remove('show'), status==='approved' ? 900 : 200);
+    renderReviewTable();
+  }
+  document.getElementById('approveBtn').addEventListener('click', ()=> decide('approved'));
+  document.getElementById('denyBtn').addEventListener('click', ()=> decide('denied'));
+  document.getElementById('reopenBtn').addEventListener('click', async ()=>{
+    const rec = await getRequestById(activeRequestId);
+    if (!rec) return;
+    rec.status = 'pending';
+    rec.teacherNote = '';
+    rec.resolvedAt = null;
+    await saveRequest(rec);
+    showMsg('Request reopened as pending.');
+    openDetail(activeRequestId);
+    renderReviewTable();
+  });
+
+  /* ---------- Init ---------- */
+  (async function init(){
+    await loadCustomSubjects();
+    await loadRegisters();
+    populateStudentPicker();
+    applyMeta();
+    applyZoom();
+  })();
+})();
+</script>
+</body>
+</html>

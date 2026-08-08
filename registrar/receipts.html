@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>Kingsville Public High School — Fee Receipts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Registrar / Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:block; min-height:100vh; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-num{ font-family:'Fraunces',serif; font-size:24px; font-weight:700; margin-top:14px; line-height:1.15; }
+.stat-num small{ display:block; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--muted); font-weight:600; margin-top:3px; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-body{ padding:14px 20px 20px; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:560px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; max-height:90vh; display:flex; flex-direction:column; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; overflow-y:auto; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; flex:none; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field label .req{ color:var(--crimson); }
+.field input[type=text], .field input[type=number], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.field-hint{ font-size:11px; color:var(--muted); margin-top:-2px; }
+.lookup-row{ display:flex; gap:8px; }
+.lookup-row input{ flex:1; }
+.lookup-results{ border:1px solid var(--line); border-radius:10px; margin-top:4px; max-height:160px; overflow-y:auto; display:none; background:var(--paper); }
+.lookup-results.open{ display:block; }
+.lookup-item{ padding:9px 12px; font-size:12.5px; border-bottom:1px solid var(--line); cursor:pointer; }
+.lookup-item:last-child{ border-bottom:none; }
+.lookup-item:hover{ background:#FBF4E6; }
+.lookup-item b{ display:block; font-size:12.8px; }
+.lookup-item span{ color:var(--muted); font-size:11px; }
+.selected-chip{
+  display:flex; align-items:center; gap:8px; margin-top:8px; padding:8px 10px;
+  background:rgba(46,125,79,.1); border:1px solid rgba(46,125,79,.35); border-radius:10px;
+  font-size:12.5px; font-weight:600; color:var(--success);
+}
+.selected-chip svg{ width:15px; height:15px; flex:none; }
+.selected-chip span{ flex:1; }
+.selected-chip button{
+  background:none; border:none; color:var(--success); opacity:.7; font-size:13px;
+  padding:2px 4px; border-radius:6px; line-height:1;
+}
+.selected-chip button:hover{ opacity:1; background:rgba(46,125,79,.15); }
+
+/* Scan / photo uploader */
+.scan-box{ border:2px dashed var(--line); border-radius:12px; padding:16px; text-align:center; background:#FBF4E6; transition:border-color .15s; }
+.scan-box.has-img{ padding:10px; }
+.scan-box svg{ width:26px; height:26px; color:var(--gold-deep); margin-bottom:6px; }
+.scan-box p{ margin:0; font-size:12px; color:var(--muted); }
+.scan-box input[type=file]{ display:none; }
+.scan-preview{ display:flex; align-items:center; gap:12px; text-align:left; }
+.scan-preview img{ width:72px; height:96px; object-fit:cover; border-radius:8px; border:1px solid var(--line); background:#fff; }
+.scan-preview .sp-info{ flex:1; }
+.scan-preview .sp-info b{ display:block; font-size:12.5px; }
+.scan-status{ font-size:11.5px; color:var(--gold-deep); margin-top:6px; display:flex; align-items:center; gap:6px; justify-content:center; }
+.scan-status.ok{ color:var(--success); }
+.spinner{ width:12px; height:12px; border:2px solid rgba(217,138,36,.25); border-top-color:var(--gold-deep); border-radius:50%; animation:spin .7s linear infinite; flex:none; }
+@keyframes spin{ to{ transform:rotate(360deg);} }
+.ocr-text{ margin-top:8px; max-height:70px; overflow-y:auto; font-size:10.8px; color:var(--muted); background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:8px 10px; text-align:left; white-space:pre-wrap; }
+.convert-note{ font-size:11.5px; color:var(--gold-deep); font-weight:700; margin-top:-4px; }
+
+/* Official receipt (print + PDF export) — cash-receipt style, boxed layout */
+#officialReceiptRoot{ position:fixed; left:-9999px; top:0; }
+.off-receipt{ font-family:'IBM Plex Mono',monospace; }
+.off-receipt{
+  position:relative; width:700px; max-width:100%; margin:0 auto 26px;
+  background:#F7E08A; color:#1E1712; border:2px solid #1E1712;
+  box-shadow:0 0 0 5px #F7E08A, 0 0 0 6px #1E1712;
+  overflow:hidden;
+}
+.rc-body{ position:relative; z-index:2; padding:30px 36px 24px; }
+.rc-corner{ position:absolute; width:22px; height:22px; border:#A8631A solid; z-index:3; }
+.rc-corner.tl{ top:10px; left:10px; border-width:3px 0 0 3px; }
+.rc-corner.tr{ top:10px; right:10px; border-width:3px 3px 0 0; }
+.rc-corner.bl{ bottom:10px; left:10px; border-width:0 0 3px 3px; }
+.rc-corner.br{ bottom:10px; right:10px; border-width:0 3px 3px 0; }
+.rc-watermark{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:180px; font-weight:800; color:rgba(30,23,18,.06); letter-spacing:.04em;
+  transform:rotate(-20deg); z-index:1; pointer-events:none; user-select:none;
+}
+.rc-stamp{
+  position:absolute; top:8px; right:8px; font-size:11px; font-weight:700;
+  letter-spacing:.06em; padding:6px 10px; border:2px solid; transform:rotate(4deg);
+  text-transform:uppercase; background:rgba(247,224,138,.85); z-index:4;
+}
+.rc-stamp.received{ color:#1F5C1F; border-color:#1F5C1F; }
+.rc-stamp.paid{ color:#A81530; border-color:#A81530; }
+
+.rc-header{ display:flex; align-items:center; gap:16px; }
+.rc-logo{ width:56px; height:56px; border-radius:50%; object-fit:cover; flex:none; border:1.5px solid #1E1712; background:#fff; }
+.rc-head-mid{ flex:1; text-align:center; }
+.rc-super{ font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; color:#1E1712; margin-bottom:4px; }
+.rc-title{ font-size:28px; font-weight:700; letter-spacing:.03em; color:#1F5C1F; line-height:1.1; }
+.rc-school{ margin-top:4px; }
+.rc-school .s1{ font-size:13px; font-weight:700; }
+.rc-school .s2{ font-size:10.5px; color:#4a4436; }
+.rc-rule{ display:flex; align-items:center; text-align:center; margin:16px 0 18px; color:#A8631A; }
+.rc-rule::before, .rc-rule::after{ content:""; flex:1; height:0; border-top:1.5px double #1E1712; }
+.rc-rule span{ padding:0 10px; font-size:11px; }
+
+table.rc-table{ width:100%; border-collapse:collapse; table-layout:fixed; margin-bottom:14px; position:relative; z-index:2; }
+table.rc-table th{
+  border:1.5px solid #1E1712; text-align:left; font-size:12px; font-weight:700;
+  padding:6px 10px; background:rgba(255,255,255,.18);
+}
+table.rc-table td{
+  border:1.5px solid #1E1712; border-top:none; padding:10px 10px 12px;
+  font-size:13px; color:#1F5C1F; vertical-align:top; line-height:1.65;
+  background:rgba(255,255,255,.06);
+}
+.rc-serial{ letter-spacing:.06em; font-weight:700; }
+.rc-field{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; border-bottom:1px dotted #8a7f5e; padding:3px 0; }
+.rc-field:last-child{ border-bottom:none; }
+.rc-flabel{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:#6b6350; font-weight:700; flex:none; }
+.rc-fval{ color:#1F5C1F; font-weight:700; text-align:right; }
+.rc-paidby{ color:#1F5C1F; }
+.rc-check{ display:flex; align-items:center; gap:8px; margin:3px 0; }
+.rc-cb{ display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; border:1.5px solid #1E1712; font-size:11px; color:#fff; flex:none; }
+.rc-cb.on{ background:#1F5C1F; border-color:#1F5C1F; }
+.rc-amount{ font-size:22px; font-weight:700; color:#1E1712; }
+.rc-words{ text-transform:capitalize; }
+.rc-equiv{ margin-top:8px; font-size:10.5px; color:#6b6350; text-transform:none; }
+.rc-foot{ display:flex; justify-content:space-between; margin-top:30px; font-size:12px; position:relative; z-index:2; }
+.rc-foot .sig{ width:44%; border-top:1.5px solid #1E1712; text-align:center; padding-top:5px; }
+.rc-barcode{ margin-top:18px; text-align:center; font-size:20px; letter-spacing:1px; color:#1E1712; opacity:.55; line-height:1; }
+.rc-legal{ text-align:center; font-size:9.5px; color:#6b6350; margin-top:6px; position:relative; z-index:2; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.toast.err{ border-left-color:var(--crimson-bright); }
+.toast.err svg{ color:#ffb9c0; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .field-row{ grid-template-columns:1fr; }
+}
+@media print{
+  .topbar, .btn, .tbl-actions, .toolbar, .toast-wrap, .modal-backdrop, .footer-ribbon{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .card{ box-shadow:none !important; border:1px solid #ccc !important; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .search-pill{ display:none; }
+  .stat-grid{ grid-template-columns:1fr; }
+}
+</style>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="app">
+
+  <!-- ============================= MAIN ============================= -->
+  <main class="main">
+    <header class="topbar">
+      <a class="icon-btn" id="backBtn" href="dashboard.html" title="Back to Dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia · Ministry of Education</div>
+        <div class="page-title">Fee Receipts</div>
+      </div>
+      <span class="pill green" id="connStatusPill" style="border:none;" title="Connected to Kingsville Public High School's Supabase project">Live · Supabase</span>
+      <button class="icon-btn" onclick="window.print()" title="Print this view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+      </button>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned by the Super Administrator">
+        <div class="av-init" id="chipAvatar">—</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Registrar account</div>
+        </div>
+      </div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </header>
+
+    <div class="content">
+      <section class="view active">
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div>
+            <div class="sb-t">Scope of Access</div>
+            <div class="sb-s">Fee receipts recorded here stay private to the Registrar and the <b class="sa">Super Administrator</b>. The Principal and Super Admin dashboards only ever see aggregate totals — never individual student payment details.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Fee Receipts</h2>
+            <p>Record every fee payment as it's collected. Totals here feed the live Fee Collections figures on the Principal and Super Admin dashboards automatically.</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-gold" onclick="openQuickReceiptModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+              Generate Receipt Instantly
+            </button>
+            <button class="btn btn-primary" onclick="openReceiptModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Record New Receipt
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="stat-grid" id="statGrid">
+          <div class="stat-card"><div class="stat-top"><div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div></div><div class="stat-num" id="sumToday">—<small id="sumTodayUsd">&nbsp;</small></div><div class="stat-label">Collected Today</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></div></div><div class="stat-num" id="sumWeek">—<small id="sumWeekUsd">&nbsp;</small></div><div class="stat-label">This Week</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-ic navy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19h16M7 19v-6M12 19V6M17 19v-9"/></svg></div></div><div class="stat-num" id="sumMonth">—<small id="sumMonthUsd">&nbsp;</small></div><div class="stat-label">This Month</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.6-4.1 6.1-.6z"/></svg></div></div><div class="stat-num" id="sumAll">—<small id="sumAllUsd">&nbsp;</small></div><div class="stat-label">All-Time</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg></div></div><div class="stat-num" id="sumCount">—</div><div class="stat-label">Receipts Recorded</div></div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="search-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="receiptSearch" type="text" placeholder="Search student name, receipt #…">
+          </div>
+          <select class="filter" id="filterCurrency">
+            <option value="">All currencies</option>
+            <option value="LRD">LRD only</option>
+            <option value="USD">USD only</option>
+          </select>
+          <select class="filter" id="filterPurpose">
+            <option value="">All purposes</option>
+            <option>Tuition</option>
+            <option>Registration</option>
+            <option>Exam Fee</option>
+            <option>PTA Fee</option>
+            <option>Uniform / Books</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <!-- Receipts table -->
+        <div class="card">
+          <div class="card-head"><h3>Recorded Receipts</h3></div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table class="data">
+                <thead>
+                  <tr>
+                    <th>Receipt #</th>
+                    <th>Student</th>
+                    <th>Class</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Purpose</th>
+                    <th>Recorded</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="receiptsBody">
+                  <tr><td colspan="8"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg><h4>Loading receipts…</h4></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-ribbon">
+          <img class="footer-crest" src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="">
+          <b>Kingsville Public High School</b> · Fee Receipts are visible only to the Registrar and Super Administrator.
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ============================= RECORD RECEIPT MODAL ============================= -->
+<div class="modal-backdrop" id="receiptModalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Record New Fee Receipt</h3>
+      <button onclick="closeReceiptModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Scan Paper Receipt <span class="field-hint" style="font-weight:400;">(optional)</span></label>
+        <div class="scan-box" id="scanBox">
+          <label for="fReceiptPhoto" style="cursor:pointer; display:block;" id="scanBoxLabel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>
+            <p><b>Tap to photograph or upload</b> the paper receipt<br>KPS will try to read the amount automatically</p>
+          </label>
+          <input type="file" id="fReceiptPhoto" accept="image/*" capture="environment">
+        </div>
+        <div class="scan-status" id="scanStatus" style="display:none;"></div>
+        <div class="ocr-text" id="ocrTextBox" style="display:none;"></div>
+      </div>
+      <div class="field">
+        <label>Student Name <span class="req">*</span></label>
+        <div class="lookup-row">
+          <input type="text" id="fStudentName" placeholder="Type to search existing students…" autocomplete="off">
+        </div>
+        <div class="lookup-results" id="studentLookupResults"></div>
+        <div class="field-hint">Pick a match to auto-fill Student ID and Class, or just type a name if the student isn't in the system yet.</div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Student / Admission ID</label>
+          <input type="text" id="fStudentId" placeholder="e.g. KPS-2026-0143">
+        </div>
+        <div class="field">
+          <label>Class</label>
+          <input type="text" id="fClass" placeholder="e.g. Grade 9">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Amount <span class="req">*</span></label>
+          <input type="number" id="fAmount" placeholder="0.00" min="0" step="0.01">
+        </div>
+        <div class="field">
+          <label>Currency <span class="req">*</span></label>
+          <select id="fCurrency">
+            <option value="LRD">LRD — Liberian Dollar</option>
+            <option value="USD">USD — US Dollar</option>
+          </select>
+        </div>
+      </div>
+      <div class="convert-note" id="convertNote">Enter an amount to see the LRD ⇄ USD conversion (rate: L$200 = $1)</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Payment Method <span class="req">*</span></label>
+          <select id="fMethod">
+            <option>Cash</option>
+            <option>Mobile Money</option>
+            <option>Bank Transfer</option>
+            <option>Cheque</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Purpose <span class="req">*</span></label>
+          <select id="fPurpose">
+            <option>Tuition</option>
+            <option>Registration</option>
+            <option>Exam Fee</option>
+            <option>PTA Fee</option>
+            <option>Uniform / Books</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Receipt Number</label>
+        <input type="text" id="fReceiptNo" placeholder="Leave blank to auto-generate">
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <textarea id="fNotes" rows="2" placeholder="Optional — e.g. term, partial payment balance"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeReceiptModal()">Cancel</button>
+      <button class="btn btn-primary" id="saveReceiptBtn" onclick="saveReceipt()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        Save Receipt
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= GENERATE RECEIPT INSTANTLY MODAL ============================= -->
+<div class="modal-backdrop" id="quickModalBackdrop">
+  <div class="modal" style="width:440px;">
+    <div class="modal-head" style="background:linear-gradient(135deg, var(--gold), var(--gold-deep));">
+      <h3>Generate Receipt Instantly</h3>
+      <button onclick="closeQuickReceiptModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-hint" style="margin:-6px 0 2px;">Just the essentials — saves the receipt and opens it ready to print in one step.</div>
+      <div class="field">
+        <label>Student Name <span class="req">*</span></label>
+        <div class="lookup-row">
+          <input type="text" id="qStudentName" placeholder="Type to search existing students…" autocomplete="off">
+        </div>
+        <div class="lookup-results" id="quickLookupResults"></div>
+        <div class="selected-chip" id="quickSelectedChip" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>
+          <span id="quickSelectedChipText"></span>
+          <button type="button" title="Clear selection" onclick="clearQuickSelectedStudent()">✕</button>
+        </div>
+        <div class="field-hint" id="quickStudentHint">Pick a match to load the student instantly, or just type a name if they're not in the system yet.</div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Amount <span class="req">*</span></label>
+          <input type="number" id="qAmount" placeholder="0.00" min="0" step="0.01">
+        </div>
+        <div class="field">
+          <label>Currency <span class="req">*</span></label>
+          <select id="qCurrency">
+            <option value="LRD">LRD — Liberian Dollar</option>
+            <option value="USD">USD — US Dollar</option>
+          </select>
+        </div>
+      </div>
+      <div class="convert-note" id="qConvertNote">Enter an amount to see the LRD ⇄ USD conversion (rate: L$200 = $1)</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Purpose</label>
+          <select id="qPurpose">
+            <option>Tuition</option>
+            <option>Registration</option>
+            <option>Exam Fee</option>
+            <option>PTA Fee</option>
+            <option>Uniform / Books</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Payment Method</label>
+          <select id="qMethod">
+            <option>Cash</option>
+            <option>Mobile Money</option>
+            <option>Bank Transfer</option>
+            <option>Cheque</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeQuickReceiptModal()">Cancel</button>
+      <button class="btn btn-gold" id="quickGenerateBtn" onclick="generateReceiptInstantly()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+        Generate &amp; Print
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<div id="officialReceiptRoot"></div>
+
+<script>
+let profile = null;
+let receipts = [];
+let selectedStudent = null;
+let selectedReceiptFile = null;
+const EXCHANGE_RATE = 200; // L$200 = $1 — adjust here if the rate changes
+
+/* ============================= TOAST ============================= */
+function showToast(msg, kind){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind==='err' ? ' err' : '');
+  const icon = kind==='err'
+    ? '<path d="M12 8v5M12 16.5h.01"/><circle cx="12" cy="12" r="9"/>'
+    : '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>';
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icon}</svg><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),250); }, 3600);
+}
+
+function initials(name){ return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''); }
+function money(n, cur){ return (cur==='USD' ? '$' : 'L$') + (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+/* ============================= LRD ⇄ USD CONVERSION (rate 200) ============================= */
+function convertAmount(amount, fromCurrency){
+  const n = Number(amount)||0;
+  return fromCurrency === 'USD' ? n * EXCHANGE_RATE : n / EXCHANGE_RATE;
+}
+// The fee_receipts table stores amount_usd on every row (required, NOT
+// NULL). amount_lrd is a DATABASE-GENERATED column
+// (GENERATED ALWAYS AS round(amount_usd * exchange_rate, 2) STORED) — the
+// database computes it automatically from amount_usd, so it must NOT be
+// included in the insert/update payload, or Postgres rejects the write
+// with "cannot insert a non-DEFAULT value into column amount_lrd".
+// exchange_rate itself has a DB default of 200 (NOT NULL), matching
+// EXCHANGE_RATE below, so we don't need to send that either.
+function bothCurrencyAmounts(amount, currency){
+  const n = Number(amount)||0;
+  return currency === 'USD'
+    ? { amount_usd: n }
+    : { amount_usd: convertAmount(n, 'LRD') };
+}
+function updateConversionPreview(){
+  const note = document.getElementById('convertNote');
+  const amt = parseFloat(document.getElementById('fAmount').value);
+  const cur = document.getElementById('fCurrency').value;
+  if(!amt || amt <= 0){
+    note.textContent = 'Enter an amount to see the LRD ⇄ USD conversion (rate: L$200 = $1)';
+    return;
+  }
+  const other = convertAmount(amt, cur);
+  note.textContent = cur === 'USD'
+    ? `≈ ${money(amt,'USD')} = ${money(other,'LRD')}`
+    : `≈ ${money(amt,'LRD')} = ${money(other,'USD')}`;
+}
+
+function renderProfileChip(){
+  const chipAvatar = document.getElementById('chipAvatar');
+  const chipName = document.getElementById('chipName');
+  const chipRole = document.getElementById('chipRole');
+  if(profile && (profile.full_name || profile.name)){
+    const name = profile.full_name || profile.name;
+    chipAvatar.textContent = initials(name);
+    chipName.textContent = name;
+    chipRole.textContent = profile.role || 'Registrar';
+  } else {
+    chipAvatar.textContent = '—';
+    chipName.textContent = 'Not signed in';
+    chipRole.textContent = 'Awaiting Registrar account';
+  }
+}
+function renderConnectionStatus(){
+  const pill = document.getElementById('connStatusPill');
+  if(!pill) return;
+  pill.textContent = 'Live · Supabase';
+  pill.title = 'Connected to Kingsville Public High School\'s Supabase project: ' + (window.KPS ? KPS.SUPABASE_URL : '');
+}
+
+/* ============================= STUDENT LOOKUP ============================= */
+let lookupTimer = null;
+document.getElementById('fStudentName').addEventListener('input', (e)=>{
+  selectedStudent = null;
+  const q = e.target.value.trim();
+  const box = document.getElementById('studentLookupResults');
+  clearTimeout(lookupTimer);
+  if(q.length < 2){ box.classList.remove('open'); box.innerHTML=''; return; }
+  lookupTimer = setTimeout(async ()=>{
+    try{
+      const { data, error } = await window.sb
+        .from('students')
+        .select('id, student_id, full_name, sections(name, classes(name))')
+        .or(`student_id.ilike.%${q}%,full_name.ilike.%${q}%`)
+        .limit(8);
+      if(error) throw error;
+      const rows = data || [];
+      if(!rows.length){ box.classList.remove('open'); box.innerHTML=''; return; }
+      box.innerHTML = rows.map(s=>{
+        const cls = s.sections && s.sections.classes ? s.sections.classes.name : '';
+        return `<div class="lookup-item" data-id="${s.student_id||''}" data-name="${(s.full_name||'').replace(/"/g,'&quot;')}" data-class="${cls}">
+          <b>${s.full_name||'Unnamed'}</b><span>${s.student_id||'—'} ${cls?'· '+cls:''}</span>
+        </div>`;
+      }).join('');
+      box.classList.add('open');
+      box.querySelectorAll('.lookup-item').forEach(item=>{
+        item.addEventListener('click', ()=>{
+          document.getElementById('fStudentName').value = item.dataset.name;
+          document.getElementById('fStudentId').value = item.dataset.id;
+          document.getElementById('fClass').value = item.dataset.class;
+          selectedStudent = item.dataset.id;
+          box.classList.remove('open');
+        });
+      });
+    }catch(err){
+      console.warn('[Fee Receipts] student lookup failed', err);
+    }
+  }, 280);
+});
+
+/* ============================= SCAN PAPER RECEIPT (photo + OCR) ============================= */
+document.getElementById('fReceiptPhoto').addEventListener('change', handleReceiptPhotoChange);
+
+function handleReceiptPhotoChange(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  selectedReceiptFile = file;
+
+  const box = document.getElementById('scanBox');
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    box.classList.add('has-img');
+    box.innerHTML = `
+      <div class="scan-preview">
+        <img src="${ev.target.result}" alt="Receipt photo">
+        <div class="sp-info">
+          <b>${file.name}</b>
+          <span style="font-size:11px; color:var(--muted);">${(file.size/1024).toFixed(0)} KB · tap to replace</span>
+        </div>
+      </div>
+      <input type="file" id="fReceiptPhoto" accept="image/*" capture="environment">`;
+    // re-bind the (replaced) file input and make the whole box clickable again
+    document.getElementById('fReceiptPhoto').addEventListener('change', handleReceiptPhotoChange);
+    box.querySelector('.scan-preview').style.cursor = 'pointer';
+    box.querySelector('.scan-preview').addEventListener('click', ()=>document.getElementById('fReceiptPhoto').click());
+    scanReceiptPhoto(ev.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function scanReceiptPhoto(dataUrl){
+  const status = document.getElementById('scanStatus');
+  const ocrBox = document.getElementById('ocrTextBox');
+  status.style.display = 'flex';
+  status.classList.remove('ok');
+  status.innerHTML = `<span class="spinner"></span> Reading the receipt…`;
+  ocrBox.style.display = 'none';
+
+  try{
+    const { data: { text } } = await Tesseract.recognize(dataUrl, 'eng');
+    ocrBox.style.display = 'block';
+    ocrBox.textContent = text.trim() || '(no text recognized)';
+
+    // Best-effort: look for an amount near "Total", "Amount Paid", or a currency symbol.
+    const amountGuess = guessAmountFromText(text);
+    if(amountGuess){
+      document.getElementById('fAmount').value = amountGuess;
+      updateConversionPreview();
+      status.classList.add('ok');
+      status.innerHTML = `✓ Detected amount L$/US$${amountGuess} — please double-check it against the photo before saving`;
+    } else {
+      status.innerHTML = `Could not confidently read an amount — please enter it manually below (handwriting is hard to scan reliably)`;
+    }
+  }catch(err){
+    console.warn('[Fee Receipts] OCR failed', err);
+    status.innerHTML = `Scan failed — please enter the amount manually below`;
+  }
+}
+
+function guessAmountFromText(text){
+  const lines = text.split('\n');
+  const labeled = /(total|amount|paid)/i;
+  let candidates = [];
+  lines.forEach(line=>{
+    const nums = line.match(/[\d][\d,]*\.?\d{0,2}/g);
+    if(nums && labeled.test(line)){
+      nums.forEach(n=> candidates.push(parseFloat(n.replace(/,/g,''))));
+    }
+  });
+  if(!candidates.length){
+    // fall back to any plausible-looking number anywhere in the text
+    const allNums = (text.match(/[\d][\d,]*\.\d{2}/g) || []).map(n=>parseFloat(n.replace(/,/g,'')));
+    candidates = allNums;
+  }
+  candidates = candidates.filter(n=> n > 0 && n < 10000000);
+  if(!candidates.length) return null;
+  return Math.max(...candidates).toFixed(2);
+}
+
+async function uploadReceiptImage(file, receiptNumber){
+  if(!file) return null;
+  try{
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `${receiptNumber}-${Date.now()}.${ext}`;
+    const { error: upErr } = await window.sb.storage.from('receipt-scans').upload(path, file, { upsert:false });
+    if(upErr) throw upErr;
+    const { data } = await window.sb.storage.from('receipt-scans').createSignedUrl(path, 60*60*24*365*5); // ~5yr
+    return data ? data.signedUrl : null;
+  }catch(err){
+    console.warn('[Fee Receipts] photo upload failed (receipt will still save)', err);
+    return null;
+  }
+}
+
+/* ============================= MODAL ============================= */
+function openReceiptModal(){
+  document.getElementById('fStudentName').value = '';
+  document.getElementById('fStudentId').value = '';
+  document.getElementById('fClass').value = '';
+  document.getElementById('fAmount').value = '';
+  document.getElementById('fCurrency').value = 'LRD';
+  document.getElementById('fMethod').value = 'Cash';
+  document.getElementById('fPurpose').value = 'Tuition';
+  document.getElementById('fReceiptNo').value = '';
+  document.getElementById('fNotes').value = '';
+  document.getElementById('studentLookupResults').classList.remove('open');
+  document.getElementById('convertNote').textContent = 'Enter an amount to see the LRD ⇄ USD conversion (rate: L$200 = $1)';
+  document.getElementById('scanStatus').style.display = 'none';
+  document.getElementById('ocrTextBox').style.display = 'none';
+  selectedReceiptFile = null;
+  const box = document.getElementById('scanBox');
+  box.classList.remove('has-img');
+  box.innerHTML = `
+    <label for="fReceiptPhoto" style="cursor:pointer; display:block;" id="scanBoxLabel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>
+      <p><b>Tap to photograph or upload</b> the paper receipt<br>KPS will try to read the amount automatically</p>
+    </label>
+    <input type="file" id="fReceiptPhoto" accept="image/*" capture="environment">`;
+  document.getElementById('fReceiptPhoto').addEventListener('change', handleReceiptPhotoChange);
+  document.getElementById('receiptModalBackdrop').classList.add('open');
+}
+function closeReceiptModal(){
+  document.getElementById('receiptModalBackdrop').classList.remove('open');
+}
+document.getElementById('fAmount').addEventListener('input', updateConversionPreview);
+document.getElementById('fCurrency').addEventListener('change', updateConversionPreview);
+
+/* ============================= GENERATE RECEIPT INSTANTLY ============================= */
+function updateQuickConversionPreview(){
+  const note = document.getElementById('qConvertNote');
+  const amt = parseFloat(document.getElementById('qAmount').value);
+  const cur = document.getElementById('qCurrency').value;
+  if(!amt || amt <= 0){
+    note.textContent = 'Enter an amount to see the LRD ⇄ USD conversion (rate: L$200 = $1)';
+    return;
+  }
+  const other = convertAmount(amt, cur);
+  note.textContent = cur === 'USD'
+    ? `≈ ${money(amt,'USD')} = ${money(other,'LRD')}`
+    : `≈ ${money(amt,'LRD')} = ${money(other,'USD')}`;
+}
+document.getElementById('qAmount').addEventListener('input', updateQuickConversionPreview);
+document.getElementById('qCurrency').addEventListener('change', updateQuickConversionPreview);
+
+/* ============================= QUICK-MODAL STUDENT LOOKUP ============================= */
+let selectedQuickStudent = null;
+let quickLookupTimer = null;
+document.getElementById('qStudentName').addEventListener('input', (e)=>{
+  selectedQuickStudent = null;
+  document.getElementById('quickSelectedChip').style.display = 'none';
+  const q = e.target.value.trim();
+  const box = document.getElementById('quickLookupResults');
+  clearTimeout(quickLookupTimer);
+  if(q.length < 2){ box.classList.remove('open'); box.innerHTML=''; return; }
+  quickLookupTimer = setTimeout(async ()=>{
+    try{
+      const { data, error } = await window.sb
+        .from('students')
+        .select('id, student_id, full_name, sections(name, classes(name))')
+        .or(`student_id.ilike.%${q}%,full_name.ilike.%${q}%`)
+        .limit(8);
+      if(error) throw error;
+      const rows = data || [];
+      if(!rows.length){ box.classList.remove('open'); box.innerHTML=''; return; }
+      box.innerHTML = rows.map(s=>{
+        const cls = s.sections && s.sections.classes ? s.sections.classes.name : '';
+        return `<div class="lookup-item" data-id="${s.student_id||''}" data-name="${(s.full_name||'').replace(/"/g,'&quot;')}" data-class="${cls}">
+          <b>${s.full_name||'Unnamed'}</b><span>${s.student_id||'—'} ${cls?'· '+cls:''}</span>
+        </div>`;
+      }).join('');
+      box.classList.add('open');
+      box.querySelectorAll('.lookup-item').forEach(item=>{
+        item.addEventListener('click', ()=>{
+          document.getElementById('qStudentName').value = item.dataset.name;
+          selectedQuickStudent = { id: item.dataset.id, name: item.dataset.name, class: item.dataset.class };
+          const chip = document.getElementById('quickSelectedChip');
+          document.getElementById('quickSelectedChipText').textContent =
+            `${item.dataset.name} — ${item.dataset.id || 'No ID on file'}${item.dataset.class ? ' · ' + item.dataset.class : ''}`;
+          chip.style.display = 'flex';
+          box.classList.remove('open');
+          box.innerHTML = '';
+        });
+      });
+    }catch(err){
+      console.warn('[Fee Receipts] quick student lookup failed', err);
+    }
+  }, 280);
+});
+function clearQuickSelectedStudent(){
+  selectedQuickStudent = null;
+  document.getElementById('quickSelectedChip').style.display = 'none';
+  document.getElementById('qStudentName').value = '';
+  document.getElementById('qStudentName').focus();
+}
+
+function openQuickReceiptModal(){
+  document.getElementById('qStudentName').value = '';
+  document.getElementById('qAmount').value = '';
+  document.getElementById('qCurrency').value = 'LRD';
+  document.getElementById('qPurpose').value = 'Tuition';
+  document.getElementById('qMethod').value = 'Cash';
+  document.getElementById('qConvertNote').textContent = 'Enter an amount to see the LRD ⇄ USD conversion (rate: L$200 = $1)';
+  selectedQuickStudent = null;
+  document.getElementById('quickSelectedChip').style.display = 'none';
+  document.getElementById('quickLookupResults').classList.remove('open');
+  document.getElementById('quickLookupResults').innerHTML = '';
+  document.getElementById('quickModalBackdrop').classList.add('open');
+}
+function closeQuickReceiptModal(){
+  document.getElementById('quickModalBackdrop').classList.remove('open');
+}
+document.getElementById('quickModalBackdrop').addEventListener('click', (e)=>{
+  if(e.target.id === 'quickModalBackdrop') closeQuickReceiptModal();
+});
+
+async function generateReceiptInstantly(){
+  const name = document.getElementById('qStudentName').value.trim();
+  const amount = parseFloat(document.getElementById('qAmount').value);
+  const currency = document.getElementById('qCurrency').value;
+  if(!name){ showToast('Enter the student\'s name before generating', 'err'); return; }
+  if(!amount || amount <= 0){ showToast('Enter a valid amount before generating', 'err'); return; }
+
+  const btn = document.getElementById('quickGenerateBtn');
+  btn.disabled = true;
+  btn.textContent = 'Generating…';
+
+  const row = {
+    student_name: name,
+    student_id: (selectedQuickStudent && selectedQuickStudent.id) || null,
+    class_name: (selectedQuickStudent && selectedQuickStudent.class) || null,
+    amount: amount,
+    currency: currency,
+    ...bothCurrencyAmounts(amount, currency),
+    payment_method: document.getElementById('qMethod').value,
+    purpose: document.getElementById('qPurpose').value,
+    // receipt_number intentionally omitted — the database assigns it automatically
+    recorded_by: profile ? profile.id : null,
+    recorded_by_name: profile ? (profile.full_name || profile.name) : null
+  };
+
+  try{
+    const { data, error } = await window.sb.from('fee_receipts').insert(row).select().single();
+    if(error) throw error;
+    showToast('Receipt generated — opening print view');
+    closeQuickReceiptModal();
+    await loadReceipts();
+    await loadSummary();
+    printOfficialReceipt(data || row);
+  }catch(err){
+    console.error('[Fee Receipts] instant generate failed', err);
+    showToast('Could not generate receipt — ' + ((err && err.message) || 'check your connection'), 'err');
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>Generate &amp; Print`;
+  }
+}
+
+// Note: receipt numbers are now generated by the database itself (see the
+// fee_receipts_set_number trigger in fee-receipts-setup.sql) — this
+// guarantees uniqueness even when two registrars save at the same moment,
+// which a browser-generated number couldn't.
+
+async function saveReceipt(){
+  const name = document.getElementById('fStudentName').value.trim();
+  const amount = parseFloat(document.getElementById('fAmount').value);
+  const currency = document.getElementById('fCurrency').value;
+  if(!name){ showToast('Enter the student\'s name before saving', 'err'); return; }
+  if(!amount || amount <= 0){ showToast('Enter a valid amount before saving', 'err'); return; }
+
+  const btn = document.getElementById('saveReceiptBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const typedReceiptNo = document.getElementById('fReceiptNo').value.trim();
+
+  const row = {
+    student_name: name,
+    student_id: document.getElementById('fStudentId').value.trim() || null,
+    class_name: document.getElementById('fClass').value.trim() || null,
+    amount: amount,
+    currency: currency,
+    ...bothCurrencyAmounts(amount, currency),
+    payment_method: document.getElementById('fMethod').value,
+    purpose: document.getElementById('fPurpose').value,
+    // receipt_number omitted when blank — the database assigns it automatically
+    receipt_number: typedReceiptNo || undefined,
+    notes: document.getElementById('fNotes').value.trim() || null,
+    recorded_by: profile ? profile.id : null,
+    recorded_by_name: profile ? (profile.full_name || profile.name) : null
+  };
+
+  try{
+    const { data, error } = await window.sb.from('fee_receipts').insert(row).select().single();
+    if(error) throw error;
+
+    // Now that we have the database-assigned receipt number, name and
+    // attach the scanned photo (if one was chosen) to this row.
+    if(selectedReceiptFile){
+      btn.textContent = 'Uploading photo…';
+      const imageUrl = await uploadReceiptImage(selectedReceiptFile, data.receipt_number);
+      if(imageUrl){
+        await window.sb.from('fee_receipts').update({ receipt_image_url: imageUrl }).eq('id', data.id);
+      }
+    }
+
+    showToast('Receipt saved — receipt no. ' + data.receipt_number);
+    closeReceiptModal();
+    await loadReceipts();
+    await loadSummary();
+  }catch(err){
+    console.error('[Fee Receipts] save failed', err);
+    showToast('Could not save receipt — ' + ((err && err.message) || 'check your connection'), 'err');
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Save Receipt`;
+  }
+}
+
+async function deleteReceipt(id){
+  if(!confirm('Delete this receipt? This cannot be undone.')) return;
+  try{
+    const { error } = await window.sb.from('fee_receipts').delete().eq('id', id);
+    if(error) throw error;
+    showToast('Receipt deleted');
+    await loadReceipts();
+    await loadSummary();
+  }catch(err){
+    console.error('[Fee Receipts] delete failed', err);
+    showToast('Could not delete receipt', 'err');
+  }
+}
+
+/* ============================= OFFICIAL RECEIPT (matches the MoE paper receipt) ============================= */
+const ONES = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+const TENS = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function threeDigitsToWords(n){
+  let s = '';
+  if(n >= 100){ s += ONES[Math.floor(n/100)] + ' Hundred '; n %= 100; }
+  if(n >= 20){ s += TENS[Math.floor(n/10)] + ' '; n %= 10; }
+  if(n > 0) s += ONES[n] + ' ';
+  return s.trim();
+}
+function integerToWords(num){
+  if(num === 0) return 'Zero';
+  const groups = ['', 'Thousand', 'Million', 'Billion'];
+  let parts = [];
+  let g = 0;
+  while(num > 0){
+    const chunk = num % 1000;
+    if(chunk) parts.unshift(threeDigitsToWords(chunk) + (groups[g] ? ' ' + groups[g] : ''));
+    num = Math.floor(num/1000);
+    g++;
+  }
+  return parts.join(' ').trim();
+}
+function numberToWords(amount, currency){
+  const n = Number(amount)||0;
+  const whole = Math.floor(n);
+  const cents = Math.round((n - whole) * 100);
+  const unit = currency === 'USD' ? 'US Dollars' : 'Liberian Dollars';
+  let words = integerToWords(whole) + ' ' + unit;
+  if(cents > 0) words += ' and ' + integerToWords(cents) + ' Cents';
+  return words + ' Only';
+}
+
+function checkbox(active){
+  return `<span class="rc-cb${active ? ' on' : ''}">${active ? '✓' : ''}</span>`;
+}
+
+/* copyType: 'received' = office/school copy, 'paid' = the copy handed to the payer */
+function buildOfficialReceiptHTML(r, copyType){
+  copyType = copyType || 'received';
+  const d = new Date(r.created_at);
+  const methods = ['Cash','Mobile Money','Bank Transfer','Cheque'];
+  const stampText = copyType === 'paid' ? 'PAID COPY' : 'RECEIVED COPY';
+  const stampClass = copyType === 'paid' ? 'paid' : 'received';
+  return `
+  <div class="off-receipt" id="offReceiptEl-${copyType}">
+    <div class="rc-corner tl"></div><div class="rc-corner tr"></div>
+    <div class="rc-corner bl"></div><div class="rc-corner br"></div>
+    <div class="rc-watermark">KPS</div>
+    <div class="rc-body">
+      <div class="rc-stamp ${stampClass}">${stampText}</div>
+
+      <div class="rc-header">
+        <img class="rc-logo" src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="Kingsville Public High School crest">
+        <div class="rc-head-mid">
+          <div class="rc-super">Republic of Liberia · Ministry of Education</div>
+          <div class="rc-title">CASH RECEIPT</div>
+          <div class="rc-school">
+            <div class="s1">Kingsville Public High School</div>
+            <div class="s2">Kingsville Township, #7, Careysburg District</div>
+          </div>
+        </div>
+        <img class="rc-logo" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+      </div>
+      <div class="rc-rule"><span>❖</span></div>
+
+      <table class="rc-table rc-row1">
+        <tr><th style="width:50%;">Receipt Date</th><th>Receipt No.</th></tr>
+        <tr><td>${d.toLocaleDateString()}</td><td class="rc-serial">${r.receipt_number}</td></tr>
+      </table>
+
+      <table class="rc-table rc-row2">
+        <tr><th style="width:34%;">Received From</th><th style="width:33%;">Received By</th><th>Paid by</th></tr>
+        <tr>
+          <td>
+            <div class="rc-field"><span class="rc-flabel">Student Name</span><span class="rc-fval">${r.student_name}</span></div>
+            <div class="rc-field"><span class="rc-flabel">Student ID No.</span><span class="rc-fval">${r.student_id || '—'}</span></div>
+            <div class="rc-field"><span class="rc-flabel">Class</span><span class="rc-fval">${r.class_name || '—'}</span></div>
+          </td>
+          <td>
+            <div class="rc-field"><span class="rc-flabel">Name</span><span class="rc-fval">${r.recorded_by_name || '—'}</span></div>
+            <div class="rc-field"><span class="rc-flabel">School</span><span class="rc-fval">Kingsville Public High</span></div>
+            <div class="rc-field"><span class="rc-flabel">Office</span><span class="rc-fval">Registrar's Office</span></div>
+          </td>
+          <td class="rc-paidby">
+            <div class="rc-check">${checkbox(r.payment_method === 'Cash')} Cash</div>
+            <div class="rc-check">${checkbox(r.payment_method === 'Mobile Money')} Mobile Money</div>
+            <div class="rc-check">${checkbox(r.payment_method === 'Bank Transfer')} Bank Transfer</div>
+            <div class="rc-check">${checkbox(r.payment_method === 'Cheque')} Cheque No. ${r.payment_method === 'Cheque' ? (r.notes || '________') : ''}</div>
+          </td>
+        </tr>
+      </table>
+
+      <table class="rc-table rc-row3">
+        <tr><th style="width:40%;">Amount Received</th><th>Amount in words</th></tr>
+        <tr>
+          <td class="rc-amount">${money(r.amount, r.currency)}</td>
+          <td class="rc-words">${numberToWords(r.amount, r.currency)}
+            <div class="rc-equiv">Equivalent: ${r.currency==='USD' ? money(convertAmount(r.amount,'USD'),'LRD') : money(convertAmount(r.amount,'LRD'),'USD')} (at L$${EXCHANGE_RATE} = $1)</div>
+          </td>
+        </tr>
+      </table>
+
+      <table class="rc-table rc-row4">
+        <tr><th>Purpose of Payment</th></tr>
+        <tr><td>${r.purpose}${r.notes && r.payment_method !== 'Cheque' ? ' — ' + r.notes : ''}</td></tr>
+      </table>
+
+      <div class="rc-foot">
+        <div class="sig">Registrar</div>
+        <div class="sig">Parent / Guardian</div>
+      </div>
+      <div class="rc-barcode">${'▍▎▍▍▎▌▍▎▎▌▍▎▍▌▎▍▍▎▌▍▎▍▎▌▍▎▍▌▎▍▎▌▍▎▍▎▌▍'}</div>
+      <div class="rc-legal">This receipt was generated electronically by the KPS system and is valid without a handwritten signature. · ${stampText}</div>
+    </div>
+  </div>`;
+}
+
+const RECEIPT_TEMPLATE_CSS = `
+  .off-receipt{
+    position:relative; width:700px; max-width:100%; margin:0 auto 26px;
+    background:#F7E08A; color:#1E1712; border:2px solid #1E1712;
+    box-shadow:0 0 0 5px #F7E08A, 0 0 0 6px #1E1712;
+    overflow:hidden;
+  }
+  .rc-body{ position:relative; z-index:2; padding:30px 36px 24px; }
+  .rc-corner{ position:absolute; width:22px; height:22px; border:#A8631A solid; z-index:3; }
+  .rc-corner.tl{ top:10px; left:10px; border-width:3px 0 0 3px; }
+  .rc-corner.tr{ top:10px; right:10px; border-width:3px 3px 0 0; }
+  .rc-corner.bl{ bottom:10px; left:10px; border-width:0 0 3px 3px; }
+  .rc-corner.br{ bottom:10px; right:10px; border-width:0 3px 3px 0; }
+  .rc-watermark{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:180px; font-weight:800; color:rgba(30,23,18,.06); letter-spacing:.04em;
+    transform:rotate(-20deg); z-index:1; pointer-events:none; user-select:none;
+  }
+  .rc-stamp{
+    position:absolute; top:8px; right:8px; font-size:11px; font-weight:700;
+    letter-spacing:.06em; padding:6px 10px; border:2px solid; transform:rotate(4deg);
+    text-transform:uppercase; background:rgba(247,224,138,.85); z-index:4;
+  }
+  .rc-stamp.received{ color:#1F5C1F; border-color:#1F5C1F; }
+  .rc-stamp.paid{ color:#A81530; border-color:#A81530; }
+
+  .rc-header{ display:flex; align-items:center; gap:16px; }
+  .rc-logo{ width:56px; height:56px; border-radius:50%; object-fit:cover; flex:none; border:1.5px solid #1E1712; background:#fff; }
+  .rc-head-mid{ flex:1; text-align:center; }
+  .rc-super{ font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; color:#1E1712; margin-bottom:4px; }
+  .rc-title{ font-size:28px; font-weight:700; letter-spacing:.03em; color:#1F5C1F; line-height:1.1; }
+  .rc-school{ margin-top:4px; }
+  .rc-school .s1{ font-size:13px; font-weight:700; }
+  .rc-school .s2{ font-size:10.5px; color:#4a4436; }
+  .rc-rule{ display:flex; align-items:center; text-align:center; margin:16px 0 18px; color:#A8631A; }
+  .rc-rule::before, .rc-rule::after{ content:""; flex:1; height:0; border-top:1.5px double #1E1712; }
+  .rc-rule span{ padding:0 10px; font-size:11px; }
+
+  table.rc-table{ width:100%; border-collapse:collapse; table-layout:fixed; margin-bottom:14px; position:relative; z-index:2; }
+  table.rc-table th{
+    border:1.5px solid #1E1712; text-align:left; font-size:12px; font-weight:700;
+    padding:6px 10px; background:rgba(255,255,255,.18);
+  }
+  table.rc-table td{
+    border:1.5px solid #1E1712; border-top:none; padding:10px 10px 12px;
+    font-size:13px; color:#1F5C1F; vertical-align:top; line-height:1.65;
+    background:rgba(255,255,255,.06);
+  }
+  .rc-serial{ letter-spacing:.06em; font-weight:700; }
+  .rc-field{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; border-bottom:1px dotted #8a7f5e; padding:3px 0; }
+  .rc-field:last-child{ border-bottom:none; }
+  .rc-flabel{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:#6b6350; font-weight:700; flex:none; }
+  .rc-fval{ color:#1F5C1F; font-weight:700; text-align:right; }
+  .rc-paidby{ color:#1F5C1F; }
+  .rc-check{ display:flex; align-items:center; gap:8px; margin:3px 0; }
+  .rc-cb{ display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; border:1.5px solid #1E1712; font-size:11px; color:#fff; flex:none; }
+  .rc-cb.on{ background:#1F5C1F; border-color:#1F5C1F; }
+  .rc-amount{ font-size:22px; font-weight:700; color:#1E1712; }
+  .rc-words{ text-transform:capitalize; }
+  .rc-equiv{ margin-top:8px; font-size:10.5px; color:#6b6350; text-transform:none; }
+
+  .rc-foot{ display:flex; justify-content:space-between; margin-top:30px; font-size:12px; position:relative; z-index:2; }
+  .rc-foot .sig{ width:44%; border-top:1.5px solid #1E1712; text-align:center; padding-top:5px; }
+  .rc-barcode{ margin-top:18px; text-align:center; font-size:20px; letter-spacing:1px; color:#1E1712; opacity:.55; line-height:1; }
+  .rc-legal{ text-align:center; font-size:9.5px; color:#6b6350; margin-top:6px; position:relative; z-index:2; }
+`;
+
+const OFFICIAL_RECEIPT_CSS = `
+  body{margin:0;padding:20px;background:#EBE0CA;font-family:'IBM Plex Mono',monospace;}
+  ${RECEIPT_TEMPLATE_CSS}
+  @media print{
+    body{ background:#fff; padding:0; }
+    .off-receipt{ margin:0 auto; page-break-after:always; }
+    .off-receipt:last-child{ page-break-after:auto; }
+  }
+`;
+
+/* Opens a print window containing BOTH copies: the office "Received" copy
+   followed by the payer's "Paid" copy (each on its own printed page). */
+function printOfficialReceipt(r){
+  const win = window.open('', '_blank', 'width=760,height=900');
+  const html = buildOfficialReceiptHTML(r, 'received') + buildOfficialReceiptHTML(r, 'paid');
+  win.document.write(`<html><head><title>Receipt ${r.receipt_number}</title><style>${OFFICIAL_RECEIPT_CSS}</style></head><body>${html}</body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(()=>win.print(), 400);
+}
+
+/* Builds a single PDF with two pages: page 1 = Received copy, page 2 = Paid copy. */
+async function downloadReceiptPDF(r){
+  showToast('Preparing PDF…');
+  const root = document.getElementById('officialReceiptRoot');
+  const { jsPDF } = window.jspdf;
+  let pdf = null;
+  try{
+    for(const copyType of ['received','paid']){
+      root.innerHTML = buildOfficialReceiptHTML(r, copyType);
+      const el = document.getElementById(`offReceiptEl-${copyType}`);
+      const canvas = await html2canvas(el, { scale:2, backgroundColor:'#F7E08A' });
+      const img = canvas.toDataURL('image/png');
+      const w = canvas.width/2, h = canvas.height/2;
+      if(!pdf){
+        pdf = new jsPDF({ unit:'pt', format:[w, h] });
+      } else {
+        pdf.addPage([w, h]);
+      }
+      pdf.addImage(img, 'PNG', 0, 0, w, h);
+    }
+    pdf.save(`Receipt-${r.receipt_number}.pdf`);
+  }catch(err){
+    console.error('[Fee Receipts] PDF export failed', err);
+    showToast('Could not generate PDF', 'err');
+  }finally{
+    root.innerHTML = '';
+  }
+}
+
+/* ============================= LOAD ============================= */
+function purposePill(p){
+  const map = {Tuition:'green', Registration:'navy', 'Exam Fee':'gold', 'PTA Fee':'gold', 'Uniform / Books':'grey', Other:'grey'};
+  return `<span class="pill ${map[p]||'grey'}">${p||'—'}</span>`;
+}
+function renderReceiptsTable(){
+  const q = document.getElementById('receiptSearch').value.trim().toLowerCase();
+  const curFilter = document.getElementById('filterCurrency').value;
+  const purFilter = document.getElementById('filterPurpose').value;
+
+  const rows = receipts.filter(r=>{
+    if(curFilter && r.currency !== curFilter) return false;
+    if(purFilter && r.purpose !== purFilter) return false;
+    if(q && !((r.student_name||'').toLowerCase().includes(q) || (r.receipt_number||'').toLowerCase().includes(q))) return false;
+    return true;
+  });
+
+  const body = document.getElementById('receiptsBody');
+  if(!rows.length){
+    body.innerHTML = `<tr><td colspan="8"><div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg>
+      <h4>No receipts yet</h4><p>Receipts you record will appear here, and their totals will show live on the Principal and Super Admin dashboards.</p>
+    </div></td></tr>`;
+    return;
+  }
+
+  body.innerHTML = rows.map(r=>`
+    <tr>
+      <td class="mono">${r.receipt_number}</td>
+      <td><div class="avatar-name"><div class="av">${initials(r.student_name)}</div><div><div class="nm">${r.student_name}</div><div class="sb">${r.student_id||'—'}</div></div></div></td>
+      <td>${r.class_name||'—'}</td>
+      <td class="mono">${money(r.amount, r.currency)}</td>
+      <td>${r.payment_method}</td>
+      <td>${purposePill(r.purpose)}</td>
+      <td>${KPS.fmtDate(r.created_at)}</td>
+      <td><div class="tbl-actions">
+        <button title="Print official receipt" onclick='printOfficialReceipt(${JSON.stringify(r).replace(/'/g,"&apos;")})'>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+        </button>
+        <button title="Download receipt as PDF" onclick='downloadReceiptPDF(${JSON.stringify(r).replace(/'/g,"&apos;")})'>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 21h16"/></svg>
+        </button>
+        ${r.receipt_image_url ? `<button title="View scanned photo" onclick="window.open('${r.receipt_image_url}','_blank')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5-5-4 4-3-3-4 4"/></svg>
+        </button>` : ''}
+        <button title="Delete" onclick="deleteReceipt('${r.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+        </button>
+      </div></td>
+    </tr>`).join('');
+}
+
+async function loadReceipts(){
+  try{
+    const { data, error } = await window.sb
+      .from('fee_receipts')
+      .select('*')
+      .order('created_at', { ascending:false })
+      .limit(300);
+    if(error) throw error;
+    receipts = data || [];
+  }catch(err){
+    console.error('[Fee Receipts] failed to load receipts', err);
+    receipts = [];
+    showToast('Could not load receipts — check your Supabase connection', 'err');
+  }
+  renderReceiptsTable();
+}
+
+async function loadSummary(){
+  function set(idAmt, idUsd, lrd, usd){
+    document.getElementById(idAmt).innerHTML = money(lrd,'LRD') + `<small id="${idUsd}">${money(usd,'USD')}</small>`;
+  }
+  try{
+    const { data, error } = await window.sb.rpc('get_fee_collection_summary');
+    if(error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
+    if(!row){ throw new Error('empty'); }
+    set('sumToday','sumTodayUsd', row.today_lrd, row.today_usd);
+    set('sumWeek','sumWeekUsd', row.week_lrd, row.week_usd);
+    set('sumMonth','sumMonthUsd', row.month_lrd, row.month_usd);
+    set('sumAll','sumAllUsd', row.all_time_lrd, row.all_time_usd);
+    document.getElementById('sumCount').textContent = row.receipt_count ?? receipts.length;
+  }catch(err){
+    console.warn('[Fee Receipts] summary RPC unavailable, falling back to client-side totals', err);
+    // Fallback: compute from the loaded receipts list directly (LRD-only view)
+    const totalLrd = receipts.filter(r=>r.currency==='LRD').reduce((s,r)=>s+Number(r.amount||0),0);
+    const totalUsd = receipts.filter(r=>r.currency==='USD').reduce((s,r)=>s+Number(r.amount||0),0);
+    document.getElementById('sumToday').innerHTML = '—';
+    document.getElementById('sumWeek').innerHTML = '—';
+    document.getElementById('sumMonth').innerHTML = '—';
+    document.getElementById('sumAll').innerHTML = money(totalLrd,'LRD') + `<small>${money(totalUsd,'USD')}</small>`;
+    document.getElementById('sumCount').textContent = receipts.length;
+  }
+}
+
+document.getElementById('receiptSearch').addEventListener('input', renderReceiptsTable);
+document.getElementById('filterCurrency').addEventListener('change', renderReceiptsTable);
+document.getElementById('filterPurpose').addEventListener('change', renderReceiptsTable);
+document.getElementById('receiptModalBackdrop').addEventListener('click', (e)=>{
+  if(e.target.id === 'receiptModalBackdrop') closeReceiptModal();
+});
+
+(async function init(){
+  const auth = await KPS.requireRole(['registrar', 'super_admin']);
+  if (!auth.user) return; // requireRole already redirected to login
+  profile = auth.profile;
+  renderProfileChip();
+  renderConnectionStatus();
+  await loadReceipts();
+  await loadSummary();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public School &mdash; ID Card Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* ============================= TOKENS (matches Super Admin / Report Card) ============================= */
+:root{
+  --crimson-deep:#6E0F1E; --crimson:#A81530; --crimson-bright:#E01B2E;
+  --gold:#D98A24; --gold-deep:#A8631A; --gold-light:#F3CD8E;
+  --navy:#0D1730; --navy-2:#182548; --navy-3:#22315C;
+  --cream:#FBF4E6; --paper:#FFFEFB; --ink:#1E1712; --muted:#7A7064; --line:#EBE0CA;
+  --success:#2E7D4F; --warn:#B9750D; --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35); --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+  --liberia-blue:#00205B; --liberia-red:#BF0A30;
+  --foil-1:#eaf1ff; --foil-2:#ffd9ef; --foil-3:#d8fff2; --foil-4:#fff3d0;
+  --noise-uri: none;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{ margin:0; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+input,select,textarea{ font-family:inherit; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* -------- Topbar (matches Super Admin shell) -------- */
+.topbar{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:16px; padding:16px 32px; background:rgba(251,244,230,.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.brand-mark{ width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg, var(--navy-3), var(--navy)); box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Fraunces',serif; font-weight:700; font-size:15px; overflow:hidden; }
+.brand-mark img{ width:100%; height:100%; object-fit:cover; }
+.topbar-moe{ width:40px; height:40px; border-radius:50%; overflow:hidden; background:#fff; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); flex:none; }
+.topbar-moe img{ width:100%; height:100%; object-fit:cover; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.content{ padding:22px 32px 70px; max-width:1520px; margin:0 auto; }
+
+.scope-banner{ display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px; background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08)); border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px; }
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+
+/* -------- Layout: designer grid -------- */
+.designer-grid{ display:grid; grid-template-columns: 380px 1fr; gap:22px; align-items:start; }
+@media (max-width:1180px){ .designer-grid{ grid-template-columns:1fr; } }
+
+.panel{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; position:sticky; top:90px; max-height:calc(100vh - 110px); display:flex; flex-direction:column; }
+@media (max-width:1180px){ .panel{ position:static; max-height:none; } }
+.panel-head{ padding:18px 20px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; flex:none; }
+.panel-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:110px; height:110px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.panel-head h2{ color:#fff; margin:0 0 3px; font-size:17.5px; }
+.panel-head p{ margin:0; color:rgba(255,255,255,.65); font-size:11.8px; }
+.panel-body{ padding:6px 20px 18px; overflow-y:auto; }
+
+.pgroup{ border-bottom:1px solid var(--line); padding:16px 0; }
+.pgroup:last-child{ border-bottom:none; }
+.pgroup-t{ display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--navy-3); margin-bottom:12px; }
+.pgroup-t svg{ width:15px; height:15px; color:var(--gold-deep); }
+
+.field{ margin-bottom:12px; }
+.field label{ display:block; font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:5px; }
+.field input[type=text], .field input[type=number], .field select, .field textarea{
+  width:100%; border:1px solid var(--line); border-radius:9px; padding:8px 11px; font-size:13px; background:var(--paper); color:var(--ink); transition:border-color .15s;
+}
+.field textarea{ resize:vertical; min-height:56px; line-height:1.45; }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); }
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+.toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; border:1px solid var(--line); border-radius:9px; margin-bottom:8px; background:#FBF8F0; }
+.toggle-row .tr-t{ font-size:12px; font-weight:700; }
+.toggle-row .tr-s{ font-size:10.5px; color:var(--muted); margin-top:1px; }
+.switch{ position:relative; width:36px; height:20px; flex:none; }
+.switch input{ opacity:0; width:0; height:0; position:absolute; }
+.switch .sw-track{ position:absolute; inset:0; background:var(--line); border-radius:20px; transition:background .15s; cursor:pointer; }
+.switch .sw-track::after{ content:""; position:absolute; left:2px; top:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .15s; }
+.switch input:checked + .sw-track{ background:var(--gold-deep); }
+.switch input:checked + .sw-track::after{ transform:translateX(16px); }
+
+.color-row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.color-row input[type=color]{ width:36px; height:36px; border-radius:9px; border:1px solid var(--line); padding:2px; background:var(--paper); cursor:pointer; flex:none; }
+.color-row .cr-label{ font-size:12.5px; font-weight:700; }
+.color-row .cr-sub{ font-size:10.8px; color:var(--muted); }
+
+.role-tabs{ display:flex; gap:6px; background:#FBF8F0; border:1px solid var(--line); padding:4px; border-radius:11px; margin-bottom:12px; }
+.role-tabs .role-tab{ flex:1; display:flex; align-items:center; justify-content:center; gap:6px; border:none; background:transparent; padding:8px 6px; border-radius:8px; font-size:11.8px; font-weight:700; color:var(--muted); }
+.role-tabs .role-tab svg{ width:14px; height:14px; }
+.role-tabs .role-tab.active{ background:var(--navy); color:#fff; }
+
+.search-results{ display:none; position:absolute; left:0; right:0; top:calc(100% - 2px); z-index:20; background:var(--paper); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); max-height:260px; overflow-y:auto; padding:6px; }
+.search-results.open{ display:block; }
+.search-results .sr-item{ width:100%; display:flex; align-items:center; gap:10px; padding:7px 8px; border:none; background:transparent; border-radius:9px; text-align:left; }
+.search-results .sr-item:hover{ background:#FBF4E6; }
+.search-results .sr-avatar{ width:30px; height:30px; border-radius:50%; overflow:hidden; background:#FBF8F0; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex:none; }
+.search-results .sr-avatar img{ width:100%; height:100%; object-fit:cover; }
+.search-results .sr-avatar svg{ width:14px; height:14px; color:var(--muted); }
+.search-results .sr-name{ font-size:12.5px; font-weight:700; color:var(--ink); }
+.search-results .sr-sub{ font-size:10.8px; color:var(--muted); margin-top:1px; }
+.search-results .sr-empty{ padding:12px; text-align:center; font-size:12px; color:var(--muted); }
+.search-results .sr-loading{ padding:12px; text-align:center; font-size:12px; color:var(--muted); }
+
+.loaded-chip{ align-items:center; gap:10px; padding:9px 10px; border-radius:12px; background:linear-gradient(90deg, rgba(46,125,79,.08), rgba(217,138,36,.08)); border:1px solid var(--success); margin-top:2px; }
+.loaded-chip .lc-photo{ width:36px; height:36px; border-radius:50%; overflow:hidden; background:#FBF8F0; border:2px solid var(--success); flex:none; }
+.loaded-chip .lc-photo img{ width:100%; height:100%; object-fit:cover; }
+.loaded-chip .lc-info{ flex:1; min-width:0; }
+.loaded-chip .lc-name{ font-size:12.5px; font-weight:800; color:var(--navy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.loaded-chip .lc-sub{ font-size:10.5px; color:var(--success); font-weight:700; margin-top:1px; }
+.loaded-chip .lc-clear{ border:none; background:transparent; color:var(--muted); font-size:18px; line-height:1; padding:2px 6px; border-radius:6px; flex:none; }
+.loaded-chip .lc-clear:hover{ background:rgba(200,20,48,.1); color:var(--danger); }
+.lp-hint{ font-size:11px; color:var(--muted); line-height:1.5; }
+
+.logo-upload{ display:flex; align-items:center; gap:12px; }
+.logo-preview{ width:54px; height:54px; border-radius:50%; border:2px dashed var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; background:#FBF8F0; flex:none; }
+.logo-preview img{ width:100%; height:100%; object-fit:cover; }
+.logo-preview svg{ width:20px; height:20px; color:var(--muted); }
+.logo-preview.square{ border-radius:12px; }
+
+.panel-foot{ padding:14px 20px; border-top:1px solid var(--line); background:#FBF8F0; display:flex; gap:9px; flex:none; }
+.panel-foot .btn{ flex:1; justify-content:center; }
+
+/* -------- Preview column -------- */
+.preview-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:16px; flex-wrap:wrap; }
+.preview-toolbar .pt-l{ font-size:12.5px; color:var(--muted); }
+.zoom-tabs{ display:flex; gap:6px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:11px; }
+.zoom-tabs button{ border:none; background:transparent; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; color:var(--muted); }
+.zoom-tabs button.active{ background:var(--navy); color:#fff; }
+
+.cards-stage{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); padding:46px; overflow:auto; }
+.cards-wrap{ display:flex; gap:46px; align-items:flex-start; justify-content:center; flex-wrap:wrap; transform-origin:top center; transition:transform .15s; }
+.card-col{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+.card-col .cc-label{ font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+
+/* ============================= ID CARD ============================= */
+.idcard{
+  width:338px; height:214px; border-radius:16px; position:relative; overflow:hidden;
+  background:var(--paper);
+  box-shadow:0 18px 40px -18px rgba(20,10,10,.45), 0 0 0 1px rgba(20,10,10,.06),
+             inset 0 0 0 2px rgba(217,138,36,.4), inset 0 0 0 5.5px rgba(217,138,36,.14);
+  font-family:'Inter',sans-serif;
+}
+/* engine-turn corner rules, echoing passport bio-page framing */
+.idcard::before{
+  content:""; position:absolute; inset:8px; border-radius:9px; pointer-events:none; z-index:5;
+  border:1px solid rgba(217,138,36,.22);
+}
+/* laminate gloss sweep — plays only on hover, respects reduced motion */
+.idcard .id-sheen{ position:absolute; inset:0; z-index:9; pointer-events:none; overflow:hidden; border-radius:16px; }
+.idcard .id-sheen::after{
+  content:""; position:absolute; top:-60%; left:-70%; width:38%; height:220%;
+  background:linear-gradient(75deg, transparent, rgba(255,255,255,.6), transparent);
+  transform:translateX(-120%) rotate(9deg); transition:transform .75s cubic-bezier(.2,.7,.3,1);
+}
+.idcard:hover .id-sheen::after{ transform:translateX(430%) rotate(9deg); }
+@media (prefers-reduced-motion: reduce){ .idcard .id-sheen::after{ transition:none; display:none; } }
+/* fine paper-grain security texture */
+.idcard .id-noise{ position:absolute; inset:0; z-index:1; pointer-events:none; background-image:var(--noise-uri); opacity:.5; mix-blend-mode:multiply; }
+/* tiled ghost watermark, classic security-document tell */
+.idcard .id-watermark{
+  position:absolute; inset:-20%; z-index:1; pointer-events:none; display:flex; flex-wrap:wrap; align-content:space-around; justify-content:space-around;
+  transform:rotate(-16deg); opacity:.05; color:var(--navy);
+}
+.idcard .id-watermark span{ font-size:8px; font-weight:800; letter-spacing:.12em; white-space:nowrap; margin:9px 14px; }
+/* guilloché rosette, drawn behind the photo / seal */
+.idcard .id-rosette{ position:absolute; z-index:2; pointer-events:none; }
+/* circular microtext ring */
+.idcard .id-microtext{ position:absolute; z-index:2; pointer-events:none; }
+/* holographic authenticity foil */
+.idcard .id-holo{
+  position:absolute; z-index:8; width:32px; height:32px; border-radius:50%;
+  background:conic-gradient(from 0deg, var(--foil-1), var(--foil-2), var(--foil-3), var(--foil-4), var(--foil-1));
+  mix-blend-mode:color-dodge; opacity:.6; filter:saturate(1.5);
+  box-shadow:0 0 0 1px rgba(255,255,255,.5) inset;
+}
+/* smart-chip glyph */
+.idcard .id-chip{ width:24px; height:18px; border-radius:3px; background:linear-gradient(135deg, var(--gold-light), var(--gold-deep)); position:relative; flex:none; box-shadow:0 0 0 1px rgba(0,0,0,.08); }
+.idcard .id-chip::before{
+  content:""; position:absolute; inset:3px; border-radius:2px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,0,0,.28) 2px 2.6px),
+    repeating-linear-gradient(90deg, transparent 0 3.5px, rgba(0,0,0,.18) 3.5px 4.2px);
+}
+/* barcode strip */
+.idcard .id-barcode{
+  height:14px; opacity:.88;
+  background-image: repeating-linear-gradient(90deg,
+    var(--ink) 0 1px, transparent 1px 2px,
+    var(--ink) 2px 2.6px, transparent 2.6px 4px,
+    var(--ink) 4px 4.5px, transparent 4.5px 6.6px,
+    var(--ink) 6.6px 7.8px, transparent 7.8px 9px);
+}
+/* mini Liberian flag glyph */
+.flag-mini{ width:16px; height:11.6px; position:relative; border-radius:1px; overflow:hidden; flex:none; box-shadow:0 0 0 1px rgba(0,0,0,.15);
+  background:repeating-linear-gradient(180deg, var(--liberia-red) 0 1.05px, #fff 1.05px 2.1px); }
+.flag-mini .canton{ position:absolute; top:0; left:0; width:8px; height:6.3px; background:var(--liberia-blue); display:flex; align-items:center; justify-content:center; }
+.flag-mini .canton span{ font-size:5.5px; color:#fff; line-height:1; transform:translateY(-.3px); }
+
+.idcard .id-head{
+  background:linear-gradient(135deg, var(--id-head, var(--navy-3)), var(--navy));
+  padding:9px 12px 8px; display:flex; align-items:center; gap:9px; position:relative; z-index:4;
+}
+.idcard .id-head::after{ content:""; position:absolute; right:-14px; top:-24px; width:80px; height:80px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.28), transparent 70%); }
+.idcard .id-logo{ width:38px; height:38px; border-radius:50%; background:#fff; box-shadow:0 0 0 2px var(--id-accent, var(--gold)); flex:none; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.idcard .id-logo img{ width:100%; height:100%; object-fit:cover; }
+.idcard .id-logo svg{ width:16px; height:16px; color:var(--muted); }
+.idcard .id-head-center{ flex:1; text-align:center; color:#fff; min-width:0; }
+.idcard .id-school{
+  font-family:'Fraunces',serif; font-weight:700; font-size:12px; line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background:linear-gradient(180deg,#fff, var(--gold-light)); -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 1px 0 rgba(0,0,0,.3); letter-spacing:.01em;
+}
+.idcard .id-org{ font-size:7px; letter-spacing:.06em; text-transform:uppercase; color:var(--id-gold, var(--gold-light)); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.idcard .id-goldbar{ height:3px; background:linear-gradient(90deg, var(--id-accent, var(--gold-deep)), var(--id-gold, var(--gold)), var(--id-accent, var(--gold-deep))); position:relative; z-index:4; }
+.idcard .id-title-strip{ text-align:center; font-size:8.5px; font-weight:800; letter-spacing:.14em; color:#fff; background:var(--id-primary, var(--crimson)); padding:2.5px 0; text-transform:uppercase; position:relative; z-index:4; }
+
+.idcard .id-body{ display:flex; gap:10px; padding:9px 12px 4px; position:relative; z-index:4; }
+.idcard .id-photo{ width:66px; height:78px; border-radius:8px; background:#EFE7D5; border:2px solid var(--id-accent, var(--gold)); flex:none; overflow:hidden; display:flex; align-items:center; justify-content:center; position:relative; z-index:3; }
+.idcard .id-photo img{ width:100%; height:100%; object-fit:cover; }
+.idcard .id-photo svg{ width:26px; height:26px; color:var(--muted); }
+.idcard .id-fields{ flex:1; min-width:0; padding-top:1px; }
+.idcard .idf{ margin-bottom:4px; }
+.idcard .idf .idf-l{ font-size:6.4px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); }
+.idcard .idf .idf-v{ font-size:11px; font-weight:700; color:var(--ink); line-height:1.2; border-bottom:1px solid var(--line); padding-bottom:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.idcard .idf-chiprow{ display:flex; align-items:center; gap:6px; margin-top:5px; }
+
+.idcard .id-foot{ position:absolute; left:0; right:0; bottom:0; padding:5px 12px 7px; display:flex; align-items:flex-end; justify-content:space-between; gap:8px; z-index:4; }
+.idcard .id-sig{ flex:1; }
+.idcard .id-sig .sig-line{ border-top:1px solid var(--ink); width:100%; display:block; margin-bottom:2px; }
+.idcard .id-sig .sig-label{ font-size:6.2px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+.idcard .id-num{ font-family:'IBM Plex Mono',monospace; font-size:7.5px; color:var(--id-primary, var(--crimson)); font-weight:600; white-space:nowrap; }
+
+/* ---- BACK ---- */
+.idcard.back{ display:flex; flex-direction:column; }
+.idcard .id-back-body{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px 16px 6px; position:relative; z-index:4; }
+.idcard .id-seal{ width:46px; height:46px; margin-bottom:2px; display:flex; align-items:center; justify-content:center; position:relative; z-index:3; }
+.idcard .id-seal img{ width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+.idcard .id-back-title-row{ display:flex; align-items:center; gap:6px; }
+.idcard .id-back-title{ font-family:'Fraunces',serif; font-weight:700; font-size:11.5px; color:var(--navy); }
+.idcard .id-back-sub{ font-size:7.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; margin-top:1px; }
+.idcard .id-valid{ display:flex; gap:14px; margin-top:5px; }
+.idcard .id-valid div{ text-align:center; }
+.idcard .id-valid .iv-l{ font-size:6px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:700; }
+.idcard .id-valid .iv-v{ font-size:11px; font-weight:700; color:var(--ink); font-family:'IBM Plex Mono',monospace; }
+.idcard .id-found{ font-size:6.3px; color:var(--muted); line-height:1.4; margin-top:5px; padding:0 4px; }
+.idcard .id-back-sig{ display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-top:auto; padding-top:4px; }
+.idcard .id-back-sig .bs-col{ flex:1; text-align:center; }
+.idcard .id-back-sig .sig-line{ border-top:1px solid var(--ink); margin:0 6px 2px; }
+.idcard .id-back-sig .sig-label{ font-size:6px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+.idcard .id-back-barcode{ width:100%; padding:0 16px; margin-top:4px; }
+.idcard .id-back-serial{ font-family:'IBM Plex Mono',monospace; font-size:6px; letter-spacing:.08em; color:var(--muted); text-align:center; margin-top:2px; }
+.idcard .id-back-foot{ background:var(--id-primary, var(--crimson)); color:#fff; text-align:center; font-size:7px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:3.5px 0; position:relative; z-index:4; }
+
+/* -------- Action bar -------- */
+.action-bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.btn-sm{ padding:8px 14px; font-size:12.5px; border-radius:9px; }
+.dropdown{ position:relative; }
+.dropdown-menu{ position:absolute; right:0; top:calc(100% + 8px); background:var(--paper); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); min-width:230px; padding:8px; z-index:40; display:none; }
+.dropdown.open .dropdown-menu{ display:block; }
+.dropdown-menu .dm-label{ font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); padding:6px 10px 4px; }
+.dropdown-item{ display:flex; align-items:center; gap:10px; width:100%; text-align:left; padding:9px 10px; border-radius:8px; border:none; background:transparent; font-size:13px; font-weight:600; color:var(--ink); }
+.dropdown-item:hover{ background:#FBF8F0; }
+.dropdown-item svg{ width:16px; height:16px; color:var(--gold-deep); flex:none; }
+.dropdown-item .di-sub{ font-size:10.5px; color:var(--muted); font-weight:500; margin-top:1px; }
+.dropdown-item .di-t{ line-height:1.3; }
+
+/* -------- Toast -------- */
+.toast-wrap{ position:fixed; right:24px; bottom:24px; z-index:60; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:12px 16px; border-radius:12px; font-size:13px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow); max-width:340px; animation:toastin .2s ease; }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+@keyframes toastin{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
+
+/* -------- Print -------- */
+@media print{
+  body *{ visibility:hidden; }
+  .cards-stage, .cards-stage *{ visibility:visible; }
+  .cards-stage{ position:absolute; inset:0; margin:0; padding:16px; border:none; box-shadow:none; background:#fff; }
+  .cards-wrap{ transform:none !important; gap:14mm; }
+  .card-col .cc-label{ display:none; }
+  .idcard .id-sheen{ display:none; }
+  @page{ margin:10mm; }
+}
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="topbar" id="topbarEl">
+  <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  </a>
+  <div class="school-brand">
+    <div class="brand-mark" id="topbarBrandMark">KP</div>
+    <div>
+      <div class="sb-t1">Kingsville Public School</div>
+      <div class="sb-t2">Super Admin</div>
+    </div>
+  </div>
+  <div class="topbar-moe" id="topbarMoe"></div>
+  <div class="topbar-divider"></div>
+  <div class="page-title-wrap">
+    <div class="eyebrow">Identity &amp; Records</div>
+    <div class="page-title">ID Card Designer</div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="scope-banner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+    <div>
+      <div class="sb-t">School-wide ID card template</div>
+      <div class="sb-s">Design once and it applies to every student, staff, and dean ID card printed for <b class="sa">Kingsville Public School</b>. School logo and Ministry of Education logo appear on the <b>front</b>; the Republic of Liberia seal appears on the <b>back</b>. Finished with passport-grade security print &mdash; guilloch&eacute; engraving, microtext, hologram foil, smart chip, and barcode.</div>
+    </div>
+  </div>
+
+  <div class="designer-grid">
+
+    <!-- ================= LEFT PANEL ================= -->
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Card Template</h2>
+        <p>Customize identity, logos, colors &amp; sample data</p>
+      </div>
+      <div class="panel-body">
+
+        <div class="pgroup" id="loadPersonGroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Load a Real Person</div>
+          <div class="role-tabs" id="roleTabs">
+            <button type="button" class="role-tab active" data-role="student">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2S19 16.4 19 20"/></svg>Student
+            </button>
+            <button type="button" class="role-tab" data-role="registrar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>Registrar
+            </button>
+            <button type="button" class="role-tab" data-role="principal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/></svg>Principal
+            </button>
+          </div>
+          <div class="field" style="position:relative; margin-bottom:6px;">
+            <label>Search by name or ID</label>
+            <input type="text" id="personSearch" placeholder="Start typing a student name&hellip;" autocomplete="off">
+            <div class="search-results" id="searchResults"></div>
+          </div>
+          <div class="loaded-chip" id="loadedChip" style="display:none;">
+            <div class="lc-photo" id="lcPhoto"></div>
+            <div class="lc-info">
+              <div class="lc-name" id="lcName"></div>
+              <div class="lc-sub" id="lcSub"></div>
+            </div>
+            <button type="button" class="lc-clear" id="lcClear" title="Clear loaded person">&times;</button>
+          </div>
+          <div class="lp-hint" id="lpHint">Pick a role above, then search to pull a real name, photo, class/section and ID number straight from the school database &mdash; no retyping.</div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/></svg>School Identity</div>
+          <div class="field"><label>School Name</label><input type="text" id="f-school"></div>
+          <div class="field"><label>District / Sub-title</label><input type="text" id="f-subtitle"></div>
+          <div class="field"><label>Card Title Strip</label><input type="text" id="f-title"></div>
+          <div class="field"><label>Motto</label><input type="text" id="f-motto"></div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>Logos (Front)</div>
+          <div class="field">
+            <label>School Logo</label>
+            <div class="logo-upload">
+              <div class="logo-preview" id="logoPreview"></div>
+              <button class="btn btn-ghost btn-sm" id="logoBtn" type="button">Upload</button>
+              <input type="file" id="logoFile" accept="image/*" hidden>
+            </div>
+          </div>
+          <div class="field">
+            <label>Ministry of Education Logo</label>
+            <div class="logo-upload">
+              <div class="logo-preview" id="logoPreview2"></div>
+              <button class="btn btn-ghost btn-sm" id="logoBtn2" type="button">Upload</button>
+              <input type="file" id="logoFile2" accept="image/*" hidden>
+            </div>
+          </div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Seal (Back)</div>
+          <div class="field">
+            <label>Republic of Liberia Seal</label>
+            <div class="logo-upload">
+              <div class="logo-preview" id="sealPreview"></div>
+              <button class="btn btn-ghost btn-sm" id="sealBtn" type="button">Upload</button>
+              <input type="file" id="sealFile" accept="image/*" hidden>
+            </div>
+          </div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9.5 12l2 2 3.5-4"/></svg>Security &amp; Finish</div>
+          <div class="toggle-row">
+            <div><div class="tr-t">Guilloch&eacute; rosette</div><div class="tr-s">Engine-turn pattern behind photo &amp; seal</div></div>
+            <label class="switch"><input type="checkbox" id="s-guilloche" checked><span class="sw-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><div class="tr-t">Microtext ring</div><div class="tr-s">Repeating fine print, hard to photocopy</div></div>
+            <label class="switch"><input type="checkbox" id="s-microtext" checked><span class="sw-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><div class="tr-t">Holographic foil</div><div class="tr-s">Iridescent authenticity seal</div></div>
+            <label class="switch"><input type="checkbox" id="s-hologram" checked><span class="sw-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><div class="tr-t">Smart chip</div><div class="tr-s">Contactless access glyph</div></div>
+            <label class="switch"><input type="checkbox" id="s-chip" checked><span class="sw-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><div class="tr-t">Barcode &amp; watermark</div><div class="tr-s">Serial barcode + tiled ghost print</div></div>
+            <label class="switch"><input type="checkbox" id="s-barcode" checked><span class="sw-track"></span></label>
+          </div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg>Colors</div>
+          <div class="color-row">
+            <input type="color" id="c-primary">
+            <div><div class="cr-label">Primary (Crimson)</div><div class="cr-sub">Title strip &amp; back footer</div></div>
+          </div>
+          <div class="color-row">
+            <input type="color" id="c-accent">
+            <div><div class="cr-label">Accent (Gold)</div><div class="cr-sub">Logo ring &amp; photo border</div></div>
+          </div>
+          <div class="color-row">
+            <input type="color" id="c-head">
+            <div><div class="cr-label">Header (Navy)</div><div class="cr-sub">Top band gradient</div></div>
+          </div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2S19 16.4 19 20"/></svg><span id="holderGroupTitle">Card Holder</span></div>
+          <div class="field">
+            <label>Photo</label>
+            <div class="logo-upload">
+              <div class="logo-preview square" id="photoPreview"></div>
+              <button class="btn btn-ghost btn-sm" id="photoBtn" type="button">Upload</button>
+              <input type="file" id="photoFile" accept="image/*" hidden>
+            </div>
+          </div>
+          <div class="field"><label>Full Name</label><input type="text" id="f-name"></div>
+          <div class="row2">
+            <div class="field"><label id="lblGrade">Grade / Class</label><input type="text" id="f-grade"></div>
+            <div class="field"><label id="lblSection">Section</label><input type="text" id="f-section"></div>
+          </div>
+          <div class="field"><label>ID Number</label><input type="text" id="f-idnum"></div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>Validity &amp; Signatures</div>
+          <div class="row2">
+            <div class="field"><label>Issued Year</label><input type="text" id="f-from"></div>
+            <div class="field"><label>Expires Year</label><input type="text" id="f-to"></div>
+          </div>
+          <div class="field"><label>Holder Signature Label</label><input type="text" id="f-siglabel"></div>
+          <div class="field"><label>Dean / Principal Name</label><input type="text" id="f-principal"></div>
+          <div class="field"><label>Dean / Principal Title</label><input type="text" id="f-ptitle"></div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Back Note</div>
+          <div class="field"><label>School Address</label><input type="text" id="f-address"></div>
+          <div class="field"><label>If-Found Statement</label><textarea id="f-found"></textarea></div>
+        </div>
+
+        <div class="pgroup">
+          <div class="pgroup-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Export &amp; Delivery</div>
+          <div class="field"><label>Student Email</label><input type="text" id="f-studentemail" placeholder="melvin.paye@student.kps.edu.lr"></div>
+          <div class="field"><label>Registrar Email</label><input type="text" id="f-registraremail" placeholder="registrar@kps.edu.lr"></div>
+          <div class="field"><label>Principal Email</label><input type="text" id="f-principalemail" placeholder="principal@kps.edu.lr"></div>
+        </div>
+
+      </div>
+      <div class="panel-foot">
+        <button class="btn btn-ghost" id="resetBtn" type="button">Reset</button>
+        <button class="btn btn-primary" id="saveBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+          Save Template
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= PREVIEW ================= -->
+    <div>
+      <div class="preview-toolbar">
+        <div class="pt-l">Live preview &middot; front &amp; back &middot; standard CR80 card ratio</div>
+        <div class="zoom-tabs" id="zoomTabs">
+          <button data-z="0.85">85%</button>
+          <button data-z="1" class="active">100%</button>
+          <button data-z="1.35">135%</button>
+          <button data-z="1.7">170%</button>
+        </div>
+      </div>
+
+      <div class="preview-toolbar">
+        <div class="action-bar">
+          <div class="dropdown" id="downloadDropdown">
+            <button class="btn btn-ghost btn-sm" id="downloadBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+              Download
+            </button>
+            <div class="dropdown-menu">
+              <div class="dm-label">Export as PNG</div>
+              <button class="dropdown-item" data-download="front"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/></svg><span class="di-t">Front only</span></button>
+              <button class="dropdown-item" data-download="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/></svg><span class="di-t">Back only</span></button>
+              <button class="dropdown-item" data-download="both"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="18" rx="2"/><rect x="13" y="3" width="8" height="18" rx="2"/></svg><span class="di-t">Front &amp; back (one image)</span></button>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="printBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V4h12v5M6 18H4v-6a1 1 0 011-1h14a1 1 0 011 1v6h-2M6 14h12v7H6v-7z"/></svg>
+            Print
+          </button>
+          <div class="dropdown" id="sendDropdown">
+            <button class="btn btn-primary btn-sm" id="sendBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+              Send to&hellip;
+            </button>
+            <div class="dropdown-menu">
+              <div class="dm-label">Deliver this card</div>
+              <button class="dropdown-item" data-send="student"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2S19 16.4 19 20"/></svg><span class="di-t">Student<div class="di-sub" id="dm-student-email"></div></span></button>
+              <button class="dropdown-item" data-send="registrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg><span class="di-t">Registrar<div class="di-sub">Adds to Registrar Dashboard</div></span></button>
+              <button class="dropdown-item" data-send="principal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/></svg><span class="di-t">Principal<div class="di-sub" id="dm-principal-email"></div></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cards-stage">
+        <div class="cards-wrap" id="cardsWrap">
+          <div class="card-col">
+            <div class="cc-label">Front</div>
+            <div class="idcard" id="idFront"></div>
+          </div>
+          <div class="card-col">
+            <div class="cc-label">Back</div>
+            <div class="idcard back" id="idBack"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================= DEFAULT / STATE ============================= */
+const defaults = {
+  school:'Kingsville Public School',
+  subtitle:'Kingsville #7 \u00b7 Careysburg District',
+  title:'Student Identification Card',
+  motto:'Knowledge is Power',
+  role:'student',
+  logo:'../assets/images/img-b504c686993dd8f4.png',
+  moeLogo:'../assets/images/img-9de970b873392ae2.png',
+  seal:'../assets/images/img-77b38e10dd863828.png',
+  colorPrimary:'#A81530', colorAccent:'#D98A24', colorHead:'#22315C',
+  name:'Melvin S. Paye',
+  grade:'Grade 6', section:'A',
+  idnum:'KPS-2024-0163',
+  photo:'',
+  from:'2024', to:'2025',
+  siglabel:"Holder's Signature",
+  principal:'M. S. Doe',
+  ptitle:'Principal',
+  address:'Kingsville #7, Careysburg District, Montserrado County, Liberia',
+  found:'If found, please deliver to the school address above or to the nearest police station.',
+  security:{ guilloche:true, microtext:true, hologram:true, chip:true, barcode:true },
+  studentEmail:'melvin.paye@student.kps.edu.lr',
+  registrarEmail:'registrar@kps.edu.lr',
+  principalEmail:'principal@kps.edu.lr'
+};
+let state = JSON.parse(JSON.stringify(defaults));
+
+/* ============================= ICONS ============================= */
+const userIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2S19 16.4 19 20"/></svg>';
+const imgIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="9" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg>';
+
+/* ============================= LOAD A REAL PERSON (Supabase) =============================
+   Pulls real students (public.students, joined to sections/classes for grade & section, and
+   to profiles for a photo where a login account exists) and real registrar/principal staff
+   (public.profiles filtered by role) so the template can be built for an actual person
+   instead of typed-in sample data. Nothing here writes to the database — it only reads. */
+const sbc = () => window.sb;
+let lpRole = 'student';
+let lpTimer = null;
+let lpToken = 0;
+
+document.getElementById('roleTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.role-tab'); if(!btn) return;
+  lpRole = btn.dataset.role;
+  document.querySelectorAll('#roleTabs .role-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const search = document.getElementById('personSearch');
+  search.value = '';
+  search.placeholder = lpRole === 'student' ? 'Start typing a student name\u2026'
+                      : lpRole === 'registrar' ? 'Start typing a registrar name\u2026'
+                      : 'Start typing the principal\u2019s name\u2026';
+  const box = document.getElementById('searchResults');
+  box.innerHTML = ''; box.classList.remove('open');
+});
+
+async function searchPeople(role, q){
+  if(!sbc()) return [];
+  try{
+    if(role === 'student'){
+      let query = sbc().from('students')
+        .select('id, student_id, full_name, status, sections(name, classes(name)), profiles(avatar_url)')
+        .eq('status', 'active')
+        .order('full_name')
+        .limit(8);
+      if(q) query = query.ilike('full_name', '%'+q+'%');
+      const { data, error } = await query;
+      if(error) throw error;
+      return (data||[]).map(s => ({
+        id: s.id,
+        name: s.full_name,
+        idnum: s.student_id || '',
+        grade: (s.sections && s.sections.classes && s.sections.classes.name) || '',
+        section: (s.sections && s.sections.name) || '',
+        photo: (s.profiles && s.profiles.avatar_url) || '',
+        role: 'student'
+      }));
+    }else{
+      let query = sbc().from('profiles')
+        .select('id, full_name, username, avatar_url, role, is_active')
+        .eq('role', role)
+        .order('full_name')
+        .limit(8);
+      if(q) query = query.ilike('full_name', '%'+q+'%');
+      const { data, error } = await query;
+      if(error) throw error;
+      return (data||[]).filter(p => p.is_active !== false).map(p => ({
+        id: p.id,
+        name: p.full_name,
+        idnum: p.username || ('KPS-STAFF-'+String(p.id).slice(0,8).toUpperCase()),
+        grade: role === 'principal' ? 'School Administration' : "Registrar's Office",
+        section: 'Staff',
+        photo: p.avatar_url || '',
+        role
+      }));
+    }
+  }catch(err){
+    console.error('Person search failed', err);
+    showToast('Could not search the database right now &mdash; check the connection and try again.');
+    return [];
+  }
+}
+
+function renderSearchResults(list){
+  const box = document.getElementById('searchResults');
+  if(!list.length){
+    box.innerHTML = '<div class="sr-empty">No matches found</div>';
+    box.classList.add('open');
+    return;
+  }
+  box.innerHTML = list.map(p => `
+    <button type="button" class="sr-item" data-id="${p.id}">
+      <div class="sr-avatar">${p.photo ? '<img src="'+p.photo+'">' : userIcon}</div>
+      <div class="sr-txt">
+        <div class="sr-name">${p.name}</div>
+        <div class="sr-sub">${p.idnum}${p.grade ? ' \u00b7 '+p.grade : ''}${(p.section && p.section !== 'Staff') ? ' '+p.section : ''}</div>
+      </div>
+    </button>`).join('');
+  box.classList.add('open');
+  box.querySelectorAll('.sr-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const person = list.find(p => String(p.id) === btn.dataset.id);
+      if(person) applyPerson(person);
+      box.classList.remove('open');
+    });
+  });
+}
+
+function applyPerson(person){
+  state.name = person.name || state.name;
+  state.idnum = person.idnum || state.idnum;
+  state.grade = person.grade || state.grade;
+  state.section = person.section || '';
+  if(person.photo) state.photo = person.photo;
+  state.role = person.role;
+  state.title = person.role === 'student' ? 'Student Identification Card'
+              : person.role === 'registrar' ? 'Staff Identification Card \u2014 Registrar'
+              : 'Staff Identification Card \u2014 Principal';
+  state.siglabel = person.role === 'student' ? 'Student Signature' : 'Staff Signature';
+  document.getElementById('personSearch').value = person.name;
+  document.getElementById('holderGroupTitle').textContent = person.role === 'student' ? 'Card Holder \u2014 Student' : 'Card Holder \u2014 Staff';
+  document.getElementById('lblGrade').textContent = person.role === 'student' ? 'Grade / Class' : 'Department';
+  document.getElementById('lblSection').textContent = person.role === 'student' ? 'Section' : 'Office';
+  syncFieldsFromState();
+  showLoadedChip(person);
+  showToast('Loaded '+person.name+' from the database &middot; card fields updated.');
+}
+
+function showLoadedChip(person){
+  const chip = document.getElementById('loadedChip');
+  document.getElementById('lcPhoto').innerHTML = person.photo ? '<img src="'+person.photo+'">' : userIcon;
+  document.getElementById('lcName').textContent = person.name;
+  const roleLabel = person.role.charAt(0).toUpperCase()+person.role.slice(1);
+  document.getElementById('lcSub').textContent = roleLabel+' \u00b7 '+person.idnum+' \u00b7 loaded from database';
+  chip.style.display = 'flex';
+  document.getElementById('lpHint').style.display = 'none';
+}
+document.getElementById('lcClear').addEventListener('click', () => {
+  document.getElementById('loadedChip').style.display = 'none';
+  document.getElementById('lpHint').style.display = 'block';
+  document.getElementById('personSearch').value = '';
+});
+
+document.getElementById('personSearch').addEventListener('input', e => {
+  const q = e.target.value.trim();
+  clearTimeout(lpTimer);
+  const myToken = ++lpToken;
+  const box = document.getElementById('searchResults');
+  box.innerHTML = '<div class="sr-loading">Searching&hellip;</div>';
+  box.classList.add('open');
+  lpTimer = setTimeout(async () => {
+    const list = await searchPeople(lpRole, q);
+    if(myToken !== lpToken) return; // a newer search superseded this one
+    renderSearchResults(list);
+  }, 320);
+});
+document.getElementById('personSearch').addEventListener('focus', e => {
+  if(!e.target.value) searchPeople(lpRole, '').then(list => { renderSearchResults(list); });
+});
+document.addEventListener('click', e => {
+  if(!e.target.closest('#loadPersonGroup')) document.getElementById('searchResults').classList.remove('open');
+});
+
+/* ============================= PAPER-GRAIN NOISE (once) ============================= */
+const noiseSvg = '<svg xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>';
+document.documentElement.style.setProperty('--noise-uri', 'url("data:image/svg+xml,'+encodeURIComponent(noiseSvg)+'")');
+
+/* ============================= SECURITY-PRINT BUILDERS ============================= */
+// Guilloché rosette: concentric rotated ellipses, the engine-turn pattern seen on currency & passports
+function buildRosette(count, rx, ry){
+  let shapes = '';
+  for(let i=0;i<count;i++){
+    const angle = (180/count)*i;
+    shapes += '<ellipse cx="50" cy="50" rx="'+rx+'" ry="'+ry+'" transform="rotate('+angle.toFixed(2)+' 50 50)" fill="none" stroke="currentColor" stroke-width="0.4"/>';
+  }
+  return '<svg viewBox="0 0 100 100" style="width:100%;height:100%;color:var(--id-accent, var(--gold-deep));opacity:.4;">'+shapes+'</svg>';
+}
+// Circular repeating microtext ring, deliberately near-illegible at print scale
+function buildMicrotext(id, text){
+  const t = (text+'  \u2022  ').repeat(6);
+  return '<svg viewBox="0 0 100 100" style="width:100%;height:100%;">'+
+    '<defs><path id="'+id+'" d="M50,50 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>'+
+    '<text font-size="2.5" fill="var(--gold-deep)" opacity=".5" letter-spacing="1">'+
+    '<textPath href="#'+id+'" startOffset="0%">'+t+'</textPath></text></svg>';
+}
+
+/* ============================= RENDER ============================= */
+function renderFront(){
+  const el = document.getElementById('idFront');
+  const sec = state.security;
+  const watermarkHtml = sec.barcode ? '<div class="id-watermark">'+Array(14).fill('<span>'+state.school.toUpperCase()+'</span>').join('')+'</div>' : '';
+  const rosetteHtml = sec.guilloche ? '<div class="id-rosette" style="left:9px;top:47px;width:84px;height:84px;">'+buildRosette(18,44,20)+'</div>' : '';
+  const microtextHtml = sec.microtext ? '<div class="id-microtext" style="left:-8px;top:33px;width:100px;height:100px;">'+buildMicrotext('mtFront', state.school)+'</div>' : '';
+  const holoHtml = sec.hologram ? '<div class="id-holo" style="right:10px;bottom:24px;"></div>' : '';
+  const chipHtml = sec.chip ? '<div class="idf-chiprow"><div class="id-chip"></div><span style="font-size:6px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;">Tap Access</span></div>' : '';
+
+  el.innerHTML = `
+    <div class="id-noise"></div>
+    ${watermarkHtml}
+    ${rosetteHtml}
+    ${microtextHtml}
+    <div class="id-head">
+      <div class="id-logo">${state.logo ? '<img src="'+state.logo+'">' : userIcon}</div>
+      <div class="id-head-center">
+        <div class="id-school">${state.school.toUpperCase()}</div>
+        <div class="id-org">${state.subtitle}</div>
+      </div>
+      <div class="id-logo">${state.moeLogo ? '<img src="'+state.moeLogo+'">' : userIcon}</div>
+    </div>
+    <div class="id-goldbar"></div>
+    <div class="id-title-strip">${state.title}</div>
+    <div class="id-body">
+      <div class="id-photo">${state.photo ? '<img src="'+state.photo+'">' : userIcon}</div>
+      <div class="id-fields">
+        <div class="idf"><div class="idf-l">Full Name</div><div class="idf-v">${state.name}</div></div>
+        <div class="idf"><div class="idf-l">Grade / Class</div><div class="idf-v">${state.grade} &middot; Sec ${state.section}</div></div>
+        <div class="idf"><div class="idf-l">ID Number</div><div class="idf-v">${state.idnum}</div></div>
+        ${chipHtml}
+      </div>
+    </div>
+    <div class="id-foot">
+      <div class="id-sig"><span class="sig-line"></span><span class="sig-label">${state.siglabel}</span></div>
+      <div class="id-num">${state.from}&ndash;${state.to}</div>
+    </div>
+    ${holoHtml}
+    <div class="id-sheen"></div>`;
+}
+
+function renderBack(){
+  const el = document.getElementById('idBack');
+  const sec = state.security;
+  const watermarkHtml = sec.barcode ? '<div class="id-watermark">'+Array(14).fill('<span>OFFICIAL</span>').join('')+'</div>' : '';
+  const rosetteHtml = sec.guilloche ? '<div class="id-rosette" style="left:50%;top:6px;width:96px;height:96px;transform:translateX(-50%);">'+buildRosette(20,46,46)+'</div>' : '';
+  const microtextHtml = sec.microtext ? '<div class="id-microtext" style="left:50%;top:2px;width:100px;height:100px;transform:translateX(-50%);">'+buildMicrotext('mtBack', 'REPUBLIC OF LIBERIA')+'</div>' : '';
+  const holoHtml = sec.hologram ? '<div class="id-holo" style="left:12px;top:10px;"></div>' : '';
+  const barcodeHtml = sec.barcode ? '<div class="id-back-barcode"><div class="id-barcode"></div><div class="id-back-serial">'+state.idnum+'</div></div>' : '';
+
+  el.innerHTML = `
+    <div class="id-noise"></div>
+    ${watermarkHtml}
+    <div class="id-back-body">
+      ${rosetteHtml}
+      ${microtextHtml}
+      <div class="id-seal">${state.seal ? '<img src="'+state.seal+'">' : ''}</div>
+      <div class="id-back-title-row">
+        <span class="flag-mini"><span class="canton">&#9733;</span></span>
+        <div class="id-back-title">Republic of Liberia</div>
+      </div>
+      <div class="id-back-sub">Ministry of Education</div>
+      <div class="id-valid">
+        <div><div class="iv-l">Issued</div><div class="iv-v">${state.from}</div></div>
+        <div><div class="iv-l">Expires</div><div class="iv-v">${state.to}</div></div>
+      </div>
+      <div class="id-found"><b>${state.address}</b><br>${state.found}</div>
+      <div class="id-back-sig">
+        <div class="bs-col"><span class="sig-line"></span><span class="sig-label">${state.principal} &middot; ${state.ptitle}</span></div>
+      </div>
+      ${barcodeHtml}
+    </div>
+    <div class="id-back-foot">${state.motto}</div>
+    ${holoHtml}
+    <div class="id-sheen"></div>`;
+}
+
+function applyColors(){
+  document.getElementById('idFront').style.setProperty('--id-primary', state.colorPrimary);
+  document.getElementById('idFront').style.setProperty('--id-accent', state.colorAccent);
+  document.getElementById('idFront').style.setProperty('--id-head', state.colorHead);
+  document.getElementById('idBack').style.setProperty('--id-primary', state.colorPrimary);
+  document.getElementById('idBack').style.setProperty('--id-accent', state.colorAccent);
+  document.getElementById('idBack').style.setProperty('--id-head', state.colorHead);
+}
+
+function syncTopbarLogos(){
+  const bm = document.getElementById('topbarBrandMark');
+  bm.innerHTML = state.logo ? '<img src="'+state.logo+'">' : 'KP';
+  const moe = document.getElementById('topbarMoe');
+  moe.innerHTML = state.moeLogo ? '<img src="'+state.moeLogo+'">' : '';
+}
+
+function updateSendMenu(){
+  document.getElementById('dm-student-email').textContent = state.studentEmail;
+  document.getElementById('dm-principal-email').textContent = state.principalEmail;
+}
+
+function renderPreview(){
+  applyColors();
+  renderFront();
+  renderBack();
+  syncTopbarLogos();
+  updateSendMenu();
+}
+
+/* ============================= BIND FIELDS ============================= */
+function bindText(id, key){ document.getElementById(id).addEventListener('input', e => { state[key] = e.target.value; renderPreview(); }); }
+bindText('f-school','school'); bindText('f-subtitle','subtitle'); bindText('f-title','title'); bindText('f-motto','motto');
+bindText('f-name','name'); bindText('f-grade','grade'); bindText('f-section','section'); bindText('f-idnum','idnum');
+bindText('f-from','from'); bindText('f-to','to'); bindText('f-siglabel','siglabel');
+bindText('f-principal','principal'); bindText('f-ptitle','ptitle');
+bindText('f-address','address'); bindText('f-found','found');
+bindText('f-studentemail','studentEmail'); bindText('f-registraremail','registrarEmail'); bindText('f-principalemail','principalEmail');
+
+document.getElementById('c-primary').addEventListener('input', e => { state.colorPrimary = e.target.value; renderPreview(); });
+document.getElementById('c-accent').addEventListener('input', e => { state.colorAccent = e.target.value; renderPreview(); });
+document.getElementById('c-head').addEventListener('input', e => { state.colorHead = e.target.value; renderPreview(); });
+
+function bindToggle(id, key){ document.getElementById(id).addEventListener('change', e => { state.security[key] = e.target.checked; renderPreview(); }); }
+bindToggle('s-guilloche','guilloche'); bindToggle('s-microtext','microtext'); bindToggle('s-hologram','hologram');
+bindToggle('s-chip','chip'); bindToggle('s-barcode','barcode');
+
+function wireUpload(btnId, fileId, previewId, key){
+  document.getElementById(btnId).addEventListener('click', () => document.getElementById(fileId).click());
+  document.getElementById(fileId).addEventListener('change', e => {
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      state[key] = ev.target.result;
+      document.getElementById(previewId).innerHTML = '<img src="'+state[key]+'">';
+      renderPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+wireUpload('logoBtn','logoFile','logoPreview','logo');
+wireUpload('logoBtn2','logoFile2','logoPreview2','moeLogo');
+wireUpload('sealBtn','sealFile','sealPreview','seal');
+wireUpload('photoBtn','photoFile','photoPreview','photo');
+
+/* ============================= ZOOM ============================= */
+document.getElementById('zoomTabs').addEventListener('click', e => {
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#zoomTabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cardsWrap').style.transform = 'scale('+btn.dataset.z+')';
+});
+
+/* ============================= TOAST ============================= */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>'+msg+'</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+
+/* ============================= DROPDOWNS ============================= */
+document.querySelectorAll('.dropdown > button').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const dd = btn.closest('.dropdown');
+    const wasOpen = dd.classList.contains('open');
+    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+    if(!wasOpen) dd.classList.add('open');
+  });
+});
+document.addEventListener('click', () => document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open')));
+
+/* ============================= DOWNLOAD (PNG via html2canvas) ============================= */
+async function captureCard(el){
+  return await html2canvas(el, { scale: 3, backgroundColor: null, useCORS: true });
+}
+function triggerDownload(dataUrl, filename){
+  const a = document.createElement('a');
+  a.href = dataUrl; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function downloadCard(which){
+  showToast('Preparing PNG&hellip;');
+  const safeName = (state.idnum || 'idcard').replace(/[^a-z0-9-]+/gi, '_');
+  if(which === 'both'){
+    const [cFront, cBack] = await Promise.all([captureCard(document.getElementById('idFront')), captureCard(document.getElementById('idBack'))]);
+    const gap = 40;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(cFront.width, cBack.width);
+    canvas.height = cFront.height + cBack.height + gap;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#FBF4E6'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(cFront, 0, 0);
+    ctx.drawImage(cBack, 0, cFront.height + gap);
+    triggerDownload(canvas.toDataURL('image/png'), safeName+'-front-back.png');
+  } else {
+    const el = which === 'front' ? document.getElementById('idFront') : document.getElementById('idBack');
+    const canvas = await captureCard(el);
+    triggerDownload(canvas.toDataURL('image/png'), safeName+'-'+which+'.png');
+  }
+  showToast('Downloaded &middot; '+(which==='both' ? 'front &amp; back' : which)+' PNG saved.');
+}
+document.querySelectorAll('[data-download]').forEach(btn => {
+  btn.addEventListener('click', () => downloadCard(btn.dataset.download));
+});
+
+/* ============================= PRINT ============================= */
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+/* ============================= SEND TO ============================= */
+/* Shared inbox key -- id-card.html (Registrar Dashboard) reads from this
+   same localStorage key. Keeping the storage schema here and there in sync
+   is required if either file is edited. */
+const REGISTRAR_INBOX_KEY = 'kps_registrar_id_card_inbox';
+
+function pushToRegistrarInbox(){
+  let inbox = [];
+  try { inbox = JSON.parse(localStorage.getItem(REGISTRAR_INBOX_KEY)) || []; }
+  catch(e){ inbox = []; }
+
+  const record = {
+    id: 'card_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),
+    idnum: state.idnum,
+    name: state.name,
+    grade: state.grade,
+    section: state.section,
+    from: state.from,
+    to: state.to,
+    sentAt: new Date().toISOString(),
+    status: 'new',
+    /* full template snapshot so the dashboard can render an identical
+       front & back preview without re-deriving anything */
+    state: JSON.parse(JSON.stringify(state))
+  };
+
+  /* replace an existing record for the same ID number instead of duplicating */
+  inbox = inbox.filter(r => r.idnum !== record.idnum || !record.idnum);
+  inbox.unshift(record);
+  localStorage.setItem(REGISTRAR_INBOX_KEY, JSON.stringify(inbox));
+  return record;
+}
+
+const roleLabels = { student:'Student', registrar:'Registrar', principal:'Principal' };
+document.querySelectorAll('[data-send]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const role = btn.dataset.send;
+
+    if(role === 'registrar'){
+      pushToRegistrarInbox();
+      showToast('Sent to the Registrar &middot; card now appears on the Registrar Dashboard');
+      return;
+    }
+
+    const emailKey = role+'Email';
+    const to = state[emailKey] || '';
+    const subject = 'ID Card &mdash; '+state.name+' ('+state.idnum+')';
+    const bodyLines = [
+      'Hello,', '',
+      'Please find the ID card details for '+state.name+' below.',
+      'ID Number: '+state.idnum,
+      'Grade / Class: '+state.grade+' &middot; Sec '+state.section,
+      'Valid: '+state.from+'&ndash;'+state.to, '',
+      'Note: attach the downloaded front &amp; back PNG files to this email before sending.', '',
+      '&mdash; Kingsville Public School, ID Card Designer'
+    ];
+    const mailto = 'mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(subject.replace(/&mdash;/g,'\u2014'))+'&body='+encodeURIComponent(bodyLines.join('\n').replace(/&middot;/g,'\u00b7').replace(/&ndash;/g,'\u2013').replace(/&mdash;/g,'\u2014').replace(/&amp;/g,'&'));
+    window.location.href = mailto;
+    showToast('Opening email to the '+roleLabels[role]+' &middot; '+ (to || 'no address set'));
+  });
+});
+
+/* ============================= SAVE / RESET =============================
+   Persisted for real via the shared Supabase-backed key/value store
+   (js/supabase-api.js's KPS.kv, aliased to window.storage) so the template
+   survives reloads and is genuinely shared school-wide across every device,
+   not just a fake success toast. */
+const IDCARD_TEMPLATE_KEY = 'idcard-template:kingsville';
+
+async function loadSavedTemplate(){
+  try{
+    if (window.storage && window.storage.get){
+      const r = await window.storage.get(IDCARD_TEMPLATE_KEY, true);
+      if (r && r.value){
+        const saved = JSON.parse(r.value);
+        state = Object.assign(JSON.parse(JSON.stringify(defaults)), saved);
+      }
+    }
+  }catch(e){ /* nothing saved yet — using defaults */ }
+}
+
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  try{
+    if (window.storage && window.storage.set) await window.storage.set(IDCARD_TEMPLATE_KEY, JSON.stringify(state), true);
+    showToast('ID card template saved &middot; applied school-wide for all future student &amp; staff ID cards.');
+  }catch(e){
+    showToast('Could not save — the database did not confirm it.');
+  }
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  state = JSON.parse(JSON.stringify(defaults));
+  syncFieldsFromState();
+  showToast('Template reset to the default Kingsville Public School design.');
+});
+
+function syncFieldsFromState(){
+  document.getElementById('f-school').value = state.school;
+  document.getElementById('f-subtitle').value = state.subtitle;
+  document.getElementById('f-title').value = state.title;
+  document.getElementById('f-motto').value = state.motto;
+  document.getElementById('f-name').value = state.name;
+  document.getElementById('f-grade').value = state.grade;
+  document.getElementById('f-section').value = state.section;
+  document.getElementById('f-idnum').value = state.idnum;
+  document.getElementById('f-from').value = state.from;
+  document.getElementById('f-to').value = state.to;
+  document.getElementById('f-siglabel').value = state.siglabel;
+  document.getElementById('f-principal').value = state.principal;
+  document.getElementById('f-ptitle').value = state.ptitle;
+  document.getElementById('f-address').value = state.address;
+  document.getElementById('f-found').value = state.found;
+  document.getElementById('f-studentemail').value = state.studentEmail;
+  document.getElementById('f-registraremail').value = state.registrarEmail;
+  document.getElementById('f-principalemail').value = state.principalEmail;
+  document.getElementById('c-primary').value = state.colorPrimary;
+  document.getElementById('c-accent').value = state.colorAccent;
+  document.getElementById('c-head').value = state.colorHead;
+  document.getElementById('s-guilloche').checked = state.security.guilloche;
+  document.getElementById('s-microtext').checked = state.security.microtext;
+  document.getElementById('s-hologram').checked = state.security.hologram;
+  document.getElementById('s-chip').checked = state.security.chip;
+  document.getElementById('s-barcode').checked = state.security.barcode;
+  document.getElementById('logoPreview').innerHTML = state.logo ? '<img src="'+state.logo+'">' : userIcon;
+  document.getElementById('logoPreview2').innerHTML = state.moeLogo ? '<img src="'+state.moeLogo+'">' : userIcon;
+  document.getElementById('sealPreview').innerHTML = state.seal ? '<img src="'+state.seal+'">' : userIcon;
+  document.getElementById('photoPreview').innerHTML = state.photo ? '<img src="'+state.photo+'">' : imgIcon;
+  renderPreview();
+}
+
+/* ============================= INIT ============================= */
+(async function init(){
+  if (window.KPS && KPS.requireRole){
+    const { user } = await KPS.requireRole(['super_admin']);
+    if(!user) return;
+  }
+  await loadSavedTemplate();
+  syncFieldsFromState();
+})();
+</script>
+</body>
+</html>

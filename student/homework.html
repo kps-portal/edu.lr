@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homework — Kingsville Public High School</title>
+<style>
+  :root{
+    --red:#a3181c;
+    --red-bright:#d31f24;
+    --gold:#d4af37;
+    --gold-light:#f4e5a3;
+    --ink:#1a1a1a;
+    --line:#000;
+    --paper:#ffffff;
+    --grey-band:#e9e9e9;
+    --slate:#5c5f66;
+    --good:#1f7a3d;
+    --glow:rgba(163,24,28,.45);
+    --glow-gold:rgba(212,175,55,.65);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(163,24,28,.06), transparent 60%),
+      #f2f2f0;
+    margin:0;
+    padding:24px 12px 60px;
+  }
+  a{color:inherit;text-decoration:none}
+
+  .sheet{
+    position:relative;
+    max-width:1180px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:26px 34px 40px;
+    border:1px solid transparent;
+    border-radius:6px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    isolation:isolate;
+  }
+
+  /* Premium animated gold/crimson glowing frame */
+  .sheet::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:8px;
+    padding:2px;
+    background:conic-gradient(from var(--frame-angle,0deg),
+      var(--gold), var(--red-bright), var(--gold-light), var(--red), var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    z-index:-1;
+    animation: frame-spin 7s linear infinite;
+    filter:drop-shadow(0 0 6px var(--glow-gold));
+  }
+  @property --frame-angle{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:0deg;
+  }
+  @keyframes frame-spin{
+    to{ --frame-angle:360deg; }
+  }
+
+  .letterhead{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:3px double #333;
+    padding-bottom:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .letterhead::after{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:40%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.35), transparent);
+    animation: sweep 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{ left:-60%; }
+    45%{ left:120%; }
+    100%{ left:120%; }
+  }
+  .letterhead img{
+    height:64px;
+    width:64px;
+    object-fit:contain;
+    flex-shrink:0;
+    border-radius:50%;
+    background:#fff;
+    padding:3px;
+    box-shadow:
+      0 0 0 2px var(--gold),
+      0 0 10px 2px var(--glow-gold);
+    animation: crest-glow 2.6s ease-in-out infinite;
+  }
+  @keyframes crest-glow{
+    0%, 100%{
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 8px 1px var(--glow-gold);
+    }
+    50%{
+      box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 0 18px 6px var(--glow-gold);
+    }
+  }
+  .letterhead .headtext{
+    flex:1;
+    text-align:center;
+  }
+  .school-name{
+    font-weight:800;
+    font-size:26px;
+    letter-spacing:.5px;
+    margin:0 0 4px;
+    background:linear-gradient(100deg,
+      var(--red) 0%, var(--gold) 22%, var(--red-bright) 45%,
+      var(--gold-light) 60%, var(--red) 82%, var(--gold) 100%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 14px rgba(163,24,28,.18);
+    animation: text-shine 5s linear infinite;
+  }
+  @keyframes text-shine{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:250% 50%; }
+  }
+  .sub{ font-weight:700; font-size:13px; margin:0; color:#333; }
+  .motto{ font-style:italic; font-size:12.5px; color:#555; margin-top:2px; }
+
+  .master-title{
+    color:var(--red);
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:1px;
+    margin:8px 0 6px;
+    text-align:center;
+    text-shadow:0 0 10px rgba(163,24,28,.15);
+  }
+
+  .band{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    background:linear-gradient(180deg,var(--grey-band),#f4f4f2);
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    color:var(--red);
+    padding:7px 0;
+    margin:4px 0 20px;
+    letter-spacing:2px;
+    border-radius:3px;
+    box-shadow:inset 0 0 0 1px rgba(212,175,55,.35), 0 0 10px rgba(163,24,28,.08);
+  }
+  .band::before{
+    content:"";
+    position:absolute;
+    top:0; left:-40%;
+    width:25%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.55), transparent);
+    animation: sweep 4.5s ease-in-out infinite;
+    animation-delay:1s;
+    pointer-events:none;
+  }
+  .year-select{
+    font-family:inherit;
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:1px;
+    color:var(--red);
+    background:#fff;
+    border:1px solid rgba(163,24,28,.4);
+    border-radius:4px;
+    padding:4px 10px;
+  }
+
+  /* HERO STRIP */
+  .hero-strip{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:24px;
+  }
+  .hero-card{
+    position:relative;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:16px 18px;
+    overflow:hidden;
+    box-shadow:0 1px 4px rgba(0,0,0,.05);
+  }
+  .hero-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:8px;
+    padding:1.5px;
+    background:linear-gradient(135deg, var(--gold), transparent 40%, transparent 60%, var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity:.6;
+  }
+  .hero-card .label{
+    font-family:Georgia, serif;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--slate);
+    font-weight:700;
+  }
+  .hero-card .value{
+    font-size:28px;
+    font-weight:800;
+    color:var(--ink);
+    margin-top:6px;
+  }
+  .hero-card .value small{
+    font-size:13px;
+    color:var(--slate);
+    font-weight:400;
+  }
+  .hero-card.rank .value{
+    background:linear-gradient(100deg, var(--red) 0%, var(--gold) 40%, var(--red-bright) 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    animation:text-shine 6s linear infinite;
+  }
+  .hero-card.conduct .value{ color:var(--good); }
+  .hero-card::after{
+    content:"";
+    position:absolute;
+    top:12px;
+    right:14px;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    box-shadow:0 0 8px 2px currentColor;
+  }
+  .hero-card.rank::after{ background:var(--red-bright); color:var(--red-bright); }
+  .hero-card.semave::after{ background:var(--gold); color:var(--gold); }
+  .hero-card.yrave::after{ background:var(--red); color:var(--red); }
+  .hero-card.conduct::after{ background:var(--good); color:var(--good); }
+
+  /* EMPTY-STATE / STATUS NOTICE */
+  .notice{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#FBF6E6;
+    border:1px solid var(--gold);
+    border-radius:6px;
+    padding:10px 16px;
+    margin-bottom:26px;
+    font-size:12.5px;
+    color:#5E4A20;
+    box-shadow:0 0 10px rgba(212,175,55,.2);
+  }
+  .notice .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--gold);
+    flex-shrink:0;
+    box-shadow:0 0 6px 2px var(--glow-gold);
+    animation:crest-glow 2.2s ease-in-out infinite;
+  }
+
+  section.block{ margin-bottom:36px; }
+  .block-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .block-head h2{
+    font-size:19px;
+    font-weight:800;
+    color:var(--red);
+    margin:0;
+    text-shadow:0 0 8px rgba(163,24,28,.12);
+  }
+  .block-head .meta{
+    font-size:12px;
+    color:var(--slate);
+    font-style:italic;
+  }
+
+  /* GRADES TABLE */
+  .table-wrap{
+    overflow-x:auto;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+  }
+  table.grades{
+    width:100%;
+    border-collapse:collapse;
+    min-width:960px;
+    font-size:13px;
+  }
+  table.grades thead tr.semrow th{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--red) 100%);
+    color:#fdf6e3;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    padding:9px 6px;
+    text-align:center;
+  }
+  table.grades thead tr.pdrow th{
+    background:var(--grey-band);
+    font-size:10.5px;
+    color:#444;
+    font-weight:700;
+    padding:7px 6px;
+    text-align:center;
+    border-bottom:2px solid var(--red);
+  }
+  table.grades tbody td{
+    padding:10px 8px;
+    border-bottom:1px solid #ece5d2;
+    text-align:center;
+    color:#333;
+  }
+  table.grades tbody td.subject{
+    text-align:left;
+    font-weight:700;
+    color:var(--ink);
+    padding-left:14px;
+  }
+  table.grades tbody td.subject .teacher{
+    display:block;
+    font-weight:400;
+    font-style:italic;
+    font-size:11px;
+    color:var(--slate);
+    margin-top:2px;
+  }
+  table.grades tbody td.sem-ave{
+    font-weight:800;
+    background:#fbf6e6;
+    color:var(--red);
+  }
+  table.grades tbody td.low{ color:var(--red-bright); font-weight:800; }
+  table.grades tbody tr:hover td{ background:#fffaf0; }
+  table.grades tbody tr:last-child td{ border-bottom:none; }
+
+  .empty-row td{
+    padding:32px 8px;
+    color:#999;
+    font-style:italic;
+  }
+
+  .legend{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    font-size:11.5px;
+    color:var(--slate);
+    margin-top:12px;
+    padding:0 4px;
+  }
+  .legend b{ color:var(--ink); }
+
+  footer.note{
+    margin-top:44px;
+    padding-top:16px;
+    border-top:1px solid #e3ddc9;
+    font-size:11.5px;
+    color:var(--slate);
+    text-align:center;
+  }
+
+  :focus-visible{ outline:2px solid var(--red); outline-offset:2px; }
+
+  /* TOOLBAR + PREMIUM BUTTONS */
+  .toolbar{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  button.premium{
+    position:relative;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    padding:9px 18px;
+    cursor:pointer;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--gold) 100%);
+    background-size:220% 100%;
+    background-position:0% 50%;
+    box-shadow:0 0 8px 1px var(--glow-gold);
+    transition:box-shadow .25s ease, transform .15s ease, background-position .3s ease;
+  }
+  button.premium:hover{
+    background-position:100% 50%;
+    box-shadow:0 0 14px 3px var(--glow-gold);
+    transform:translateY(-1px);
+  }
+  button.premium:active{ transform:translateY(0); }
+  button.premium:disabled{ opacity:.55; cursor:wait; transform:none; }
+  button.premium.print{
+    background:linear-gradient(100deg, #333 0%, #555 45%, var(--gold) 100%);
+    background-size:220% 100%;
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .sheet{ box-shadow:none; border:1px solid #999; }
+    .sheet::before{ display:none; }
+    .toolbar{ display:none !important; }
+  }
+
+  @media (max-width:820px){
+    .sheet{ padding:16px; }
+    .school-name{ font-size:20px; }
+    .letterhead img{ height:44px; width:44px; }
+    .hero-strip{ grid-template-columns:repeat(2,1fr); }
+  }
+
+  /* ============ HOMEWORK-SPECIFIC STYLES ============ */
+  .hero-card.total .value{
+    background:linear-gradient(100deg, var(--red) 0%, var(--gold) 40%, var(--red-bright) 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent; -webkit-text-fill-color:transparent;
+    animation:text-shine 6s linear infinite;
+  }
+  .hero-card.pending .value{ color:#a8790a; }
+  .hero-card.submitted .value{ color:#1f5f9e; }
+  .hero-card.overdue .value{ color:var(--red-bright); }
+  .hero-card.total::after{ background:var(--gold); color:var(--gold); }
+  .hero-card.pending::after{ background:#d4a017; color:#d4a017; }
+  .hero-card.submitted::after{ background:#1f5f9e; color:#1f5f9e; }
+  .hero-card.overdue::after{ background:var(--red-bright); color:var(--red-bright); }
+
+  .homework-list{ display:flex; flex-direction:column; gap:16px; }
+  .empty-row{
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:32px 8px;
+    text-align:center;
+    color:#999;
+    font-style:italic;
+  }
+
+  .homework-card{
+    position:relative;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:18px 20px;
+    box-shadow:0 1px 4px rgba(0,0,0,.05);
+    overflow:hidden;
+  }
+  .homework-card::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:5px;
+  }
+  .homework-card.status-pending::before{ background:#d4a017; }
+  .homework-card.status-submitted::before{ background:#1f5f9e; }
+  .homework-card.status-graded::before{ background:var(--good); }
+  .homework-card.status-overdue::before{ background:var(--red-bright); }
+
+  .a-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .a-title-wrap{ flex:1; min-width:220px; }
+  .a-badge{
+    display:inline-block;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    padding:3px 9px;
+    border-radius:20px;
+    margin-bottom:6px;
+    color:#fff;
+  }
+  .badge-pending{ background:#d4a017; }
+  .badge-submitted{ background:#1f5f9e; }
+  .badge-graded{ background:var(--good); }
+  .badge-overdue{ background:var(--red-bright); }
+
+  .a-title{
+    font-family:Georgia, serif;
+    font-size:16.5px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 3px;
+  }
+  .a-subject{
+    font-size:12.5px;
+    color:var(--slate);
+    font-weight:700;
+  }
+  .a-subject .a-teacher{
+    font-weight:400;
+    font-style:italic;
+    margin-left:6px;
+  }
+  .a-due{
+    text-align:right;
+    flex-shrink:0;
+  }
+  .a-due-label{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--slate);
+    font-weight:700;
+  }
+  .a-due-date{
+    font-size:14px;
+    font-weight:800;
+    color:var(--ink);
+  }
+  .status-overdue .a-due-date{ color:var(--red-bright); }
+
+  .a-body{ border-top:1px dashed #e3ddc9; padding-top:12px; margin-top:6px; }
+  .a-instructions{
+    font-size:13.5px;
+    color:#333;
+    line-height:1.5;
+    margin:0 0 10px;
+    white-space:pre-wrap;
+  }
+  .a-attachment{
+    display:inline-block;
+    font-size:12px;
+    background:#fbf6e6;
+    border:1px solid var(--gold);
+    border-radius:5px;
+    padding:4px 10px;
+    margin-bottom:12px;
+    color:#5E4A20;
+  }
+
+  .a-submission-form label{
+    display:block;
+    font-size:11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--slate);
+    margin:10px 0 4px;
+  }
+  .a-submission-form textarea{
+    width:100%;
+    min-height:90px;
+    font-family:inherit;
+    font-size:13.5px;
+    padding:10px;
+    border:1px solid #cfc9b4;
+    border-radius:6px;
+    resize:vertical;
+    box-sizing:border-box;
+  }
+  .a-submission-form input[type="file"]{
+    font-family:inherit;
+    font-size:12.5px;
+  }
+  .a-form-actions{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+    flex-wrap:wrap;
+  }
+  button.premium.ghost{
+    background:#fff;
+    color:var(--red);
+    border:1px solid var(--red);
+    box-shadow:none;
+  }
+  button.premium.ghost:hover{
+    background:#fbf6e6;
+    box-shadow:none;
+    transform:translateY(-1px);
+  }
+  button.premium.small{
+    padding:7px 14px;
+    font-size:12.5px;
+  }
+  .a-save-hint{
+    font-size:11px;
+    color:var(--slate);
+    font-style:italic;
+    align-self:center;
+  }
+
+  .a-submission-summary{
+    background:#f7fbf7;
+    border:1px solid #cfe8cf;
+    border-radius:6px;
+    padding:12px 14px;
+    font-size:13px;
+  }
+  .status-submitted .a-submission-summary{ background:#f2f7fc; border-color:#c6dcf0; }
+  .a-submission-summary .s-row{ margin-bottom:4px; }
+  .a-submission-summary .s-label{ font-weight:700; color:var(--slate); margin-right:4px; }
+  .a-submission-summary .s-text{ white-space:pre-wrap; color:#333; }
+
+  .a-grade-box{
+    margin-top:10px;
+    padding:10px 14px;
+    background:#fff;
+    border:1px solid var(--gold);
+    border-radius:6px;
+  }
+  .a-grade-box .g-score{
+    font-size:20px;
+    font-weight:800;
+    color:var(--red);
+  }
+  .a-grade-box .g-feedback{
+    font-size:12.5px;
+    color:#444;
+    margin-top:4px;
+    font-style:italic;
+  }
+
+  .sync-banner{
+    display:none;
+    align-items:center;
+    gap:8px;
+    background:#eaf6ea;
+    border:1px solid var(--good);
+    color:#155724;
+    border-radius:6px;
+    padding:8px 14px;
+    font-size:12.5px;
+    margin-bottom:14px;
+  }
+  .sync-banner.show{ display:flex; }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="sheet" id="sheet">
+
+  <div class="letterhead">
+    <img src="../assets/images/img-1005aedff1a0c5ea.png" alt="Kingsville Public High School crest">
+    <div class="headtext">
+      <p class="school-name">Kingsville Public High School</p>
+      <p class="sub">Kingsville Township, Careysburg District &middot; Montserrado County, Liberia</p>
+      <p class="motto">Motto: "Knowledge Is Power"</p>
+    </div>
+    <img src="../assets/images/img-a7df6c3d8d6e390b.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+
+    <p class="master-title">STUDENT HOMEWORK</p>
+  <div class="band">
+    FILTER:
+    <select class="year-select" id="filterSelect" aria-label="Filter homework">
+      <option value="all">All Homework</option>
+      <option value="pending">Pending</option>
+      <option value="submitted">Submitted</option>
+      <option value="graded">Graded</option>
+      <option value="overdue">Overdue</option>
+    </select>
+  </div>
+
+  <div class="toolbar">
+    <button class="premium" id="downloadBtn" onclick="downloadPDF()">⬇ Download PDF</button>
+    <button class="premium print" onclick="window.print()">🖨 Print</button>
+  </div>
+
+  <div class="hero-strip" id="heroStrip">
+    <div class="hero-card total">
+      <div class="label">Total Homework</div>
+      <div class="value" id="totalValue">—</div>
+    </div>
+    <div class="hero-card pending">
+      <div class="label">Pending</div>
+      <div class="value" id="pendingValue">—</div>
+    </div>
+    <div class="hero-card submitted">
+      <div class="label">Submitted</div>
+      <div class="value" id="submittedValue">—</div>
+    </div>
+    <div class="hero-card overdue">
+      <div class="label">Overdue</div>
+      <div class="value" id="overdueValue">—</div>
+    </div>
+  </div>
+
+  <div class="sync-banner" id="syncBanner">
+    <span class="dot"></span>
+    <span id="syncBannerText">Submitted to Teacher Dashboard.</span>
+  </div>
+
+  <div class="notice" id="statusNotice">
+    <span class="dot"></span>
+    No homework have been posted yet. Homework will appear here as soon as your teachers publish them.
+  </div>
+
+  <section class="block">
+    <div class="block-head">
+      <h2>My Homework</h2>
+      <span class="meta" id="lastUpdated">Not yet updated</span>
+    </div>
+
+    <div class="homework-list" id="homeworkList">
+      <div class="empty-row">No homework on file yet.</div>
+    </div>
+
+    <div class="legend">
+      <div><span class="a-badge badge-pending" style="margin-right:6px;">&nbsp;</span><b>Pending</b> — not yet submitted</div>
+      <div><span class="a-badge badge-submitted" style="margin-right:6px;">&nbsp;</span><b>Submitted</b> — awaiting grading</div>
+      <div><span class="a-badge badge-graded" style="margin-right:6px;">&nbsp;</span><b>Graded</b> — score posted</div>
+      <div><span class="a-badge badge-overdue" style="margin-right:6px;">&nbsp;</span><b>Overdue</b> — past due date</div>
+    </div>
+  </section>
+
+  <footer class="note">
+    Homework shown here are posted by your subject teachers. Completed work you submit is sent directly to the Teacher Dashboard (Homework) for grading and cannot be edited by students once graded.
+  </footer>
+
+  <div class="back-row" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:13px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <a href="dashboard.html" style="color:var(--red, var(--navy, var(--blue, #333)));text-decoration:none;font-weight:600;">Back to Dashboard</a>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  async function downloadPDF(){
+    const btn = document.getElementById('downloadBtn');
+    const sheet = document.getElementById('sheet');
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Preparing…';
+    try{
+      const canvas = await html2canvas(sheet, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+
+      const pageWidth = 612; // pt (8.5in)
+      const pageHeight = 792; // pt (11in)
+      const margin = 24;
+      const usableWidth = pageWidth - margin * 2;
+      const imgWidthPt = usableWidth;
+      const imgHeightPt = (canvas.height / canvas.width) * imgWidthPt;
+
+      const pdf = new jsPDF('p', 'pt', 'letter');
+      let heightLeft = imgHeightPt;
+      let position = margin;
+
+      pdf.addImage(imgData, 'PNG', margin, position, imgWidthPt, imgHeightPt);
+      heightLeft -= (pageHeight - margin * 2);
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeightPt + margin;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', margin, position, imgWidthPt, imgHeightPt);
+        heightLeft -= (pageHeight - margin * 2);
+      }
+
+      pdf.save('Homework_KPS.pdf');
+    }catch(err){
+      console.error(err);
+      alert('Could not generate the PDF. You can still use the Print button to save a copy.');
+    }finally{
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  }
+
+  /*
+    ================================================================
+    DATA CONTRACT
+    ================================================================
+    This page renders whatever homework the subject Teachers have
+    published for this student (e.g. fetched from your backend/API for
+    the logged-in student). Replace `teacherHomework` below with the
+    real payload, then call renderHomework(). Leaving it as null/empty
+    keeps the page in its "no homework posted yet" empty state.
+
+    Expected shape:
+    {
+      homework: [
+        {
+          id: "asn-2026-0091",              // unique id, matches Teacher Dashboard record
+          subject: "Mathematics",
+          teacher: "Mrs. Novak",
+          title: "Chapter 6 Problem Set — Quadratic Equations",
+          instructions: "Solve problems 1–20 on page 142. Show all working.",
+          assignedDate: "2026-07-14",
+          dueDate: "2026-07-24T23:59:00",
+          maxScore: 100,
+          attachmentName: "chapter6-worksheet.pdf",   // optional, provided by teacher
+          submission: null
+          // once the student submits, the page fills this in locally and
+          // sends the same payload to the Teacher Dashboard:
+          // submission: {
+          //   text: "...",
+          //   fileName: "my-answer.pdf",
+          //   submittedAt: "2026-07-20T14:03:00",
+          //   grade: null,        // set once teacher grades it
+          //   feedback: null
+          // }
+        },
+        ...
+      ]
+    }
+  */
+  const teacherHomework = null; // <- populated by Teacher/Admin data feed
+
+  // ----------------------------------------------------------------
+  // Local working copy: keeps drafts + submissions on this device so
+  // the student doesn't lose work on refresh, and merges with whatever
+  // the Teacher/Admin feed says has been graded. A real deployment
+  // should replace the localStorage calls below with API calls to your
+  // backend (fetch grades, POST submissions) — the postToTeacherDashboard()
+  // function is the single place that needs to be wired up.
+  // ----------------------------------------------------------------
+  const LOCAL_KEY = 'kps_homework_submissions_v1';
+  const DASHBOARD_KEY = 'kps_teacher_dashboard_submissions_v1'; // read by Teacher Dashboard (Homework) page
+
+  function loadLocalSubmissions(){
+    try{
+      const raw = localStorage.getItem(LOCAL_KEY);
+      return raw ? JSON.parse(raw) : {};
+    }catch(e){ return {}; }
+  }
+
+  function saveLocalSubmissions(map){
+    try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(map)); }catch(e){ /* storage unavailable */ }
+  }
+
+  function loadDrafts(){
+    try{
+      const raw = localStorage.getItem(LOCAL_KEY + '_drafts');
+      return raw ? JSON.parse(raw) : {};
+    }catch(e){ return {}; }
+  }
+
+  function saveDrafts(map){
+    try{ localStorage.setItem(LOCAL_KEY + '_drafts', JSON.stringify(map)); }catch(e){ /* storage unavailable */ }
+  }
+
+  // Sends the finished submission to the Teacher Dashboard (Homework).
+  // Tries a real backend endpoint first; falls back to a local mirror so
+  // the demo still works end-to-end without a server.
+  async function postToTeacherDashboard(homework, submission){
+    const payload = {
+      homeworkId: homework.id,
+      subject: homework.subject,
+      teacher: homework.teacher,
+      title: homework.title,
+      submission: submission
+    };
+
+    let synced = false;
+    try{
+      const res = await fetch(`/api/homework/${encodeURIComponent(homework.id)}/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      synced = res && res.ok;
+    }catch(e){
+      synced = false; // no backend wired up yet — fall back to local mirror
+    }
+
+    // Mirror into the local "Teacher Dashboard" store so it can be reviewed
+    // in this demo even without a backend.
+    try{
+      const raw = localStorage.getItem(DASHBOARD_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      const idx = list.findIndex(r => r.homeworkId === homework.id);
+      const record = Object.assign({}, payload, { syncedToServer: synced, receivedAt: new Date().toISOString() });
+      if(idx >= 0){ list[idx] = record; } else { list.push(record); }
+      localStorage.setItem(DASHBOARD_KEY, JSON.stringify(list));
+    }catch(e){ /* storage unavailable */ }
+
+    return synced;
+  }
+
+  function escapeHtml(str){
+    if(str === undefined || str === null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function formatDate(d){
+    if(!d) return '—';
+    const dt = new Date(d);
+    if(isNaN(dt.getTime())) return d;
+    return dt.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }) +
+      (d.includes('T') ? ' · ' + dt.toLocaleTimeString(undefined, { hour:'2-digit', minute:'2-digit' }) : '');
+  }
+
+  function computeStatus(a){
+    if(a.submission){
+      return (a.submission.grade !== undefined && a.submission.grade !== null) ? 'graded' : 'submitted';
+    }
+    const due = a.dueDate ? new Date(a.dueDate) : null;
+    if(due && due.getTime() < Date.now()) return 'overdue';
+    return 'pending';
+  }
+
+  const STATUS_LABEL = {
+    pending: 'Pending',
+    submitted: 'Submitted — Awaiting Grade',
+    graded: 'Graded',
+    overdue: 'Overdue'
+  };
+
+  function renderSubmissionArea(a, status, draftText){
+    if(status === 'submitted' || status === 'graded'){
+      const s = a.submission;
+      let html = `<div class="a-submission-summary">
+        <div class="s-row"><span class="s-label">Submitted:</span>${formatDate(s.submittedAt)}</div>
+        ${s.fileName ? `<div class="s-row"><span class="s-label">Attached file:</span>${escapeHtml(s.fileName)}</div>` : ''}
+        ${s.text ? `<div class="s-row"><span class="s-label">Your answer:</span></div><div class="s-text">${escapeHtml(s.text)}</div>` : ''}
+      </div>`;
+      if(status === 'graded'){
+        html += `<div class="a-grade-box">
+          <span class="g-score">${escapeHtml(s.grade)}${a.maxScore ? ' / ' + escapeHtml(a.maxScore) : ''}</span>
+          ${s.feedback ? `<div class="g-feedback">"${escapeHtml(s.feedback)}"</div>` : ''}
+        </div>`;
+      } else {
+        const due = a.dueDate ? new Date(a.dueDate) : null;
+        const stillOpen = !due || due.getTime() > Date.now();
+        if(stillOpen){
+          html += `<div class="a-form-actions">
+            <button class="premium ghost small" onclick="resubmitHomework('${a.id}')">Revise &amp; Resubmit</button>
+          </div>`;
+        }
+      }
+      return html;
+    }
+
+    // pending / overdue — show the working form
+    const text = draftText !== undefined ? draftText : '';
+    return `<div class="a-submission-form">
+      <label for="answer-${a.id}">Your Answer</label>
+      <textarea id="answer-${a.id}" placeholder="Type your answer or notes here…">${escapeHtml(text)}</textarea>
+      <label for="file-${a.id}">Attach a File (optional)</label>
+      <input type="file" id="file-${a.id}">
+      <div class="a-form-actions">
+        <button class="premium ghost small" onclick="saveDraft('${a.id}')">Save Draft</button>
+        <button class="premium small" onclick="submitHomework('${a.id}')">Submit to Teacher</button>
+        <span class="a-save-hint" id="hint-${a.id}"></span>
+      </div>
+    </div>`;
+  }
+
+  function renderHomework(){
+    const list = document.getElementById('homeworkList');
+    const notice = document.getElementById('statusNotice');
+    const lastUpdated = document.getElementById('lastUpdated');
+    const filter = document.getElementById('filterSelect').value;
+
+    const data = teacherHomework;
+    if(!data || !data.homework || data.homework.length === 0){
+      list.innerHTML = '<div class="empty-row">No homework on file yet.</div>';
+      notice.innerHTML = '<span class="dot"></span> No homework have been posted yet. Homework will appear here as soon as your teachers publish them.';
+      ['totalValue','pendingValue','submittedValue','overdueValue'].forEach(id => document.getElementById(id).textContent = '—');
+      lastUpdated.textContent = 'Not yet updated';
+      return;
+    }
+
+    const localSubs = loadLocalSubmissions();
+    const drafts = loadDrafts();
+
+    // Merge: teacher/backend feed wins once graded; otherwise prefer local submission record
+    const merged = data.homework.map(a => {
+      const copy = Object.assign({}, a);
+      if(!copy.submission && localSubs[copy.id]){
+        copy.submission = localSubs[copy.id];
+      }
+      return copy;
+    });
+
+    let total = merged.length, pending = 0, submitted = 0, overdue = 0;
+    merged.forEach(a => {
+      const st = computeStatus(a);
+      if(st === 'pending') pending++;
+      else if(st === 'overdue') overdue++;
+      else submitted++; // submitted + graded both count as "submitted work in"
+    });
+
+    document.getElementById('totalValue').textContent = total;
+    document.getElementById('pendingValue').textContent = pending;
+    document.getElementById('submittedValue').textContent = submitted;
+    document.getElementById('overdueValue').textContent = overdue;
+    lastUpdated.textContent = data.lastUpdated ? ('Updated ' + data.lastUpdated) : 'Live';
+    notice.innerHTML = '<span class="dot"></span> Homework below are as posted by your teachers.';
+
+    const filtered = merged.filter(a => filter === 'all' ? true : computeStatus(a) === filter);
+
+    if(filtered.length === 0){
+      list.innerHTML = '<div class="empty-row">No homework match this filter.</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(a => {
+      const status = computeStatus(a);
+      return `<div class="homework-card status-${status}" data-id="${a.id}">
+        <div class="a-head">
+          <div class="a-title-wrap">
+            <span class="a-badge badge-${status}">${STATUS_LABEL[status]}</span>
+            <h3 class="a-title">${escapeHtml(a.title)}</h3>
+            <div class="a-subject">${escapeHtml(a.subject)}<span class="a-teacher">${escapeHtml(a.teacher || '')}</span></div>
+          </div>
+          <div class="a-due">
+            <div class="a-due-label">Due</div>
+            <div class="a-due-date">${formatDate(a.dueDate)}</div>
+          </div>
+        </div>
+        <div class="a-body">
+          <p class="a-instructions">${escapeHtml(a.instructions)}</p>
+          ${a.attachmentName ? `<div class="a-attachment">📎 ${escapeHtml(a.attachmentName)}</div>` : ''}
+          ${renderSubmissionArea(a, status, drafts[a.id])}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function saveDraft(id){
+    const drafts = loadDrafts();
+    const ta = document.getElementById('answer-' + id);
+    drafts[id] = ta ? ta.value : '';
+    saveDrafts(drafts);
+    const hint = document.getElementById('hint-' + id);
+    if(hint){
+      hint.textContent = 'Draft saved ✓';
+      setTimeout(() => { if(hint) hint.textContent = ''; }, 2500);
+    }
+  }
+
+  function showSyncBanner(text){
+    const banner = document.getElementById('syncBanner');
+    const label = document.getElementById('syncBannerText');
+    label.textContent = text;
+    banner.classList.add('show');
+    setTimeout(() => banner.classList.remove('show'), 4000);
+  }
+
+  async function submitHomework(id){
+    const data = teacherHomework;
+    if(!data) return;
+    const homework = data.homework.find(a => a.id === id);
+    if(!homework) return;
+
+    const ta = document.getElementById('answer-' + id);
+    const fileInput = document.getElementById('file-' + id);
+    const text = ta ? ta.value.trim() : '';
+    const file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+    if(!text && !file){
+      alert('Please write an answer or attach a file before submitting.');
+      return;
+    }
+
+    const submission = {
+      text: text,
+      fileName: file ? file.name : null,
+      submittedAt: new Date().toISOString(),
+      grade: null,
+      feedback: null
+    };
+
+    const localSubs = loadLocalSubmissions();
+    localSubs[id] = submission;
+    saveLocalSubmissions(localSubs);
+
+    const drafts = loadDrafts();
+    delete drafts[id];
+    saveDrafts(drafts);
+
+    const synced = await postToTeacherDashboard(homework, submission);
+    showSyncBanner(synced
+      ? 'Submitted to Teacher Dashboard.'
+      : 'Saved on this device — will sync to the Teacher Dashboard once connected.');
+
+    renderHomework();
+  }
+
+  function resubmitHomework(id){
+    const localSubs = loadLocalSubmissions();
+    const drafts = loadDrafts();
+    if(localSubs[id]){
+      drafts[id] = localSubs[id].text || '';
+      saveDrafts(drafts);
+      delete localSubs[id];
+      saveLocalSubmissions(localSubs);
+    }
+    renderHomework();
+  }
+
+  document.getElementById('filterSelect').addEventListener('change', renderHomework);
+  renderHomework();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Student Registration</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --gold-soft:#fbe4b3;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;gap:12px;}
+  header.topbar .kps-logo{height:32px;width:32px;object-fit:contain;border-radius:6px;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .left .page-label{font-weight:400;font-size:11.5px;opacity:.75;letter-spacing:.4px;margin-left:2px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .live-pill{
+    display:flex;align-items:center;gap:6px;background:rgba(30,132,73,.18);
+    border:1px solid rgba(90,220,150,.4);color:#bdf5d3;border-radius:20px;
+    padding:4px 10px;font-size:10.5px;font-weight:700;letter-spacing:.4px;
+  }
+  header.topbar .live-pill .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:pulseDot 1.8s infinite;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55);}70%{box-shadow:0 0 0 7px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
+
+  .notice-strip{
+    background:var(--gold-soft);border-bottom:1px solid #ecd090;color:#5c3c0c;
+    font-size:12px;font-weight:600;text-align:center;padding:8px 16px;line-height:1.5;
+  }
+  .notice-strip b{color:#3a2205;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1240px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,32px) clamp(20px,4vw,32px) clamp(16px,3vh,28px);text-align:left;}
+
+  .page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:clamp(10px,2vh,16px);flex-wrap:wrap;}
+  .page-head .id{display:flex;align-items:center;gap:16px;}
+  .seal-stage{position:relative;width:56px;height:56px;flex-shrink:0;}
+  .seal-stage img.seal{height:56px;width:56px;object-fit:contain;border-radius:10px;background:#fff;padding:3px;box-shadow:0 6px 16px rgba(11,23,48,.2), 0 0 0 3px #fff, 0 0 0 4px var(--line);}
+  .page-head h1{font-size:clamp(16px,3vh,19px);color:var(--navy);font-weight:800;line-height:1.35;letter-spacing:.2px;}
+  .page-head h1 .school-line{display:block;color:var(--crimson);font-size:clamp(12.5px,2.4vh,13.5px);font-weight:700;margin-top:2px;}
+  .db-status{font-size:11px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px;}
+  .db-status .n{color:var(--navy);font-weight:800;}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:0 0 clamp(14px,2.6vh,20px);border-radius:2px;}
+
+  .layout{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start;}
+  @media (max-width:960px){.layout{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(14px,2.4vh,18px);}
+  .panel h2{font-size:11.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;}
+  .panel h2 .num{width:18px;height:18px;border-radius:5px;background:var(--navy);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+  .find-row{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:var(--panel);}
+  .find-row .fr-info{display:flex;flex-direction:column;min-width:0;}
+  .find-row .fr-name{font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .find-row .fr-meta{font-size:10.5px;color:var(--muted);}
+  .find-row button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;}
+  .find-row button:hover{background:#eef0f6;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field label .hint{font-weight:400;text-transform:none;color:var(--muted);font-size:10px;letter-spacing:0;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(8px,1.5vh,10px) 12px;border:1px solid var(--line);border-radius:4px;
+    font-size:13.5px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:64px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .field input[readonly]{background:var(--panel);color:var(--muted);font-weight:700;}
+  .regnum-wrap{position:relative;}
+  .regnum-wrap input{padding-right:56px;letter-spacing:.4px;}
+  .regnum-badge{
+    position:absolute;top:50%;right:8px;transform:translateY(-50%);
+    background:var(--navy);color:#fff;font-size:9px;font-weight:800;letter-spacing:.5px;
+    padding:3px 7px;border-radius:4px;pointer-events:none;
+  }
+  .regnum-badge.pending{background:transparent;color:var(--muted);font-weight:700;}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  @media (max-width:720px){.compose-grid,.grid3{grid-template-columns:1fr;}}
+  .radio-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px;}
+  .radio-row label{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink);text-transform:none;letter-spacing:0;}
+  .radio-row input{width:auto;}
+  .cond{display:none;}
+  .cond.show{display:block;}
+
+  .topbar-actions{display:flex;gap:8px;}
+  .topbar-actions button{
+    background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.35);
+    border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .topbar-actions button.gold{background:var(--gold);border-color:var(--gold);color:#3a2600;}
+  .topbar-actions button:hover{background:rgba(255,255,255,.18);}
+  .topbar-actions button.gold:hover{filter:brightness(0.96);}
+  .topbar-actions button.danger{border-color:rgba(255,140,140,.6);color:#ffd7d7;}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--navy-deep);color:#fff;border:1px solid var(--gold);
+    border-radius:8px;padding:11px 20px;font-size:13px;font-weight:600;
+    box-shadow:0 10px 30px rgba(11,23,48,.35);opacity:0;pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;z-index:999;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{border-color:var(--danger);}
+
+  /* ---------- Directory (database view, on-screen only) ---------- */
+  .directory-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .directory-toolbar span{font-size:11.5px;color:var(--muted);}
+
+  .db-table-wrap{border:1px solid var(--line);border-radius:8px;overflow:auto;background:#fff;}
+  table.db-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.db-table th{
+    background:var(--navy);color:#fff;text-align:left;padding:9px 12px;font-size:10.5px;
+    text-transform:uppercase;letter-spacing:.4px;font-weight:800;position:sticky;top:0;
+  }
+  table.db-table td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  table.db-table tr:last-child td{border-bottom:none;}
+  table.db-table tr:hover td{background:var(--panel);}
+  table.db-table td.name{font-weight:700;color:var(--ink);}
+  table.db-table td.muted{color:var(--muted);}
+  .status-pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;}
+  .status-pill.active{background:#e3f6ea;color:var(--ok);}
+  .status-pill.pending{background:var(--gold-soft);color:#8a5a06;}
+  .status-pill.withdrawn{background:#fdecea;color:var(--danger);}
+  .status-pill.graduated{background:#e7edfb;color:var(--navy);}
+  .row-actions{display:flex;gap:6px;}
+  .row-actions button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:4px 9px;font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .row-actions button:hover{background:#eef0f6;}
+  .row-actions button.del{border-color:var(--danger);color:var(--danger);}
+  .row-actions button.save{border-color:var(--ok);color:var(--ok);opacity:.4;pointer-events:none;}
+  .row-actions a{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:4px 9px;font-size:10.5px;font-weight:700;white-space:nowrap;text-decoration:none;}
+  .row-actions a:hover{background:#eef0f6;}
+  .row-actions button.save.active{opacity:1;pointer-events:auto;background:var(--ok);color:#fff;}
+  .row-actions button.save.active:hover{filter:brightness(1.08);}
+  table.db-table tr.dirty td{background:#fffdf5;}
+  table.db-table tr.dirty td:first-child{box-shadow:inset 3px 0 0 var(--gold);}
+  td.cell-edit input, td.cell-edit select{
+    width:100%;border:1px solid transparent;background:transparent;border-radius:4px;
+    padding:5px 6px;font-size:12.5px;font-family:inherit;color:var(--ink);
+  }
+  td.cell-edit input:hover, td.cell-edit select:hover{border-color:var(--line);background:#fff;}
+  td.cell-edit input:focus, td.cell-edit select:focus{outline:none;border-color:var(--crimson);background:#fff;box-shadow:0 0 0 2px rgba(200,16,46,.08);}
+  td.cell-edit.name input{font-weight:700;}
+  .db-empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:12.5px;font-style:italic;}
+  .db-summary{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px;}
+  .db-summary .stat{border:1px solid var(--line);border-radius:8px;padding:10px 16px;background:var(--panel);min-width:110px;}
+  .db-summary .stat .n{font-size:20px;font-weight:800;color:var(--navy);}
+  .db-summary .stat .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:700;}
+
+  .active-badge{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#e7edfb;border:1px solid #c7d5f5;border-radius:8px;padding:9px 13px;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:16px;}
+  .active-badge button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+
+  /* ---------- Top search panel ---------- */
+  .top-search{
+    background:linear-gradient(180deg,#f8fafc 0%,#fff 100%);
+    border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;margin-bottom:clamp(14px,2.6vh,20px);
+    box-shadow:0 2px 10px rgba(11,23,48,.05);
+  }
+  .top-search .ts-head{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+  .top-search .ts-head .num{width:20px;height:20px;border-radius:6px;background:var(--crimson);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .top-search .ts-head h2{font-size:12.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;}
+  .top-search .ts-head .ts-sub{font-size:11px;color:var(--muted);font-weight:500;margin-left:auto;text-transform:none;letter-spacing:0;}
+  .top-search .ts-bar{display:flex;gap:10px;align-items:center;}
+  .top-search .ts-bar input{
+    flex:1;padding:11px 14px;border:1.5px solid var(--line);border-radius:8px;
+    font-size:14px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .top-search .ts-bar input:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 3px rgba(200,16,46,.08);}
+  .top-search .ts-icon{width:38px;height:38px;border-radius:8px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  #findResults{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;margin-top:10px;}
+  #findResults.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  @media (max-width:720px){#findResults.grid2{grid-template-columns:1fr;}}
+
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/student-id.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left">
+    <img class="kps-logo" id="topbarKpsLogo" alt="Kingsville Public School logo">
+    <div>
+      <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+      <span class="page-label">Office of the Registrar · Student Registration</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="live-pill no-print"><span class="dot"></span>REGISTRATION DATABASE · ACTIVE</div>
+    <div class="topbar-actions">
+      <button id="newBtn">New Registration</button>
+      <button id="saveBtn" class="gold">Save to Database</button>
+    </div>
+    <img class="moe-mini" id="topbarMoeLogo" alt="Ministry of Education seal">
+  </div>
+</header>
+
+<div class="notice-strip">
+  <b>Registrar use only:</b> this record is stored in the school registration database and is not designed to be printed. Records can be searched by student name, registration number, or ID, and updated at any time by the Registrar.
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+
+      <div class="page-head">
+        <div class="id">
+          <div class="seal-stage"><img class="seal" id="cardSeal" alt="School seal"></div>
+          <h1>Student Registration Record<span class="school-line">Kingsville Public High School — Office of the Registrar</span></h1>
+        </div>
+        <div class="db-status">Records in database: <span class="n" id="progressBadge">0</span></div>
+      </div>
+      <div class="subtitle-rule"></div>
+
+      <div class="top-search" id="findPanel">
+        <div class="ts-head">
+          <span class="num">&#128269;</span>
+          <h2>Search the Database</h2>
+          <span class="ts-sub">by student name, registration number, or ID</span>
+        </div>
+        <div class="ts-bar">
+          <span class="ts-icon">&#128269;</span>
+          <input id="findInput" type="text" placeholder="e.g. Doe, 000002, or a Student ID#">
+        </div>
+        <div id="findResults" class="grid2" style="display:none;"></div>
+        <p id="findEmpty" style="font-size:11.5px;color:var(--muted);font-style:italic;margin-top:10px;">Registration records are stored in your school's live database.</p>
+      </div>
+
+      <div class="layout">
+
+        <!-- FORM COLUMN -->
+        <div>
+
+          <div id="activeBadgeWrap"></div>
+
+          <div class="panel">
+            <h2><span class="num">1</span>Registration Details</h2>
+            <div class="compose-grid">
+              <div class="field">
+                <label>Registration number <span class="hint">🔒 System-generated — cannot be typed or edited</span></label>
+                <div class="regnum-wrap">
+                  <input id="regNumber" type="text" readonly placeholder="Assigned on save">
+                  <span id="regNumberBadge" class="regnum-badge">AUTO</span>
+                </div>
+              </div>
+              <div class="field"><label>Registration date</label><input id="regDate" type="date"></div>
+            </div>
+            <div class="compose-grid" style="margin-bottom:0;">
+              <div class="field"><label>Registration status</label>
+                <select id="regStatus"><option>Active</option><option>Pending</option><option>Withdrawn</option><option>Dropped</option><option>Graduated</option></select>
+              </div>
+              <div class="field"><label>Student type</label>
+                <select id="studentType"><option>New Student</option><option>Old Student</option></select>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Status note</label>
+              <textarea id="statusNote" placeholder="Optional — e.g. reason for New/Old classification, transfer note, repeat year, etc."></textarea>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">2</span>Student Identification</h2>
+            <div class="field"><label>Student ID#</label><input id="stuId" type="text"></div>
+            <div class="grid3">
+              <div class="field"><label>Last name</label><input id="lastName" type="text"></div>
+              <div class="field"><label>First name</label><input id="firstName" type="text"></div>
+              <div class="field"><label>Middle name</label><input id="middleName" type="text"></div>
+            </div>
+            <div class="compose-grid">
+              <div class="field"><label>Date of birth</label><input id="stuDob" type="date"></div>
+              <div class="field"><label>Gender</label>
+                <select id="stuGender"><option>Female</option><option>Male</option></select>
+              </div>
+            </div>
+            <div class="compose-grid">
+              <div class="field"><label>Nationality</label><input id="nationality" type="text"></div>
+              <div class="field"><label>National ID#</label><input id="natlId" type="text"></div>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>County</label><input id="stuCounty" type="text"></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">3</span>Academic Placement</h2>
+            <div class="field"><label>Name of school</label><input id="schoolName" type="text"></div>
+            <div class="compose-grid">
+              <div class="field"><label>Grade level</label><select id="gradeLevel"><option value="">Select grade…</option></select></div>
+              <div class="field"><label>Class / section</label><select id="classSection" disabled><option value="">Select grade first…</option></select></div>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>Academic year</label><input id="academicYear" type="text" placeholder="e.g. 2025/2026"></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">4</span>Previous School</h2>
+            <div class="field"><label>Name of previous school <span class="hint">(optional)</span></label><input id="prevSchoolName" type="text"></div>
+            <div class="compose-grid">
+              <div class="field"><label>Last grade completed</label><input id="prevLastGrade" type="text"></div>
+              <div class="field"><label>Previous school reference # <span class="hint">(optional)</span></label><input id="prevRefNo" type="text" placeholder="e.g. KPS-PSR-000002"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">5</span>Parents / Guardian</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Father's name</label><input id="fatherName" type="text"></div>
+              <div class="field"><label>Father's phone</label><input id="fatherPhone" type="tel"></div>
+            </div>
+            <div class="compose-grid">
+              <div class="field"><label>Mother's name</label><input id="motherName" type="text"></div>
+              <div class="field"><label>Mother's phone</label><input id="motherPhone" type="tel"></div>
+            </div>
+            <div class="field"><label>Parent reference # <span class="hint">(optional)</span></label><input id="parentRefNo" type="text" placeholder="e.g. KPS-PRT-000002"></div>
+            <div class="compose-grid">
+              <div class="field"><label>Guardian name <span class="hint">(if different)</span></label><input id="guardianName" type="text"></div>
+              <div class="field"><label>Guardian phone</label><input id="guardianPhone" type="tel"></div>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>Guardian reference # <span class="hint">(optional)</span></label><input id="guardianRefNo" type="text" placeholder="e.g. KPS-GRD-000002"></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">6</span>Medical Summary</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Blood group <span class="hint">(if known)</span></label><input id="bloodGroup" type="text"></div>
+              <div class="field"><label>Allergies <span class="hint">(if any)</span></label><input id="allergies" type="text"></div>
+            </div>
+            <div class="field"><label>Known medical conditions?</label>
+              <div class="radio-row">
+                <label><input type="radio" name="hasConditions" value="Yes"> Yes</label>
+                <label><input type="radio" name="hasConditions" value="No"> No</label>
+              </div>
+            </div>
+            <div class="field cond" id="conditionsField"><label>Specify conditions</label><textarea id="conditionsDetail"></textarea></div>
+            <div class="field" style="margin-bottom:0;"><label>Medical reference # <span class="hint">(optional)</span></label><input id="medRefNo" type="text" placeholder="e.g. KPS-MED-000002"></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">7</span>Emergency Contact</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Full name</label><input id="emergName" type="text"></div>
+              <div class="field"><label>Phone number</label><input id="emergPhone" type="tel"></div>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>Relationship to student</label><input id="emergRelationship" type="text"></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">8</span>Registrar Administration</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Registered by (Registrar)</label><input id="registeredBy" type="text"></div>
+              <div class="field"><label>Last updated by (Registrar)</label><input id="updatedBy" type="text" readonly></div>
+            </div>
+            <div class="field"><label>Last updated date</label><input id="updatedDate" type="text" readonly></div>
+            <div class="field" style="margin-bottom:0;"><label>Internal notes</label><textarea id="notes" placeholder="Registrar notes — not visible to students or parents"></textarea></div>
+          </div>
+
+        </div>
+
+        <!-- DATABASE / DIRECTORY COLUMN -->
+        <div>
+          <div class="panel">
+            <h2><span class="num">&#128193;</span>Registration Database</h2>
+            <div class="db-summary">
+              <div class="stat"><div class="n" id="statTotal">0</div><div class="l">Total</div></div>
+              <div class="stat"><div class="n" id="statActive">0</div><div class="l">Active</div></div>
+              <div class="stat"><div class="n" id="statPending">0</div><div class="l">Pending</div></div>
+              <div class="stat"><div class="n" id="statWithdrawn">0</div><div class="l">Withdrawn</div></div>
+              <div class="stat"><div class="n" id="statDropped">0</div><div class="l">Dropped</div></div>
+              <div class="stat"><div class="n" id="statGraduated">0</div><div class="l">Graduated</div></div>
+            </div>
+            <div class="directory-toolbar">
+              <span>Edit a student's name, ID#, grade, or status directly in the table below, then click Save.</span>
+            </div>
+            <div class="db-table-wrap">
+              <table class="db-table">
+                <thead>
+                  <tr>
+                    <th>Reg. Number</th>
+                    <th>Student</th>
+                    <th>ID#</th>
+                    <th>Grade</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="dbTableBody"></tbody>
+              </table>
+              <div class="db-empty" id="dbEmpty">No registrations saved yet. Fill in the form and click "Save to Database".</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  function el(id){ return document.getElementById(id); }
+  function val(id){ return el(id).value.trim(); }
+  function setVal(id, v){ el(id).textContent = v || '—'; }
+  function setInput(id, v){ el(id).value = v || ''; }
+  function radioVal(name){
+    const r = document.querySelector(`input[name=${name}]:checked`);
+    return r ? r.value : '';
+  }
+  function setRadio(name, value){
+    document.querySelectorAll(`input[name=${name}]`).forEach(r => { r.checked = (r.value === value); });
+  }
+
+  // -------- Logos --------
+    const KPS_LOGO = "../assets/images/img-05ddf6d498159c2e.png";
+    const MOE_SEAL = "../assets/images/img-2c6f3402d893a11c.png";
+  ['topbarKpsLogo','cardSeal'].forEach(id => el(id).src = KPS_LOGO);
+  ['topbarMoeLogo'].forEach(id => el(id).src = MOE_SEAL);
+
+  // -------- Conditional fields --------
+  function wireRadioCond(name, fieldId){
+    document.querySelectorAll(`input[name=${name}]`).forEach(r => {
+      r.addEventListener('change', () => {
+        el(fieldId).classList.toggle('show', r.value === 'Yes' && r.checked);
+      });
+    });
+  }
+  wireRadioCond('hasConditions', 'conditionsField');
+
+  // -------- Auth guard (registrar/super_admin only) --------
+  let currentProfile = null;
+
+  // -------- Link back to the source Admission application, if this
+  // registration was started via "Continue to Registration" from
+  // admissions.html (?admission_id=<uuid>). Written to
+  // admissions.converted_student_id on save — see
+  // supabase/migrations/012_link_admissions_registration_profile.sql --------
+  let sourceAdmissionId = null;
+
+  function fullNameFromCombined(name){
+    // Admission applicant_name uses the same "Last, First Middle" convention
+    // as this form's own name fields.
+    const parts = (name || '').split(',').map(p => p.trim());
+    return { lastName: parts[0] || '', firstName: parts[1] || '', middleName: parts[2] || '' };
+  }
+
+  async function resolveClassIdByName(gradeName){
+    if(!gradeName) return '';
+    try{
+      const { data } = await sbc0().from('classes').select('id').ilike('name', gradeName).maybeSingle();
+      return data ? data.id : '';
+    }catch(err){ return ''; }
+  }
+
+  /** Pulls every field the applicant/parent already gave the school on
+   *  admissions.html into this form, so nothing has to be retyped. The
+   *  Registrar reviews, fills in Grade/Section + Registered by, and saves
+   *  to actually create the student record. */
+  async function prefillFromAdmission(a){
+    clearForm();
+    sourceAdmissionId = a.id;
+    // Reuse the same number assigned at Application/Admission (see
+    // js/student-id.js) — never regenerate it here, so a student keeps
+    // one Student ID# across the whole Application -> Admission ->
+    // Registration pipeline.
+    setInput('regNumber', a.reference_code);
+    const np = fullNameFromCombined(a.applicant_name);
+    setInput('lastName', np.lastName); setInput('firstName', np.firstName); setInput('middleName', np.middleName);
+    setInput('stuDob', a.date_of_birth);
+    if(a.gender) el('stuGender').value = a.gender;
+    setInput('stuId', a.student_username);
+    setInput('academicYear', a.academic_year_label);
+    setInput('prevSchoolName', a.previous_school_name);
+    setInput('prevLastGrade', a.previous_school_last_grade);
+    setInput('guardianName', a.guardian_name);
+    setInput('guardianPhone', a.guardian_phone);
+    setInput('bloodGroup', a.blood_group);
+    if(a.medical_conditions){
+      setRadio('hasConditions', 'Yes');
+      setInput('conditionsDetail', a.medical_conditions);
+      el('conditionsField').classList.add('show');
+    }
+    setInput('emergName', a.emergency_contact);
+    const extraNotes = [
+      a.home_address ? ('Home address (from admission): ' + a.home_address) : '',
+      a.guardian_relationship ? ('Guardian relationship (from admission): ' + a.guardian_relationship) : '',
+      a.notes ? ('Admission notes: ' + a.notes) : '',
+    ].filter(Boolean).join(' \u2014 ');
+    setInput('notes', 'From Admission Application Ref ' + (a.reference_code || '') + (extraNotes ? ' \u2014 ' + extraNotes : ''));
+
+    const classId = await resolveClassIdByName(a.grade_applying_for);
+    setInput('gradeLevel', classId);
+    await loadSectionOptions(classId, null);
+
+    el('activeBadgeWrap').innerHTML = `
+      <div class="active-badge">
+        <span>Pre-filled from Admission Application \u2014 Ref ${escapeHtml(a.reference_code || '')} (${escapeHtml(a.applicant_name || 'Unnamed applicant')}). Select Grade/Section and Registered by, then Save to register.</span>
+        <span style="display:flex;gap:8px;">
+          <a href="admissions.html?admission_id=${encodeURIComponent(a.id)}" style="border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:4px 10px;font-size:11px;font-weight:700;text-decoration:none;">View Original Application</a>
+        </span>
+      </div>`;
+    showToast('Pulled in details from Admission Ref ' + (a.reference_code || '') + '. Review, then Save to register.');
+    window.scrollTo({ top: 0, behavior:'smooth' });
+  }
+
+  async function loadAdmissionAndPrefill(admissionId){
+    try{
+      const { data, error } = await window.sb.from('admissions').select('*').eq('id', admissionId).single();
+      if(error) throw error;
+      if(data.converted_student_id){
+        // Already registered — go straight to the real record instead of duplicating it.
+        const { data: stu } = await window.sb.from('students').select('student_id').eq('id', data.converted_student_id).maybeSingle();
+        if(stu && stu.student_id){ await loadByRegNumber(stu.student_id); showToast('This applicant is already registered \u2014 loaded their existing record.'); return; }
+      }
+      await prefillFromAdmission(data);
+    }catch(err){
+      showToast('Could not load that admission application: ' + (err.message || err), true);
+    }
+  }
+
+  // -------- Registration number generation --------
+  // Uses the shared sequence in js/student-id.js so a number is never
+  // assigned twice across Application / Admission / Registration. If this
+  // registration came from an Admission (sourceAdmissionId set, reference
+  // already carried into #regNumber by prefillFromAdmission), that number
+  // is reused as-is and this function is never called.
+  async function nextRegNumber(){
+    return await KPS.nextStudentId();
+  }
+
+  // -------- Grade level / section: pick from what the Super Admin already
+  // created, never create a new class/section from this screen. --------
+  const sbc0 = () => window.sb;
+
+  // Populates the "Grade level" <select> from public.classes (Super Admin's list).
+  async function loadGradeOptions(){
+    const { data, error } = await sbc0().from('classes').select('id, name').order('level', { ascending: true, nullsFirst: false }).order('name');
+    const sel = el('gradeLevel');
+    sel.innerHTML = '<option value="">Select grade…</option>';
+    if(error){ console.error(error); return; }
+    (data || []).forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id; opt.textContent = c.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  // Populates the "Class / section" <select> from public.sections for the chosen class.
+  async function loadSectionOptions(classId, selectedSectionId){
+    const sel = el('classSection');
+    sel.innerHTML = '';
+    if(!classId){
+      sel.innerHTML = '<option value="">Select grade first…</option>';
+      sel.disabled = true;
+      return;
+    }
+    const { data, error } = await sbc0().from('sections').select('id, name').eq('class_id', classId).order('name');
+    sel.disabled = false;
+    sel.innerHTML = '<option value="">Select section…</option>';
+    if(error){ console.error(error); return; }
+    (data || []).forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id; opt.textContent = s.name;
+      sel.appendChild(opt);
+    });
+    if(selectedSectionId) sel.value = selectedSectionId;
+  }
+
+  el('gradeLevel').addEventListener('change', () => loadSectionOptions(el('gradeLevel').value, null));
+  loadGradeOptions();
+
+  // The form's selects already only ever hold real section_id values pulled
+  // straight from public.sections — nothing to "resolve", just pass it on.
+  // (Kept as a function so persistRecord()'s call site below doesn't change.)
+  async function resolveSectionId(_gradeLevel, classSection){
+    return classSection || null;
+  }
+
+  // Used only by the directory table's quick inline edit (a plain text cell,
+  // not the select above) — exact-name match against existing classes only,
+  // never inserts a new one.
+  async function resolveSectionIdByName(gradeLevelName){
+    if(!gradeLevelName) return null;
+    const { data: cls } = await sbc0().from('classes').select('id').ilike('name', gradeLevelName).maybeSingle();
+    if(!cls){ showToast(`"${gradeLevelName}" is not a Grade the Super Admin has created.`, true); return null; }
+    const { data: sec } = await sbc0().from('sections').select('id').eq('class_id', cls.id).order('name').limit(1).maybeSingle();
+    if(!sec){ showToast(`Grade "${gradeLevelName}" has no section set up yet — ask the Super Admin to add one.`, true); return null; }
+    return sec.id;
+  }
+
+  // -------- Guardians (father / mother / guardian -> find-or-create + link) --------
+  async function upsertGuardianLink(studentUuid, fullName, phone, relationship, isPrimary){
+    if(!fullName) return;
+    const sbc = window.sb;
+    let { data: g } = await sbc.from('guardians').select('id').ilike('full_name', fullName).eq('relationship', relationship).maybeSingle();
+    if(!g){
+      const { data: created, error: ge } = await sbc.from('guardians').insert({ full_name: fullName, phone, relationship }).select('id').single();
+      if(ge){ console.error(ge); return; }
+      g = created;
+    } else if(phone){
+      await sbc.from('guardians').update({ phone }).eq('id', g.id);
+    }
+    await sbc.from('student_guardians').upsert(
+      { student_id: studentUuid, guardian_id: g.id, is_primary: !!isPrimary },
+      { onConflict: 'student_id,guardian_id' }
+    );
+  }
+
+  function statusToDb(s){ return (s || 'Active').toLowerCase(); }
+  function statusFromDb(s){ return { active:'Active', pending:'Pending', withdrawn:'Withdrawn', dropped:'Dropped', graduated:'Graduated', transferred:'Withdrawn' }[s] || 'Active'; }
+
+  function fullNameParts(fullName){
+    const parts = (fullName || '').split(',').map(p => p.trim());
+    return { lastName: parts[0] || '', firstName: parts[1] || '', middleName: parts[2] || '' };
+  }
+
+  // -------- Live directory cache (last loaded page of `students`) --------
+  let directoryCache = [];
+
+  async function fetchDirectory(){
+    const { data, error } = await window.sb
+      .from('students')
+      .select('id, student_id, external_student_id, full_name, status, updated_at, sections(name, classes(name))')
+      .order('updated_at', { ascending: false })
+      .limit(200);
+    if(error){ console.error(error); showToast('Could not load the student directory.', true); return []; }
+    return (data || []).map(s => ({
+      uuid: s.id,
+      regNumber: s.student_id,
+      stuId: s.external_student_id,
+      name: s.full_name,
+      regStatus: statusFromDb(s.status),
+      gradeLevel: s.sections && s.sections.classes ? s.sections.classes.name : '',
+      updatedBy: null,
+      updatedDate: s.updated_at ? s.updated_at.slice(0,10) : ''
+    }));
+  }
+
+  async function fetchFullRecord(regNumber){
+    const { data, error } = await window.sb
+      .from('students')
+      .select('*, sections(id, name, classes(id, name)), student_guardians(is_primary, guardians(full_name, phone, relationship))')
+      .eq('student_id', regNumber)
+      .maybeSingle();
+    if(error || !data) { console.error(error); return null; }
+    const np = fullNameParts(data.full_name);
+    const guardianLinks = data.student_guardians || [];
+    const findRel = (rel) => { const l = guardianLinks.find(g => g.guardians && g.guardians.relationship === rel); return l ? l.guardians : null; };
+    const father = findRel('father'), mother = findRel('mother'), guardian = findRel('guardian');
+    return {
+      uuid: data.id,
+      regNumber: data.student_id,
+      regDate: data.created_at ? data.created_at.slice(0,10) : '',
+      regStatus: statusFromDb(data.status),
+      studentType: data.student_type,
+      statusNote: data.status_note,
+      stuId: data.external_student_id,
+      lastName: np.lastName, firstName: np.firstName, middleName: np.middleName,
+      name: data.full_name,
+      stuDob: data.date_of_birth, gender: data.gender,
+      nationality: data.nationality, natlId: data.national_id, stuCounty: data.county,
+      schoolName: data.school_name,
+      gradeLevel: data.sections && data.sections.classes ? data.sections.classes.id : '',
+      classSection: data.section_id || '', academicYear: data.academic_year_label,
+      prevSchoolName: data.previous_school_name, prevLastGrade: data.previous_school_last_grade, prevRefNo: '',
+      fatherName: father ? father.full_name : '', fatherPhone: father ? father.phone : '',
+      motherName: mother ? mother.full_name : '', motherPhone: mother ? mother.phone : '', parentRefNo: '',
+      guardianName: guardian ? guardian.full_name : '', guardianPhone: guardian ? guardian.phone : '', guardianRefNo: '',
+      bloodGroup: data.blood_group, allergies: data.allergies,
+      hasConditions: data.has_medical_conditions === true ? 'Yes' : (data.has_medical_conditions === false ? 'No' : ''),
+      conditionsDetail: data.medical_conditions_detail, medRefNo: '',
+      emergName: data.emergency_contact_name, emergPhone: data.emergency_contact_phone, emergRelationship: data.emergency_contact_relationship,
+      registeredBy: data.registered_by, updatedBy: data.registered_by, updatedDate: data.updated_at ? data.updated_at.slice(0,10) : '',
+      notes: data.internal_notes,
+    };
+  }
+
+  function fullNameLine(){
+    const parts = [val('lastName'), val('firstName'), val('middleName')].filter(Boolean);
+    return parts.length ? parts.join(', ') : '';
+  }
+
+  function collectData(){
+    return {
+      regNumber: val('regNumber'),
+      regDate: val('regDate'),
+      regStatus: el('regStatus').value,
+      studentType: el('studentType').value,
+      statusNote: val('statusNote'),
+      stuId: val('stuId'),
+      lastName: val('lastName'), firstName: val('firstName'), middleName: val('middleName'),
+      name: fullNameLine(),
+      stuDob: val('stuDob'), gender: el('stuGender').value,
+      nationality: val('nationality'), natlId: val('natlId'), stuCounty: val('stuCounty'),
+      schoolName: val('schoolName'), gradeLevel: val('gradeLevel'), classSection: val('classSection'), academicYear: val('academicYear'),
+      prevSchoolName: val('prevSchoolName'), prevLastGrade: val('prevLastGrade'), prevRefNo: val('prevRefNo'),
+      fatherName: val('fatherName'), fatherPhone: val('fatherPhone'),
+      motherName: val('motherName'), motherPhone: val('motherPhone'), parentRefNo: val('parentRefNo'),
+      guardianName: val('guardianName'), guardianPhone: val('guardianPhone'), guardianRefNo: val('guardianRefNo'),
+      bloodGroup: val('bloodGroup'), allergies: val('allergies'),
+      hasConditions: radioVal('hasConditions'), conditionsDetail: val('conditionsDetail'), medRefNo: val('medRefNo'),
+      emergName: val('emergName'), emergPhone: val('emergPhone'), emergRelationship: val('emergRelationship'),
+      registeredBy: val('registeredBy'), updatedBy: val('updatedBy'), updatedDate: val('updatedDate'),
+      notes: val('notes'),
+    };
+  }
+
+  async function loadRecordIntoForm(record){
+    setInput('regNumber', record.regNumber);
+    setInput('regDate', record.regDate);
+    if(record.regStatus) el('regStatus').value = record.regStatus;
+    if(record.studentType) el('studentType').value = record.studentType;
+    setInput('statusNote', record.statusNote);
+    setInput('stuId', record.stuId);
+    setInput('lastName', record.lastName); setInput('firstName', record.firstName); setInput('middleName', record.middleName);
+    setInput('stuDob', record.stuDob);
+    if(record.gender) el('stuGender').value = record.gender;
+    setInput('nationality', record.nationality); setInput('natlId', record.natlId); setInput('stuCounty', record.stuCounty);
+    setInput('schoolName', record.schoolName);
+    setInput('gradeLevel', record.gradeLevel);
+    await loadSectionOptions(record.gradeLevel, record.classSection);
+    setInput('academicYear', record.academicYear);
+    setInput('prevSchoolName', record.prevSchoolName); setInput('prevLastGrade', record.prevLastGrade); setInput('prevRefNo', record.prevRefNo);
+    setInput('fatherName', record.fatherName); setInput('fatherPhone', record.fatherPhone);
+    setInput('motherName', record.motherName); setInput('motherPhone', record.motherPhone); setInput('parentRefNo', record.parentRefNo);
+    setInput('guardianName', record.guardianName); setInput('guardianPhone', record.guardianPhone); setInput('guardianRefNo', record.guardianRefNo);
+    setInput('bloodGroup', record.bloodGroup); setInput('allergies', record.allergies);
+    setRadio('hasConditions', record.hasConditions); setInput('conditionsDetail', record.conditionsDetail); setInput('medRefNo', record.medRefNo);
+    el('conditionsField').classList.toggle('show', record.hasConditions === 'Yes');
+    setInput('emergName', record.emergName); setInput('emergPhone', record.emergPhone); setInput('emergRelationship', record.emergRelationship);
+    setInput('registeredBy', record.registeredBy); setInput('updatedBy', record.updatedBy); setInput('updatedDate', record.updatedDate);
+    setInput('notes', record.notes);
+    showActiveBadge(record);
+  }
+
+  function clearForm(){
+    sourceAdmissionId = null;
+    document.querySelectorAll('.field input, .field textarea').forEach(n => n.value = '');
+    document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+    el('regStatus').value = 'Active';
+    el('studentType').value = 'New Student';
+    el('stuGender').value = 'Female';
+    el('gradeLevel').value = '';
+    loadSectionOptions(null, null);
+    el('conditionsField').classList.remove('show');
+    hideActiveBadge();
+    previewNextRegNumber();
+  }
+
+  // Shows what the next Student ID# will likely be, purely as a preview —
+  // it does NOT reserve the number. The real one is assigned by the
+  // database itself the moment the record is saved (see js/student-id.js
+  // and the auto_student_id trigger), so this can never drift into a
+  // duplicate even if two registrars have this page open at once.
+  async function previewNextRegNumber(){
+    const input = el('regNumber');
+    const badge = el('regNumberBadge');
+    input.value = '';
+    input.placeholder = 'Calculating next ID…';
+    badge.textContent = '…';
+    badge.classList.add('pending');
+    try{
+      const next = (window.KPS && KPS.nextStudentId) ? await KPS.nextStudentId() : null;
+      if(next){
+        input.placeholder = `Next: ${next} (assigned automatically on save)`;
+        badge.textContent = 'AUTO';
+        badge.classList.remove('pending');
+      } else {
+        input.placeholder = 'Assigned automatically on save';
+        badge.textContent = 'AUTO';
+        badge.classList.remove('pending');
+      }
+    } catch(err){
+      input.placeholder = 'Assigned automatically on save';
+      badge.textContent = 'AUTO';
+      badge.classList.remove('pending');
+    }
+  }
+
+  function showActiveBadge(record, mode){
+    const label = mode === 'saved'
+      ? `Saved: ${escapeHtml(record.name || 'Unnamed student')} — ${escapeHtml(record.regNumber || '')}`
+      : `Editing existing record: ${escapeHtml(record.name || 'Unnamed student')} — ${escapeHtml(record.regNumber || '')}`;
+    el('activeBadgeWrap').innerHTML = `
+      <div class="active-badge">
+        <span>${label}</span>
+        <span style="display:flex;gap:8px;">
+          <a href="student-profile.html?student_id=${encodeURIComponent(record.regNumber || '')}" id="viewProfileBtn" style="border:1px solid var(--navy);background:var(--navy);color:#fff;border-radius:5px;padding:4px 10px;font-size:11px;font-weight:700;text-decoration:none;">Continue to Full Profile →</a>
+          <button type="button" id="stopEditingBtn">Start New Instead</button>
+        </span>
+      </div>`;
+    el('stopEditingBtn').addEventListener('click', () => { clearForm(); showToast('Ready for a new registration.'); });
+  }
+  function hideActiveBadge(){ el('activeBadgeWrap').innerHTML = ''; }
+
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function fmtDate(d){
+    if(!d) return '—';
+    try{ return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }); }
+    catch(err){ return d; }
+  }
+
+  // -------- Save a full record (new or edited) to Supabase --------
+  async function persistRecord(data, existingUuid){
+    const sbc = window.sb;
+    const sectionId = await resolveSectionId(data.gradeLevel, data.classSection);
+    const row = {
+      student_id: data.regNumber,
+      external_student_id: data.stuId || null,
+      full_name: data.name,
+      date_of_birth: data.stuDob || null,
+      gender: data.gender || null,
+      section_id: sectionId,
+      status: statusToDb(data.regStatus),
+      student_type: data.studentType || null,
+      status_note: data.statusNote || null,
+      nationality: data.nationality || null,
+      national_id: data.natlId || null,
+      county: data.stuCounty || null,
+      school_name: data.schoolName || null,
+      academic_year_label: data.academicYear || null,
+      previous_school_name: data.prevSchoolName || null,
+      previous_school_last_grade: data.prevLastGrade || null,
+      blood_group: data.bloodGroup || null,
+      allergies: data.allergies || null,
+      has_medical_conditions: data.hasConditions === 'Yes' ? true : (data.hasConditions === 'No' ? false : null),
+      medical_conditions_detail: data.conditionsDetail || null,
+      emergency_contact_name: data.emergName || null,
+      emergency_contact_phone: data.emergPhone || null,
+      emergency_contact_relationship: data.emergRelationship || null,
+      registered_by: data.registeredBy || null,
+      internal_notes: data.notes || null,
+      updated_at: new Date().toISOString(),
+    };
+
+    let studentUuid = existingUuid;
+    if(studentUuid){
+      const { error } = await sbc.from('students').update(row).eq('id', studentUuid);
+      if(error){ showToast('Save failed: ' + error.message, true); return null; }
+    } else {
+      const { data: created, error } = await sbc.from('students').insert(row).select('id').single();
+      if(error){ showToast('Save failed: ' + error.message, true); return null; }
+      studentUuid = created.id;
+    }
+
+    await Promise.all([
+      upsertGuardianLink(studentUuid, data.fatherName, data.fatherPhone, 'father', true),
+      upsertGuardianLink(studentUuid, data.motherName, data.motherPhone, 'mother', !data.fatherName),
+      upsertGuardianLink(studentUuid, data.guardianName, data.guardianPhone, 'guardian', !data.fatherName && !data.motherName),
+    ]);
+
+    return studentUuid;
+  }
+
+  // -------- Directory table --------
+  function statusClass(status){
+    return (status || 'active').toLowerCase();
+  }
+
+  async function renderDirectory(){
+    directoryCache = await fetchDirectory();
+    const list = directoryCache;
+    const body = el('dbTableBody');
+    const empty = el('dbEmpty');
+
+    el('progressBadge').textContent = list.length;
+    el('statTotal').textContent = list.length;
+    el('statActive').textContent = list.filter(r => r.regStatus === 'Active').length;
+    el('statPending').textContent = list.filter(r => r.regStatus === 'Pending').length;
+    el('statWithdrawn').textContent = list.filter(r => r.regStatus === 'Withdrawn').length;
+    el('statDropped').textContent = list.filter(r => r.regStatus === 'Dropped').length;
+    el('statGraduated').textContent = list.filter(r => r.regStatus === 'Graduated').length;
+
+    if(!list.length){
+      body.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    const statusOptions = ['Active','Pending','Withdrawn','Dropped','Graduated'];
+    body.innerHTML = list.map(r => `
+      <tr data-row="${escapeHtml(r.regNumber)}" data-uuid="${escapeHtml(r.uuid)}">
+        <td class="muted">${escapeHtml(r.regNumber || '—')}</td>
+        <td class="cell-edit name"><input type="text" data-field="name" value="${escapeHtml(r.name || '')}" placeholder="Unnamed student"></td>
+        <td class="cell-edit"><input type="text" data-field="stuId" value="${escapeHtml(r.stuId || '')}"></td>
+        <td class="cell-edit"><input type="text" data-field="gradeLevel" value="${escapeHtml(r.gradeLevel || '')}"></td>
+        <td class="cell-edit">
+          <select data-field="regStatus">
+            ${statusOptions.map(s => `<option value="${s}" ${(r.regStatus || 'Active') === s ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>
+        </td>
+        <td class="muted">${escapeHtml(r.updatedDate || '—')}</td>
+        <td>
+          <div class="row-actions">
+            <button type="button" class="save" data-save="${escapeHtml(r.regNumber)}">Save</button>
+            <button type="button" data-edit="${escapeHtml(r.regNumber)}">Full Edit</button>
+            <a href="student-profile.html?student_id=${encodeURIComponent(r.regNumber || '')}" style="display:inline-flex;align-items:center;">Profile</a>
+            <button type="button" class="del" data-del="${escapeHtml(r.regNumber)}">Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+
+    body.querySelectorAll('tr[data-row]').forEach(row => {
+      row.querySelectorAll('[data-field]').forEach(field => {
+        field.addEventListener('input', () => markRowDirty(row));
+        field.addEventListener('change', () => markRowDirty(row));
+      });
+    });
+    body.querySelectorAll('[data-save]').forEach(btn => {
+      btn.addEventListener('click', () => saveInlineRow(btn.getAttribute('data-save')));
+    });
+    body.querySelectorAll('[data-edit]').forEach(btn => {
+      btn.addEventListener('click', () => loadByRegNumber(btn.getAttribute('data-edit')));
+    });
+    body.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', () => deleteRecord(btn.getAttribute('data-del')));
+    });
+  }
+
+  function markRowDirty(row){
+    row.classList.add('dirty');
+    row.querySelector('[data-save]').classList.add('active');
+  }
+
+  async function saveInlineRow(regNumber){
+    const row = document.querySelector(`tr[data-row="${CSS.escape(regNumber)}"]`);
+    if(!row) return;
+    const uuid = row.getAttribute('data-uuid');
+    const nameVal = row.querySelector('[data-field="name"]').value.trim();
+    const stuId = row.querySelector('[data-field="stuId"]').value.trim();
+    const gradeLevel = row.querySelector('[data-field="gradeLevel"]').value.trim();
+    const regStatus = row.querySelector('[data-field="regStatus"]').value;
+
+    const sectionId = await resolveSectionIdByName(gradeLevel);
+    if(gradeLevel && !sectionId) return; // typed grade doesn't match one the Super Admin created
+    const { error } = await window.sb.from('students').update({
+      full_name: nameVal,
+      external_student_id: stuId || null,
+      section_id: sectionId,
+      status: statusToDb(regStatus),
+      updated_at: new Date().toISOString(),
+    }).eq('id', uuid);
+    if(error){ showToast('Update failed: ' + error.message, true); return; }
+
+    if(val('regNumber') === regNumber){
+      const record = await fetchFullRecord(regNumber);
+      if(record) await loadRecordIntoForm(record);
+    }
+    await renderDirectory();
+    renderFindResults();
+    showToast('Updated ' + (nameVal || 'record') + ' in the database.');
+  }
+
+  async function loadByRegNumber(regNumber){
+    const record = await fetchFullRecord(regNumber);
+    if(!record) return;
+    await loadRecordIntoForm(record);
+    el('findInput').value = '';
+    renderFindResults();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('Loaded ' + (record.name || 'record') + ' for editing.');
+  }
+
+  async function deleteRecord(regNumber){
+    if(!confirm('Delete this registration record from the database? This cannot be undone.')) return;
+    const { error } = await window.sb.from('students').delete().eq('student_id', regNumber);
+    if(error){ showToast('Delete failed: ' + error.message, true); return; }
+    await renderDirectory();
+    if(val('regNumber') === regNumber){ clearForm(); }
+    showToast('Record deleted from the database.');
+  }
+
+  // -------- Search (students already registered + admissions not yet
+  // registered, so one search box covers a student anywhere in their
+  // journey) --------
+  let findRequestId = 0;
+  async function renderFindResults(){
+    const q = val('findInput').toLowerCase();
+    const box = el('findResults');
+    const empty = el('findEmpty');
+    if(!q){
+      box.style.display = 'none';
+      empty.style.display = 'block';
+      empty.textContent = "Registration records are stored in your school's live database.";
+      return;
+    }
+    const myRequestId = ++findRequestId;
+    const studentResults = directoryCache.filter(r =>
+      (r.name || '').toLowerCase().includes(q) ||
+      (r.regNumber || '').toLowerCase().includes(q) ||
+      (r.stuId || '').toLowerCase().includes(q));
+
+    let admissionResults = [];
+    try{
+      const { data, error } = await window.sb
+        .from('admissions')
+        .select('id, reference_code, applicant_name, student_username, converted_student_id')
+        .is('converted_student_id', null)
+        .or(`applicant_name.ilike.%${q}%,reference_code.ilike.%${q}%,student_username.ilike.%${q}%`)
+        .order('updated_at', { ascending:false })
+        .limit(8);
+      if(!error) admissionResults = data || [];
+    }catch(err){ /* live search is best-effort; the students directory above still works */ }
+    if(myRequestId !== findRequestId) return; // a newer keystroke superseded this search
+
+    const combined = [
+      ...studentResults.map(r => ({ source:'student', regNumber:r.regNumber, name:r.name, stuId:r.stuId })),
+      ...admissionResults.map(r => ({ source:'admission', id:r.id, name:r.applicant_name, ref:r.reference_code, stuId:r.student_username })),
+    ];
+    if(!combined.length){
+      box.style.display = 'none';
+      empty.style.display = 'block';
+      empty.textContent = 'No registration records or applications match that search.';
+      return;
+    }
+    empty.style.display = 'none';
+    box.style.display = 'flex';
+    box.innerHTML = combined.slice(0, 12).map((r, i) => `
+      <div class="find-row">
+        <div class="fr-info">
+          <span class="fr-name">${escapeHtml(r.name || 'Unnamed student')}</span>
+          <span class="fr-meta">${r.source === 'student' ? escapeHtml(r.regNumber || '') : 'Ref ' + escapeHtml(r.ref || '') + ' \u00b7 not yet registered'}${r.stuId ? ' \u00b7 ' + escapeHtml(r.stuId) : ''}</span>
+        </div>
+        <button type="button" data-idx="${i}">${r.source === 'student' ? 'Load' : 'Register'}</button>
+      </div>`).join('');
+    box.querySelectorAll('[data-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const r = combined[Number(btn.getAttribute('data-idx'))];
+        if(r.source === 'student') loadByRegNumber(r.regNumber);
+        else loadAdmissionAndPrefill(r.id);
+      });
+    });
+  }
+  el('findInput').addEventListener('input', () => {
+    clearTimeout(el('findInput')._deb);
+    el('findInput')._deb = setTimeout(renderFindResults, 250);
+  });
+
+  // -------- Toast --------
+  function showToast(msg, isErr){
+    const t = el('toast');
+    t.textContent = msg;
+    t.classList.toggle('err', !!isErr);
+    t.classList.add('show');
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  // -------- Save / Update --------
+  el('saveBtn').addEventListener('click', async () => {
+    if(!val('lastName') && !val('firstName')){
+      showToast('Please enter at least the student\u2019s name before saving.', true);
+      return;
+    }
+    if(!val('registeredBy') && !val('regNumber')){
+      showToast('Please enter the Registrar\u2019s name in "Registered by" before saving.', true);
+      return;
+    }
+
+    let regNumber = val('regNumber');
+    let existingUuid = null;
+    if(regNumber){
+      const existing = directoryCache.find(r => r.regNumber === regNumber);
+      existingUuid = existing ? existing.uuid : null;
+    }
+    // "New" means this save will INSERT a students row, whether or not a
+    // Student ID# was already assigned upstream (e.g. carried over from an
+    // Admission via prefillFromAdmission — see js/student-id.js for the
+    // shared numbering sequence this reuses).
+    const isNew = !existingUuid;
+    if(!regNumber){
+      regNumber = await nextRegNumber();
+      setInput('regNumber', regNumber);
+    }
+    if(!val('regDate')){
+      setInput('regDate', new Date().toISOString().slice(0,10));
+    }
+    setInput('updatedBy', val('registeredBy') || val('updatedBy') || 'Registrar');
+    setInput('updatedDate', new Date().toISOString().slice(0,10));
+
+    const data = collectData();
+    if(!data.gradeLevel || !data.classSection){
+      showToast('Select the student\'s Grade and Class/section before saving.', true);
+      return;
+    }
+    const uuid = await persistRecord(data, existingUuid);
+    if(!uuid) return; // persistRecord already toasted the error
+
+    if(sourceAdmissionId){
+      try{
+        await window.sb.from('admissions').update({ converted_student_id: uuid }).eq('id', sourceAdmissionId);
+      }catch(err){ console.warn('[KPS] Could not link the source admission application to this student', err); }
+      sourceAdmissionId = null;
+    }
+
+    await renderDirectory();
+    showActiveBadge(data, 'saved');
+    showToast(isNew
+      ? 'Saved to database as ' + data.regNumber + '. Click "Continue to Full Profile" to finish their student profile.'
+      : 'Registration record updated.');
+  });
+
+  el('newBtn').addEventListener('click', () => {
+    if(!confirm('Start a new registration? Unsaved changes to the current record will be lost.')) return;
+    clearForm();
+    showToast('Ready for a new registration.');
+  });
+
+  // ---------------- Init ----------------
+  (async function init(){
+    const auth = await KPS.requireRole(['registrar', 'super_admin']);
+    if(!auth.user) return;
+    currentProfile = auth.profile;
+    el('regStatus').value = 'Active';
+    await renderDirectory();
+    renderFindResults();
+
+    const params = new URLSearchParams(window.location.search);
+    const admissionId = params.get('admission_id');
+    if(admissionId){
+      await loadAdmissionAndPrefill(admissionId);
+    } else {
+      previewNextRegNumber();
+    }
+  })();
+})();
+</script>
+
+</body>
+</html>

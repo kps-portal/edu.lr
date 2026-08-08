@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Student Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --gold-soft:#fbe4b3;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;gap:12px;}
+  header.topbar .kps-logo{height:32px;width:32px;object-fit:contain;border-radius:6px;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .left .page-label{font-weight:400;font-size:11.5px;opacity:.75;letter-spacing:.4px;margin-left:2px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .live-pill{
+    display:flex;align-items:center;gap:6px;background:rgba(30,132,73,.18);
+    border:1px solid rgba(90,220,150,.4);color:#bdf5d3;border-radius:20px;
+    padding:4px 10px;font-size:10.5px;font-weight:700;letter-spacing:.4px;
+  }
+  header.topbar .live-pill .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:pulseDot 1.8s infinite;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55);}70%{box-shadow:0 0 0 7px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
+
+  .notice-strip{
+    background:var(--gold-soft);border-bottom:1px solid #ecd090;color:#5c3c0c;
+    font-size:12px;font-weight:600;text-align:center;padding:8px 16px;line-height:1.5;
+  }
+  .notice-strip b{color:#3a2205;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1240px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,32px) clamp(20px,4vw,32px) clamp(16px,3vh,28px);text-align:left;}
+
+  .page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:clamp(10px,2vh,16px);flex-wrap:wrap;}
+  .page-head .id{display:flex;align-items:center;gap:16px;}
+  .seal-stage{position:relative;width:56px;height:56px;flex-shrink:0;}
+  .seal-stage img.seal{height:56px;width:56px;object-fit:contain;border-radius:10px;background:#fff;padding:3px;box-shadow:0 6px 16px rgba(11,23,48,.2), 0 0 0 3px #fff, 0 0 0 4px var(--line);}
+  .page-head h1{font-size:clamp(16px,3vh,19px);color:var(--navy);font-weight:800;line-height:1.35;letter-spacing:.2px;}
+  .page-head h1 .school-line{display:block;color:var(--crimson);font-size:clamp(12.5px,2.4vh,13.5px);font-weight:700;margin-top:2px;}
+  .db-status{font-size:11px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px;}
+  .db-status .n{color:var(--navy);font-weight:800;}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:0 0 clamp(14px,2.6vh,20px);border-radius:2px;}
+
+  .layout{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start;}
+  @media (max-width:960px){.layout{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(14px,2.4vh,18px);}
+  .panel h2{font-size:11.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;}
+  .panel h2 .num{width:18px;height:18px;border-radius:5px;background:var(--navy);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+  #findResults{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;margin-top:6px;}
+  .find-row{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:var(--panel);}
+  .find-row .fr-info{display:flex;flex-direction:column;min-width:0;}
+  .find-row .fr-name{font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .find-row .fr-meta{font-size:10.5px;color:var(--muted);}
+  .find-row button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;}
+  .find-row button:hover{background:#eef0f6;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field label .hint{font-weight:400;text-transform:none;color:var(--muted);font-size:10px;letter-spacing:0;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(8px,1.5vh,10px) 12px;border:1px solid var(--line);border-radius:4px;
+    font-size:13.5px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:64px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .field input[readonly]{background:var(--panel);color:var(--muted);font-weight:700;}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  @media (max-width:720px){.compose-grid,.grid3{grid-template-columns:1fr;}}
+  .radio-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px;}
+  .radio-row label{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink);text-transform:none;letter-spacing:0;}
+  .radio-row input{width:auto;}
+
+  /* ---------- Upload zone ---------- */
+  .upload-item{border:1px dashed var(--line);border-radius:8px;padding:10px;margin-bottom:9px;background:var(--panel);}
+  .upload-item .u-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .upload-item .u-label{font-size:12px;font-weight:700;color:var(--ink);}
+  .upload-item .u-req{font-size:9.5px;font-weight:800;color:var(--crimson);background:#fdecea;padding:1.5px 7px;border-radius:20px;letter-spacing:.3px;}
+  .upload-item .u-opt{font-size:9.5px;font-weight:800;color:var(--muted);background:#eee;padding:1.5px 7px;border-radius:20px;letter-spacing:.3px;}
+  .upload-item .u-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
+  .upload-item input[type=file]{display:none;}
+  .upload-item .u-btn{
+    border:1px solid var(--navy);color:var(--navy);background:#fff;border-radius:6px;
+    padding:6px 12px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;
+  }
+  .upload-item .u-btn:hover{background:#eef0f6;}
+  .upload-item .u-preview{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+  .upload-item .u-thumb{width:34px;height:34px;border-radius:5px;object-fit:cover;border:1px solid var(--line);flex-shrink:0;background:#fff;}
+  .upload-item .u-file{width:34px;height:34px;border-radius:5px;border:1px solid var(--line);flex-shrink:0;background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .upload-item .u-name{font-size:11.5px;color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .upload-item .u-empty{font-size:11px;color:var(--muted);font-style:italic;}
+  .upload-item .u-remove{border:none;background:none;color:var(--danger);cursor:pointer;font-size:12px;font-weight:700;flex-shrink:0;padding:4px;}
+
+  .badge{display:inline-block;padding:1.5px 7px;border-radius:20px;font-size:9.5px;font-weight:800;letter-spacing:.2px;text-transform:uppercase;flex-shrink:0;}
+  .badge.active{background:#e8f5ec;color:var(--ok);}
+
+  button.action-btn{
+    border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;
+    padding:9px 13px;font-size:12.5px;font-weight:700;cursor:pointer;transition:transform .12s ease, background .12s ease;width:100%;
+  }
+  button.action-btn:hover{background:#fafafa;}
+  button.action-btn:active{transform:scale(.97);}
+  button.action-btn.gold{background:var(--gold);border-color:var(--gold);color:#3a2600;}
+  button.action-btn.gold:hover{filter:brightness(0.96);}
+  button.action-btn.crimson{background:var(--crimson);border-color:var(--crimson);color:#fff;}
+  button.action-btn.crimson:hover{background:var(--crimson-dark);}
+  button.action-btn.navy{background:var(--navy);border-color:var(--navy);color:#fff;}
+  button.action-btn.navy:hover{background:var(--navy-deep);}
+  button.action-btn.danger-outline{color:var(--danger);border-color:#f1c3bc;}
+  button.action-btn.small{padding:6px 10px;font-size:11.5px;}
+
+  .topbar-actions{display:flex;gap:8px;}
+  .topbar-actions button{
+    border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;
+    border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .topbar-actions button.gold{background:var(--gold);border-color:var(--gold);color:#3a2600;}
+  .topbar-actions button:hover{background:rgba(255,255,255,.18);}
+  .topbar-actions button.gold:hover{filter:brightness(0.96);}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--navy-deep);color:#fff;border:1px solid var(--gold);
+    border-radius:8px;padding:11px 20px;font-size:13px;font-weight:600;
+    box-shadow:0 10px 30px rgba(11,23,48,.35);opacity:0;pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;z-index:999;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{border-color:var(--danger);}
+
+  /* ---------- Printable preview ---------- */
+  .preview-wrap{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:clamp(14px,2.4vh,22px);}
+  .preview-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .preview-toolbar span{font-size:11.5px;color:var(--muted);}
+  .preview-toolbar button{border:1px solid var(--line);background:#fff;border-radius:5px;padding:5px 10px;font-size:12px;font-weight:700;color:var(--navy);cursor:pointer;}
+
+  .doc-paper{
+    max-width:900px;margin:0 auto;background:#fff;padding:clamp(20px,4vw,36px);
+    border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);
+    font-family:Georgia,"Times New Roman",serif;color:#111;position:relative;
+  }
+
+  /* ---------- eKPortal-style tabular record ---------- */
+  .lp-card{border:2px solid #2b2b2b;font-family:"Courier New",Courier,monospace;color:#1a1a1a;background:#fff;}
+  .lp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 22px 14px;border-bottom:2px solid #2b2b2b;}
+  .lp-seal-box{width:62px;height:62px;flex-shrink:0;}
+  .lp-seal-box img{width:100%;height:100%;object-fit:contain;}
+  .lp-head-center{flex:1;text-align:center;padding-top:2px;}
+  .lp-head-center h1{font-size:18px;letter-spacing:.5px;font-weight:700;}
+  .lp-head-center .lp-sub1{font-size:12px;margin-top:9px;line-height:1.7;}
+  .lp-photo-box{width:62px;height:74px;border:1px solid #2b2b2b;background:#8a97a8;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  .lp-photo-box img{width:100%;height:100%;object-fit:cover;}
+  .lp-photo-box svg{width:68%;height:68%;fill:#4f5866;}
+
+  .lp-ref-row{display:flex;justify-content:flex-end;padding:6px 14px 0;font-size:10px;color:#555;}
+
+  .lp-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:10px;table-layout:fixed;}
+  .lp-table td{border:1px solid #2b2b2b;padding:7px 9px;vertical-align:middle;overflow-wrap:break-word;}
+  .lp-table td.lbl{font-weight:700;white-space:normal;}
+  .lp-table td.lbl.center{text-align:center;}
+  .lp-table td.val{word-break:normal;overflow-wrap:break-word;white-space:normal;min-height:1.4em;}
+  .lp-table tr.lp-url td{text-align:center;font-weight:700;padding:7px;letter-spacing:.3px;}
+  .lp-table tr.lp-url input{width:100%;text-align:center;font-weight:700;letter-spacing:.3px;border:none;background:transparent;font-family:inherit;font-size:inherit;color:inherit;outline:none;padding:2px 4px;border-radius:4px;}
+  .lp-table tr.lp-url input:focus{background:#fff;box-shadow:0 0 0 2px var(--gold-soft);}
+  .lp-table td.note{font-style:italic;color:#444;}
+
+  .lp-barcode-row{display:flex;justify-content:flex-end;align-items:center;gap:14px;padding:14px 18px 18px;}
+  .lp-barcode-bars{display:flex;align-items:flex-end;height:36px;gap:2px;}
+  .lp-barcode-bars span{display:block;width:3px;background:#1a1a1a;}
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:60px;width:60px;object-fit:contain;border-radius:10px;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;padding:2px;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:21px;font-weight:800;color:#122148;letter-spacing:.2px;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-photo-slot{width:64px;height:76px;border:1.5px dashed #bbb;border-radius:6px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fafafa;font-family:Arial,sans-serif;}
+  .doc-photo-slot img{width:100%;height:100%;object-fit:cover;}
+  .doc-photo-slot span{font-size:8px;color:#999;text-align:center;padding:4px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+
+  .doc-office-row{display:flex;justify-content:space-between;font-size:12px;font-style:italic;margin-bottom:14px;color:#333;font-family:Arial,sans-serif;}
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:6px;text-transform:uppercase;position:relative;overflow:hidden;font-family:Arial,sans-serif;}
+  .doc-banner::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--crimson),var(--gold));}
+  .doc-banner .sub2{display:block;font-size:10px;font-weight:500;letter-spacing:.4px;opacity:.85;margin-top:3px;text-transform:none;}
+  .doc-ref-row{display:flex;justify-content:space-between;align-items:flex-start;font-size:11px;color:#777;margin-bottom:14px;font-weight:700;font-family:Arial,sans-serif;}
+  .doc-photo-block{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;}
+  .doc-photo-capt{font-size:9.5px;font-weight:800;color:#20242e;letter-spacing:.3px;font-family:Arial,sans-serif;}
+
+  .doc-day-notice{
+    background:var(--gold-soft);border:1px solid #ecd090;border-radius:6px;padding:10px 13px;
+    font-size:11.5px;color:#5c3c0c;margin-bottom:18px;line-height:1.6;font-weight:500;font-family:Arial,sans-serif;
+  }
+  .doc-day-notice b{color:#3a2205;}
+
+  .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 26px;font-size:12.5px;margin-bottom:6px;font-family:Arial,sans-serif;}
+  @media (max-width:640px){.meta-grid{grid-template-columns:1fr;}}
+  .meta-row{display:flex;gap:8px;padding:4px 0;}
+  .meta-row.full{grid-column:1 / -1;}
+  .meta-row .lbl{font-weight:700;min-width:158px;flex-shrink:0;color:#20242e;}
+  .meta-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;min-height:16px;}
+  .meta-row .val.empty{font-weight:400;color:#aaa;font-style:italic;border-bottom-color:#ddd;}
+
+  .doc-section-title{font-weight:700;font-size:13px;margin:22px 0 12px;text-transform:uppercase;letter-spacing:.3px;color:#20242e;border-bottom:1px solid #ccc;padding-bottom:5px;font-family:Arial,sans-serif;display:flex;align-items:center;gap:8px;}
+  .doc-section-title .snum{width:17px;height:17px;border-radius:50%;background:var(--crimson);color:#fff;font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+  .docs-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px;font-family:Arial,sans-serif;}
+  .doc-chip{border:1px solid var(--line);border-radius:8px;padding:6px;text-align:center;background:#fafafa;}
+  .doc-chip img{width:100%;height:56px;object-fit:cover;border-radius:5px;margin-bottom:5px;background:#fff;}
+  .doc-chip .fico{width:100%;height:56px;border-radius:5px;margin-bottom:5px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .doc-chip .fname{font-size:9px;font-weight:700;color:#20242e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .doc-chip .fstatus{font-size:8px;font-weight:800;color:var(--ok);text-transform:uppercase;letter-spacing:.3px;}
+  .docs-empty{font-size:12.5px;color:var(--muted);font-style:italic;padding:8px 0;font-family:Arial,sans-serif;}
+
+  .checklist{display:flex;flex-direction:column;gap:7px;font-family:Arial,sans-serif;}
+  .checklist .ci{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;}
+  .checklist .ci .box{width:16px;height:16px;border-radius:4px;border:1.5px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;}
+  .checklist .ci.done .box{background:var(--ok);border-color:var(--ok);}
+  .checklist .ci.pending .box{background:#fff;}
+  .checklist .ci.done{color:#20242e;}
+  .checklist .ci.pending{color:var(--muted);}
+
+  .decl-box{background:#faf9f7;border:1px solid var(--line);border-radius:8px;padding:14px;font-size:12px;line-height:1.8;color:#20242e;margin-top:6px;font-family:Georgia,"Times New Roman",serif;}
+  .memo-signoff{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin:28px 0 8px;}
+  .memo-signoff div{font-size:12.5px;font-family:Arial,sans-serif;}
+  .memo-signoff .sig-line{border-top:1px solid #333;padding-top:4px;font-weight:700;min-height:20px;}
+  .memo-signoff .sig-title{color:#555;font-size:11px;}
+  .memo-ref{font-size:11px;margin-top:14px;font-weight:700;color:#555;text-align:center;font-family:Arial,sans-serif;}
+  .memo-ref .gen-note{display:block;font-weight:400;color:#888;font-size:10px;margin-top:3px;}
+
+  @media print{
+    header.topbar,.notice-strip,.card > .accent,.card .page-head,.card .subtitle-rule,.layout > div:first-child,.preview-toolbar,.no-print{display:none !important;}
+    body{background:#fff;}
+    main{padding:0;display:block;}
+    .card{box-shadow:none;border:none;max-width:none;}
+    .card .body{padding:0;}
+    .layout{display:block;}
+    .preview-wrap{background:#fff;border:none;padding:0;}
+    .doc-paper{box-shadow:none;max-width:none;}
+  }
+
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left">
+    <img class="kps-logo" id="topbarKpsLogo" alt="Kingsville Public School logo">
+    <div>
+      <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+      <span class="page-label">Office of the Registrar · Student Profile</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="live-pill no-print"><span class="dot"></span>STUDENT RECORDS · ACTIVE</div>
+    <div class="topbar-actions no-print">
+      <button id="printBtn">Print</button>
+      <button id="saveBtn">Save</button>
+      <button id="downloadBtn" class="gold">Download PDF</button>
+    </div>
+    <img class="moe-mini" id="topbarMoeLogo" alt="Ministry of Education seal">
+  </div>
+</header>
+
+<div class="notice-strip no-print">
+  <b>Please note:</b> This is the master student profile record for Kingsville Public High School, combining identification, admission, academic, and emergency contact details. It does not itself constitute new admission &mdash; please use the separate Student Admission Application for that purpose.
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+
+      <div class="page-head">
+        <div class="id">
+          <div class="seal-stage"><img class="seal" id="cardSeal" alt="School seal"></div>
+          <h1>Student Profile Form<span class="school-line">Kingsville Public High School — Office of the Registrar</span></h1>
+        </div>
+        <div class="db-status no-print">Checklist complete: <span class="n" id="progressBadge">0/8</span></div>
+      </div>
+      <div class="subtitle-rule"></div>
+
+      <div class="layout">
+
+        <!-- FORM COLUMN -->
+        <div class="no-print">
+
+          <div class="panel" id="findPanel">
+            <h2><span class="num">&#128269;</span>Find a Saved Student Profile</h2>
+            <div class="field" style="margin-bottom:8px;"><label>Search by student name, ID number, or reference number</label><input id="findInput" type="text" placeholder="e.g. Doe or 000002"></div>
+            <div id="findResults" style="display:none;"></div>
+            <p id="findEmpty" style="font-size:11.5px;color:var(--muted);font-style:italic;margin-top:2px;">Search by name or Student ID# to load a registered student — the Student ID# above is set automatically from that record.</p>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">1</span>Student Photograph</h2>
+            <div class="upload-item">
+              <div class="u-top"><span class="u-label">Passport-size photo</span><span class="u-opt">Optional</span></div>
+              <div class="u-row">
+                <div class="u-preview" id="photoPreviewRow"><span class="u-empty">No photo uploaded yet</span></div>
+                <label class="u-btn">Choose file<input type="file" id="photoInput" accept="image/*"></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">2</span>Identification</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Student ID# <span class="hint">(from Registration — not editable here)</span></label><input id="stuId" type="text" readonly placeholder="Open this page from Registration or search below"></div>
+              <div class="field"><label>Provisional ID# <span class="hint">(optional)</span></label><input id="provId" type="text"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">3</span>Student's Name</h2>
+            <div class="grid3">
+              <div class="field"><label>Last name</label><input id="lastName" type="text"></div>
+              <div class="field"><label>First name</label><input id="firstName" type="text"></div>
+              <div class="field"><label>Middle name</label><input id="middleName" type="text"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">4</span>Admission</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Year of provisional admission</label><input id="provAdmDate" type="date"></div>
+              <div class="field"><label>Year of regular admission</label><input id="regAdmDate" type="date"></div>
+            </div>
+            <div class="field"><label>Address at time of admission</label><input id="admAddress" type="text"></div>
+            <div class="field"><label>Current address</label><input id="currentAddress" type="text"></div>
+            <div class="field" style="margin-bottom:0;"><label>Student type</label>
+              <select id="studentType"><option>New Student</option><option>Old Student</option></select>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>Registration status</label>
+              <select id="regStatus"><option>Active</option><option>Pending</option><option>Withdrawn</option><option>Dropped</option><option>Graduated</option></select>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">5</span>Personal Information</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Gender</label>
+                <select id="stuGender"><option>Female</option><option>Male</option></select>
+              </div>
+              <div class="field"><label>Marital status</label>
+                <select id="maritalStatus"><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select>
+              </div>
+            </div>
+            <div class="compose-grid">
+              <div class="field"><label>Email</label><input id="stuEmail" type="email"></div>
+              <div class="field"><label>Contact #</label><input id="stuPhone" type="tel"></div>
+            </div>
+            <div class="compose-grid">
+              <div class="field"><label>Nationality</label><input id="nationality" type="text"></div>
+              <div class="field"><label>National ID#</label><input id="natlId" type="text"></div>
+            </div>
+            <div class="compose-grid">
+              <div class="field"><label>County</label><input id="stuCounty" type="text"></div>
+              <div class="field"><label>State / Region <span class="hint">(optional)</span></label><input id="stateRegion" type="text"></div>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>Date of birth</label><input id="stuDob" type="date"></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">6</span>Previous School</h2>
+            <div class="compose-grid">
+              <div class="field"><label>School accepted from</label><input id="schoolAccepted" type="text"></div>
+              <div class="field"><label>School location</label><input id="schoolLocation" type="text"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">7</span>Academic Program</h2>
+            <div class="field"><label>Name of School</label><input id="college" type="text"></div>
+            <div class="compose-grid">
+              <div class="field"><label>Grade Level</label><input id="department" type="text" placeholder="e.g. Grade 9"></div>
+              <div class="field"><label>Class / Section</label><input id="degree" type="text" placeholder="e.g. 9A"></div>
+            </div>
+            <div class="compose-grid">
+              <div class="field"><label>Academic Year</label><input id="major" type="text" placeholder="e.g. 2025/2026"></div>
+              <div class="field"><label>Track / Program <span class="hint">(optional)</span></label><input id="minorPathway" type="text" placeholder="e.g. General"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">8</span>Parent / Guardian &amp; Emergency Contact</h2>
+            <div class="field"><label>Name of parent / guardian</label><input id="parentName" type="text"></div>
+            <div class="compose-grid">
+              <div class="field"><label>Parent / guardian address</label><input id="parentAddress" type="text"></div>
+              <div class="field"><label>Parent / guardian contact #</label><input id="parentPhone" type="tel"></div>
+            </div>
+            <div class="field"><label>Emergency person name</label><input id="emergName" type="text"></div>
+            <div class="compose-grid">
+              <div class="field"><label>Emergency person address</label><input id="emergAddress" type="text"></div>
+              <div class="field"><label>Emergency person contact</label><input id="emergPhone" type="tel"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">9</span>Account &amp; Office Use</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Updated by</label><input id="updatedBy" type="text"></div>
+              <div class="field"><label>Updated date</label><input id="updatedDate" type="date"></div>
+            </div>
+            <div class="compose-grid">
+              <div class="field"><label>Username</label><input id="portalUsername" type="text"></div>
+              <div class="field"><label>KPS / school email <span class="hint">(optional)</span></label><input id="schoolEmail" type="email"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">10</span>Supporting Documents</h2>
+            <div id="uploadZones"></div>
+          </div>
+
+          <div class="panel">
+            <h2><span class="num">11</span>Declaration</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Signed by (Registrar / Data Entry Officer)</label><input id="declName" type="text"></div>
+              <div class="field"><label>Date signed</label><input id="declDate" type="date"></div>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>Notes for registrar</label><textarea id="notes"></textarea></div>
+          </div>
+
+          <button class="action-btn crimson" id="generateBtn" style="margin-bottom:8px;">Refresh profile preview</button>
+          <button class="action-btn danger-outline" id="clearAllBtn">Reset entire form</button>
+
+        </div>
+
+        <!-- PREVIEW COLUMN -->
+        <div class="preview-wrap">
+          <div class="preview-toolbar no-print">
+            <span>This is the official student profile record your registrar will print, sign, and file &mdash; it updates as you fill in the fields on the left.</span>
+          </div>
+
+          <div class="doc-paper lp-card" id="paper">
+            <div class="doc-letterhead">
+              <img id="rSchoolLogo" alt="School logo">
+              <div class="doc-headtext">
+                <div class="school-name">KINGSVILLE PUBLIC HIGH SCHOOL</div>
+                <div class="school-address">Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia</div>
+              </div>
+              <img id="rMoeLogoHeader" alt="Ministry of Education seal">
+            </div>
+
+            <div class="doc-office-row">
+              <span>Office of the Registrar</span>
+              <span id="mGenerated2">Date generated: &mdash;</span>
+            </div>
+
+            <div class="doc-banner" id="pvTitle">Student Profile Record
+              <span class="sub2">Master Identification &amp; Academic File</span>
+            </div>
+
+            <div class="doc-ref-row">
+              <span id="mRef">Reference: 000001</span>
+              <div class="doc-photo-block">
+                <div class="doc-photo-slot" id="docPhotoSlot"><span>Photo</span></div>
+                <div class="doc-photo-capt" id="docPhotoCapt">000001</div>
+              </div>
+            </div>
+
+            <table class="lp-table">
+              <colgroup>
+                <col style="width:27%">
+                <col style="width:23%">
+                <col style="width:27%">
+                <col style="width:23%">
+              </colgroup>
+              <tr>
+                <td class="lbl">Student ID#:</td><td class="val" id="mStuId">&mdash;</td>
+                <td class="lbl">Provisional ID#:</td><td class="val" id="mProvId">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl center">Last Name</td>
+                <td class="lbl center">First Name</td>
+                <td class="lbl center" colspan="2">Middle Name</td>
+              </tr>
+              <tr>
+                <td class="val" id="mLastName">&mdash;</td>
+                <td class="val" id="mFirstName">&mdash;</td>
+                <td class="val" colspan="2" id="mMiddleName">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Year Of Provisional Admission:</td><td class="val" id="mProvAdmDate">&mdash;</td>
+                <td class="lbl">Year of Regular Admission:</td><td class="val" id="mRegAdmDate">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Address at time of Admission:</td><td class="val" colspan="3" id="mAdmAddress">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Current Address:</td><td class="val" colspan="3" id="mCurrentAddress">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Student Type:</td><td class="val" id="mStudentType">&mdash;</td>
+                <td class="lbl">Registration Status:</td><td class="val" id="mRegStatus">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Gender:</td><td class="val" id="mGender">&mdash;</td>
+                <td class="lbl">Marital Status:</td><td class="val" id="mMaritalStatus">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Email:</td><td class="val" colspan="3" id="mEmail">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Contact #:</td><td class="val" id="mPhone">&mdash;</td>
+                <td class="lbl">Nationality:</td><td class="val" id="mNationality">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Nat'l ID#:</td><td class="val" id="mNatlId">&mdash;</td>
+                <td class="lbl">County:</td><td class="val" id="mCounty">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">State/Region:</td><td class="val" id="mStateRegion">&mdash;</td>
+                <td class="lbl">Date of Birth:</td><td class="val" id="mDob">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">School Accepted From:</td><td class="val" id="mSchoolAccepted">&mdash;</td>
+                <td class="lbl">School Location:</td><td class="val" id="mSchoolLocation">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Name of School:</td><td class="val" colspan="3" id="mCollege">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Grade Level:</td><td class="val" id="mDepartment">&mdash;</td>
+                <td class="lbl">Class / Section:</td><td class="val" id="mDegree">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Academic Year:</td><td class="val" id="mMajor">&mdash;</td>
+                <td class="lbl">Track / Program:</td><td class="val" id="mMinorPathway">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Name of Parent / Guardian:</td><td class="val" colspan="3" id="mParentName">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Parent / Guardian Address:</td><td class="val" colspan="3" id="mParentAddress">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Parent / Guardian Contact #:</td><td class="val" colspan="3" id="mParentPhone">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Emergency Person Name:</td><td class="val" colspan="3" id="mEmergName">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Emergency Person Address:</td><td class="val" colspan="3" id="mEmergAddress">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Emergency Person Contact:</td><td class="val" colspan="3" id="mEmergPhone">&mdash;</td>
+              </tr>
+              <tr>
+                <td class="lbl">Updated By:</td><td class="val" id="mUpdatedBy">&mdash;</td>
+                <td class="lbl">Updated Date:</td><td class="val" id="mUpdatedDate">&mdash;</td>
+              </tr>
+              <tr class="lp-url">
+                <td colspan="4"><input id="portalUrl" type="text" value="https://www.kpsportal.com"></td>
+              </tr>
+              <tr>
+                <td class="lbl">Username:</td><td class="val" id="mUsername">&mdash;</td>
+                <td class="lbl">Password:</td><td class="val note">Default Password Already Changed</td>
+              </tr>
+              <tr>
+                <td class="lbl">KPS Email:</td><td class="val" id="mSchoolEmail">&mdash;</td>
+                <td class="val note" colspan="2">Same Password as above</td>
+              </tr>
+            </table>
+
+            <div class="lp-barcode-row">
+              <div class="lp-barcode-bars" id="lpBarcode"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast no-print" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+  const el = id => document.getElementById(id);
+  const toast = el('toast');
+  function showToast(msg, isErr){
+    toast.textContent = msg;
+    toast.classList.toggle('err', !!isErr);
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>toast.classList.remove('show'), 2600);
+  }
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function val(id){ return el(id).value.trim(); }
+  function fmtDate(d){
+    if(!d) return '';
+    const dt = new Date(d + 'T00:00:00');
+    if(isNaN(dt)) return d;
+    return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+  }
+  function setVal(id, text){
+    const node = el(id);
+    if(text && text !== '—'){ node.textContent = text; node.classList.remove('empty'); }
+    else { node.textContent = '—'; node.classList.add('empty'); }
+  }
+
+  // -------- Logos --------
+  const KPS_LOGO = "../assets/images/img-05ddf6d498159c2e.png";
+  const MOE_SEAL = "../assets/images/img-2c6f3402d893a11c.png";
+  ['topbarKpsLogo','cardSeal','rSchoolLogo'].forEach(id => el(id).src = KPS_LOGO);
+  ['topbarMoeLogo','rMoeLogoHeader'].forEach(id => el(id).src = MOE_SEAL);
+
+  // -------- Document upload definitions --------
+  const DOC_TYPES = [
+    { id:'idDoc', label:"Student ID / National ID copy", required:true },
+    { id:'admissionLetter', label:"Admission letter", required:false },
+    { id:'otherDoc', label:"Other relevant document", required:false },
+  ];
+  const docs = {};
+
+  function buildUploadZones(){
+    const wrap = el('uploadZones');
+    wrap.innerHTML = '';
+    DOC_TYPES.forEach(dt => {
+      const item = document.createElement('div');
+      item.className = 'upload-item';
+      item.innerHTML = `
+        <div class="u-top">
+          <span class="u-label">${dt.label}</span>
+          <span class="${dt.required ? 'u-req' : 'u-opt'}">${dt.required ? 'Required' : 'Optional'}</span>
+        </div>
+        <div class="u-row">
+          <div class="u-preview" id="prev-${dt.id}"><span class="u-empty">No file uploaded yet</span></div>
+          <label class="u-btn">Choose file<input type="file" id="file-${dt.id}" accept="image/*,.pdf"></label>
+        </div>`;
+      wrap.appendChild(item);
+      el(`file-${dt.id}`).addEventListener('change', (e) => handleUpload(dt, e.target.files[0]));
+    });
+  }
+
+  function handleUpload(dt, file){
+    if(!file) return;
+    const isImage = file.type.startsWith('image/');
+    const reader = new FileReader();
+    reader.onload = () => {
+      docs[dt.id] = { name: file.name, dataUrl: reader.result, isImage, label: dt.label };
+      renderUploadPreview(dt.id);
+      refreshAll();
+      showToast(dt.label + ' attached.');
+    };
+    reader.onerror = () => showToast('Could not read that file.', true);
+    reader.readAsDataURL(file);
+  }
+
+  function renderUploadPreview(id){
+    const box = el(`prev-${id}`);
+    const d = docs[id];
+    if(!d){ box.innerHTML = '<span class="u-empty">No file uploaded yet</span>'; return; }
+    box.innerHTML = `
+      ${d.isImage ? `<img class="u-thumb" src="${d.dataUrl}">` : `<div class="u-file">\u{1F4C4}</div>`}
+      <span class="u-name">${escapeHtml(d.name)}</span>
+      <button class="u-remove" data-remove="${id}" title="Remove">\u2715</button>`;
+    box.querySelector('[data-remove]').addEventListener('click', () => {
+      delete docs[id];
+      renderUploadPreview(id);
+      refreshAll();
+      showToast('Document removed.');
+    });
+  }
+
+  // -------- Photo upload --------
+  let photoData = null;
+  el('photoInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      photoData = reader.result;
+      el('photoPreviewRow').innerHTML = `<img class="u-thumb" src="${photoData}" style="width:44px;height:44px;"><span class="u-name">${escapeHtml(file.name)}</span>`;
+      refreshAll();
+      showToast('Photo uploaded.');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function nextRef(){
+    let n = parseInt(localStorage.getItem('__kps_stu_ref_seed') || '1', 10);
+    return String(n).padStart(6,'0');
+  }
+
+  function fullNameLine(){
+    return [val('lastName'), val('firstName'), val('middleName')].filter(Boolean).join(', ');
+  }
+
+  /** Splits the `full_name` stored by Registration ("Last, First, Middle")
+   *  back into parts, so a profile opened for the first time doesn't force
+   *  the registrar to retype a name that was already captured. */
+  function fullNameParts(fullName){
+    const parts = (fullName || '').split(',').map(p => p.trim());
+    return { lastName: parts[0] || '', firstName: parts[1] || '', middleName: parts[2] || '' };
+  }
+
+  function renderBarcode(seed){
+    const bars = el('lpBarcode');
+    if(!bars) return;
+    bars.innerHTML = '';
+    let s = 0;
+    for(let i = 0; i < String(seed).length; i++) s += String(seed).charCodeAt(i) * (i + 1);
+    for(let i = 0; i < 34; i++){
+      const pseudo = Math.abs(Math.sin(s + i * 12.9898) * 43758.5453);
+      const frac = pseudo - Math.floor(pseudo);
+      const h = 14 + Math.round(frac * 22);
+      const bar = document.createElement('span');
+      bar.style.height = h + 'px';
+      bars.appendChild(bar);
+    }
+  }
+
+  function refreshAll(){
+    setVal('mStuId', val('stuId'));
+    setVal('mProvId', val('provId'));
+    setVal('mLastName', val('lastName'));
+    setVal('mFirstName', val('firstName'));
+    setVal('mMiddleName', val('middleName'));
+
+    setVal('mProvAdmDate', fmtDate(val('provAdmDate')));
+    setVal('mRegAdmDate', fmtDate(val('regAdmDate')));
+    setVal('mAdmAddress', val('admAddress'));
+    setVal('mCurrentAddress', val('currentAddress'));
+    setVal('mStudentType', el('studentType').value);
+    setVal('mRegStatus', el('regStatus').value);
+
+    setVal('mGender', el('stuGender').value);
+    setVal('mMaritalStatus', el('maritalStatus').value);
+    setVal('mEmail', val('stuEmail'));
+    setVal('mPhone', val('stuPhone'));
+    setVal('mNationality', val('nationality'));
+    setVal('mNatlId', val('natlId'));
+    setVal('mCounty', val('stuCounty'));
+    setVal('mStateRegion', val('stateRegion'));
+    setVal('mDob', fmtDate(val('stuDob')));
+
+    setVal('mSchoolAccepted', val('schoolAccepted'));
+    setVal('mSchoolLocation', val('schoolLocation'));
+
+    setVal('mCollege', val('college'));
+    setVal('mDepartment', val('department'));
+    setVal('mDegree', val('degree'));
+    setVal('mMajor', val('major'));
+    setVal('mMinorPathway', val('minorPathway'));
+
+    setVal('mParentName', val('parentName'));
+    setVal('mParentAddress', val('parentAddress'));
+    setVal('mParentPhone', val('parentPhone'));
+    setVal('mEmergName', val('emergName'));
+    setVal('mEmergAddress', val('emergAddress'));
+    setVal('mEmergPhone', val('emergPhone'));
+
+    setVal('mUpdatedBy', val('updatedBy'));
+    setVal('mUpdatedDate', fmtDate(val('updatedDate')));
+    setVal('mUsername', val('portalUsername'));
+    setVal('mSchoolEmail', val('schoolEmail'));
+
+    el('docPhotoSlot').innerHTML = photoData ? `<img src="${photoData}">` : '<span>Photo</span>';
+
+    const items = [
+      { label:'Identification completed', done: !!val('stuId') && !!fullNameLine() },
+      { label:'Admission details completed', done: !!val('regAdmDate') || !!val('provAdmDate') },
+      { label:'Personal information completed', done: !!val('stuDob') && !!val('stuPhone') },
+      { label:'Academic program completed', done: !!val('college') && !!val('major') },
+      { label:'Parent / guardian and emergency contact provided', done: !!val('parentName') && !!val('emergName') },
+      { label:'Student ID / national ID attached', done: !!docs.idDoc },
+      { label:'Declaration signed', done: !!val('declName') && !!val('declDate') },
+    ];
+    const doneCount = items.filter(i => i.done).length;
+    el('progressBadge').textContent = `${doneCount}/${items.length}`;
+
+    el('mGenerated2').textContent = 'Date generated: ' + new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    const ref = nextRef();
+    el('mRef').textContent = 'Reference: ' + ref;
+    el('docPhotoCapt').textContent = ref;
+    renderBarcode(ref);
+  }
+
+  document.querySelectorAll('#stuId,#provId,#lastName,#firstName,#middleName,#provAdmDate,#regAdmDate,#admAddress,#currentAddress,#studentType,#regStatus,#stuGender,#maritalStatus,#stuEmail,#stuPhone,#nationality,#natlId,#stuCounty,#stateRegion,#stuDob,#schoolAccepted,#schoolLocation,#college,#department,#degree,#major,#minorPathway,#parentName,#parentAddress,#parentPhone,#emergName,#emergAddress,#emergPhone,#updatedBy,#updatedDate,#portalUrl,#portalUsername,#schoolEmail,#declName,#declDate,#notes')
+    .forEach(node => { node.addEventListener('input', refreshAll); node.addEventListener('change', refreshAll); });
+
+  el('generateBtn').addEventListener('click', () => {
+    let n = parseInt(localStorage.getItem('__kps_stu_ref_seed') || '1', 10);
+    localStorage.setItem('__kps_stu_ref_seed', String(n + 1));
+    refreshAll();
+    el('paper').scrollIntoView({ behavior:'smooth', block:'start' });
+    showToast('Profile preview refreshed.');
+  });
+
+  el('clearAllBtn').addEventListener('click', () => {
+    if(!confirm('Clear all fields and uploaded documents? This cannot be undone.')) return;
+    document.querySelectorAll('.field input, .field textarea, .field select').forEach(n => { if(n.tagName !== 'SELECT') n.value = ''; });
+    Object.keys(docs).forEach(k => delete docs[k]);
+    DOC_TYPES.forEach(dt => renderUploadPreview(dt.id));
+    photoData = null;
+    el('photoPreviewRow').innerHTML = '<span class="u-empty">No photo uploaded yet</span>';
+    refreshAll();
+    showToast('Form reset. This does not affect any downloaded files.');
+  });
+
+  el('printBtn').addEventListener('click', () => window.print());
+
+  // -------- Save / local registry / find --------
+  const REGISTRY_KEY = '__kps_stu_saved_profiles';
+  const ACTIVE_KEY = '__kps_active_student_ref';
+
+  // The UUID (students.id) of the registration row this profile belongs to.
+  // Student Profile is a CONTINUATION of Registration, never a standalone
+  // entry point — Save must always UPDATE this exact row and must never
+  // insert a brand-new `students` row (that would duplicate the student).
+  // It is only ever set by loadFromSupabase()/loadFromQueryString() once a
+  // real registration row has been found.
+  let currentStudentUuid = null;
+
+  // Live sync: notify the Student Dashboard the instant a profile is saved
+  let syncChan = null;
+  try{ syncChan = new BroadcastChannel('kps-student-sync'); }
+  catch(e){ /* BroadcastChannel not available in this browser — storage event still covers cross-tab updates */ }
+
+  function currentRef(){
+    return el('mRef').textContent.replace('Reference:', '').trim();
+  }
+
+  function collectData(){
+    return {
+      stuId: val('stuId'), provId: val('provId'),
+      lastName: val('lastName'), firstName: val('firstName'), middleName: val('middleName'),
+      name: fullNameLine(),
+      provAdmDate: val('provAdmDate'), regAdmDate: val('regAdmDate'),
+      admAddress: val('admAddress'), currentAddress: val('currentAddress'),
+      studentType: el('studentType').value,
+      regStatus: el('regStatus').value,
+      gender: el('stuGender').value, maritalStatus: el('maritalStatus').value,
+      email: val('stuEmail'), phone: val('stuPhone'),
+      nationality: val('nationality'), natlId: val('natlId'),
+      county: val('stuCounty'), stateRegion: val('stateRegion'), dob: val('stuDob'),
+      schoolAccepted: val('schoolAccepted'), schoolLocation: val('schoolLocation'),
+      college: val('college'), department: val('department'), degree: val('degree'),
+      major: val('major'), minorPathway: val('minorPathway'),
+      parentName: val('parentName'), parentAddress: val('parentAddress'), parentPhone: val('parentPhone'),
+      emergName: val('emergName'), emergAddress: val('emergAddress'), emergPhone: val('emergPhone'),
+      updatedBy: val('updatedBy'), updatedDate: val('updatedDate'),
+      portalUrl: val('portalUrl'), portalUsername: val('portalUsername'), schoolEmail: val('schoolEmail'),
+      declName: val('declName'), declDate: val('declDate'), notes: val('notes'),
+      photoData: photoData,
+      docs: JSON.parse(JSON.stringify(docs)),
+      reference: currentRef(),
+      savedAt: Date.now(),
+    };
+  }
+
+  function getRegistry(){
+    try{ return JSON.parse(localStorage.getItem(REGISTRY_KEY) || '[]'); }
+    catch(err){ return []; }
+  }
+
+  // -------- Real backend connection (Supabase `students` table) --------
+  // This is what actually connects this page to the Student Dashboard
+  // across devices/accounts. Local registry above stays as a same-device
+  // convenience cache for the search box + draft/PDF workflow; this is the
+  // real, permanent, cross-device record.
+  // Same status column/convention as registrar/registration.html — this
+  // page updates the exact same `students.status` value, so both pages
+  // must map Active/Pending/Withdrawn/Dropped/Graduated to the database
+  // the same way (lowercase) or they'll drift out of sync.
+  function statusToDb(s){ return (s || 'Active').toLowerCase(); }
+  function statusFromDb(s){ return { active:'Active', pending:'Pending', withdrawn:'Withdrawn', dropped:'Dropped', graduated:'Graduated', transferred:'Withdrawn' }[s] || 'Active'; }
+
+  function fullDisplayName(data){
+    return [data.firstName, data.middleName, data.lastName].filter(Boolean).join(' ') || data.name || '';
+  }
+
+  async function pushToSupabase(data){
+    if(!window.sb) return { ok:false, reason:'Supabase client not configured.' };
+    if(!data.stuId) return { ok:false, reason:'No Student ID# is loaded — open this page from Registration\'s "Continue to Full Profile" link, or search for a registered student above, before saving.' };
+    // Hard requirement: Student Profile only ever UPDATES the registration
+    // row it was opened for. It never creates a new `students` row — that
+    // would duplicate the student in the database. If no row was loaded,
+    // stop here and tell the registrar to register the student first.
+    if(!currentStudentUuid){
+      return { ok:false, reason:'This student has no registration record loaded, so there is nothing to update. Open this page from Registration\'s "Continue to Full Profile" link, or search for the student above, then try Save again.' };
+    }
+    try{
+      const row = {
+        full_name: fullDisplayName(data),
+        date_of_birth: data.dob || null,
+        gender: data.gender || null,
+        status: statusToDb(data.regStatus),
+        profile_extra: data,
+        updated_at: new Date().toISOString()
+      };
+      const { data: result, error } = await window.sb
+        .from('students')
+        .update(row)
+        .eq('id', currentStudentUuid)
+        .select();
+      if(error) throw error;
+      return { ok:true, result: result && result[0] };
+    }catch(err){
+      return { ok:false, reason: (err && err.message) || String(err) };
+    }
+  }
+
+  async function supabaseFindStudents(q){
+    if(!window.sb || !q) return [];
+    try{
+      const { data, error } = await window.sb
+        .from('students')
+        .select('id, student_id, full_name, profile_extra, updated_at')
+        .or(`student_id.ilike.%${q}%,full_name.ilike.%${q}%`)
+        .order('updated_at', { ascending:false })
+        .limit(12);
+      if(error) throw error;
+      return data || [];
+    }catch(err){
+      console.warn('[KPS] Live student search failed', err);
+      return [];
+    }
+  }
+
+  function saveToRegistry(record){
+    try{
+      const list = getRegistry();
+      const idx = list.findIndex(r => r.reference === record.reference);
+      if(idx >= 0) list[idx] = record; else list.push(record);
+      localStorage.setItem(REGISTRY_KEY, JSON.stringify(list));
+      return true;
+    }catch(err){ return false; }
+  }
+
+  function setInput(id, v){ el(id).value = v || ''; }
+  function setSelect(id, v){ if(v) el(id).value = v; }
+
+  let findRequestId = 0;
+
+  async function renderFindResults(){
+    const q = val('findInput').toLowerCase();
+    const box = el('findResults');
+    const empty = el('findEmpty');
+    if(!q){
+      box.style.display = 'none';
+      empty.style.display = 'block';
+      empty.textContent = 'Search by name or Student ID# \u2014 searches the live database.';
+      return;
+    }
+
+    const myRequestId = ++findRequestId;
+    const localResults = getRegistry().filter(r =>
+      (r.name || '').toLowerCase().includes(q) || (r.reference || '').toLowerCase().includes(q) || (r.stuId || '').toLowerCase().includes(q));
+
+    // Live database results (source of truth). Falls back gracefully if the
+    // Supabase call fails/offline \u2014 local cache above still works.
+    let liveResults = [];
+    try{ liveResults = await supabaseFindStudents(q); }catch(e){ liveResults = []; }
+
+    // Also surface applicants who exist in Admissions but haven't been
+    // registered yet (no `students` row exists for them to load here) \u2014
+    // so a search on THIS page still finds them, with a pointer to finish
+    // Registration first. See supabase/migrations/012_link_admissions_
+    // registration_profile.sql for the converted_student_id link.
+    let admissionOnly = [];
+    try{
+      if(window.sb){
+        const { data, error } = await window.sb
+          .from('admissions')
+          .select('id, reference_code, applicant_name, student_username')
+          .is('converted_student_id', null)
+          .or(`applicant_name.ilike.%${q}%,reference_code.ilike.%${q}%,student_username.ilike.%${q}%`)
+          .limit(6);
+        if(!error) admissionOnly = data || [];
+      }
+    }catch(e){ /* best-effort */ }
+    if(myRequestId !== findRequestId) return; // a newer keystroke superseded this search
+
+    // De-dupe: prefer the live DB row over a same-device local cache entry
+    // for the same student_id.
+    const liveIds = new Set(liveResults.map(r => r.student_id));
+    const localOnly = localResults.filter(r => !liveIds.has(r.stuId));
+
+    const combined = [
+      ...liveResults.map(r => ({ source:'live', id:r.id, name:r.full_name, stuId:r.student_id, updatedAt:r.updated_at })),
+      ...localOnly.map(r => ({ source:'local', reference:r.reference, name:r.name, stuId:r.stuId })),
+      ...admissionOnly.map(r => ({ source:'admission', id:r.id, name:r.applicant_name, stuId:r.student_username, ref:r.reference_code })),
+    ];
+
+    if(!combined.length){
+      box.style.display = 'none';
+      empty.style.display = 'block';
+      empty.textContent = 'No student profiles match that search.';
+      return;
+    }
+    empty.style.display = 'none';
+    box.style.display = 'flex';
+    box.innerHTML = combined.slice(0, 12).map((r, i) => `
+      <div class="find-row">
+        <div class="fr-info">
+          <span class="fr-name">${escapeHtml(r.name || 'Unnamed student')}</span>
+          <span class="fr-meta">${r.stuId ? 'Student ID# ' + escapeHtml(r.stuId) : ''}${r.source === 'local' ? ' \u00b7 not yet saved to database' : ''}${r.source === 'admission' ? ' \u00b7 Ref ' + escapeHtml(r.ref || '') + ' \u00b7 not registered yet' : ''}</span>
+        </div>
+        <button type="button" data-idx="${i}">${r.source === 'admission' ? 'Register \u2192' : 'Load'}</button>
+      </div>`).join('');
+    box.querySelectorAll('[data-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const r = combined[Number(btn.getAttribute('data-idx'))];
+        if(r.source === 'live') loadFromSupabase(r.id);
+        else if(r.source === 'admission') window.location.href = 'registration.html?admission_id=' + encodeURIComponent(r.id);
+        else loadRecord(r.reference);
+      });
+    });
+  }
+
+  /** Loads a student's full record straight from Supabase and fills the
+   *  form. `profile_extra` holds whatever was already saved from THIS page
+   *  (same shape collectData() produces). But the very first time this
+   *  page opens for a student, profile_extra is empty — everything the
+   *  Registrar already typed into registrar/registration.html (name, DOB,
+   *  gender, nationality, ID#, county, grade/section, academic year,
+   *  previous school, guardian, emergency contact) lives on the `students`
+   *  row and its joined tables instead. We pull those in as fallbacks so
+   *  nothing has to be retyped — profile_extra always wins once it exists,
+   *  since that reflects the registrar's own edits on THIS page. */
+  async function loadFromSupabase(id){
+    if(!window.sb) return;
+    try{
+      currentStudentUuid = id;
+      const { data, error } = await window.sb
+        .from('students')
+        .select(`id, student_id, full_name, date_of_birth, gender, nationality, national_id,
+                  county, academic_year_label, previous_school_name, status,
+                  emergency_contact_name, emergency_contact_phone, emergency_contact_relationship,
+                  profile_extra, updated_at,
+                  sections(name, classes(name)),
+                  student_guardians(is_primary, guardians(full_name, phone, relationship))`)
+        .eq('id', id)
+        .single();
+      if(error) throw error;
+      const extra = data.profile_extra || {};
+      const hasProfileYet = !!(data.profile_extra && Object.keys(data.profile_extra).length);
+      const np = fullNameParts(data.full_name);
+
+      const guardianLinks = data.student_guardians || [];
+      const primaryGuardian = guardianLinks.find(g => g.is_primary && g.guardians) || guardianLinks.find(g => g.guardians);
+      const gClass = data.sections && data.sections.classes ? data.sections.classes.name : '';
+      const gSection = data.sections ? data.sections.name : '';
+
+      const record = {
+        ...extra,
+        stuId: extra.stuId || data.student_id,
+        lastName: extra.lastName || np.lastName,
+        firstName: extra.firstName || np.firstName,
+        middleName: extra.middleName || np.middleName,
+        dob: extra.dob || data.date_of_birth,
+        gender: extra.gender || data.gender,
+        nationality: extra.nationality || data.nationality,
+        natlId: extra.natlId || data.national_id,
+        county: extra.county || data.county,
+        schoolAccepted: extra.schoolAccepted || data.previous_school_name || '',
+        department: extra.department || gClass,
+        degree: extra.degree || gSection,
+        major: extra.major || data.academic_year_label || '',
+        parentName: extra.parentName || (primaryGuardian ? primaryGuardian.guardians.full_name : ''),
+        parentPhone: extra.parentPhone || (primaryGuardian ? primaryGuardian.guardians.phone : ''),
+        emergName: extra.emergName || data.emergency_contact_name || '',
+        emergPhone: extra.emergPhone || data.emergency_contact_phone || '',
+        regStatus: extra.regStatus || statusFromDb(data.status),
+        reference: extra.reference || currentRef(),
+        savedAt: data.updated_at ? new Date(data.updated_at).getTime() : extra.savedAt,
+      };
+      loadRecordObject(record);
+      const displayName = record.name || [record.firstName, record.lastName].filter(Boolean).join(' ') || 'student';
+      showToast(hasProfileYet
+        ? 'Loaded ' + displayName + ' from the live database.'
+        : 'Loaded ' + displayName + ' from Registration — details already entered there are pre-filled. Review and complete the rest below.');
+    }catch(err){
+      currentStudentUuid = null;
+      showToast('Could not load that record: ' + (err.message || err), true);
+    }
+  }
+
+  async function loadRecord(ref){
+    const record = getRegistry().find(r => r.reference === ref);
+    if(!record) return;
+    loadRecordObject(record);
+    // This is only a same-device draft cache — it doesn't carry the
+    // database row's UUID. Resolve it now by Student ID# so Save still
+    // updates the correct registration row instead of being blocked.
+    currentStudentUuid = null;
+    if(window.sb && record.stuId){
+      try{
+        const { data } = await window.sb.from('students').select('id').eq('student_id', record.stuId).maybeSingle();
+        if(data) currentStudentUuid = data.id;
+      }catch(e){ /* best-effort */ }
+    }
+    showToast('Loaded saved profile for ' + (record.name || 'student') + '.');
+  }
+
+  function loadRecordObject(record){
+    setInput('stuId', record.stuId); setInput('provId', record.provId);
+    setInput('lastName', record.lastName); setInput('firstName', record.firstName); setInput('middleName', record.middleName);
+    setInput('provAdmDate', record.provAdmDate); setInput('regAdmDate', record.regAdmDate);
+    setInput('admAddress', record.admAddress); setInput('currentAddress', record.currentAddress);
+    setSelect('studentType', record.studentType);
+    setSelect('regStatus', record.regStatus);
+    setSelect('stuGender', record.gender); setSelect('maritalStatus', record.maritalStatus);
+    setInput('stuEmail', record.email); setInput('stuPhone', record.phone);
+    setInput('nationality', record.nationality); setInput('natlId', record.natlId);
+    setInput('stuCounty', record.county); setInput('stateRegion', record.stateRegion); setInput('stuDob', record.dob);
+    setInput('schoolAccepted', record.schoolAccepted); setInput('schoolLocation', record.schoolLocation);
+    setInput('college', record.college); setInput('department', record.department); setInput('degree', record.degree);
+    setInput('major', record.major); setInput('minorPathway', record.minorPathway);
+    setInput('parentName', record.parentName); setInput('parentAddress', record.parentAddress); setInput('parentPhone', record.parentPhone);
+    setInput('emergName', record.emergName); setInput('emergAddress', record.emergAddress); setInput('emergPhone', record.emergPhone);
+    setInput('updatedBy', record.updatedBy); setInput('updatedDate', record.updatedDate);
+    setInput('portalUrl', record.portalUrl || 'https://www.kpsportal.com'); setInput('portalUsername', record.portalUsername); setInput('schoolEmail', record.schoolEmail);
+    setInput('declName', record.declName); setInput('declDate', record.declDate); setInput('notes', record.notes);
+
+    photoData = record.photoData || null;
+    el('photoPreviewRow').innerHTML = photoData
+      ? `<img class="u-thumb" src="${photoData}" style="width:44px;height:44px;"><span class="u-name">Photo on file</span>`
+      : '<span class="u-empty">No photo uploaded yet</span>';
+
+    Object.keys(docs).forEach(k => delete docs[k]);
+    Object.assign(docs, record.docs || {});
+    DOC_TYPES.forEach(dt => renderUploadPreview(dt.id));
+
+    el('findInput').value = '';
+    renderFindResults();
+    refreshAll();
+    el('paper').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  let findDebounce = null;
+  el('findInput').addEventListener('input', () => {
+    clearTimeout(findDebounce);
+    findDebounce = setTimeout(renderFindResults, 250);
+  });
+
+  /** Supports opening this page pre-loaded to one student, e.g.
+   *  registrar/student-profile.html?student_id=000001 */
+  async function loadFromQueryString(){
+    const params = new URLSearchParams(window.location.search);
+    const stuId = params.get('student_id') || params.get('stuId') || params.get('id');
+    if(!stuId || !window.sb) return;
+    try{
+      const { data, error } = await window.sb
+        .from('students')
+        .select('id, student_id')
+        .eq('student_id', stuId)
+        .maybeSingle();
+      if(error) throw error;
+      if(data){ await loadFromSupabase(data.id); }
+      else{
+        currentStudentUuid = null;
+        showToast('No registration found for ID# ' + stuId + ' yet. Please complete Registration first, then open Student Profile from there.', true);
+        setInput('stuId', stuId); refreshAll();
+      }
+    }catch(err){
+      console.warn('[KPS] Could not preload student from query string', err);
+    }
+  }
+
+  el('saveBtn').addEventListener('click', async () => {
+    const btn = el('saveBtn');
+    const original = btn.textContent;
+    try{
+      const data = collectData();
+
+      // Local, same-device convenience cache for the search box + PDF/print
+      // workflow only. This is NOT what the Student Dashboard reads from
+      // anymore \u2014 see pushToSupabase() below for the real, cross-device record.
+      saveToRegistry(data);
+      try{ localStorage.setItem(ACTIVE_KEY, data.reference); }catch(e){}
+      if(syncChan){ syncChan.postMessage({ type:'profile-saved', reference: data.reference }); }
+
+      // -------- Real save: this is what the student actually sees --------
+      btn.disabled = true;
+      btn.textContent = 'Saving to database\u2026';
+      const result = await pushToSupabase(data);
+      btn.disabled = false;
+      btn.textContent = original;
+
+      if(!result.ok){
+        showToast('Saved locally, but the live database save failed: ' + result.reason, true);
+        return;
+      }
+
+      const downloadData = {
+        ...data,
+        documents: Object.keys(data.docs).map(k => ({ type:k, name: data.docs[k].name })),
+        photoAttached: !!data.photoData,
+      };
+      delete downloadData.docs;
+      delete downloadData.photoData;
+
+      const blob = new Blob([JSON.stringify(downloadData, null, 2)], { type:'application/json;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const fname = (data.name || 'student').toLowerCase().replace(/[^a-z0-9]+/g,'-');
+      a.href = url; a.download = `kps-student-profile-${fname}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      showToast('Student profile saved to the live database \u2014 the student will see this on their dashboard.');
+    }catch(err){
+      btn.disabled = false;
+      btn.textContent = original;
+      showToast('Could not save the record.', true);
+    }
+  });
+
+  el('downloadBtn').addEventListener('click', () => {
+    const btn = el('downloadBtn');
+    const original = btn.textContent;
+    btn.textContent = 'Preparing\u2026';
+    btn.disabled = true;
+    html2canvas(el('paper'), {scale:2, backgroundColor:'#ffffff', useCORS:true}).then(canvas => {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p','pt','a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgW = pageWidth;
+      const imgH = canvas.height * (imgW / canvas.width);
+      let heightLeft = imgH, position = 0;
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', 0, position, imgW, imgH);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0){
+        position = heightLeft - imgH;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgW, imgH);
+        heightLeft -= pageHeight;
+      }
+      const fname = (fullNameLine() || 'student').toLowerCase().replace(/[^a-z0-9]+/g,'-');
+      pdf.save(`kps-student-profile-${fname}.pdf`);
+      btn.textContent = original; btn.disabled = false;
+      showToast('PDF downloaded.');
+    }).catch(() => {
+      showToast('Could not generate the PDF. Please try Print instead.', true);
+      btn.textContent = original; btn.disabled = false;
+    });
+  });
+
+  // ---------------- Init ----------------
+  buildUploadZones();
+  refreshAll();
+  loadFromQueryString();
+})();
+</script>
+
+</body>
+</html>

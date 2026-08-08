@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academics — Kingsville Public High School</title>
+<style>
+  :root{
+    --red:#a3181c;
+    --red-bright:#d31f24;
+    --gold:#d4af37;
+    --gold-light:#f4e5a3;
+    --ink:#1a1a1a;
+    --line:#000;
+    --paper:#ffffff;
+    --grey-band:#e9e9e9;
+    --slate:#5c5f66;
+    --good:#1f7a3d;
+    --glow:rgba(163,24,28,.45);
+    --glow-gold:rgba(212,175,55,.65);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(163,24,28,.06), transparent 60%),
+      #f2f2f0;
+    margin:0;
+    padding:24px 12px 60px;
+  }
+  a{color:inherit;text-decoration:none}
+
+  .sheet{
+    position:relative;
+    max-width:1180px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:26px 34px 40px;
+    border:1px solid transparent;
+    border-radius:6px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    isolation:isolate;
+  }
+
+  /* Premium animated gold/crimson glowing frame */
+  .sheet::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:8px;
+    padding:2px;
+    background:conic-gradient(from var(--frame-angle,0deg),
+      var(--gold), var(--red-bright), var(--gold-light), var(--red), var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    z-index:-1;
+    animation: frame-spin 7s linear infinite;
+    filter:drop-shadow(0 0 6px var(--glow-gold));
+  }
+  @property --frame-angle{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:0deg;
+  }
+  @keyframes frame-spin{
+    to{ --frame-angle:360deg; }
+  }
+
+  .letterhead{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:3px double #333;
+    padding-bottom:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .letterhead::after{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:40%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.35), transparent);
+    animation: sweep 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{ left:-60%; }
+    45%{ left:120%; }
+    100%{ left:120%; }
+  }
+  .letterhead img{
+    height:64px;
+    width:64px;
+    object-fit:contain;
+    flex-shrink:0;
+    border-radius:50%;
+    background:#fff;
+    padding:3px;
+    box-shadow:
+      0 0 0 2px var(--gold),
+      0 0 10px 2px var(--glow-gold);
+    animation: crest-glow 2.6s ease-in-out infinite;
+  }
+  @keyframes crest-glow{
+    0%, 100%{
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 8px 1px var(--glow-gold);
+    }
+    50%{
+      box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 0 18px 6px var(--glow-gold);
+    }
+  }
+  .letterhead .headtext{
+    flex:1;
+    text-align:center;
+  }
+  .school-name{
+    font-weight:800;
+    font-size:26px;
+    letter-spacing:.5px;
+    margin:0 0 4px;
+    background:linear-gradient(100deg,
+      var(--red) 0%, var(--gold) 22%, var(--red-bright) 45%,
+      var(--gold-light) 60%, var(--red) 82%, var(--gold) 100%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 14px rgba(163,24,28,.18);
+    animation: text-shine 5s linear infinite;
+  }
+  @keyframes text-shine{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:250% 50%; }
+  }
+  .sub{ font-weight:700; font-size:13px; margin:0; color:#333; }
+  .motto{ font-style:italic; font-size:12.5px; color:#555; margin-top:2px; }
+
+  .master-title{
+    color:var(--red);
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:1px;
+    margin:8px 0 6px;
+    text-align:center;
+    text-shadow:0 0 10px rgba(163,24,28,.15);
+  }
+
+  .band{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    background:linear-gradient(180deg,var(--grey-band),#f4f4f2);
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    color:var(--red);
+    padding:7px 0;
+    margin:4px 0 20px;
+    letter-spacing:2px;
+    border-radius:3px;
+    box-shadow:inset 0 0 0 1px rgba(212,175,55,.35), 0 0 10px rgba(163,24,28,.08);
+  }
+  .band::before{
+    content:"";
+    position:absolute;
+    top:0; left:-40%;
+    width:25%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.55), transparent);
+    animation: sweep 4.5s ease-in-out infinite;
+    animation-delay:1s;
+    pointer-events:none;
+  }
+  .year-select{
+    font-family:inherit;
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:1px;
+    color:var(--red);
+    background:#fff;
+    border:1px solid rgba(163,24,28,.4);
+    border-radius:4px;
+    padding:4px 10px;
+  }
+
+  /* HERO STRIP */
+  .hero-strip{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:24px;
+  }
+  .hero-card{
+    position:relative;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:16px 18px;
+    overflow:hidden;
+    box-shadow:0 1px 4px rgba(0,0,0,.05);
+  }
+  .hero-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:8px;
+    padding:1.5px;
+    background:linear-gradient(135deg, var(--gold), transparent 40%, transparent 60%, var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity:.6;
+  }
+  .hero-card .label{
+    font-family:Georgia, serif;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--slate);
+    font-weight:700;
+  }
+  .hero-card .value{
+    font-size:28px;
+    font-weight:800;
+    color:var(--ink);
+    margin-top:6px;
+  }
+  .hero-card .value small{
+    font-size:13px;
+    color:var(--slate);
+    font-weight:400;
+  }
+  .hero-card.rank .value{
+    background:linear-gradient(100deg, var(--red) 0%, var(--gold) 40%, var(--red-bright) 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    animation:text-shine 6s linear infinite;
+  }
+  .hero-card.conduct .value{ color:var(--good); }
+  .hero-card::after{
+    content:"";
+    position:absolute;
+    top:12px;
+    right:14px;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    box-shadow:0 0 8px 2px currentColor;
+  }
+  .hero-card.rank::after{ background:var(--red-bright); color:var(--red-bright); }
+  .hero-card.semave::after{ background:var(--gold); color:var(--gold); }
+  .hero-card.yrave::after{ background:var(--red); color:var(--red); }
+  .hero-card.conduct::after{ background:var(--good); color:var(--good); }
+
+  /* EMPTY-STATE / STATUS NOTICE */
+  .notice{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#FBF6E6;
+    border:1px solid var(--gold);
+    border-radius:6px;
+    padding:10px 16px;
+    margin-bottom:26px;
+    font-size:12.5px;
+    color:#5E4A20;
+    box-shadow:0 0 10px rgba(212,175,55,.2);
+  }
+  .notice .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--gold);
+    flex-shrink:0;
+    box-shadow:0 0 6px 2px var(--glow-gold);
+    animation:crest-glow 2.2s ease-in-out infinite;
+  }
+
+  section.block{ margin-bottom:36px; }
+  .block-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .block-head h2{
+    font-size:19px;
+    font-weight:800;
+    color:var(--red);
+    margin:0;
+    text-shadow:0 0 8px rgba(163,24,28,.12);
+  }
+  .block-head .meta{
+    font-size:12px;
+    color:var(--slate);
+    font-style:italic;
+  }
+
+  /* GRADES TABLE */
+  .table-wrap{
+    overflow-x:auto;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+  }
+  table.grades{
+    width:100%;
+    border-collapse:collapse;
+    min-width:960px;
+    font-size:13px;
+  }
+  table.grades thead tr.semrow th{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--red) 100%);
+    color:#fdf6e3;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    padding:9px 6px;
+    text-align:center;
+  }
+  table.grades thead tr.pdrow th{
+    background:var(--grey-band);
+    font-size:10.5px;
+    color:#444;
+    font-weight:700;
+    padding:7px 6px;
+    text-align:center;
+    border-bottom:2px solid var(--red);
+  }
+  table.grades tbody td{
+    padding:10px 8px;
+    border-bottom:1px solid #ece5d2;
+    text-align:center;
+    color:#333;
+  }
+  table.grades tbody td.subject{
+    text-align:left;
+    font-weight:700;
+    color:var(--ink);
+    padding-left:14px;
+  }
+  table.grades tbody td.subject .teacher{
+    display:block;
+    font-weight:400;
+    font-style:italic;
+    font-size:11px;
+    color:var(--slate);
+    margin-top:2px;
+  }
+  table.grades tbody td.sem-ave{
+    font-weight:800;
+    background:#fbf6e6;
+    color:var(--red);
+  }
+  table.grades tbody td.low{ color:var(--red-bright); font-weight:800; }
+  table.grades tbody td.pending{
+    color:#8a6d1a;
+    font-style:italic;
+    font-weight:600;
+    font-size:11px;
+    background:#FBF6E6;
+  }
+  table.grades tbody tr:hover td{ background:#fffaf0; }
+  table.grades tbody tr:last-child td{ border-bottom:none; }
+
+  .empty-row td{
+    padding:32px 8px;
+    color:#999;
+    font-style:italic;
+  }
+
+  .legend{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    font-size:11.5px;
+    color:var(--slate);
+    margin-top:12px;
+    padding:0 4px;
+  }
+  .legend b{ color:var(--ink); }
+
+  footer.note{
+    margin-top:44px;
+    padding-top:16px;
+    border-top:1px solid #e3ddc9;
+    font-size:11.5px;
+    color:var(--slate);
+    text-align:center;
+  }
+
+  :focus-visible{ outline:2px solid var(--red); outline-offset:2px; }
+
+  /* TOOLBAR + PREMIUM BUTTONS */
+  .toolbar{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  button.premium{
+    position:relative;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    padding:9px 18px;
+    cursor:pointer;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--gold) 100%);
+    background-size:220% 100%;
+    background-position:0% 50%;
+    box-shadow:0 0 8px 1px var(--glow-gold);
+    transition:box-shadow .25s ease, transform .15s ease, background-position .3s ease;
+  }
+  button.premium:hover{
+    background-position:100% 50%;
+    box-shadow:0 0 14px 3px var(--glow-gold);
+    transform:translateY(-1px);
+  }
+  button.premium:active{ transform:translateY(0); }
+  button.premium:disabled{ opacity:.55; cursor:wait; transform:none; }
+  button.premium.print{
+    background:linear-gradient(100deg, #333 0%, #555 45%, var(--gold) 100%);
+    background-size:220% 100%;
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .sheet{ box-shadow:none; border:1px solid #999; }
+    .sheet::before{ display:none; }
+    .toolbar{ display:none !important; }
+  }
+
+  @media (max-width:820px){
+    .sheet{ padding:16px; }
+    .school-name{ font-size:20px; }
+    .letterhead img{ height:44px; width:44px; }
+    .hero-strip{ grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="sheet" id="sheet">
+
+  <div class="letterhead">
+    <img src="../assets/images/img-1005aedff1a0c5ea.png" alt="Kingsville Public High School crest">
+    <div class="headtext">
+      <p class="school-name">Kingsville Public High School</p>
+      <p class="sub">Kingsville Township, Careysburg District &middot; Montserrado County, Liberia</p>
+      <p class="motto">Motto: "Knowledge Is Power"</p>
+    </div>
+    <img src="../assets/images/img-a7df6c3d8d6e390b.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+
+  <p class="master-title">STUDENT ACADEMIC RECORD</p>
+  <div class="band">
+    ACADEMIC&nbsp;YEAR:
+    <select class="year-select" id="yearSelect" aria-label="Select academic year">
+      <option value="2025/2026">2025/2026 — Current Year</option>
+      <option value="2024/2025">2024/2025</option>
+    </select>
+  </div>
+
+  <div class="toolbar">
+    <button class="premium" id="downloadBtn" onclick="downloadPDF()">⬇ Download PDF</button>
+    <button class="premium print" onclick="window.print()">🖨 Print</button>
+  </div>
+
+  <div class="hero-strip" id="heroStrip">
+    <div class="hero-card rank">
+      <div class="label">Rank in Class</div>
+      <div class="value" id="rankValue">—</div>
+    </div>
+    <div class="hero-card semave">
+      <div class="label">Semester Average</div>
+      <div class="value" id="semAveValue">—</div>
+    </div>
+    <div class="hero-card yrave">
+      <div class="label">Yearly Average</div>
+      <div class="value" id="yrAveValue">—</div>
+    </div>
+    <div class="hero-card conduct">
+      <div class="label">Conduct</div>
+      <div class="value" id="conductValue">—</div>
+    </div>
+  </div>
+
+  <div class="notice" id="statusNotice">
+    <span class="dot"></span>
+    No grades have been posted yet. Grades will appear here as soon as your teacher submits them.
+  </div>
+
+  <section class="block">
+    <div class="block-head">
+      <h2>Subject Grades</h2>
+      <span class="meta" id="lastUpdated">Not yet updated</span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="grades">
+        <thead>
+          <tr class="semrow">
+            <th rowspan="2" style="background:var(--red-bright)"></th>
+            <th colspan="5">First Semester</th>
+            <th colspan="5">Second Semester</th>
+          </tr>
+          <tr class="pdrow">
+            <th>1st Pd</th><th>2nd Pd</th><th>3rd Pd</th><th>Exam</th><th>Sem. Ave.</th>
+            <th>4th Pd</th><th>5th Pd</th><th>6th Pd</th><th>Exam</th><th>Sem./Yrly Ave.</th>
+          </tr>
+        </thead>
+        <tbody id="gradesBody">
+          <tr class="empty-row">
+            <td colspan="11">No subject grades on file yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <div><b>Excellent</b> 95–100</div>
+      <div><b>Very Good</b> 90–94</div>
+      <div><b>Good</b> 80–89</div>
+      <div><b>Average</b> 75–79</div>
+      <div><b>Fair</b> 70–74</div>
+      <div><b>Below 70</b> — means failed</div>
+    </div>
+  </section>
+
+  <footer class="note">
+    Grades on this page are entered by your subject teachers and released only after Principal approval. They cannot be edited by students. For the official signed copy, see Report Card.
+  </footer>
+
+  <div class="back-row" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:13px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <a href="dashboard.html" style="color:var(--red, var(--navy, var(--blue, #333)));text-decoration:none;font-weight:600;">Back to Dashboard</a>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  async function downloadPDF(){
+    const btn = document.getElementById('downloadBtn');
+    const sheet = document.getElementById('sheet');
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Preparing…';
+    try{
+      const canvas = await html2canvas(sheet, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+
+      // Fit the captured sheet onto standard Letter-width PDF pages
+      const pageWidth = 612; // pt (8.5in)
+      const pageHeight = 792; // pt (11in)
+      const margin = 24;
+      const usableWidth = pageWidth - margin * 2;
+      const imgWidthPt = usableWidth;
+      const imgHeightPt = (canvas.height / canvas.width) * imgWidthPt;
+
+      const pdf = new jsPDF('p', 'pt', 'letter');
+      let heightLeft = imgHeightPt;
+      let position = margin;
+
+      pdf.addImage(imgData, 'PNG', margin, position, imgWidthPt, imgHeightPt);
+      heightLeft -= (pageHeight - margin * 2);
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeightPt + margin;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', margin, position, imgWidthPt, imgHeightPt);
+        heightLeft -= (pageHeight - margin * 2);
+      }
+
+      const studentLabel = (document.getElementById('rankValue').textContent || 'Report').trim();
+      pdf.save(`Academic-Record_${studentLabel !== '—' ? studentLabel.replace(/[^a-z0-9]+/gi,'_') : 'KPS'}.pdf`);
+    }catch(err){
+      console.error(err);
+      alert('Could not generate the PDF. You can still use the Print button to save a copy.');
+    }finally{
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  }
+
+  /*
+    DATA CONTRACT (now live — see loadAcademics() below)
+    -------------
+    Real data path: signed-in student's auth.uid() -> profiles.id ->
+    students row (via students.profile_id) -> students.id -> every
+    published marks row where marks.student_id matches, each joined to
+    its subject and the teacher who entered it (marks.entered_by ->
+    profiles.full_name). This is exactly how a student with 10+ different
+    subject teachers ends up seeing all of their grades on one page: the
+    link is students.id, not any per-teacher record.
+
+    NOTE ON THE PERIOD COLUMNS: the KPS-MIS schema has no dedicated
+    "1st/2nd/3rd Period" columns — marks rows only carry a `component`
+    ('exam' | 'ca' | 'quiz' | 'practical' | 'assignment') and an optional
+    linked `examinations` row (which carries `semester`). To populate the
+    existing P1/P2/P3 + Exam layout without inventing new schema, this
+    page buckets every non-exam component chronologically into P1→P3 (or
+    P4→P6 for the second semester) and puts the 'exam' component in the
+    Exam column. If your grading workflow enters more than 3 non-exam
+    marks per subject per semester, only the first 3 (by entry order)
+    will show here — the Report Card / raw marks table is the source of
+    truth for anything beyond that.
+  */
+  let studentAcademics = null;
+
+  async function loadAcademics(){
+    const notice = document.getElementById('statusNotice');
+    try{
+      const auth = await KPS.requireRole(['student']);
+      if(!auth.user){ renderAcademics(null); return; }
+
+      const sb = KPS.sb;
+      const { data: studentRow, error: studentErr } = await sb.from('students')
+        .select('id, section_id, yearly_average, promotion_status, conduct')
+        .eq('profile_id', auth.user.id).single();
+      if(studentErr || !studentRow){ renderAcademics(null); return; }
+
+      // get_my_grade_submissions() is a security-definer RPC (see
+      // supabase/migrations/027_addendum_student_academics_submission_status.sql)
+      // that is hard-filtered server-side to this student's own record.
+      // Unlike a direct `.from('marks')` read, it also returns marks the
+      // teacher has entered but the Principal hasn't approved yet — with
+      // score/semester_average nulled out until `published = true`, so we
+      // can show "Submitted — awaiting Principal approval" instead of
+      // just hiding the row entirely.
+      const { data: marks, error: marksErr } = await sb.rpc('get_my_grade_submissions');
+      if(marksErr) throw marksErr;
+
+      if(!marks || marks.length === 0){
+        renderAcademics(null);
+        return;
+      }
+
+      // Group every mark — regardless of which of the 10+ possible
+      // teachers entered it — by subject_id, keyed off the same
+      // student.id link for every row. Each entry keeps its own
+      // `published` flag so a submitted-but-not-yet-approved mark can be
+      // rendered as "Pending" rather than either a real score or a blank.
+      const bySubject = {};
+      for(const m of marks){
+        const key = m.subject_id;
+        if(!bySubject[key]){
+          bySubject[key] = {
+            name: m.subject_name || 'Subject',
+            teacher: m.teacher_name || '',
+            semesters: {} // { 'First': { periodic:[], exam:null, semAve:null }, 'Second': {...} }
+          };
+        }
+        const semLabel = m.semester || 'First';
+        if(!bySubject[key].semesters[semLabel]){
+          bySubject[key].semesters[semLabel] = { periodic: [], exam: null, semAve: null };
+        }
+        const bucket = bySubject[key].semesters[semLabel];
+        const entry = { value: m.score, published: m.published };
+        if(m.component === 'exam'){
+          bucket.exam = entry;
+        } else {
+          bucket.periodic.push(entry);
+        }
+        // semester_average is only ever non-null once published (see the
+        // RPC), so this naturally stays unset until approval.
+        if(m.semester_average !== null && m.semester_average !== undefined){
+          bucket.semAve = m.semester_average;
+        }
+      }
+
+      const semesterLabels = Object.values(bySubject).reduce((acc, s) => acc.concat(Object.keys(s.semesters)), []);
+      const orderedSemesters = [...new Set(semesterLabels)];
+      const firstLabel = orderedSemesters[0] || 'First';
+      const secondLabel = orderedSemesters.find(l => l !== firstLabel) || 'Second';
+
+      const subjects = Object.values(bySubject).map(s => {
+        const fsData = s.semesters[firstLabel] || { periodic: [], exam: null, semAve: null };
+        const ssData = s.semesters[secondLabel] || { periodic: [], exam: null, semAve: null };
+        return {
+          name: s.name,
+          teacher: s.teacher,
+          firstSemester: {
+            p1: fsData.periodic[0], p2: fsData.periodic[1], p3: fsData.periodic[2],
+            exam: fsData.exam, semAve: fsData.semAve
+          },
+          secondSemester: {
+            p4: ssData.periodic[0], p5: ssData.periodic[1], p6: ssData.periodic[2],
+            exam: ssData.exam, semAve: ssData.semAve
+          }
+        };
+      }).sort((a, b) => a.name.localeCompare(b.name));
+      // Every p1..p6/exam field above is now either undefined (no mark
+      // entered at all) or an { value, published } entry — see cell()
+      // below for how each of the three states is rendered.
+
+      // Rank in class — a student's RLS access to public.students only
+      // covers their own row ("students: own" policy), so this can't be
+      // computed by reading classmates' rows directly from the client.
+      // get_my_class_rank() (migration 033) computes it server-side and
+      // returns only the caller's own rank/total, never classmate data.
+      let rank = '—';
+      const { data: rankRows, error: rankErr } = await sb.rpc('get_my_class_rank');
+      if(!rankErr && rankRows && rankRows.length){
+        const r = rankRows[0];
+        if(r.rnk != null && r.total != null) rank = `${r.rnk} / ${r.total}`;
+      }
+
+      // Semester average shown in the hero strip = mean of whichever
+      // semester's per-subject semAve values are most complete.
+      const secondAves = subjects.map(s => s.secondSemester.semAve).filter(v => v !== null && v !== undefined);
+      const firstAves = subjects.map(s => s.firstSemester.semAve).filter(v => v !== null && v !== undefined);
+      const aves = secondAves.length ? secondAves : firstAves;
+      const semesterAverage = aves.length
+        ? (aves.reduce((a, b) => a + Number(b), 0) / aves.length).toFixed(1) + '%'
+        : '—';
+
+      studentAcademics = {
+        rank,
+        semesterAverage,
+        yearlyAverage: studentRow.yearly_average != null ? Number(studentRow.yearly_average).toFixed(1) + '%' : '—',
+        conduct: studentRow.conduct || '—',
+        lastUpdated: 'Live',
+        subjects
+      };
+      renderAcademics(studentAcademics);
+    }catch(err){
+      console.error('[KPS] Academics load failed:', err);
+      notice.innerHTML = '<span class="dot"></span> Could not load grades right now — check the browser console.';
+      renderAcademics(null);
+    }
+  }
+
+  function cell(entry, isLow){
+    // entry can be:
+    //  - undefined/null            -> nothing entered yet
+    //  - { value, published }      -> an individual mark (p1..p6 / exam)
+    //  - a plain number            -> a semester average (always published-
+    //                                 only already, since the RPC nulls
+    //                                 semester_average until approved)
+    if(entry === undefined || entry === null) return "<td>—</td>";
+    const isMarkEntry = typeof entry === 'object';
+    if(isMarkEntry && entry.published === false){
+      return '<td class="pending" title="Submitted by teacher — awaiting Principal approval">Pending</td>';
+    }
+    const value = isMarkEntry ? entry.value : entry;
+    if(value === undefined || value === null || value === "") return "<td>—</td>";
+    return `<td class="${isLow ? 'low' : ''}">${value}</td>`;
+  }
+
+  function renderAcademics(data){
+    const body = document.getElementById('gradesBody');
+    const notice = document.getElementById('statusNotice');
+    const lastUpdated = document.getElementById('lastUpdated');
+
+    if(!data || !data.subjects || data.subjects.length === 0){
+      body.innerHTML = '<tr class="empty-row"><td colspan="11">No subject grades on file yet.</td></tr>';
+      notice.innerHTML = '<span class="dot"></span> No grades on file yet. Once your teacher submits marks and the Principal approves them, they will appear here.';
+      lastUpdated.textContent = 'Not yet updated';
+      return;
+    }
+
+    document.getElementById('rankValue').textContent = data.rank || '—';
+    document.getElementById('semAveValue').textContent = data.semesterAverage || '—';
+    document.getElementById('yrAveValue').textContent = data.yearlyAverage || '—';
+    document.getElementById('conductValue').textContent = data.conduct || '—';
+    lastUpdated.textContent = data.lastUpdated || 'Not yet updated';
+
+    const hasPending = data.subjects.some(s => {
+      const entries = [
+        s.firstSemester.p1, s.firstSemester.p2, s.firstSemester.p3, s.firstSemester.exam,
+        s.secondSemester.p4, s.secondSemester.p5, s.secondSemester.p6, s.secondSemester.exam
+      ];
+      return entries.some(e => e && typeof e === 'object' && e.published === false);
+    });
+    notice.innerHTML = hasPending
+      ? '<span class="dot"></span> Some grades below show <strong>Pending</strong> — your teacher has submitted them and they are awaiting Principal approval before the score is released.'
+      : '<span class="dot"></span> Grades below are as posted by your teachers and approved by the Principal.';
+
+    body.innerHTML = data.subjects.map(s => {
+      const fs = s.firstSemester || {};
+      const ss = s.secondSemester || {};
+      return `<tr>
+        <td class="subject">${s.name}<span class="teacher">${s.teacher || ''}</span></td>
+        ${cell(fs.p1)}${cell(fs.p2)}${cell(fs.p3)}${cell(fs.exam)}${cell(fs.semAve).replace('<td', '<td class="sem-ave"')}
+        ${cell(ss.p4)}${cell(ss.p5)}${cell(ss.p6, ss.p6 && ss.p6.value !== undefined && ss.p6.value < 70)}${cell(ss.exam)}${cell(ss.semAve).replace('<td', '<td class="sem-ave"')}
+      </tr>`;
+    }).join('');
+  }
+
+  loadAcademics();
+</script>
+
+</body>
+</html>

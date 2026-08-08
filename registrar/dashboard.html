@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>Kingsville Public High School — Registrar Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand img{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; object-fit:cover; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER (ICT signature element) ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.enroll-table-wrap{border:1px solid var(--line);border-radius:8px;overflow:auto;background:#fff;}
+table.enroll-table{width:100%;border-collapse:collapse;font-size:11px;}
+table.enroll-table th{background:var(--navy);color:#fff;text-align:left;padding:6px 10px;font-size:9.5px;text-transform:uppercase;letter-spacing:.3px;font-weight:800;white-space:nowrap;}
+table.enroll-table td{padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:middle;}
+table.enroll-table tr:last-child td{border-bottom:none;}
+table.enroll-table tr:hover td{background:var(--panel);}
+table.enroll-table td.grade{font-weight:700;color:var(--ink);}
+table.enroll-table td.num{font-family:'SF Mono',ui-monospace,monospace;text-align:right;}
+table.enroll-table tr.total-row td{font-weight:800;background:var(--panel);border-top:2px solid var(--line);}
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* chart bars */
+.chart-bars{ display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:10px; }
+.chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.chart-bar{ width:100%; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--gold-light), var(--gold-deep)); position:relative; transition:filter .15s; }
+.chart-bar:hover{ filter:brightness(1.08); }
+.chart-bar.alt{ background:linear-gradient(180deg, #9FB6E0, var(--navy-3)); }
+.chart-lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+.chart-legend{ display:flex; gap:16px; margin-top:6px; font-size:11.5px; color:var(--muted); }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.chip-dot{ width:8px; height:8px; border-radius:2px; }
+
+/* feed / lists */
+.feed-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px dashed var(--line); }
+.feed-item:last-child{ border-bottom:none; }
+.feed-dot{ width:32px; height:32px; border-radius:9px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex:none; }
+.feed-dot svg{ width:15px; height:15px; color:var(--crimson); }
+.feed-dot.gold svg{ color:var(--gold-deep); }
+.feed-dot.navy svg{ color:var(--navy-3); }
+.feed-text{ font-size:13px; font-weight:600; }
+.feed-sub{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.feed-time{ margin-left:auto; font-size:11px; color:var(--muted); white-space:nowrap; }
+
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+.progress-track{ height:6px; border-radius:20px; background:var(--line); overflow:hidden; flex:1; }
+.progress-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); }
+.progress-fill.ok{ background:linear-gradient(90deg, #8FD8AC, var(--success)); }
+.progress-fill.warn{ background:linear-gradient(90deg, var(--gold-light), var(--warn)); }
+.progress-fill.bad{ background:linear-gradient(90deg, #F0A7AE, var(--danger)); }
+
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.health-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; padding:7px 0; }
+.health-row .hb{ flex:1; height:7px; background:var(--line); border-radius:20px; overflow:hidden; }
+.health-row .hb i{ display:block; height:100%; border-radius:20px; }
+.health-row .hv{ width:74px; text-align:right; font-weight:700; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+button.pill:hover{ filter:brightness(0.96); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* Module placeholder cards */
+.module-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.module-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.module-ic{ width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.module-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.module-card h4{ margin:0; font-size:14.5px; }
+.module-card p{ margin:0; font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* Device status card (network) */
+.device-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
+.device-top{ display:flex; align-items:center; justify-content:space-between; }
+.device-ic{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.device-ic svg{ width:19px; height:19px; }
+.device-name{ font-weight:700; font-size:13.5px; margin-top:2px; }
+.device-meta{ font-size:11.5px; color:var(--muted); }
+
+/* Restricted note */
+.restricted-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#FBE6E6; border:1px solid #F3C7CB; margin-top:14px; }
+.restricted-note svg{ width:16px; height:16px; color:var(--danger); flex:none; margin-top:1px; }
+.restricted-note div{ font-size:12px; color:#7A2530; line-height:1.55; }
+.restricted-note b{ color:var(--danger); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+
+/* Fee Collections widget */
+.fee-summary{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.fee-box{ text-align:center; padding:10px 8px; border-radius:12px; background:var(--cream); border:1px solid var(--line); }
+.fee-box .fb-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; margin-bottom:6px; }
+.fee-box .fb-amt{ font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:700; color:var(--ink); }
+.fee-box .fb-amt small{ display:block; font-size:11px; color:var(--muted); font-weight:600; margin-top:2px; }
+.fee-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+@media (max-width:640px){ .fee-summary{ grid-template-columns:1fr; } }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field input[type=text], .field input[type=password], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.settings-list .row-line{ align-items:flex-start; }
+.settings-list .rl-name{ font-size:13.5px; }
+.settings-list .rl-sub{ margin-top:2px; max-width:52ch; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .bento{ grid-template-columns:1fr; }
+  .grid-3,.grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .tbl-actions, .toolbar, .tabs, .toast-wrap, .modal-backdrop, .footer-ribbon, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .view{ display:none !important; }
+  .view.active{ display:block !important; }
+  .card, .stat-card, .module-card, .device-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid,.grid-3,.grid-2,.grid-4{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+</style>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="Kingsville Public High School crest">
+      <div class="brand-text">
+        <div class="k1">Kingsville Public High School</div>
+        <div class="k2">Registrar</div>
+      </div>
+    </div>
+
+    <div class="role-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+      <span>REGISTRAR ACCESS · ADMISSIONS &amp; RECORDS</span>
+    </div>
+
+    <div class="nav-group-label">Overview</div>
+    <div class="nav">
+      <a class="nav-item active" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+    </div>
+
+    <div class="nav-group-label">Admissions</div>
+    <div class="nav">
+      <a class="nav-item" href="admissions.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V5a2 2 0 00-2-2H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M9 8h7M9 12h7"/></svg>
+        Applications Queue
+        <span class="badge-count gold" id="navPendingCount">—</span>
+      </a>
+      <a class="nav-item" href="application.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+        Admission Application
+      </a>
+      <a class="nav-item" href="registration.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/></svg>
+        Student Registration
+      </a>
+      <a class="nav-item" href="parents.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><path d="M2 20c0-3.5 2.7-6 6-6s6 2.5 6 6M11 20c0-3.5 2.7-6 6-6s6 2.5 5 6"/></svg>
+        Parent Information
+      </a>
+      <a class="nav-item" href="guardians.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6z"/></svg>
+        Guardian Information
+      </a>
+      <a class="nav-item" href="medical.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.5-9.5-9C.7 8.4 2.6 4 7 4c2.2 0 3.7 1.3 5 3 1.3-1.7 2.8-3 5-3 4.4 0 6.3 4.4 4.5 8-2.5 4.5-9.5 9-9.5 9z"/></svg>
+        Medical Information
+      </a>
+      <a class="nav-item" href="previous-school.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10l9-5 9 5-9 5-9-5z"/><path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/></svg>
+        Previous School Information
+      </a>
+      <a class="nav-item" href="scholarships.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.6-4.1 6.1-.6z"/></svg>
+        Scholarship Recommendation
+      </a>
+      <a class="nav-item" href="approval.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        Admission Approval
+      </a>
+      <a class="nav-item" href="rejection.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+        Admission Rejection
+      </a>
+    </div>
+
+    <div class="nav-group-label">Student Records</div>
+    <div class="nav">
+      <a class="nav-item" href="student-profile.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+        Student Profile
+        <span class="badge-count" id="navStudentsCount">—</span>
+      </a>
+      <a class="nav-item" href="transfer.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l2-7 4 14 2-9 2 4h4"/></svg>
+        Student Transfer
+      </a>
+      <a class="nav-item" href="withdrawal.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+        Student Withdrawal
+      </a>
+      <a class="nav-item" href="clearance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.4"/><path d="M12 3v6.6M20.2 8l-5.7 3.3"/></svg>
+        Graduation Clearance
+      </a>
+      <a class="nav-item" href="alumni.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
+        Alumni Registration
+      </a>
+    </div>
+
+    <div class="nav-group-label">Documents</div>
+    <div class="nav">
+      <a class="nav-item" href="id-card.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M5 16c0-1.7 1.3-2.5 3-2.5s3 .8 3 2.5M14 9h5M14 13h5"/></svg>
+        Student ID Card
+      </a>
+      <a class="nav-item" href="admission-letter.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        Admission Letter
+      </a>
+      <a class="nav-item" href="acceptance-letter.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 14l2 2 4-4"/></svg>
+        Acceptance Letter
+      </a>
+      <a class="nav-item" href="graduation-letter.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
+        Graduation Letter
+      </a>
+    </div>
+
+    <div class="nav-group-label">Records</div>
+    <div class="nav">
+      <a class="nav-item" href="receipts.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
+        Fee Receipts
+      </a>
+      <a class="nav-item" href="reports.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19h16M7 19v-6M12 19V6M17 19v-9"/></svg>
+        Reports
+      </a>
+    </div>
+
+    <div class="cannot-box">
+      <div class="title">🚫 Registrar cannot</div>
+      <ul style="margin:0; padding:0; list-style:none;">
+        <li style="font-size:11.5px; color:rgba(255,255,255,.55); padding:2px 0;">✕ Change Grades</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.55); padding:2px 0;">✕ Publish Results</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.55); padding:2px 0;">✕ Edit School Settings</li>
+      </ul>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sys-health">
+        <div class="pulse-dot warn" id="healthDot"></div>
+        <div class="sys-health-text">
+          <b id="healthLabel">Not connected</b>
+          <span id="healthSub">Connect your database to load live records</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia · Ministry of Education</div>
+        <div class="page-title">Registrar Dashboard</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search students, admission no…">
+      </div>
+      <span class="pill green" id="connStatusPill" style="border:none;" title="Connected to Kingsville Public High School's Supabase project">Live · Supabase</span>
+      <button class="icon-btn" onclick="window.print()" title="Print this view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+      </button>
+      <button class="icon-btn" onclick="location.href='admissions.html'" title="Missing documents">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        <span class="dot-flag" id="alertDotFlag" style="display:none;"></span>
+      </button>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned by the Super Administrator">
+        <div class="av-init" id="chipAvatar">—</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Registrar account</div>
+        </div>
+      </div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <section class="view active" id="view-dashboard">
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div>
+            <div class="sb-t">Scope of Access</div>
+            <div class="sb-s">The Registrar manages admissions, enrollment and student records — from application through graduation — at Kingsville Public High School. Grading, result publication and system configuration remain exclusive to the Principal and the <b class="sa">Super Administrator</b>.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Registrar Command Center</h2>
+            <p>Live view of admissions, enrollment and student records. Every figure below loads from the school's live database once connected — nothing here is a placeholder.</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn btn-ghost" href="application.html">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              New Admission Application
+            </a>
+            <a class="btn btn-primary" href="id-card.html">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg>
+              Generate Document
+            </a>
+          </div>
+        </div>
+
+        <div class="stat-grid" id="statGrid"></div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-head">
+            <h3>Enrollment by Grade — Live</h3>
+            <span style="font-size:10.5px;color:var(--success);font-weight:800;letter-spacing:.3px;">● LIVE</span>
+          </div>
+          <div class="card-body" id="enrollmentByGradeBody">
+            <div class="enroll-table-wrap">
+              <table class="enroll-table">
+                <thead><tr><th>Grade</th><th>New</th><th>Old</th><th>Male</th><th>Female</th><th>Total</th></tr></thead>
+                <tbody id="enrollmentByGradeRows"><tr><td colspan="6" style="text-align:center;color:var(--muted);font-style:italic;">Loading…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="bento">
+          <div class="card">
+            <div class="card-head"><h3>Recent Applications</h3><a class="see-all" href="admissions.html">View all →</a></div>
+            <div class="card-body" id="recentApplicationsFeed"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Pending Approvals</h3><a class="see-all" href="approval.html">Review →</a></div>
+            <div class="card-body" id="pendingApprovalsFeed"></div>
+          </div>
+        </div>
+
+        <div class="bento" style="margin-top:16px;">
+          <div class="card">
+            <div class="card-head"><h3>Recent Registrations</h3><a class="see-all" href="student-profile.html">Student records →</a></div>
+            <div class="card-body" id="recentRegistrationsFeed"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Graduation Clearance Queue</h3><a class="see-all" href="clearance.html">Manage →</a></div>
+            <div class="card-body" id="graduationQueueFeed"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="card-head"><h3>Fee Collections</h3><a class="see-all" href="receipts.html">Open Fee Receipts →</a></div>
+          <div class="card-body" id="feeSummaryBody">
+            <div class="fee-summary">
+              <div class="fee-box"><div class="fb-label">Today</div><div class="fb-amt">—</div></div>
+              <div class="fee-box"><div class="fb-label">This Week</div><div class="fb-amt">—</div></div>
+              <div class="fee-box"><div class="fb-label">This Month</div><div class="fb-amt">—</div></div>
+            </div>
+            <div class="fee-actions">
+              <a class="btn btn-gold" href="receipts.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+                Generate Receipt Instantly
+              </a>
+              <a class="btn btn-primary" href="receipts.html">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                Record New Receipt
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="allowed-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          <div><b>Registrar can:</b> create students, approve or reject admissions, update student records, generate documents and view student information.</div>
+        </div>
+        <div class="restricted-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+          <div><b>Registrar cannot:</b> change grades, publish results, or edit school settings. Contact the Super Administrator.</div>
+        </div>
+      </section>
+
+      <div class="footer-ribbon">
+        <img class="footer-crest" src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="">
+        Kingsville Public High School · Registrar Console · <b>Knowledge is Power</b> · Kingsville #7, Careysburg District
+        <img class="footer-crest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+        Republic of Liberia · Ministry of Education
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+</body>
+</html>
+<script>
+/* =========================================================================
+   LIVE DATA LAYER — Registrar Dashboard (overview only)
+   Wired directly to this school's live Supabase project (see
+   js/supabase-config.js for the shared client). No demo/placeholder
+   numbers — every stat and feed is a real query against:
+     admissions          -> Pending / Approved Admissions, recent + pending feeds
+     students            -> recent registrations, graduation queue
+     transfer_requests   -> Student Transfers (kind='transfer'), Withdrawals (kind='withdrawal')
+     graduation_requests -> Graduates (status='approved')
+   ========================================================================= */
+let applications = [];   // rows from `admissions`, newest first
+let students = [];       // rows from `students`, newest first
+let profile = null;      // signed-in Registrar's own profile row
+let feeSummary = null;   // row from get_fee_collection_summary(), or null if unavailable
+
+const stats = [
+  {label:'Pending Admissions', ic:'ticket'},
+  {label:'Approved Admissions', ic:'shield', color:'gold'},
+  {label:'Student Transfers', ic:'pulse', color:'navy'},
+  {label:'Withdrawals', ic:'lock'},
+  {label:'Graduates', ic:'disk', color:'gold'},
+  {label:'Missing Documents', ic:'bell', color:'navy'},
+  {label:'New Students', ic:'sun', color:'gold'},
+  {label:'Old Students', ic:'shield', color:'navy'},
+  {label:'Total Male Students', ic:'male', color:'navy'},
+  {label:'Total Female Students', ic:'female', color:'gold'},
+];
+const icons = {
+  pulse:'<path d="M3 12h4l2-7 4 14 2-9 2 4h4"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+  ticket:'<path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/>',
+  disk:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.4"/><path d="M12 3v6.6M20.2 8l-5.7 3.3"/>',
+  shield:'<path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/>',
+  bell:'<path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>',
+  sun:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+  male:'<circle cx="10" cy="14" r="6"/><path d="M14.5 9.5L20 4M14 4h6v6"/>',
+  female:'<circle cx="12" cy="9" r="6"/><path d="M12 15v7M9 19h6"/>',
+};
+
+/* ============================= TOAST ============================= */
+function showToast(msg, kind){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),250); }, 3600);
+}
+
+/* ============================= RENDER HELPERS ============================= */
+function initials(name){ return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''); }
+function money(n, cur){ return (cur==='USD' ? '$' : 'L$') + (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function statusPill(status){
+  const map = {Active:'green', Approved:'green', Cleared:'green', approved:'green',
+    Withdrawn:'red', Rejected:'red', Suspended:'red', rejected:'red',
+    Transferred:'gold', Pending:'gold', pending:'gold',
+    Graduated:'navy', graduated:'navy'};
+  return `<span class="pill ${map[status]||'grey'}">${status||'—'}</span>`;
+}
+function emptyFeed(msg){
+  return `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg><h4>Nothing to show yet</h4><p>${msg}</p></div>`;
+}
+function renderStatGrid(){
+  document.getElementById('statGrid').innerHTML = stats.map(s=>`
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-ic ${s.color||''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${icons[s.ic]}</svg></div>
+        <span class="stat-trend flat">live</span>
+      </div>
+      <div class="stat-num mono">${s.value ?? '—'}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`).join('');
+}
+function renderProfileChip(){
+  const chipAvatar = document.getElementById('chipAvatar');
+  const chipName = document.getElementById('chipName');
+  const chipRole = document.getElementById('chipRole');
+  if(profile && (profile.full_name || profile.name)){
+    const name = profile.full_name || profile.name;
+    chipAvatar.textContent = initials(name);
+    chipName.textContent = name;
+    chipRole.textContent = profile.role || 'Registrar';
+  } else {
+    chipAvatar.textContent = '—';
+    chipName.textContent = 'Not signed in';
+    chipRole.textContent = 'Awaiting Registrar account';
+  }
+}
+function renderFeeds(){
+  document.getElementById('recentApplicationsFeed').innerHTML = applications.length ? applications.slice(0,5).map(a=>`
+    <div class="row-line"><span class="rl-name">${a.applicant_name}</span><span class="rl-sub">${a.className||''} · ${KPS.fmtDate(a.created_at)}</span>${statusPill(a.status)}</div>`).join('')
+    : emptyFeed('New applications will appear here once submitted through Admission Application.');
+
+  const pending = applications.filter(a=>a.status==='pending').slice(0,5);
+  document.getElementById('pendingApprovalsFeed').innerHTML = pending.length ? pending.map(a=>`
+    <div class="row-line"><span class="rl-name">${a.applicant_name}</span><span class="rl-sub">Awaiting review</span></div>`).join('')
+    : emptyFeed('No pending approvals right now.');
+
+  document.getElementById('recentRegistrationsFeed').innerHTML = students.length ? students.slice(0,5).map(s=>`
+    <div class="row-line"><span class="rl-name">${s.full_name}</span><span class="rl-sub mono">${s.student_id} · ${s.className||'—'}</span></div>`).join('')
+    : emptyFeed('Newly registered students will appear here.');
+
+  const gradQueue = students.filter(s=>s.className==='Grade 12' && s.status!=='graduated').slice(0,5);
+  document.getElementById('graduationQueueFeed').innerHTML = gradQueue.length ? gradQueue.map(s=>`
+    <div class="row-line"><span class="rl-name">${s.full_name}</span><span class="rl-sub mono">${s.student_id}</span></div>`).join('')
+    : emptyFeed('Grade 12 students awaiting clearance will appear here.');
+}
+function renderNavCounts(){
+  document.getElementById('navPendingCount').textContent = applications.filter(a=>a.status==='pending').length || '—';
+  document.getElementById('navStudentsCount').textContent = students.length || '—';
+}
+function renderFeeSummary(){
+  const body = document.getElementById('feeSummaryBody');
+  const grid = body.querySelector('.fee-summary');
+  if(!feeSummary){
+    grid.innerHTML = `
+      <div class="fee-box" style="grid-column:1/-1;">
+        <div class="fb-label">Fee Collections unavailable</div>
+        <div class="fb-amt" style="font-size:12px; font-weight:600; color:var(--muted);">Run the Fee Receipts database setup, then refresh this page.</div>
+      </div>`;
+    return;
+  }
+  const box = (label, lrd, usd) => `
+    <div class="fee-box">
+      <div class="fb-label">${label}</div>
+      <div class="fb-amt">${money(lrd,'LRD')}<small>${money(usd,'USD')}</small></div>
+    </div>`;
+  grid.innerHTML =
+    box('Today', feeSummary.today_lrd, feeSummary.today_usd) +
+    box('This Week', feeSummary.week_lrd, feeSummary.week_usd) +
+    box('This Month', feeSummary.month_lrd, feeSummary.month_usd);
+}
+function renderConnectionStatus(){
+  const dot = document.getElementById('healthDot');
+  const label = document.getElementById('healthLabel');
+  const sub = document.getElementById('healthSub');
+  dot.classList.remove('warn');
+  label.textContent = 'Live data connected';
+  sub.textContent = KPS.SUPABASE_URL;
+  document.getElementById('alertDotFlag').style.display = 'none';
+}
+
+async function loadFeeSummary(){
+  try{
+    const { data, error } = await window.sb.rpc('get_fee_collection_summary');
+    if(error) throw error;
+    feeSummary = Array.isArray(data) ? data[0] : data;
+  }catch(err){
+    console.warn('[Registrar Dashboard] fee summary unavailable', err);
+    feeSummary = null;
+  }
+  renderFeeSummary();
+}
+
+/* ============================= ENROLLMENT BY GRADE (New/Old, M/F, per grade) =============================
+   Reads from public.get_student_enrollment_summary() — added by the
+   "status note + enrollment counts" migration. If the migration hasn't
+   been run yet, this fails gracefully and shows a setup message instead
+   of breaking the rest of the dashboard. */
+let enrollmentSummary = [];
+
+async function loadEnrollmentSummary(){
+  try{
+    const { data, error } = await window.sb.rpc('get_student_enrollment_summary');
+    if(error) throw error;
+    enrollmentSummary = data || [];
+  }catch(err){
+    console.warn('[Registrar Dashboard] enrollment summary unavailable — run the migration to enable this', err);
+    enrollmentSummary = null;
+  }
+  renderEnrollmentSummary();
+}
+
+function renderEnrollmentSummary(){
+  const rowsEl = document.getElementById('enrollmentByGradeRows');
+  if(enrollmentSummary === null){
+    rowsEl.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);font-style:italic;">
+      Enrollment-by-grade is unavailable — run the database migration, then refresh this page.</td></tr>`;
+    return;
+  }
+  if(!enrollmentSummary.length){
+    rowsEl.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);font-style:italic;">
+      No active, sectioned students yet.</td></tr>`;
+    return;
+  }
+  const totals = enrollmentSummary.reduce((acc, g) => ({
+    male: acc.male + Number(g.male_count||0), female: acc.female + Number(g.female_count||0),
+    newer: acc.newer + Number(g.new_student_count||0), older: acc.older + Number(g.old_student_count||0),
+    total: acc.total + Number(g.total_count||0)
+  }), {male:0, female:0, newer:0, older:0, total:0});
+
+  rowsEl.innerHTML = enrollmentSummary.map(g => `
+    <tr>
+      <td class="grade">${g.grade_name || '—'}</td>
+      <td class="num">${g.new_student_count ?? 0}</td>
+      <td class="num">${g.old_student_count ?? 0}</td>
+      <td class="num">${g.male_count ?? 0}</td>
+      <td class="num">${g.female_count ?? 0}</td>
+      <td class="num">${g.total_count ?? 0}</td>
+    </tr>`).join('') + `
+    <tr class="total-row">
+      <td class="grade">All Grades</td>
+      <td class="num">${totals.newer}</td>
+      <td class="num">${totals.older}</td>
+      <td class="num">${totals.male}</td>
+      <td class="num">${totals.female}</td>
+      <td class="num">${totals.total}</td>
+    </tr>`;
+
+  stats.forEach(s => {
+    if (s.label === 'New Students') s.value = totals.newer;
+    if (s.label === 'Old Students') s.value = totals.older;
+    if (s.label === 'Total Male Students') s.value = totals.male;
+    if (s.label === 'Total Female Students') s.value = totals.female;
+  });
+  renderStatGrid();
+}
+
+/* ============================= LOAD (real Supabase queries) ============================= */
+async function loadAllData(){
+  try {
+    const sbc = () => window.sb;
+    const [admissionRes, studentRes, transferRes, gradRes] = await Promise.all([
+      sbc().from('admissions')
+        .select('id, applicant_name, status, created_at, sections(name, classes(name))')
+        .order('created_at', { ascending: false }).limit(50),
+      sbc().from('students')
+        .select('id, student_id, full_name, status, created_at, sections(name, classes(name))')
+        .order('created_at', { ascending: false }).limit(50),
+      sbc().from('transfer_requests').select('id, kind').eq('status', 'pending'),
+      sbc().from('graduation_requests').select('id').eq('status', 'approved')
+    ]);
+    if (admissionRes.error) throw admissionRes.error;
+    if (studentRes.error) throw studentRes.error;
+    if (transferRes.error) throw transferRes.error;
+    if (gradRes.error) throw gradRes.error;
+
+    const admissionRows = (admissionRes.data || []).map(a => ({
+      ...a, className: a.sections && a.sections.classes ? a.sections.classes.name : null
+    }));
+    const studentRows = (studentRes.data || []).map(s => ({
+      ...s, className: s.sections && s.sections.classes ? s.sections.classes.name : null
+    }));
+    const transferRows = transferRes.data || [];
+    const gradRows = gradRes.data || [];
+
+    applications = admissionRows;
+    students = studentRows;
+
+    stats.forEach(s => {
+      if (s.label === 'Pending Admissions') s.value = admissionRows.filter(a => a.status === 'pending').length;
+      if (s.label === 'Approved Admissions') s.value = admissionRows.filter(a => a.status === 'approved').length;
+      if (s.label === 'Student Transfers') s.value = transferRows.filter(t => t.kind === 'transfer').length;
+      if (s.label === 'Withdrawals') s.value = transferRows.filter(t => t.kind === 'withdrawal').length;
+      if (s.label === 'Graduates') s.value = gradRows.length;
+      if (s.label === 'Missing Documents') s.value = '—'; // no document-checklist table yet — see SESSION_REPORT
+    });
+  } catch (err) {
+    console.error('[Registrar Dashboard] failed to load live data', err);
+    showToast('Could not load live data — check your Supabase connection', 'warn');
+  }
+  renderAll();
+}
+function renderAll(){
+  renderStatGrid();
+  renderFeeds();
+  renderNavCounts();
+  renderConnectionStatus();
+  renderProfileChip();
+}
+
+(async function init(){
+  const auth = await KPS.requireRole(['registrar', 'super_admin']);
+  if (!auth.user) return; // requireRole already redirected to login
+  profile = auth.profile;
+  renderProfileChip();
+  await loadAllData();
+  await loadFeeSummary();
+  await loadEnrollmentSummary();
+})();
+
+document.getElementById('globalSearch').addEventListener('keydown', e=>{
+  if(e.key==='Enter' && e.target.value.trim()){
+    showToast(students.length||applications.length ? 'Opening Student Profile to search…' : 'No records yet', 'ok');
+    if(students.length||applications.length) setTimeout(()=>location.href='student-profile.html', 500);
+  }
+});
+</script>

@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Grading System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --crimson-deep:#6E0F1E; --crimson:#A81530; --crimson-bright:#E01B2E;
+  --gold:#D98A24; --gold-deep:#A8631A; --gold-light:#F3CD8E;
+  --navy:#0D1730; --navy-2:#182548; --navy-3:#22315C;
+  --cream:#FBF4E6; --paper:#FFFEFB; --ink:#1E1712; --muted:#7A7064; --line:#EBE0CA;
+  --success:#2E7D4F; --warn:#B9750D; --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{ margin:0; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+.app{ display:block; min-height:100vh; }
+.main{ min-width:0; }
+
+.topbar{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:16px; padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.school-brand .brand-badge{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; color:var(--gold-light); font-family:'Fraunces',serif; font-weight:700; font-size:15px; object-fit:cover; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+.scope-banner{ display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px; background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08)); border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px; }
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-danger{ background:linear-gradient(135deg, var(--danger), #8C0F26); color:#fff; }
+.btn-danger:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.5); }
+
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:9px 15px; border-radius:10px; font-size:12.6px; font-weight:700; color:var(--muted); border:none; background:transparent; white-space:nowrap; }
+.role-tab svg{ width:15px; height:15px; flex:none; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.stat-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:24px; }
+.stat-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.stat-ic{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.stat-ic svg{ width:16px; height:16px; color:var(--gold-light); }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.gold svg{ color:#fff; }
+.stat-ic.crimson{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.stat-ic.crimson svg{ color:#fff; }
+.stat-ic.green{ background:linear-gradient(135deg, #3E9467, var(--success)); }
+.stat-ic.green svg{ color:#fff; }
+.stat-num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; line-height:1; }
+.stat-label{ font-size:11.8px; color:var(--muted); margin-top:5px; }
+
+.form-shell{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; margin-bottom:24px; }
+.form-head{ padding:22px 26px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; }
+.form-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.form-head h2{ color:#fff; margin:0 0 4px; font-size:20px; }
+.form-head p{ margin:0; color:rgba(255,255,255,.65); font-size:12.6px; max-width:70ch; }
+.form-body{ padding:26px; }
+.form-foot{ padding:20px 26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:#FBF8F0; }
+.form-foot .fp-note{ font-size:11.8px; color:var(--muted); max-width:56ch; }
+.form-actions{ display:flex; gap:10px; }
+
+.grade-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+table.grade{ width:100%; border-collapse:collapse; font-size:13px; }
+table.grade thead th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:800; padding:12px 16px; border-bottom:2px solid var(--line); background:#FBF8F0; white-space:nowrap; }
+table.grade thead th.num{ text-align:right; }
+table.grade tbody td{ padding:11px 16px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.grade tbody td.num{ text-align:right; }
+table.grade tbody tr:last-child td{ border-bottom:none; }
+table.grade tbody tr:hover{ background:#FBF4E6; }
+table.grade tr.total-row td{ background:#FBF8F0; font-weight:800; border-top:2px solid var(--line); }
+table.grade tr.grand-row td{ background:linear-gradient(90deg, rgba(13,23,48,.06), rgba(217,138,36,.1)); font-weight:800; font-size:14px; border-top:2px solid var(--gold); }
+.comp-name{ display:flex; align-items:center; gap:11px; }
+.comp-ic{ width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; flex:none; }
+.comp-ic svg{ width:14px; height:14px; color:#fff; }
+.comp-name-text{ font-weight:700; font-size:13px; }
+.points-input{ width:76px; border:1px solid var(--line); border-radius:9px; padding:8px 10px; font-size:13.5px; font-family:'IBM Plex Mono',monospace; font-weight:700; text-align:right; color:var(--ink); background:var(--paper); }
+.points-input:focus{ outline:none; border-color:var(--gold-deep); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.points-input:disabled{ background:#F3EEE0; color:var(--muted); border-color:var(--line); }
+.name-input{ border:1px solid transparent; border-radius:8px; padding:6px 9px; font-size:13px; font-weight:700; font-family:inherit; background:transparent; width:180px; }
+.name-input:hover, .name-input:focus{ border-color:var(--line); background:var(--paper); outline:none; }
+.icon-btn{ width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:inline-flex; align-items:center; justify-content:center; }
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn svg{ width:13px; height:13px; }
+.icon-btn.danger:hover{ border-color:var(--danger); color:var(--danger); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.report-note{ display:flex; gap:12px; padding:14px 18px; border-radius:14px; background:#FBF8F0; border:1px solid var(--line); margin-top:20px; font-size:12px; color:var(--muted); line-height:1.6; }
+.report-note svg{ width:17px; height:17px; color:var(--gold-deep); flex:none; margin-top:1px; }
+.report-note b{ color:var(--ink); }
+
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,6,.55); backdrop-filter:blur(2px); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:440px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:rise .25s ease; }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--line); }
+.modal-head h3{ margin:0; font-size:16.5px; }
+.modal-head button{ width:30px; height:30px; border-radius:9px; border:1px solid var(--line); background:transparent; display:flex; align-items:center; justify-content:center; }
+.modal-head button svg{ width:14px; height:14px; }
+.modal-body{ padding:22px 24px; display:flex; flex-direction:column; gap:16px; }
+.modal-foot{ padding:18px 24px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; background:#FBF8F0; }
+.field label{ display:block; font-size:11.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.field input, .field select, .field textarea{ width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 13px; font-size:13.5px; font-family:inherit; color:var(--ink); background:var(--paper); }
+.field input:focus, .field select:focus{ outline:none; border-color:var(--gold-deep); }
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:34px; height:34px; margin-bottom:10px; opacity:.5; }
+.empty-state h4{ margin:0 0 4px; font-size:14.5px; color:var(--ink); }
+.empty-state p{ margin:0; font-size:12.5px; }
+
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+@media (max-width:880px){ .school-brand .sb-t2{ display:none; } .topbar-divider{ display:none; } }
+@media (max-width:980px){ .stat-grid{ grid-template-columns:1fr 1fr; } }
+@media (max-width:640px){ .stat-grid{ grid-template-columns:1fr; } .field-row{ grid-template-columns:1fr; } }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="app">
+  <main class="main">
+
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="school-brand">
+        <img class="brand-badge" style="object-fit:cover;background:#fff;" src="../assets/images/img-382a5ec339393563.png" alt="Kingsville Public School crest">
+        <div>
+          <div class="sb-t1">Kingsville #7 &middot; Careysburg</div>
+          <div class="sb-t2">Kingsville Public School</div>
+        </div>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Super Admin Console</div>
+        <div class="page-title">Grading System</div>
+      </div>
+      <button type="button" class="btn btn-primary" id="saveAllBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+        Save Changes
+      </button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="role-tabs" id="mainRoleTabs">
+        <button type="button" class="role-tab active" data-view="weights">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+          Assessment Weights
+        </button>
+        <button type="button" class="role-tab" data-view="scale">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16"/><path d="M4 15l4-6 4 3 4-8 4 5"/></svg>
+          Grade Scale
+        </button>
+      </div>
+
+      <!-- ================= ASSESSMENT WEIGHTS ================= -->
+      <section class="view active" id="view-weights">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+          <div>
+            <div class="sb-t">Defining How Every Student's Grade Is Calculated</div>
+            <div class="sb-s">Set the point value for each Continuous Assessment component and the Test. This breakdown drives the <b class="sa">Grand Total</b> shown on every Report Card school-wide, so the components must add up to 100.</div>
+          </div>
+        </div>
+
+        <div class="stat-grid" id="statGrid">
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></div></div>
+            <div class="stat-num" id="statComponents">&mdash;</div>
+            <div class="stat-label">CA Components</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg></div></div>
+            <div class="stat-num" id="statCATotal">&mdash;</div>
+            <div class="stat-label">Continuous Assessment Total</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-ic crimson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div></div>
+            <div class="stat-num" id="statTest">&mdash;</div>
+            <div class="stat-label">Test Points</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-ic green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div></div>
+            <div class="stat-num" id="statGrand">&mdash;</div>
+            <div class="stat-label" id="statGrandLabel">Grand Total</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Continuous Assessment &amp; Test Breakdown</h2>
+            <p>Edit the points for each component below. Totals recalculate live as you type; save when the Grand Total reads 100.</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button type="button" class="btn btn-ghost" id="resetDefaultBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+              Reset to Default Template
+            </button>
+            <button type="button" class="btn btn-primary" id="addComponentBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Add Component
+            </button>
+          </div>
+        </div>
+
+        <div class="form-shell">
+          <div class="form-head">
+            <h2>Grading Breakdown</h2>
+            <p>Continuous Assessment components plus the Test make up every student's Grand Total out of 100.</p>
+          </div>
+          <div class="form-body">
+            <div class="grade-table-wrap">
+              <table class="grade">
+                <thead>
+                  <tr>
+                    <th>Assessment Component</th>
+                    <th class="num">Points</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="componentsTableBody">
+                  <!-- CA component rows render here -->
+                </tbody>
+                <tbody>
+                  <tr class="total-row">
+                    <td>Continuous Assessment Total</td>
+                    <td class="num mono" id="caTotalCell">0</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="comp-name">
+                        <div class="comp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+                        <div class="comp-name-text">Test</div>
+                      </div>
+                    </td>
+                    <td class="num"><input type="number" class="points-input" id="testPointsInput" value="0" min="0" max="100"></td>
+                    <td></td>
+                  </tr>
+                  <tr class="grand-row">
+                    <td>Grand Total</td>
+                    <td class="num mono" id="grandTotalCell">0</td>
+                    <td class="num"><span class="pill" id="grandTotalPill">&mdash;</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="report-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              <span>These point values are read by every Report Card in the system to compute the <b>Grand Total</b> column, so changes here apply retroactively to how totals are displayed.</span>
+            </div>
+          </div>
+          <div class="form-foot">
+            <div class="fp-note" id="weightsSaveHint">Changes save once you hit Save Changes above.</div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-primary" id="saveWeightsBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+                Save Grading Breakdown
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= GRADE SCALE ================= -->
+      <section class="view" id="view-scale">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19h16"/><path d="M4 15l4-6 4 3 4-8 4 5"/></svg>
+          <div>
+            <div class="sb-t">Mapping Grand Total Scores to Letter Grades</div>
+            <div class="sb-s">Define the score ranges (out of 100) for each letter grade and its remark. These bands are what a student's <b class="sa">Grand Total</b> is matched against on the Report Card.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Grade Bands</h2>
+            <p>Every band below is used school-wide. Click Add Grade Band to create a new range, or edit an existing one.</p>
+          </div>
+          <button type="button" class="btn btn-primary" id="addBandBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Add Grade Band
+          </button>
+        </div>
+
+        <div class="grade-table-wrap">
+          <table class="grade">
+            <thead>
+              <tr>
+                <th>Grade</th>
+                <th class="num">Min Score</th>
+                <th class="num">Max Score</th>
+                <th>Remark</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="scaleTableBody">
+              <!-- grade band rows render here -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-state" id="scaleEmptyState" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19h16"/><path d="M4 15l4-6 4 3 4-8 4 5"/></svg>
+          <div class="es-t">No grade bands yet</div>
+          <div class="es-s">Add your first grade band (e.g. A, 90&ndash;100, Excellent) to start scoring report cards.</div>
+        </div>
+
+      </section>
+
+      <div class="footer-ribbon">
+        <b>Kingsville Public School</b> &middot; Kingsville #7, Careysburg District &middot; Super Admin Console
+      </div>
+
+    </div>
+
+    <!-- Add / Edit Component modal -->
+    <div class="modal-backdrop" id="compModalBackdrop">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>New Assessment Component</h3>
+          <button type="button" id="compModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="compNameInput">Component name</label>
+            <input type="text" id="compNameInput" placeholder="e.g. Class Participation">
+          </div>
+          <div class="field">
+            <label for="compPointsInput">Points</label>
+            <input type="number" id="compPointsInput" value="5" min="0" max="100">
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="compCancelBtn">Cancel</button>
+          <button type="button" class="btn btn-primary" id="compConfirmBtn">Add Component</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add / Edit Grade Band modal -->
+    <div class="modal-backdrop" id="bandModalBackdrop">
+      <div class="modal">
+        <div class="modal-head">
+          <h3 id="bandModalTitle">New Grade Band</h3>
+          <button type="button" id="bandModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="bandGradeInput">Grade</label>
+            <input type="text" id="bandGradeInput" placeholder="e.g. A">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="bandMinInput">Min score</label>
+              <input type="number" id="bandMinInput" value="0" min="0" max="100">
+            </div>
+            <div class="field">
+              <label for="bandMaxInput">Max score</label>
+              <input type="number" id="bandMaxInput" value="100" min="0" max="100">
+            </div>
+          </div>
+          <div class="field">
+            <label for="bandRemarkInput">Remark</label>
+            <input type="text" id="bandRemarkInput" placeholder="e.g. Excellent">
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="bandCancelBtn">Cancel</button>
+          <button type="button" class="btn btn-primary" id="bandConfirmBtn">Save Grade Band</button>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="bandEditingId" value="">
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATABASE WIRING
+   Nothing here is hard-coded past the seeded default template — the page
+   renders whatever the API returns and persists edits back to it.
+
+   Assessment weights (components + testPoints) are a single school-wide
+   settings blob — stored via the real KPS.kv (kv_store table) bridge under
+   key "grading_config", shared=true so every dashboard reads the same one.
+   The letter-grade scale is relational (one row per band) and lives in the
+   real `grading_bands` table.
+   ========================================================================= */
+const sbc = () => window.sb;
+const GRADING_CONFIG_KEY = 'grading_config';
+
+const DEFAULT_COMPONENTS = [
+  { id:'cp',        name:'Class Participation (CP)', points:5 },
+  { id:'attendance', name:'Attendance',              points:10 },
+  { id:'quiz1',     name:'Quiz 1',                    points:10 },
+  { id:'quiz2',     name:'Quiz 2',                    points:10 },
+  { id:'assignment', name:'Assignment',               points:10 },
+  { id:'project',   name:'Project',                   points:5 }
+];
+const DEFAULT_TEST_POINTS = 50;
+
+/* ---------- Shared helpers ---------- */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function uid(){ return 'c' + Math.random().toString(36).slice(2, 9); }
+
+/* ---------- State (populated only from the API) ---------- */
+let components = [];
+let testPoints = 0;
+let bands = [];
+
+/* =========================================================================
+   ROLE TABS
+   ========================================================================= */
+document.querySelectorAll('#mainRoleTabs .role-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#mainRoleTabs .role-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const view = tab.dataset.view;
+    document.getElementById('view-weights').classList.toggle('active', view === 'weights');
+    document.getElementById('view-scale').classList.toggle('active', view === 'scale');
+  });
+});
+
+/* =========================================================================
+   LOAD & RENDER: ASSESSMENT WEIGHTS
+   ========================================================================= */
+async function loadGradingConfig(){
+  try{
+    const rec = await KPS.kv.get(GRADING_CONFIG_KEY, true);
+    const data = JSON.parse(rec.value);
+    components = data.components || [];
+    testPoints = (data.testPoints != null) ? data.testPoints : 0;
+  }catch(err){
+    // Key not found yet is expected on a brand-new project (no toast needed).
+    components = [];
+    testPoints = 0;
+  }
+  document.getElementById('testPointsInput').value = testPoints;
+  renderComponents();
+}
+
+function renderComponents(){
+  const tbody = document.getElementById('componentsTableBody');
+  tbody.innerHTML = components.map(c => `
+    <tr data-id="${c.id}">
+      <td>
+        <div class="comp-name">
+          <div class="comp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+          <input type="text" class="name-input comp-name-input" value="${escapeHtml(c.name)}" data-id="${c.id}">
+        </div>
+      </td>
+      <td class="num"><input type="number" class="points-input comp-points-input" value="${c.points}" min="0" max="100" data-id="${c.id}"></td>
+      <td class="num">
+        <button type="button" class="icon-btn danger remove-comp-btn" data-id="${c.id}" title="Remove component">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+
+  tbody.querySelectorAll('.comp-name-input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const c = components.find(x => x.id === inp.dataset.id);
+      if(c) c.name = inp.value;
+    });
+  });
+  tbody.querySelectorAll('.comp-points-input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const c = components.find(x => x.id === inp.dataset.id);
+      if(c) c.points = Number(inp.value) || 0;
+      computeTotals();
+    });
+  });
+  tbody.querySelectorAll('.remove-comp-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      components = components.filter(c => c.id !== btn.dataset.id);
+      renderComponents();
+      computeTotals();
+    });
+  });
+
+  computeTotals();
+}
+
+function computeTotals(){
+  const caTotal = components.reduce((sum, c) => sum + (Number(c.points) || 0), 0);
+  testPoints = Number(document.getElementById('testPointsInput').value) || 0;
+  const grandTotal = caTotal + testPoints;
+
+  document.getElementById('caTotalCell').textContent = caTotal;
+  document.getElementById('grandTotalCell').textContent = grandTotal;
+  document.getElementById('statComponents').textContent = components.length;
+  document.getElementById('statCATotal').textContent = caTotal;
+  document.getElementById('statTest').textContent = testPoints;
+  document.getElementById('statGrand').textContent = grandTotal;
+
+  const pill = document.getElementById('grandTotalPill');
+  if(grandTotal === 100){
+    pill.className = 'pill green';
+    pill.textContent = 'Balanced at 100';
+  } else if(grandTotal < 100){
+    pill.className = 'pill gold';
+    pill.textContent = `${100 - grandTotal} short of 100`;
+  } else {
+    pill.className = 'pill red';
+    pill.textContent = `${grandTotal - 100} over 100`;
+  }
+}
+document.getElementById('testPointsInput').addEventListener('input', computeTotals);
+
+document.getElementById('addComponentBtn').addEventListener('click', () => {
+  document.getElementById('compNameInput').value = '';
+  document.getElementById('compPointsInput').value = 5;
+  document.getElementById('compModalBackdrop').classList.add('open');
+});
+document.getElementById('compModalClose').addEventListener('click', () => document.getElementById('compModalBackdrop').classList.remove('open'));
+document.getElementById('compCancelBtn').addEventListener('click', () => document.getElementById('compModalBackdrop').classList.remove('open'));
+document.getElementById('compModalBackdrop').addEventListener('click', (e) => { if(e.target.id === 'compModalBackdrop') e.target.classList.remove('open'); });
+
+document.getElementById('compConfirmBtn').addEventListener('click', () => {
+  const name = document.getElementById('compNameInput').value.trim();
+  const points = Number(document.getElementById('compPointsInput').value) || 0;
+  if(!name){ showToast('Give the component a name first, e.g. Class Participation.'); return; }
+  components.push({ id: uid(), name, points });
+  renderComponents();
+  document.getElementById('compModalBackdrop').classList.remove('open');
+});
+
+document.getElementById('resetDefaultBtn').addEventListener('click', () => {
+  if(!confirm('Reset to the default 50/50 template? This replaces all current components.')) return;
+  components = DEFAULT_COMPONENTS.map(c => ({ ...c }));
+  document.getElementById('testPointsInput').value = DEFAULT_TEST_POINTS;
+  renderComponents();
+  showToast('Reset to the default grading template — remember to Save.');
+});
+
+async function saveWeights(){
+  const caTotal = components.reduce((sum, c) => sum + (Number(c.points) || 0), 0);
+  const tp = Number(document.getElementById('testPointsInput').value) || 0;
+  const grand = caTotal + tp;
+  if(grand !== 100 && !confirm(`The Grand Total is currently ${grand}, not 100. Save anyway?`)) return;
+
+  try{
+    await KPS.kv.set(GRADING_CONFIG_KEY, JSON.stringify({ components, testPoints: tp }), true);
+    showToast('Grading breakdown saved — applied to every report card.');
+  }catch(err){
+    console.error('Failed to save grading breakdown', err);
+    showToast('Could not save the grading breakdown — the database did not confirm it.');
+  }
+}
+document.getElementById('saveWeightsBtn').addEventListener('click', saveWeights);
+document.getElementById('saveAllBtn').addEventListener('click', async () => {
+  await saveWeights();
+  await saveScaleIfDirty();
+});
+
+/* =========================================================================
+   LOAD & RENDER: GRADE SCALE
+   ========================================================================= */
+async function loadScale(){
+  try{
+    const rows = await KPS.db.list('grading_bands');
+    bands = rows.map(r => ({ id: r.id, grade: r.grade, minScore: r.min_score, maxScore: r.max_score, remark: r.remark }));
+  }catch(err){
+    console.error('Failed to load grade scale', err);
+    bands = [];
+  }
+  renderScale();
+}
+
+function renderScale(){
+  const tbody = document.getElementById('scaleTableBody');
+  const empty = document.getElementById('scaleEmptyState');
+  const sorted = [...bands].sort((a,b) => (b.minScore||0) - (a.minScore||0));
+  if(!sorted.length){
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = sorted.map(b => `
+    <tr data-id="${b.id}">
+      <td><span class="pill navy">${escapeHtml(b.grade)}</span></td>
+      <td class="num mono">${b.minScore}</td>
+      <td class="num mono">${b.maxScore}</td>
+      <td>${escapeHtml(b.remark || '')}</td>
+      <td class="num" style="display:flex; gap:6px; justify-content:flex-end;">
+        <button type="button" class="icon-btn edit-band-btn" data-id="${b.id}" title="Edit band">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+        <button type="button" class="icon-btn danger delete-band-btn" data-id="${b.id}" title="Delete band">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+
+  tbody.querySelectorAll('.edit-band-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const b = bands.find(x => String(x.id) === String(btn.dataset.id));
+      if(b) openBandModal(b);
+    });
+  });
+  tbody.querySelectorAll('.delete-band-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteBand(btn.dataset.id));
+  });
+}
+
+const bandModalBackdrop = document.getElementById('bandModalBackdrop');
+function openBandModal(existing){
+  document.getElementById('bandModalTitle').textContent = existing ? 'Edit Grade Band' : 'New Grade Band';
+  document.getElementById('bandConfirmBtn').textContent = existing ? 'Save Changes' : 'Save Grade Band';
+  document.getElementById('bandEditingId').value = existing ? existing.id : '';
+  document.getElementById('bandGradeInput').value = existing ? existing.grade : '';
+  document.getElementById('bandMinInput').value = existing ? existing.minScore : 0;
+  document.getElementById('bandMaxInput').value = existing ? existing.maxScore : 100;
+  document.getElementById('bandRemarkInput').value = existing ? (existing.remark || '') : '';
+  bandModalBackdrop.classList.add('open');
+}
+document.getElementById('addBandBtn').addEventListener('click', () => openBandModal(null));
+document.getElementById('bandModalClose').addEventListener('click', () => bandModalBackdrop.classList.remove('open'));
+document.getElementById('bandCancelBtn').addEventListener('click', () => bandModalBackdrop.classList.remove('open'));
+bandModalBackdrop.addEventListener('click', (e) => { if(e.target === bandModalBackdrop) bandModalBackdrop.classList.remove('open'); });
+
+document.getElementById('bandConfirmBtn').addEventListener('click', async () => {
+  const grade = document.getElementById('bandGradeInput').value.trim();
+  const minScore = Number(document.getElementById('bandMinInput').value) || 0;
+  const maxScore = Number(document.getElementById('bandMaxInput').value) || 0;
+  const remark = document.getElementById('bandRemarkInput').value.trim();
+  const editingId = document.getElementById('bandEditingId').value;
+  if(!grade){ showToast('Give the band a grade letter first, e.g. A.'); return; }
+
+  const payload = { grade, min_score: minScore, max_score: maxScore, remark };
+  try{
+    if(editingId){
+      await sbc().from('grading_bands').update(payload).eq('id', editingId).throwOnError();
+      showToast('Grade ' + grade + ' updated.');
+    } else {
+      await sbc().from('grading_bands').insert(payload).throwOnError();
+      showToast('Grade ' + grade + ' added to the scale.');
+    }
+    bandModalBackdrop.classList.remove('open');
+    await loadScale();
+  }catch(err){
+    console.error('Failed to save grade band', err);
+    showToast('Could not save that grade band — the database did not confirm it.');
+  }
+});
+
+async function deleteBand(id){
+  const b = bands.find(x => String(x.id) === String(id));
+  if(!confirm(`Delete grade "${b ? b.grade : ''}"? This removes it from the scale.`)) return;
+  try{
+    await sbc().from('grading_bands').delete().eq('id', id).throwOnError();
+    showToast((b ? b.grade : 'Grade') + ' deleted.');
+    await loadScale();
+  }catch(err){
+    console.error('Failed to delete grade band', err);
+    showToast('Could not delete that grade band — the database did not confirm it.');
+  }
+}
+async function saveScaleIfDirty(){ /* bands save individually via their own modal actions */ }
+
+/* ---------- Initial load: everything comes from the database ---------- */
+(async function init(){
+  await loadGradingConfig();
+  await loadScale();
+})();
+</script>
+
+</body>
+</html>

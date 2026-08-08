@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>Kingsville Public School — Student's Attendance Record</title>
+<style>
+  :root{
+    --red:#a3181c;
+    --red-bright:#d31f24;
+    --gold:#d4af37;
+    --gold-light:#f4e5a3;
+    --ink:#1a1a1a;
+    --line:#000;
+    --paper:#ffffff;
+    --grey-band:#e9e9e9;
+    --lock-green:#1f7a3d;
+    --lock-red:#a3181c;
+    --glow:rgba(163,24,28,.45);
+    --glow-gold:rgba(212,175,55,.65);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(163,24,28,.06), transparent 60%),
+      #f2f2f0;
+    margin:0;
+    padding:24px 12px 60px;
+  }
+  .sheet{
+    position:relative;
+    max-width:920px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:26px 34px 38px;
+    border:1px solid transparent;
+    border-radius:6px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    isolation:isolate;
+  }
+  /* Premium animated gold/crimson glowing frame */
+  .sheet::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:8px;
+    padding:2px;
+    background:conic-gradient(from var(--frame-angle,0deg),
+      var(--gold), var(--red-bright), var(--gold-light), var(--red), var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    z-index:-1;
+    animation: frame-spin 7s linear infinite;
+    filter:drop-shadow(0 0 6px var(--glow-gold));
+  }
+  @property --frame-angle{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:0deg;
+  }
+  @keyframes frame-spin{
+    to{ --frame-angle:360deg; }
+  }
+  .letterhead{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:3px double #333;
+    padding-bottom:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  /* subtle shimmer sweep across the letterhead */
+  .letterhead::after{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:40%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.35), transparent);
+    animation: sweep 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{ left:-60%; }
+    45%{ left:120%; }
+    100%{ left:120%; }
+  }
+  .letterhead img{
+    height:64px;
+    width:64px;
+    object-fit:contain;
+    flex-shrink:0;
+    border-radius:50%;
+    background:#fff;
+    padding:3px;
+    box-shadow:
+      0 0 0 2px var(--gold),
+      0 0 10px 2px var(--glow-gold);
+    animation: crest-glow 2.6s ease-in-out infinite;
+  }
+  @keyframes crest-glow{
+    0%, 100%{
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 8px 1px var(--glow-gold);
+    }
+    50%{
+      box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 0 18px 6px var(--glow-gold);
+    }
+  }
+  .letterhead .headtext{
+    flex:1;
+    text-align:center;
+  }
+  .school-name{
+    font-weight:800;
+    font-size:26px;
+    letter-spacing:.5px;
+    margin:0 0 4px;
+    background:linear-gradient(100deg,
+      var(--red) 0%, var(--gold) 22%, var(--red-bright) 45%,
+      var(--gold-light) 60%, var(--red) 82%, var(--gold) 100%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 14px rgba(163,24,28,.18);
+    animation: text-shine 5s linear infinite;
+  }
+  @keyframes text-shine{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:250% 50%; }
+  }
+  .sub{ font-weight:700; font-size:13px; margin:0; color:#333; }
+  .motto{ font-style:italic; font-size:12.5px; color:#555; margin-top:2px; }
+
+  .master-title{
+    color:var(--red);
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:1px;
+    margin:8px 0 6px;
+    text-align:center;
+    text-shadow:0 0 10px rgba(163,24,28,.15);
+  }
+  .band{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(180deg,var(--grey-band),#f4f4f2);
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    color:var(--red);
+    padding:7px 0;
+    margin:4px 0 16px;
+    letter-spacing:2px;
+    border-radius:3px;
+    box-shadow:inset 0 0 0 1px rgba(212,175,55,.35), 0 0 10px rgba(163,24,28,.08);
+  }
+  .band::before{
+    content:"";
+    position:absolute;
+    top:0; left:-40%;
+    width:25%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.55), transparent);
+    animation: sweep 4.5s ease-in-out infinite;
+    animation-delay:1s;
+    pointer-events:none;
+  }
+  .year-input{
+    font-family:inherit;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:2px;
+    color:var(--red);
+    background:transparent;
+    border:none;
+    border-bottom:1px dashed rgba(163,24,28,.5);
+    text-align:center;
+    width:110px;
+    padding:0 2px;
+  }
+  .year-input::placeholder{
+    color:rgba(163,24,28,.45);
+  }
+  .year-input:focus{
+    outline:none;
+    border-bottom:1px solid var(--red);
+    text-shadow:0 0 8px rgba(212,175,55,.5);
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 22px;
+    font-size:14px;
+    margin-bottom:18px;
+    align-items:baseline;
+  }
+  .meta-row label{ font-weight:700; white-space:nowrap; }
+  .meta-row input{
+    border:none;
+    border-bottom:1px solid #333;
+    font-family:inherit;
+    font-style:italic;
+    font-size:14px;
+    padding:2px 4px;
+    background:transparent;
+    min-width:140px;
+  }
+  .meta-row input:disabled{ color:#333; opacity:1; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  th,td{
+    border:1px solid var(--line);
+    padding:5px 6px;
+    text-align:center;
+  }
+  th{ background:#f6f6f6; font-size:12px; }
+  td.name{ text-align:left; }
+  tr:nth-child(even) td{ background:#fbfbfb; }
+
+  input.name-input{
+    width:100%;
+    border:1px solid #bbb;
+    font-family:inherit;
+    padding:3px 4px;
+    border-radius:3px;
+    text-align:left;
+  }
+  select.sex-input{
+    width:100%;
+    border:1px solid #bbb;
+    font-family:inherit;
+    padding:3px 2px;
+    border-radius:3px;
+    text-align:center;
+  }
+  input.att-input{
+    width:56px;
+    border:1px solid #bbb;
+    text-align:center;
+    font-family:inherit;
+    padding:3px 2px;
+    border-radius:3px;
+  }
+  input:disabled, select:disabled{
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--ink);
+    font-weight:600;
+  }
+  input:focus, select:focus{ outline:2px solid var(--red); }
+
+  .empty-row td{
+    color:#999;
+    font-style:italic;
+    padding:14px 6px;
+  }
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .status-pill{
+    font-size:13px;
+    font-weight:700;
+    padding:5px 12px;
+    border-radius:20px;
+    color:#fff;
+  }
+  .status-pill.locked{ background:var(--lock-red); }
+  .status-pill.unlocked{ background:var(--lock-green); }
+
+  button{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    padding:7px 14px;
+    border-radius:5px;
+    border:1px solid var(--red);
+    background:#fff;
+    color:var(--red);
+    cursor:pointer;
+    transition:box-shadow .25s ease, transform .15s ease, background .2s ease, color .2s ease;
+  }
+  button:hover{
+    background:var(--red);
+    color:#fff;
+    box-shadow:0 0 12px 2px var(--glow);
+    transform:translateY(-1px);
+  }
+  button:active{ transform:translateY(0); }
+  button.subtle{
+    border-color:#999; color:#444; font-weight:600;
+  }
+  button.subtle:hover{ background:#444; color:#fff; }
+  button:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .row-actions{ display:flex; gap:6px; justify-content:center; }
+  .row-actions button{ padding:3px 6px; font-size:11px; }
+
+  /* ---- Attendance-specific additions ---- */
+  .table-scroll{
+    width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    border:1px solid #ddd;
+    border-radius:4px;
+  }
+  .table-scroll table{ width:max-content; min-width:100%; }
+  th.week-head{
+    background:linear-gradient(180deg,#fbf6e6,#f4e9c8);
+    color:var(--red);
+    font-weight:800;
+    letter-spacing:1px;
+    border-bottom:2px solid var(--gold);
+  }
+  th.day-head{
+    width:26px;
+    min-width:26px;
+    font-size:10.5px;
+    font-weight:700;
+    color:#555;
+    background:#fbfbfb;
+  }
+  th.name-head{ position:sticky; left:0; z-index:2; background:#f6f6f6; }
+  td.name{ position:sticky; left:0; z-index:1; background:#fff; }
+  tr:nth-child(even) td.name{ background:#fbfbfb; }
+  td.day-cell{
+    width:26px;
+    min-width:26px;
+    padding:2px 0;
+    text-align:center;
+    cursor:pointer;
+    user-select:none;
+    font-weight:800;
+    font-size:12px;
+  }
+  td.day-cell.mark-p{ background:#e6f7ea; color:var(--lock-green); }
+  td.day-cell.mark-a{ background:#fbe6e6; color:var(--lock-red); }
+  td.day-cell.mark-l{ background:#fdf3d8; color:#a3781c; }
+  td.day-cell:hover{ outline:2px solid var(--gold); outline-offset:-2px; }
+  button.add-week-btn{
+    border-color:var(--gold);
+    color:#8a6d1a;
+    font-weight:700;
+  }
+  button.add-week-btn:hover{
+    background:var(--gold);
+    color:#fff;
+  }
+  .days-field{
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .days-field input{
+    width:46px;
+    text-align:center;
+    border:1px solid #bbb;
+    border-radius:3px;
+    padding:3px;
+    font-family:inherit;
+  }
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    align-items:center;
+    font-size:12px;
+    color:#555;
+    margin-top:10px;
+  }
+  .legend-item{ display:flex; align-items:center; gap:5px; }
+  .mark-swatch{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:18px; height:18px;
+    border-radius:3px;
+    font-weight:800;
+    font-size:11px;
+  }
+  .mark-swatch.p{ background:#e6f7ea; color:var(--lock-green); }
+  .mark-swatch.a{ background:#fbe6e6; color:var(--lock-red); }
+  .mark-swatch.l{ background:#fdf3d8; color:#a3781c; }
+  td.total-cell.att-total{
+    font-weight:800;
+    color:var(--lock-green);
+    background:#fbf6e6;
+    white-space:nowrap;
+  }
+
+  .foot-actions{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:16px; flex-wrap:wrap; gap:10px;
+  }
+  .max-field{ font-size:13px; display:flex; align-items:center; gap:6px; }
+  .max-field input{ width:50px; text-align:center; border:1px solid #bbb; border-radius:3px; padding:3px; }
+  .save-note{ font-size:12px; color:#666; min-height:16px; }
+
+  /* Premium action buttons (Save / Download / Print / Submit) */
+  button.premium{
+    position:relative;
+    color:#fff;
+    border:none;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--gold) 100%);
+    background-size:220% 100%;
+    background-position:0% 50%;
+    box-shadow:0 0 8px 1px var(--glow-gold);
+    padding:8px 16px;
+  }
+  button.premium:hover{
+    background-position:100% 50%;
+    box-shadow:0 0 14px 3px var(--glow-gold);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+  button.premium.submit{
+    background:linear-gradient(100deg, var(--lock-green) 0%, #2fae5c 45%, var(--gold) 100%);
+    background-size:220% 100%;
+  }
+  .action-row{
+    display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
+  }
+
+  /* This is the Exam / Master sheet — unlike the single-purpose sheets
+     (CA, Assignment, Practical, Quiz) no grade column is locked here;
+     the teacher can enter or correct any score before finalising. */
+  input.grade-locked, input.grade-locked:disabled{
+    background:#f0f0ee;
+    color:#999;
+    border:1px solid #ddd;
+    text-align:center;
+    cursor:not-allowed;
+  }
+  input.grade-input{
+    background:#fffdf4;
+    border:1px solid var(--gold);
+    text-align:center;
+    font-weight:700;
+    color:var(--red);
+  }
+  input.grade-input:focus{ outline:2px solid var(--red); }
+  td.total-cell{
+    font-weight:800;
+    color:var(--red);
+    text-align:center;
+    background:#fbf6e6;
+  }
+
+  .submitted-banner{
+    display:none;
+    text-align:center;
+    font-weight:800;
+    letter-spacing:1px;
+    color:#fff;
+    background:var(--lock-green);
+    border-radius:4px;
+    padding:6px 0;
+    margin-bottom:12px;
+  }
+  .submitted .submitted-banner{ display:block; }
+  .submitted input, .submitted select, .submitted button#addRowBtn, .submitted button[data-remove]{
+    pointer-events:none;
+    opacity:.6;
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .sheet{ box-shadow:none; border:1px solid #999; }
+    .sheet::before{ display:none; }
+    .toolbar, .action-row, .row-actions, #addRowBtn, .save-note{ display:none !important; }
+    .table-scroll{ overflow:visible; border:none; }
+    th.name-head, td.name{ position:static; }
+  }
+
+  @media (max-width:640px){
+    .school-name{ font-size:20px; }
+    .sheet{ padding:16px; }
+    .letterhead img{ height:44px; width:44px; }
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<a href="dashboard.html" class="kps-back-btn" title="Back to Teacher Dashboard" style="position:fixed;top:14px;right:14px;z-index:9999;display:flex;align-items:center;gap:6px;background:#a3181c;color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 14px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.25);font-family:Arial,Helvetica,sans-serif;">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  Back to Dashboard
+</a>
+<style>@media print{ .kps-back-btn{ display:none !important; } }</style>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>window.__supabaseCreateClient = window.supabase.createClient;</script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="sheet" id="sheet">
+
+  <div class="letterhead">
+    <img src="../assets/images/img-1005aedff1a0c5ea.png" alt="Kingsville Public High School crest">
+    <div class="headtext">
+      <p class="school-name">Kingsville Public High School</p>
+      <p class="sub">Kingsville Township, Careysburg District &middot; Montserrado County, Liberia</p>
+      <p class="motto">Motto: "Knowledge Is Power"</p>
+    </div>
+    <img src="../assets/images/img-a7df6c3d8d6e390b.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+
+  <p class="master-title">DAILY ATTENDANCE RECORD</p>
+  <div class="band">
+    GRADE:&nbsp;<select id="gradeSelect" class="year-input" style="width:170px; border-bottom:1px dashed rgba(163,24,28,.5);"></select>
+    &nbsp;&nbsp;DATE:&nbsp;<input id="attDate" type="date" class="year-input" style="width:150px;">
+    &nbsp;&nbsp;<span id="rosterMeta" style="font-size:12px; font-weight:600; color:#555;"></span>
+  </div>
+
+  <div class="meta-row">
+    <span><label>Teacher:</label> <input id="teacherName" placeholder="Enter name"></span>
+    <span><label>Academic Year:</label> <input id="academicYear" placeholder="2025–2026" disabled></span>
+  </div>
+
+  <div class="toolbar">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button id="refreshBtn" class="subtle" onclick="loadRoster()">↻ Refresh roster</button>
+    </div>
+    <div class="action-row">
+      <button class="premium" onclick="saveAttendance()">💾 Save attendance</button>
+      <button class="premium" onclick="downloadCSV()">⬇ Download</button>
+      <button class="premium" onclick="window.print()">🖨 Print</button>
+    </div>
+  </div>
+
+  <div class="table-scroll">
+    <table id="attTable">
+      <thead>
+        <tr>
+          <th style="width:70px;">Student ID</th>
+          <th style="text-align:left;">Name</th>
+          <th style="width:130px;">Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr class="empty-row"><td colspan="3">Select a grade to load students.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="mark-swatch p">P</span> Present</span>
+    <span class="legend-item"><span class="mark-swatch a">A</span> Absent</span>
+    <span class="legend-item"><span class="mark-swatch l">L</span> Late</span>
+    <span class="legend-item">Click a status box to cycle P → A → L → blank</span>
+  </div>
+
+  <div class="foot-actions">
+    <div style="font-size:13px; display:flex; gap:16px; color:#333;">
+      <span>Present: <b id="countP" style="color:var(--lock-green);">0</b></span>
+      <span>Absent: <b id="countA" style="color:var(--lock-red);">0</b></span>
+      <span>Late: <b id="countL" style="color:#a3781c;">0</b></span>
+    </div>
+    <div class="save-note" id="saveNote"></div>
+  </div>
+
+</div>
+
+<script>
+// --- Live Supabase connection (per user's instruction: no login, teacher just
+// picks a grade and takes attendance). We captured the createClient factory
+// right after the CDN script tag loaded, before any other app script could
+// reassign window.supabase, so this works regardless of what the rest of the
+// dashboard's js/ files do with that global. ---
+const SUPABASE_URL = "https://ppscmmecqiyeamwejhzu.supabase.co";
+const SUPABASE_KEY = "sb_publishable_4eb8Q_S6zUNYa7n5yUMesQ_dcx4AZPu";
+const sbFactory = window.__supabaseCreateClient || (window.supabase && window.supabase.createClient);
+const sb = sbFactory(SUPABASE_URL, SUPABASE_KEY);
+
+// Status values are stored lowercase in the `attendance` table, matching the
+// lowercase convention used elsewhere in the schema (e.g. status: 'active').
+const MARK_CYCLE = ["P", "A", "L", ""];
+const STATUS_MAP = { P: "present", A: "absent", L: "late" };
+const STATUS_MAP_REV = { present: "P", absent: "A", late: "L" };
+
+let classesCache = [];
+let sectionsForGrade = []; // sections under the currently-selected grade/class
+let roster = [];           // [{ id, student_id, full_name, section_id, mark }]
+
+function noteEl(){ return document.getElementById('saveNote'); }
+
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+
+async function loadClasses(){
+  const { data, error } = await sb.from('classes').select('id,name,level').order('level', { ascending: true });
+  const sel = document.getElementById('gradeSelect');
+  if(error){
+    sel.innerHTML = '<option value="">(error loading grades)</option>';
+    noteEl().textContent = "Could not load grades: " + error.message;
+    return;
+  }
+  classesCache = data || [];
+  sel.innerHTML = '<option value="">Select grade…</option>' +
+    classesCache.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+async function loadRoster(){
+  const classId = document.getElementById('gradeSelect').value;
+  const dateInput = document.getElementById('attDate');
+  const dateStr = dateInput.value || todayISO();
+  dateInput.value = dateStr;
+
+  const tbody = document.getElementById('tbody');
+  const metaEl = document.getElementById('rosterMeta');
+
+  if(!classId){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="3">Select a grade to load students.</td></tr>`;
+    metaEl.textContent = "";
+    roster = [];
+    updateCounts();
+    return;
+  }
+
+  tbody.innerHTML = `<tr class="empty-row"><td colspan="3">Loading…</td></tr>`;
+
+  // Sections that belong to this grade
+  const { data: sections, error: secErr } = await sb.from('sections')
+    .select('id,name')
+    .eq('class_id', classId);
+  if(secErr){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="3">Error loading sections: ${secErr.message}</td></tr>`;
+    return;
+  }
+  sectionsForGrade = sections || [];
+  const sectionIds = sectionsForGrade.map(s => s.id);
+
+  if(sectionIds.length === 0){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="3">No sections found for this grade yet.</td></tr>`;
+    metaEl.textContent = "";
+    roster = [];
+    updateCounts();
+    return;
+  }
+
+  // Active students across every section in this grade — this is what makes
+  // newly-registered students show up automatically, with no manual step.
+  const { data: students, error: stuErr } = await sb.from('students')
+    .select('id,student_id,full_name,section_id,status')
+    .in('section_id', sectionIds)
+    .eq('status', 'active')
+    .order('full_name', { ascending: true });
+  if(stuErr){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="3">Error loading students: ${stuErr.message}</td></tr>`;
+    return;
+  }
+
+  // Pre-fill marks already saved for this date, if any
+  const { data: existing } = await sb.from('attendance')
+    .select('student_id,status')
+    .in('section_id', sectionIds)
+    .eq('date', dateStr);
+  const existingMap = {};
+  (existing || []).forEach(r => { existingMap[r.student_id] = STATUS_MAP_REV[r.status] || ""; });
+
+  roster = (students || []).map(s => ({
+    id: s.id,
+    student_id: s.student_id,
+    full_name: s.full_name,
+    section_id: s.section_id,
+    mark: existingMap[s.id] || ""
+  }));
+
+  metaEl.textContent = `${roster.length} student${roster.length === 1 ? "" : "s"} · ${sectionsForGrade.length} section${sectionsForGrade.length === 1 ? "" : "s"}`;
+  render();
+}
+
+function render(){
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = "";
+
+  if(roster.length === 0){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="3">No active students found for this grade.</td></tr>`;
+    updateCounts();
+    return;
+  }
+
+  roster.forEach((s, idx) => {
+    const cls = s.mark === "P" ? "mark-p" : s.mark === "A" ? "mark-a" : s.mark === "L" ? "mark-l" : "";
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${s.student_id}</td>
+      <td class="name">${s.full_name}</td>
+      <td class="day-cell ${cls}" data-idx="${idx}" style="width:130px; font-size:14px;">${s.mark || "—"}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('td.day-cell').forEach(td => {
+    td.addEventListener('click', e => {
+      cycleMark(Number(e.currentTarget.dataset.idx));
+    });
+  });
+
+  updateCounts();
+}
+
+function cycleMark(idx){
+  const s = roster[idx];
+  const nextIdx = (MARK_CYCLE.indexOf(s.mark) + 1) % MARK_CYCLE.length;
+  s.mark = MARK_CYCLE[nextIdx];
+  render();
+}
+
+function updateCounts(){
+  document.getElementById('countP').textContent = roster.filter(s => s.mark === "P").length;
+  document.getElementById('countA').textContent = roster.filter(s => s.mark === "A").length;
+  document.getElementById('countL').textContent = roster.filter(s => s.mark === "L").length;
+}
+
+async function saveAttendance(){
+  const classId = document.getElementById('gradeSelect').value;
+  const dateStr = document.getElementById('attDate').value;
+  if(!classId){ alert("Select a grade first."); return; }
+  if(roster.length === 0){ alert("No students loaded for this grade."); return; }
+
+  const sectionIds = sectionsForGrade.map(s => s.id);
+  noteEl().textContent = "Saving…";
+
+  // Replace this date's attendance for these sections, then insert current marks.
+  const { error: delErr } = await sb.from('attendance')
+    .delete()
+    .in('section_id', sectionIds)
+    .eq('date', dateStr);
+  if(delErr){
+    noteEl().textContent = "Save failed: " + delErr.message;
+    return;
+  }
+
+  const rows = roster
+    .filter(s => s.mark)
+    .map(s => ({
+      student_id: s.id,
+      section_id: s.section_id,
+      date: dateStr,
+      status: STATUS_MAP[s.mark]
+    }));
+
+  if(rows.length > 0){
+    const { error: insErr } = await sb.from('attendance').insert(rows);
+    if(insErr){
+      noteEl().textContent = "Save failed: " + insErr.message;
+      return;
+    }
+  }
+
+  noteEl().textContent = "Saved ✓";
+  setTimeout(() => { if(noteEl().textContent === "Saved ✓") noteEl().textContent = ""; }, 1500);
+}
+
+function downloadCSV(){
+  const gradeSel = document.getElementById('gradeSelect');
+  const gradeName = gradeSel.selectedIndex >= 0 ? gradeSel.options[gradeSel.selectedIndex].text : "grade";
+  const dateStr = document.getElementById('attDate').value;
+  const headers = ["Student ID", "Name", "Status"];
+  const rows = roster.map(s => [s.student_id, s.full_name, s.mark || ""]);
+  const esc = (v) => `"${String(v === undefined || v === null ? "" : v).replace(/"/g, '""')}"`;
+  const lines = [headers.map(esc).join(","), ...rows.map(r => r.map(esc).join(","))];
+  const csv = lines.join("\r\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const safeGrade = gradeName.replace(/[^a-z0-9]+/gi, "_");
+  a.href = url;
+  a.download = `Attendance_${safeGrade}_${dateStr}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('gradeSelect').addEventListener('change', loadRoster);
+document.getElementById('attDate').addEventListener('change', loadRoster);
+
+(async function init(){
+  document.getElementById('attDate').value = todayISO();
+  await loadClasses();
+  await loadRoster();
+})();
+</script>
+</body>
+</html>

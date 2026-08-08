@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Create New User</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand img{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; object-fit:cover; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER (ICT signature element) ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:disabled{ background:#C9BFAE; box-shadow:none; cursor:not-allowed; color:#fff; opacity:.75; }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* chart bars */
+.chart-bars{ display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:10px; }
+.chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.chart-bar{ width:100%; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--gold-light), var(--gold-deep)); position:relative; transition:filter .15s; }
+.chart-bar:hover{ filter:brightness(1.08); }
+.chart-bar.alt{ background:linear-gradient(180deg, #9FB6E0, var(--navy-3)); }
+.chart-lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+.chart-legend{ display:flex; gap:16px; margin-top:6px; font-size:11.5px; color:var(--muted); }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.chip-dot{ width:8px; height:8px; border-radius:2px; }
+
+/* feed / lists */
+.feed-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px dashed var(--line); }
+.feed-item:last-child{ border-bottom:none; }
+.feed-dot{ width:32px; height:32px; border-radius:9px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex:none; }
+.feed-dot svg{ width:15px; height:15px; color:var(--crimson); }
+.feed-dot.gold svg{ color:var(--gold-deep); }
+.feed-dot.navy svg{ color:var(--navy-3); }
+.feed-text{ font-size:13px; font-weight:600; }
+.feed-sub{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.feed-time{ margin-left:auto; font-size:11px; color:var(--muted); white-space:nowrap; }
+
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+.progress-track{ height:6px; border-radius:20px; background:var(--line); overflow:hidden; flex:1; }
+.progress-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); }
+.progress-fill.ok{ background:linear-gradient(90deg, #8FD8AC, var(--success)); }
+.progress-fill.warn{ background:linear-gradient(90deg, var(--gold-light), var(--warn)); }
+.progress-fill.bad{ background:linear-gradient(90deg, #F0A7AE, var(--danger)); }
+
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.health-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; padding:7px 0; }
+.health-row .hb{ flex:1; height:7px; background:var(--line); border-radius:20px; overflow:hidden; }
+.health-row .hb i{ display:block; height:100%; border-radius:20px; }
+.health-row .hv{ width:74px; text-align:right; font-weight:700; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+button.pill:hover{ filter:brightness(0.96); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* Module placeholder cards */
+.module-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.module-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.module-ic{ width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.module-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.module-card h4{ margin:0; font-size:14.5px; }
+.module-card p{ margin:0; font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* Device status card (network) */
+.device-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
+.device-top{ display:flex; align-items:center; justify-content:space-between; }
+.device-ic{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.device-ic svg{ width:19px; height:19px; }
+.device-name{ font-weight:700; font-size:13.5px; margin-top:2px; }
+.device-meta{ font-size:11.5px; color:var(--muted); }
+
+/* Restricted note */
+.restricted-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#FBE6E6; border:1px solid #F3C7CB; margin-top:14px; }
+.restricted-note svg{ width:16px; height:16px; color:var(--danger); flex:none; margin-top:1px; }
+.restricted-note div{ font-size:12px; color:#7A2530; line-height:1.55; }
+.restricted-note b{ color:var(--danger); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field input[type=text], .field input[type=password], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.settings-list .row-line{ align-items:flex-start; }
+.settings-list .rl-name{ font-size:13.5px; }
+.settings-list .rl-sub{ margin-top:2px; max-width:52ch; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .bento{ grid-template-columns:1fr; }
+  .grid-3,.grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .tbl-actions, .toolbar, .tabs, .toast-wrap, .modal-backdrop, .footer-ribbon, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .view{ display:none !important; }
+  .view.active{ display:block !important; }
+  .card, .stat-card, .module-card, .device-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid,.grid-3,.grid-2,.grid-4{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+
+/* ============================= FORM-SPECIFIC (Create User / Registration) ============================= */
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:700; color:var(--muted); border:none; background:transparent; }
+.role-tab svg{ width:16px; height:16px; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.form-shell{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; }
+.form-head{ padding:22px 26px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; }
+.form-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.form-head h2{ color:#fff; margin:0 0 4px; font-size:20px; }
+.form-head p{ margin:0; color:rgba(255,255,255,.65); font-size:12.6px; max-width:60ch; }
+.form-body{ padding:26px; display:flex; flex-direction:column; gap:26px; }
+
+.fsection{ border:1px dashed var(--line); border-radius:14px; padding:20px 22px; }
+.fsection-title{ display:flex; align-items:center; gap:10px; margin:0 0 16px; font-size:14px; font-weight:800; color:var(--navy); }
+.fsection-title .num{ width:24px; height:24px; border-radius:8px; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex:none; }
+
+.fgrid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+.fgrid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+.fgrid.cols-4{ grid-template-columns:repeat(4, 1fr); }
+.fspan-2{ grid-column:span 2; }
+.fspan-3{ grid-column:span 3; }
+
+.field .hint{ font-size:10.8px; color:var(--muted); font-weight:500; }
+.field .err{ font-size:10.8px; color:var(--danger); font-weight:700; display:none; }
+.field.invalid input, .field.invalid select, .field.invalid textarea{ border-color:var(--danger); background:#FEF4F4; }
+.field.invalid .err{ display:block; }
+.field.valid input, .field.valid select{ border-color:#9CD3AF; }
+
+.field input[type=text], .field input[type=email], .field input[type=tel], .field input[type=password],
+.field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit;
+  background:var(--paper); width:100%; transition:border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); }
+.field textarea{ resize:vertical; min-height:70px; }
+
+.dob-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+.radio-row, .check-row{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
+.radio-opt, .check-opt{ display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; cursor:pointer; }
+.radio-opt input, .check-opt input{ width:16px; height:16px; accent-color:var(--crimson-bright); cursor:pointer; }
+
+.role-fields{ display:none; }
+.role-fields.active{ display:block; }
+
+.student-lookup{ margin:0 24px 0; padding:16px 18px; border:1px solid rgba(217,138,36,.35); border-radius:14px;
+  background:linear-gradient(135deg, rgba(217,138,36,.09), rgba(217,138,36,.02)); }
+.sl-head{ display:flex; gap:10px; align-items:flex-start; margin-bottom:12px; }
+.sl-head svg{ width:18px; height:18px; color:var(--gold-deep); flex:none; margin-top:1px; }
+.sl-t{ font-size:13.5px; font-weight:800; color:var(--navy); }
+.sl-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.sl-search{ display:flex; align-items:center; gap:8px; border:1px solid var(--line); background:#fff; border-radius:10px;
+  padding:9px 12px; }
+.sl-search svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.sl-search input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+.sl-search:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.sl-results{ margin-top:8px; display:flex; flex-direction:column; gap:6px; max-height:260px; overflow-y:auto; }
+.sl-result{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 12px;
+  border:1px solid var(--line); background:#fff; border-radius:10px; cursor:pointer; text-align:left; width:100%; }
+.sl-result:hover{ border-color:var(--gold); background:#FFFBF3; }
+.sl-result .sl-r-name{ font-size:13px; font-weight:700; color:var(--navy); }
+.sl-result .sl-r-meta{ font-size:11px; color:var(--muted); margin-top:1px; }
+.sl-result .sl-r-id{ font-size:11px; font-weight:800; color:var(--gold-deep); background:rgba(217,138,36,.14);
+  padding:3px 8px; border-radius:6px; flex:none; }
+.sl-empty{ font-size:12px; color:var(--muted); padding:8px 2px; font-style:italic; }
+.sl-linked{ margin-top:10px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:11px 14px; border-radius:10px; background:#F0FBF4; border:1px solid #B7E4C7; }
+.sl-linked-info{ display:flex; gap:8px; align-items:flex-start; font-size:12.3px; color:#1C6B39; line-height:1.5; }
+.sl-linked-info svg{ width:17px; height:17px; flex:none; margin-top:1px; color:#1C6B39; }
+.sl-linked button{ flex:none; border:1px solid #1C6B39; background:#fff; color:#1C6B39; border-radius:8px;
+  padding:6px 11px; font-size:11.5px; font-weight:700; cursor:pointer; }
+.sl-linked button:hover{ background:#1C6B39; color:#fff; }
+
+.sl-empty-state{ display:flex; align-items:center; gap:9px; margin-top:8px; padding:11px 14px; border-radius:10px;
+  background:#fff; border:1px dashed var(--line); font-size:12.3px; color:var(--muted); }
+.sl-empty-state svg{ width:17px; height:17px; flex:none; color:var(--muted); }
+
+.sl-summary{ margin-top:10px; padding:14px 16px; border-radius:12px; background:#fff; border:1px solid var(--line); }
+.sl-summary-title{ font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--gold-deep); margin-bottom:10px; }
+.sl-summary-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px 16px; }
+.sl-summary-grid > div{ display:flex; flex-direction:column; gap:2px; }
+.sl-summary-full{ grid-column:1 / -1; }
+.sl-summary .sk{ font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); font-weight:700; }
+.sl-summary .sv{ font-size:13px; color:var(--ink); font-weight:600; }
+.sl-summary-note{ margin-top:12px; padding-top:10px; border-top:1px solid var(--line); font-size:11.3px; color:var(--muted); font-style:italic; }
+@media (max-width:720px){ .sl-summary-grid{ grid-template-columns:1fr 1fr; } }
+
+table.qual{ width:100%; border-collapse:collapse; font-size:12.6px; }
+table.qual th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:8px 10px; border-bottom:2px solid var(--line); }
+table.qual td{ padding:7px 10px; border-bottom:1px solid var(--line); }
+table.qual input{ border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-size:12.6px; width:100%; font-family:inherit; }
+table.qual tr:last-child td{ border-bottom:none; }
+
+.role-pill-preview{ display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:20px; font-size:11.5px; font-weight:800; }
+
+.form-foot{ padding:20px 26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:#FBF8F0; }
+.form-foot .fp-note{ font-size:11.8px; color:var(--muted); max-width:52ch; }
+.form-actions{ display:flex; gap:10px; }
+
+@media (max-width: 900px){
+  .fgrid, .fgrid.cols-2, .fgrid.cols-4{ grid-template-columns:1fr; }
+  .dob-row{ grid-template-columns:1fr 1fr 1fr; }
+}
+
+</style>
+<style>
+.app{ display:block; grid-template-columns:none; min-height:100vh; }
+.main{ min-width:0; }
+</style>
+<script src="" defer></script>
+<style>
+.setup-steps{ display:flex; align-items:center; gap:0; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.setup-step{ display:flex; align-items:center; gap:9px; padding:9px 18px; border-radius:10px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.setup-step .stepnum{ width:22px; height:22px; border-radius:50%; background:var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; font-size:11px; flex:none; }
+.setup-step.active{ color:var(--navy); }
+.setup-step.active .stepnum{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+.setup-step.done .stepnum{ background:linear-gradient(135deg, #8FD8AC, var(--success)); color:#fff; }
+.setup-step.done{ color:var(--success); }
+.setup-arrow{ width:14px; height:14px; color:var(--line); margin:0 2px; flex:none; }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+  <main class="main">
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia &middot; Ministry of Education</div>
+        <div class="page-title">Create New User</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search users, roles, records&hellip;">
+      </div>
+      <a class="btn btn-ghost" href="users.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/></svg>
+        View All Users
+      </a>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="view active" id="view-create-user">
+
+        <div class="setup-steps">
+          <a href="institution-setup.html" class="setup-step done" style="text-decoration:none;"><span class="stepnum">&#10003;</span> Institution Setup</a>
+          <svg class="setup-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg>
+          <div class="setup-step active"><span class="stepnum">2</span> Create Super Admin</div>
+        </div>
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div>
+            <div class="sb-t">Role-Based Registration</div>
+            <div class="sb-s">Choose the account type first &mdash; the form below adapts to show only the fields relevant to that role. Every new account is created in <b class="sa">Pending</b> status and routed through <b class="sa">Workflow Management</b> for approval before it becomes active.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Student &amp; Staff Registration Form</h2>
+            <p id="sectionHeadDesc">Fill in the applicant&rsquo;s details below. Fields marked with an asterisk are required. This form performs live validation as you type.</p>
+          </div>
+        </div>
+
+        <div class="role-tabs" id="roleTabs">
+          <button type="button" class="role-tab active" data-role="student">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l9 4.5-9 4.5-9-4.5L12 3z"/><path d="M5 10.3V15c0 1.7 3.1 3 7 3s7-1.3 7-3v-4.7"/></svg>
+            Student
+          </button>
+          <button type="button" class="role-tab" data-role="teacher">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2S19 16.4 19 20"/></svg>
+            Teacher
+          </button>
+          <button type="button" class="role-tab" data-role="staff">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="8" width="16" height="12" rx="1.5"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>
+            Non-Teaching Staff
+          </button>
+        </div>
+
+        <form id="registrationForm" novalidate>
+          <div class="form-shell">
+
+            <div class="form-head">
+              <h2>New User Registration</h2>
+              <p><span class="js-inst-name">Kingsville Public High School</span> &middot; Super Administrator Console &middot; account type: <span id="roleHeadLabel">Student</span></p>
+            </div>
+
+            <div class="student-lookup" id="studentLookupPanel" style="display:none;">
+              <div class="sl-head">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <div>
+                  <div class="sl-t">Find an already-registered student</div>
+                  <div class="sl-s">Search students the Registrar has already registered and select one. There is nothing to type below &mdash; their record fills in the account automatically and the Create User button unlocks.</div>
+                </div>
+              </div>
+              <div class="sl-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input id="studentLookupInput" type="text" placeholder="Search by name or Student ID# (e.g. Enoch, or 000011)&hellip;" autocomplete="off">
+              </div>
+              <div id="studentLookupResults" class="sl-results"></div>
+
+              <div id="studentNoSelection" class="sl-empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                <span>No student selected yet &mdash; search above and pick a result. The Create User button stays locked until then.</span>
+              </div>
+
+              <div id="studentLookupLinked" class="sl-linked" style="display:none;">
+                <div class="sl-linked-info">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+                  <span>Linked to <b id="slLinkedName"></b> &middot; Student ID <b id="slLinkedId"></b> &mdash; this account will be attached to that existing student record, not a new one.</span>
+                </div>
+                <button type="button" id="slUnlinkBtn">Unlink &amp; clear</button>
+              </div>
+
+              <div id="studentLockedSummary" class="sl-summary" style="display:none;">
+                <div class="sl-summary-title">Registration information on file &mdash; read only, cannot be edited here</div>
+                <div class="sl-summary-grid">
+                  <div><span class="sk">Full name</span><span class="sv" id="sumName">&mdash;</span></div>
+                  <div><span class="sk">Student ID</span><span class="sv mono" id="sumId">&mdash;</span></div>
+                  <div><span class="sk">Gender</span><span class="sv" id="sumGender">&mdash;</span></div>
+                  <div><span class="sk">Date of birth</span><span class="sv" id="sumDob">&mdash;</span></div>
+                  <div><span class="sk">Email</span><span class="sv" id="sumEmail">&mdash;</span></div>
+                  <div><span class="sk">Phone</span><span class="sv" id="sumPhone">&mdash;</span></div>
+                  <div class="sl-summary-full"><span class="sk">Address</span><span class="sv" id="sumAddress">&mdash;</span></div>
+                  <div><span class="sk">Guardian / Parent</span><span class="sv" id="sumGuardian">&mdash;</span></div>
+                </div>
+                <div class="sl-summary-note">To correct any of this, edit the student's registration record in the Registrar module &mdash; not here.</div>
+              </div>
+            </div>
+
+            <div class="form-body">
+
+              <div id="manualDetailSections">
+              <!-- SECTION 1: Personal Details -->
+              <div class="fsection">
+                <div class="fsection-title"><span class="num">1</span> Personal Details</div>
+                <div class="fgrid">
+                  <div class="field" id="f-firstName">
+                    <label>First Name *</label>
+                    <input type="text" id="firstName" maxlength="30" placeholder="e.g. Comfort">
+                    <span class="hint">Max 30 characters, letters only (a-z, A-Z)</span>
+                    <span class="err">Letters only, up to 30 characters</span>
+                  </div>
+                  <div class="field" id="f-lastName">
+                    <label>Last Name *</label>
+                    <input type="text" id="lastName" maxlength="30" placeholder="e.g. Doe">
+                    <span class="hint">Max 30 characters, letters only (a-z, A-Z)</span>
+                    <span class="err">Letters only, up to 30 characters</span>
+                  </div>
+                  <div class="field" id="f-gender">
+                    <label>Gender *</label>
+                    <div class="radio-row" style="padding-top:10px;">
+                      <label class="radio-opt"><input type="radio" name="gender" value="Female"> Female</label>
+                      <label class="radio-opt"><input type="radio" name="gender" value="Male"> Male</label>
+                      <label class="radio-opt"><input type="radio" name="gender" value="Other"> Other</label>
+                    </div>
+                    <span class="err">Please select a gender</span>
+                  </div>
+
+                  <div class="field" id="f-dob">
+                    <label>Date of Birth *</label>
+                    <div class="dob-row">
+                      <select id="dobDay"><option value="">Day</option></select>
+                      <select id="dobMonth">
+                        <option value="">Month</option>
+                        <option>January</option><option>February</option><option>March</option><option>April</option>
+                        <option>May</option><option>June</option><option>July</option><option>August</option>
+                        <option>September</option><option>October</option><option>November</option><option>December</option>
+                      </select>
+                      <select id="dobYear"><option value="">Year</option></select>
+                    </div>
+                    <span class="err">Please select a complete date of birth</span>
+                  </div>
+                  <div class="field" id="f-email">
+                    <label id="emailLabel">Email ID *</label>
+                    <input type="email" id="email" placeholder="name@example.com">
+                    <span class="hint" id="emailHint" style="display:none;">Optional for students &mdash; leave blank if they don't have one</span>
+                    <span class="err">Enter a valid email address</span>
+                  </div>
+                  <div class="field" id="f-mobile">
+                    <label id="mobileLabel">Mobile Number *</label>
+                    <input type="tel" id="mobile" maxlength="10" placeholder="e.g. 0770123456">
+                    <span class="hint" id="mobileHint">10 digit number</span>
+                    <span class="err">Must be exactly 10 digits</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 2: Address -->
+              <div class="fsection">
+                <div class="fsection-title"><span class="num">2</span> Address</div>
+                <div class="fgrid">
+                  <div class="field fspan-3" id="f-address">
+                    <label id="addressLabel">Address *</label>
+                    <textarea id="address" placeholder="House number, street, community"></textarea>
+                    <span class="err">Address is required</span>
+                  </div>
+                </div>
+                <div class="fgrid" style="margin-top:16px;">
+                  <div class="field" id="f-city">
+                    <label id="cityLabel">City *</label>
+                    <input type="text" id="city" maxlength="30" placeholder="e.g. Careysburg">
+                    <span class="hint">Max 30 characters, letters only</span>
+                    <span class="err">Letters only, up to 30 characters</span>
+                  </div>
+                  <div class="field" id="f-pin">
+                    <label>Zip / Postal Code</label>
+                    <input type="text" id="pin" maxlength="6" placeholder="e.g. 231000">
+                    <span class="hint">6 digit number (optional)</span>
+                    <span class="err">Must be exactly 6 digits</span>
+                  </div>
+                  <div class="field" id="f-state">
+                    <label id="stateLabel">County / State *</label>
+                    <input type="text" id="state" maxlength="30" placeholder="e.g. Montserrado">
+                    <span class="hint">Max 30 characters, letters only</span>
+                    <span class="err">Letters only, up to 30 characters</span>
+                  </div>
+                  <div class="field" id="f-country">
+                    <label>Country *</label>
+                    <input type="text" id="country" value="Liberia" maxlength="30">
+                    <span class="err">Country is required</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 3: Hobbies -->
+              <div class="fsection">
+                <div class="fsection-title"><span class="num">3</span> Hobbies &amp; Interests <span style="font-weight:500; color:var(--muted); font-size:11.5px;">(optional)</span></div>
+                <div class="check-row">
+                  <label class="check-opt"><input type="checkbox" value="Drawing"> Drawing</label>
+                  <label class="check-opt"><input type="checkbox" value="Singing"> Singing</label>
+                  <label class="check-opt"><input type="checkbox" value="Dancing"> Dancing</label>
+                  <label class="check-opt"><input type="checkbox" value="Sketching"> Sketching</label>
+                  <label class="check-opt"><input type="checkbox" id="hobbyOtherCheck"> Others:
+                    <input type="text" id="hobbyOtherText" style="width:160px; margin-left:6px; padding:6px 9px; border:1px solid var(--line); border-radius:8px; font-size:12.6px;" disabled placeholder="Please specify">
+                  </label>
+                </div>
+              </div>
+
+              </div>
+              <!-- /manualDetailSections -->
+
+              <!-- SECTION 4: Qualifications (Student) -->
+              <div class="fsection role-fields active" data-role-group="student" id="sectionQualStudent">
+                <div class="fsection-title"><span class="num">4</span> Academic Qualifications</div>
+                <div class="table-wrap">
+                  <table class="qual">
+                    <thead><tr><th style="width:26px;">#</th><th>Examination</th><th>Board / Institution</th><th style="width:110px;">Percentage</th><th style="width:110px;">Year of Passing</th></tr></thead>
+                    <tbody>
+                      <tr><td>1</td><td>Class X (JHS)</td><td><input type="text" placeholder="Board / School name"></td><td><input type="text" class="pct" placeholder="e.g. 82.50"></td><td><input type="text" class="yr" placeholder="e.g. 2020"></td></tr>
+                      <tr><td>2</td><td>Class XII (SHS)</td><td><input type="text" placeholder="Board / School name"></td><td><input type="text" class="pct" placeholder="e.g. 78.25"></td><td><input type="text" class="yr" placeholder="e.g. 2022"></td></tr>
+                      <tr><td>3</td><td>Undergraduate</td><td><input type="text" placeholder="Institution"></td><td><input type="text" class="pct" placeholder="If applicable"></td><td><input type="text" class="yr" placeholder="If applicable"></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="fgrid cols-2" style="margin-top:16px;">
+                  <div class="field">
+                    <label>Class / Grade Applying For *</label>
+                    <select id="classApplying">
+                      <option value="">Select class</option>
+                      <option>Grade 7</option><option>Grade 8</option><option>Grade 9</option>
+                      <option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+                    </select>
+                    <span class="err">Please select a class</span>
+                  </div>
+                  <div class="field">
+                    <label>Guardian / Parent Name</label>
+                    <input type="text" placeholder="Full name of parent or guardian">
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 4: Teacher -->
+              <div class="fsection role-fields" data-role-group="teacher">
+                <div class="fsection-title"><span class="num">4</span> Teaching Assignment</div>
+                <div class="fgrid cols-2">
+                  <div class="field">
+                    <label>Subject(s) Taught *</label>
+                    <input type="text" placeholder="e.g. Mathematics, Physics">
+                  </div>
+                  <div class="field">
+                    <label>Department</label>
+                    <select><option>Sciences</option><option>Humanities</option><option>Languages</option><option>Business</option><option>Physical Education</option></select>
+                  </div>
+                  <div class="field">
+                    <label>Highest Qualification</label>
+                    <input type="text" placeholder="e.g. B.Ed, M.A.">
+                  </div>
+                  <div class="field">
+                    <label>Years of Experience</label>
+                    <input type="text" placeholder="e.g. 5">
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 4: Staff -->
+              <div class="fsection role-fields" data-role-group="staff">
+                <div class="fsection-title"><span class="num">4</span> Employment Details</div>
+                <div class="fgrid cols-2">
+                  <div class="field">
+                    <label>Designation *</label>
+                    <input type="text" placeholder="e.g. Registrar, Records Officer, Security">
+                  </div>
+                  <div class="field">
+                    <label>Department</label>
+                    <select><option>Administration</option><option>Facilities</option><option>ICT</option><option>Security</option></select>
+                  </div>
+                  <div class="field" id="f-backendRole">
+                    <label>System Role *</label>
+                    <select id="backendRole">
+                      <option value="registrar">Registrar</option>
+                      <option value="principal">Principal</option>
+                      <option value="ict">ICT</option>
+                      <option value="super_admin">Super Admin</option>
+                    </select>
+                    <span class="hint">Determines which dashboard and permissions this account receives.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 5: Account & Permissions -->
+              <div class="fsection">
+                <div class="fsection-title"><span class="num">5</span> Account &amp; Permissions</div>
+                <div class="fgrid cols-2">
+                  <div class="field" id="f-username" style="display:none;">
+                    <label>Username *</label>
+                    <input type="text" id="username" maxlength="30" placeholder="e.g. j.doe" autocomplete="off">
+                    <span class="hint">This is what the account signs in with. 3&ndash;30 characters: letters, numbers, '.', '_', '-'. Must be unique.</span>
+                    <span class="err">Enter a valid, unique username (3&ndash;30 characters)</span>
+                  </div>
+                  <div class="field" id="f-studentIdNotice" style="display:none;">
+                    <label>Student ID</label>
+                    <div style="padding:10px 12px; border:1px dashed var(--line); border-radius:10px; font-size:12.6px; color:var(--muted); background:var(--paper);">
+                      Auto-generated on save (e.g. <b>000001</b>) &mdash; this becomes the student's login ID.
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Status on Creation</label>
+                    <select id="acctStatus">
+                      <option value="Pending Approval" selected>Pending Approval (default)</option>
+                      <option value="Active">Active &mdash; skip approval</option>
+                      <option value="Suspended">Suspended</option>
+                    </select>
+                    <span class="hint">Only Super Administrator can activate accounts immediately</span>
+                  </div>
+                  <div class="field">
+                    <label>Assigned Permission Level</label>
+                    <select id="permLevel">
+                      <option>Standard &mdash; matches role default</option>
+                      <option>Restricted &mdash; view-only access</option>
+                      <option>Elevated &mdash; requires Super Admin sign-off</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="margin-top:14px; display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:12px; font-weight:700; color:var(--muted);">This account will be created as:</span>
+                  <span class="role-pill-preview pill navy" id="rolePreviewPill">Student</span>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-foot">
+              <div class="fp-note" id="workflowNote">Submitting sends this record to <b>Workflow Management</b> for Principal / Registrar approval before the account is activated. Every action here is audit-logged.</div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-ghost" id="resetBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+                  Reset
+                </button>
+                <button type="submit" class="btn btn-primary" id="createUserBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                  <span id="createUserBtnLabel">Create User</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </form>
+
+        <div class="allowed-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          <div><b>Super Administrator can:</b> create accounts for any role, set status on creation, and bypass the workflow queue when required. All other roles can only submit requests here that route to this workflow for approval.</div>
+        </div>
+
+      </section>
+
+      <div class="footer-ribbon">
+        <img class="footer-crest js-inst-logo" src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="">
+        <span class="js-inst-name">Kingsville Public High School</span> &middot; Super Administrator Console &middot; <b class="js-inst-motto">Knowledge is Power</b> &middot; <span class="js-inst-address">Kingsville #7, Careysburg District</span>
+        <img class="footer-crest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+        Republic of Liberia &middot; Ministry of Education
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- Persistent credentials modal — stays open until manually closed, so the
+     admin has as long as they need to copy the login ID + temp password
+     instead of racing a 4-second toast. -->
+<div id="credsOverlay" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(13,23,48,.55); align-items:center; justify-content:center; padding:20px;">
+  <div style="background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); max-width:460px; width:100%; padding:28px;">
+    <h3 class="display" style="margin:0 0 6px; font-size:22px; color:var(--navy);">Account created</h3>
+    <p style="margin:0 0 18px; color:var(--muted); font-size:14px;" id="credsName"></p>
+
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div>
+        <label style="display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:6px;" id="credsLoginLabel">Username</label>
+        <div style="display:flex; gap:8px;">
+          <input id="credsLoginValue" readonly class="mono" style="flex:1; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:var(--cream); font-size:15px;">
+          <button type="button" onclick="copyCred('credsLoginValue', this)" style="padding:10px 14px; border:1px solid var(--gold-deep); background:var(--gold-light); color:var(--navy); border-radius:10px; font-weight:600; font-size:13px;">Copy</button>
+        </div>
+      </div>
+      <div>
+        <label style="display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:6px;">Temporary password</label>
+        <div style="display:flex; gap:8px;">
+          <input id="credsPasswordValue" readonly class="mono" style="flex:1; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:var(--cream); font-size:15px;">
+          <button type="button" onclick="copyCred('credsPasswordValue', this)" style="padding:10px 14px; border:1px solid var(--gold-deep); background:var(--gold-light); color:var(--navy); border-radius:10px; font-weight:600; font-size:13px;">Copy</button>
+        </div>
+        <div id="credsPasswordHint" style="margin-top:6px; font-size:11.5px; color:var(--muted);"></div>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:8px; margin-top:14px; padding:10px 12px; background:#FFF7E8; border:1px solid var(--gold-light); border-radius:10px; font-size:12.5px; color:var(--gold-deep);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+      <span>This password is shown only once and isn't stored anywhere. Save it before closing this window.</span>
+    </div>
+
+    <button type="button" onclick="document.getElementById('credsOverlay').style.display='none';" style="margin-top:18px; width:100%; padding:12px; background:var(--navy); color:#fff; border:none; border-radius:10px; font-weight:700; font-size:14px;">Done — I've saved these</button>
+  </div>
+</div>
+
+</body>
+</html>
+<script>
+/* ---------- Role-aware "View All Users" back-link ---------- */
+/* ICT is allowed onto this page (auth-guard.js), but has no access to
+   super-admin/users.html — send ICT back to their own list instead. */
+(function(){
+  document.addEventListener('kps:authorized', function(e){
+    var role = e.detail && e.detail.profile && e.detail.profile.role;
+    if (role === 'ict') {
+      var link = document.querySelector('a.btn.btn-ghost[href="users.html"]');
+      if (link) link.setAttribute('href', window.KPS.withPrefix('ict/view-users.html'));
+    }
+  });
+})();
+
+/* ---------- Populate Day / Year selects ---------- */
+(function(){
+  const daySel = document.getElementById('dobDay');
+  for(let d=1; d<=31; d++){
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    daySel.appendChild(o);
+  }
+  const yearSel = document.getElementById('dobYear');
+  const thisYear = new Date().getFullYear();
+  for(let y=thisYear; y>=thisYear-90; y--){
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y;
+    yearSel.appendChild(o);
+  }
+})();
+
+/* ---------- Role tabs ---------- */
+const roleLabels = { student:'Student', teacher:'Teacher', staff:'Non-Teaching Staff' };
+const roleTabs = document.querySelectorAll('.role-tab');
+let currentRole = 'student';
+
+function setRole(role){
+  currentRole = role;
+  roleTabs.forEach(t => t.classList.toggle('active', t.dataset.role === role));
+  document.querySelectorAll('.role-fields').forEach(el => {
+    el.classList.toggle('active', el.dataset.roleGroup === role);
+  });
+  document.getElementById('roleHeadLabel').textContent = roleLabels[role];
+  const pill = document.getElementById('rolePreviewPill');
+  pill.textContent = roleLabels[role];
+  pill.className = 'role-pill-preview pill ' + (role === 'student' ? 'navy' : role === 'teacher' ? 'gold' : 'grey');
+
+  // Students log in with an auto-generated ID; everyone else logs in with
+  // a username. Email is required for staff/teacher, optional for students.
+  const isStudent = role === 'student';
+  document.getElementById('f-username').style.display = isStudent ? 'none' : '';
+  document.getElementById('f-studentIdNotice').style.display = isStudent ? '' : 'none';
+  document.getElementById('emailLabel').textContent = isStudent ? 'Email ID' : 'Email ID *';
+  document.getElementById('emailHint').style.display = isStudent ? '' : 'none';
+
+  document.getElementById('mobileLabel').textContent = isStudent ? 'Mobile Number' : 'Mobile Number *';
+  document.getElementById('mobileHint').textContent = isStudent ? '10 digit number (optional)' : '10 digit number';
+  document.getElementById('addressLabel').textContent = isStudent ? 'Address' : 'Address *';
+  document.getElementById('cityLabel').textContent = isStudent ? 'City' : 'City *';
+  document.getElementById('stateLabel').textContent = isStudent ? 'County / State' : 'County / State *';
+
+  document.getElementById('studentLookupPanel').style.display = isStudent ? '' : 'none';
+
+  // Students: no manual data entry at all. Sections 1-3 (Personal Details,
+  // Address, Hobbies) and the student Academic Qualifications table are
+  // hidden outright — everything comes from the search-and-link flow above
+  // instead. Staff/Teacher still fill the form in the normal way.
+  document.getElementById('manualDetailSections').style.display = isStudent ? 'none' : '';
+  document.getElementById('sectionQualStudent').style.display = isStudent ? 'none' : '';
+
+  document.getElementById('workflowNote').innerHTML = isStudent
+    ? 'Search and select a registered student above — nothing to fill in. Submitting sends this record to <b>Workflow Management</b> for Principal / Registrar approval before the account is activated. Every action here is audit-logged.'
+    : 'Submitting sends this record to <b>Workflow Management</b> for Principal / Registrar approval before the account is activated. Every action here is audit-logged.';
+
+  document.getElementById('sectionHeadDesc').textContent = isStudent
+    ? 'Search for the student below and select them from the results — that\u2019s the only step. Their registration record fills the account in automatically.'
+    : 'Fill in the applicant\u2019s details below. Fields marked with an asterisk are required. This form performs live validation as you type.';
+
+  if(!isStudent) unlinkStudent();
+  updateCreateButtonState();
+}
+roleTabs.forEach(t => t.addEventListener('click', () => setRole(t.dataset.role)));
+
+/* ---------- Create User button lock ----------
+   For the Student role, the button stays disabled until a registered
+   student has actually been linked — there is no manual-entry fallback,
+   so there is nothing valid to submit before that. */
+function updateCreateButtonState(){
+  const btn = document.getElementById('createUserBtn');
+  const label = document.getElementById('createUserBtnLabel');
+  const locked = currentRole === 'student' && !linkedStudentId;
+  btn.disabled = locked;
+  label.textContent = locked ? 'Select a student first' : 'Create User';
+  document.getElementById('studentNoSelection').style.display =
+    (currentRole === 'student' && !linkedStudentId) ? 'flex' : 'none';
+}
+
+/* ---------- Find & link an already-registered student ----------
+   Searches students the Registrar already saved (students table) that
+   don't have a login yet (profile_id is null), fills the form in from
+   that record, and remembers the student_id so submit passes it to
+   admin_create_user() as p_student_id. The database then links the new
+   login to that exact existing student row (trg_link_student_from_profile)
+   instead of minting a brand-new student record. */
+function setInput(id, value){
+  const el = document.getElementById(id);
+  if(el && value !== undefined && value !== null) el.value = value;
+}
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+let linkedStudentId = null;
+let linkedStudentUuid = null;
+let lookupDebounce = null;
+
+const lookupInput = document.getElementById('studentLookupInput');
+const lookupResults = document.getElementById('studentLookupResults');
+const lookupLinked = document.getElementById('studentLookupLinked');
+
+lookupInput.addEventListener('input', () => {
+  clearTimeout(lookupDebounce);
+  const q = lookupInput.value.trim();
+  if(q.length < 2){ lookupResults.innerHTML = ''; return; }
+  lookupDebounce = setTimeout(() => runStudentLookup(q), 250);
+});
+
+async function runStudentLookup(q){
+  lookupResults.innerHTML = '<div class="sl-empty">Searching&hellip;</div>';
+  try{
+    const { data, error } = await sb
+      .from('students')
+      .select('id, student_id, full_name, gender, date_of_birth, status, profile_id, profile_extra')
+      .is('profile_id', null)
+      .or(`full_name.ilike.%${q}%,student_id.ilike.%${q}%`)
+      .order('full_name')
+      .limit(8);
+    if(error) throw error;
+
+    if(!data || !data.length){
+      lookupResults.innerHTML = '<div class="sl-empty">No unlinked registered student matches that search &mdash; they may already have an account.</div>';
+      return;
+    }
+
+    lookupResults.innerHTML = '';
+    data.forEach(rec => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sl-result';
+      btn.innerHTML = `
+        <div>
+          <div class="sl-r-name">${escapeHtml(rec.full_name || 'Unnamed student')}</div>
+          <div class="sl-r-meta">${escapeHtml(rec.gender || '')}${rec.date_of_birth ? ' &middot; DOB ' + escapeHtml(rec.date_of_birth) : ''} &middot; ${escapeHtml(rec.status || '')}</div>
+        </div>
+        <span class="sl-r-id">${escapeHtml(rec.student_id || '')}</span>`;
+      btn.addEventListener('click', () => linkStudent(rec));
+      lookupResults.appendChild(btn);
+    });
+  } catch(err){
+    console.error('[create-user] student lookup failed', err);
+    lookupResults.innerHTML = '<div class="sl-empty">Search failed &mdash; please try again.</div>';
+  }
+}
+
+function parseFullName(fullName, extra){
+  extra = extra || {};
+  if(extra.firstName || extra.lastName){
+    return {
+      first: extra.firstName || '',
+      last: extra.lastName || '',
+      middle: extra.middleName || ''
+    };
+  }
+  const raw = (fullName || '').trim();
+  if(!raw) return { first:'', last:'', middle:'' };
+
+  // "Last, First, Middle" or "Last, First" — the format used for most
+  // already-registered students (e.g. "Sumo, Samuel, D.")
+  if(raw.includes(',')){
+    const parts = raw.split(',').map(p => p.trim()).filter(Boolean);
+    return {
+      last: parts[0] || '',
+      first: parts[1] || '',
+      middle: parts[2] || ''
+    };
+  }
+
+  // "First Middle Last" — plain space-separated
+  const words = raw.split(/\s+/).filter(Boolean);
+  if(words.length === 1) return { first: words[0], last: '', middle: '' };
+  return {
+    first: words[0],
+    last: words[words.length - 1],
+    middle: words.slice(1, -1).join(' ')
+  };
+}
+
+function linkStudent(rec){
+  const extra = rec.profile_extra || {};
+  const name = parseFullName(rec.full_name, extra);
+
+  setInput('firstName', name.first);
+  setInput('lastName', name.last);
+
+  if(rec.gender){
+    const genderRadio = document.querySelector(`input[name="gender"][value="${rec.gender}"]`);
+    if(genderRadio) genderRadio.checked = true;
+  }
+
+  const dobStr = rec.date_of_birth || extra.dob || '';
+  let dobDisplay = '';
+  if(dobStr){
+    const d = new Date(dobStr + 'T00:00:00');
+    if(!isNaN(d)){
+      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      setInput('dobDay', String(d.getDate()));
+      setInput('dobMonth', months[d.getMonth()]);
+      setInput('dobYear', String(d.getFullYear()));
+      dobDisplay = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+    }
+  }
+
+  const emailVal = extra.email || '';
+  const phoneVal = (extra.phone || extra.parentPhone || '').replace(/[^0-9]/g,'').slice(0,10);
+  const addressVal = extra.currentAddress || extra.admAddress || '';
+  const cityVal = extra.schoolLocation || '';
+  const stateVal = extra.stateRegion || extra.county || '';
+
+  setInput('email', emailVal);
+  setInput('mobile', phoneVal);
+  setInput('address', addressVal);
+  setInput('city', cityVal);
+  setInput('state', stateVal);
+
+  let guardianVal = '';
+  if(extra.parentName){
+    guardianVal = extra.parentName;
+    const guardianField = document.querySelector('[data-role-group="student"] input[type="text"][placeholder="Full name of parent or guardian"]');
+    if(guardianField) guardianField.value = extra.parentName;
+  }
+
+  linkedStudentId = rec.student_id;
+  linkedStudentUuid = rec.id;
+
+  document.getElementById('slLinkedName').textContent = rec.full_name || 'this student';
+  document.getElementById('slLinkedId').textContent = rec.student_id;
+  lookupLinked.style.display = 'flex';
+  lookupResults.innerHTML = '';
+  lookupInput.value = '';
+
+  // Read-only summary — this is the ONLY view of the student's details a
+  // Super Admin / ICT user sees, since the editable form fields (which
+  // still hold these same values behind the scenes, for submission) are
+  // hidden for the Student role.
+  document.getElementById('sumName').textContent = rec.full_name || '—';
+  document.getElementById('sumId').textContent = rec.student_id || '—';
+  document.getElementById('sumGender').textContent = rec.gender || '—';
+  document.getElementById('sumDob').textContent = dobDisplay || '—';
+  document.getElementById('sumEmail').textContent = emailVal || '—';
+  document.getElementById('sumPhone').textContent = phoneVal || '—';
+  document.getElementById('sumAddress').textContent = [addressVal, cityVal, stateVal].filter(Boolean).join(', ') || '—';
+  document.getElementById('sumGuardian').textContent = guardianVal || '—';
+  document.getElementById('studentLockedSummary').style.display = '';
+
+  const notice = document.getElementById('f-studentIdNotice');
+  notice.querySelector('div').innerHTML = 'Linking to existing Student ID <b>' + escapeHtml(rec.student_id) + '</b> &mdash; this login will be attached to that student\'s record, not a new one.';
+
+  document.querySelectorAll('.field').forEach(f => f.classList.remove('invalid'));
+  updateCreateButtonState();
+  showToast('Loaded ' + (rec.full_name || 'student') + '\'s details. Click Create User to finish.');
+}
+
+function unlinkStudent(){
+  linkedStudentId = null;
+  linkedStudentUuid = null;
+  lookupLinked.style.display = 'none';
+  const summary = document.getElementById('studentLockedSummary');
+  if(summary) summary.style.display = 'none';
+  const notice = document.getElementById('f-studentIdNotice');
+  if(notice) notice.querySelector('div').innerHTML = 'Auto-generated on save (e.g. <b>000001</b>) &mdash; this becomes the student\'s login ID.';
+  updateCreateButtonState();
+}
+document.getElementById('slUnlinkBtn').addEventListener('click', () => {
+  unlinkStudent();
+  showToast('Unlinked. Fields left as-is — clear or edit them as needed.');
+});
+
+/* ---------- Hobbies "Others" toggle ---------- */
+const hobbyOtherCheck = document.getElementById('hobbyOtherCheck');
+const hobbyOtherText = document.getElementById('hobbyOtherText');
+hobbyOtherCheck.addEventListener('change', () => {
+  hobbyOtherText.disabled = !hobbyOtherCheck.checked;
+  if(!hobbyOtherCheck.checked) hobbyOtherText.value = '';
+});
+
+/* ---------- Input restriction helpers ---------- */
+function restrictLetters(el, max){
+  el.addEventListener('input', () => {
+    el.value = el.value.replace(/[^a-zA-Z\s]/g, '').slice(0, max);
+  });
+}
+function restrictDigits(el, max){
+  el.addEventListener('input', () => {
+    el.value = el.value.replace(/[^0-9]/g, '').slice(0, max);
+  });
+}
+['firstName','lastName','city','state'].forEach(id => restrictLetters(document.getElementById(id), 30));
+restrictDigits(document.getElementById('mobile'), 10);
+restrictDigits(document.getElementById('pin'), 6);
+
+document.querySelectorAll('table.qual .pct').forEach(el => {
+  el.addEventListener('input', () => {
+    let v = el.value.replace(/[^0-9.]/g, '');
+    const parts = v.split('.');
+    if(parts.length > 2) v = parts[0] + '.' + parts[1];
+    if(parts[1]) v = parts[0] + '.' + parts[1].slice(0,2);
+    el.value = v;
+  });
+});
+document.querySelectorAll('table.qual .yr').forEach(el => {
+  el.addEventListener('input', () => { el.value = el.value.replace(/[^0-9]/g,'').slice(0,4); });
+});
+
+/* ---------- Validation ---------- */
+function markInvalid(fieldId, invalid){
+  const el = document.getElementById(fieldId);
+  if(!el) return;
+  el.classList.toggle('invalid', invalid);
+  el.classList.toggle('valid', !invalid);
+}
+function isLettersMax(val, max){ return /^[a-zA-Z\s]{1,}$/.test(val.trim()) && val.trim().length <= max; }
+
+function validateForm(){
+  // Student role: nothing was typed manually, so there is nothing to
+  // field-validate — the only requirement is that a registered student
+  // has actually been linked via the search panel above.
+  if(currentRole === 'student'){
+    return !!linkedStudentId;
+  }
+
+  let ok = true;
+
+  const firstName = document.getElementById('firstName').value;
+  const fnInvalid = !isLettersMax(firstName, 30);
+  markInvalid('f-firstName', fnInvalid); if(fnInvalid) ok = false;
+
+  const lastName = document.getElementById('lastName').value;
+  const lnInvalid = !isLettersMax(lastName, 30);
+  markInvalid('f-lastName', lnInvalid); if(lnInvalid) ok = false;
+
+  const genderChecked = document.querySelector('input[name="gender"]:checked');
+  markInvalid('f-gender', !genderChecked); if(!genderChecked) ok = false;
+
+  const day = document.getElementById('dobDay').value;
+  const month = document.getElementById('dobMonth').value;
+  const year = document.getElementById('dobYear').value;
+  const dobInvalid = !(day && month && year);
+  markInvalid('f-dob', dobInvalid); if(dobInvalid) ok = false;
+
+  const email = document.getElementById('email').value.trim();
+  const emailFormatOk = email === '' ? true : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const emailInvalid = currentRole === 'student' ? !emailFormatOk : (email === '' || !emailFormatOk);
+  markInvalid('f-email', emailInvalid); if(emailInvalid) ok = false;
+
+  if(currentRole !== 'student'){
+    const username = document.getElementById('username').value.trim();
+    const usernameInvalid = !/^[a-zA-Z0-9._-]{3,30}$/.test(username);
+    markInvalid('f-username', usernameInvalid); if(usernameInvalid) ok = false;
+  }
+
+  const mobile = document.getElementById('mobile').value;
+  const mobileInvalid = currentRole === 'student'
+    ? (mobile.length > 0 && !/^[0-9]{10}$/.test(mobile))
+    : !/^[0-9]{10}$/.test(mobile);
+  markInvalid('f-mobile', mobileInvalid); if(mobileInvalid) ok = false;
+
+  const address = document.getElementById('address').value;
+  const addrInvalid = currentRole === 'student' ? false : address.trim().length === 0;
+  markInvalid('f-address', addrInvalid); if(addrInvalid) ok = false;
+
+  const city = document.getElementById('city').value;
+  const cityInvalid = currentRole === 'student'
+    ? (city.trim().length > 0 && !isLettersMax(city, 30))
+    : !isLettersMax(city, 30);
+  markInvalid('f-city', cityInvalid); if(cityInvalid) ok = false;
+
+  const pin = document.getElementById('pin').value;
+  const pinInvalid = pin.length > 0 && !/^[0-9]{6}$/.test(pin);
+  markInvalid('f-pin', pinInvalid); if(pinInvalid) ok = false;
+
+  const state = document.getElementById('state').value;
+  const stateInvalid = currentRole === 'student'
+    ? (state.trim().length > 0 && !isLettersMax(state, 30))
+    : !isLettersMax(state, 30);
+  markInvalid('f-state', stateInvalid); if(stateInvalid) ok = false;
+
+  const country = document.getElementById('country').value;
+  const countryInvalid = country.trim().length === 0;
+  markInvalid('f-country', countryInvalid); if(countryInvalid) ok = false;
+
+  return ok;
+}
+
+/* ---------- Toast ---------- */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+
+/* ---------- Persistent credentials modal (no auto-dismiss) ---------- */
+function showCredentialsModal(fullName, role, loginId, password){
+  document.getElementById('credsName').textContent = fullName + ' — ' + role.replace('_',' ');
+  document.getElementById('credsLoginLabel').textContent = role === 'student' ? 'Student ID' : 'Username';
+  document.getElementById('credsLoginValue').value = loginId || '(not generated)';
+  document.getElementById('credsPasswordValue').value = password || '';
+  const pwHint = document.getElementById('credsPasswordHint');
+  if(pwHint) pwHint.textContent = role === 'student'
+    ? 'Simple 6-digit login PIN — easy for the student to remember and re-type.'
+    : 'Temporary password — the account should change this on first login.';
+  document.getElementById('credsOverlay').style.display = 'flex';
+}
+
+function copyCred(inputId, btn){
+  const input = document.getElementById(inputId);
+  input.select();
+  input.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(input.value).then(() => {
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  }).catch(() => {
+    document.execCommand('copy'); // fallback for older browsers
+  });
+}
+
+/* ---------- Submit: create a real Supabase Auth user + profile ----------
+   Maps the UI's three role tabs onto the six backend roles:
+     student -> student
+     teacher -> teacher
+     staff   -> the "System Role" select (registrar / principal / ict / super_admin)
+
+   Creating a Supabase Auth user (email + password) from the browser
+   requires elevated privileges. Rather than a separately-deployed Edge
+   Function (which needs a `supabase functions deploy` step you may not
+   have run yet), this calls the `admin_create_user()` SQL function that
+   already ships in Backend__1_.sql via `sb.rpc(...)`. It runs as
+   SECURITY DEFINER on the database side, but checks the CALLING user's
+   own permissions (has_permission('users.create'), and blocks ICT from
+   creating super_admin/ict accounts) — so it only works when called
+   under a real logged-in session, which is exactly what happens here. */
+function generateTempPassword(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+  let pw = '';
+  for(let i=0;i<12;i++) pw += chars[Math.floor(Math.random()*chars.length)];
+  return pw;
+}
+
+/* Students get a short, digits-only password instead of the complex
+   12-character one above — easy for a student (often a child) to read
+   off a slip and type in, never an 8+ character mix of letters/symbols.
+   Length defaults to 6 digits (Supabase Auth's own minimum password
+   length is 6 by default, so this is the shortest value guaranteed to
+   be accepted without also lowering that project setting). If your
+   Supabase Auth "Minimum password length" is set below 6, you can pass
+   4 or 5 here instead. */
+function generateStudentPassword(length){
+  length = length || 6;
+  let pw = '';
+  for(let i=0;i<length;i++) pw += Math.floor(Math.random()*10);
+  return pw;
+}
+
+function backendRoleFor(uiRole){
+  if(uiRole === 'student') return 'student';
+  if(uiRole === 'teacher') return 'teacher';
+  if(uiRole === 'staff') return document.getElementById('backendRole').value;
+  return null;
+}
+
+document.getElementById('registrationForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  if(!validateForm()){
+    if(currentRole === 'student'){
+      showToast('Search above and select a registered student before creating their account.');
+      document.getElementById('studentLookupInput').focus();
+    } else {
+      showToast('Please correct the highlighted fields before submitting.');
+      const firstInvalid = document.querySelector('.field.invalid');
+      if(firstInvalid) firstInvalid.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+    return;
+  }
+
+  const role = backendRoleFor(currentRole);
+  if(!role){
+    showToast('Please select a system role before submitting.');
+    return;
+  }
+
+  const status = document.getElementById('acctStatus').value;
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const fullName = firstName + ' ' + lastName;
+  const email = document.getElementById('email').value.trim();
+  const username = currentRole === 'student' ? undefined : document.getElementById('username').value.trim();
+  const isActive = status === 'Active';
+  // Students: simple 6-digit numeric password. Everyone else: the
+  // stronger 12-character mixed password (see generateTempPassword above).
+  const tempPassword = role === 'student' ? generateStudentPassword(6) : generateTempPassword();
+
+  const submitBtn = document.querySelector('#registrationForm button[type="submit"]');
+  const submitLabel = document.getElementById('createUserBtnLabel');
+  submitBtn.disabled = true;
+  submitLabel.textContent = 'Creating…';
+
+  try {
+    // admin_create_user(p_full_name, p_role, p_username, p_email,
+    //                    p_student_id, p_password)
+    // returns table(user_id uuid, temporary_password text).
+    // Students: leave username blank — the DB trigger auto-generates a
+    // sequential Student ID instead. Staff: username is required as typed.
+    const { data, error } = await sb.rpc('admin_create_user', {
+      p_full_name: fullName,
+      p_role: role,
+      p_username: role === 'student' ? null : (username || null),
+      p_email: email || null,
+      p_student_id: role === 'student' ? (linkedStudentId || null) : null,
+      p_password: tempPassword
+    });
+
+    if (error) throw error;
+
+    const row = Array.isArray(data) ? data[0] : data;
+    const newUserId = row && row.user_id;
+    const finalPassword = (row && row.temporary_password) || tempPassword;
+
+    // The RPC doesn't return the generated username/student_id or
+    // dashboard_route directly, so fetch them from the profile it just
+    // created (the trg_handle_new_auth_user trigger already wrote this row).
+    let loginId = username, dashboardRoute = null;
+    if (newUserId) {
+      const { data: prof } = await sb
+        .from('profiles')
+        .select('username, student_id, dashboard_route')
+        .eq('id', newUserId)
+        .maybeSingle();
+      if (prof) {
+        loginId = role === 'student' ? prof.student_id : prof.username;
+        dashboardRoute = prof.dashboard_route;
+      }
+
+      // admin_create_user() always creates an active account (no
+      // is_active parameter) — if the form specified Inactive, apply
+      // that here as a follow-up update.
+      if (!isActive) {
+        await sb.from('profiles').update({ is_active: false, status: 'inactive' }).eq('id', newUserId);
+      }
+    }
+
+    const loginLine = role === 'student'
+      ? (loginId ? ' &middot; Student ID (login): <b>' + loginId + '</b>' : '')
+      : (loginId ? ' &middot; Username (login): <b>' + loginId + '</b>' : '');
+
+    showToast(fullName + ' created as ' + role.replace('_',' ') +
+      ' &middot; status: ' + status +
+      (dashboardRoute ? ' &middot; dashboard: ' + dashboardRoute : ''));
+
+    // Persistent modal — replaces cramming the password into a 4-second
+    // toast. Stays open until the admin clicks "Done".
+    showCredentialsModal(fullName, role, loginId, finalPassword);
+
+    await KPSCore.audit('create_user', { email, username: loginId, role, is_active: isActive, login_id: loginId });
+    document.getElementById('registrationForm').reset();
+    document.getElementById('country').value = 'Liberia';
+    unlinkStudent();
+    setRole('student');
+  } catch (err) {
+    console.error('[create-user] failed', err);
+    showToast('Could not create this account: ' + (err.message || 'unknown error'));
+  } finally {
+    // Not a flat "re-enable" — for Student role the button must go back
+    // to locked (since unlinkStudent()/setRole() above just cleared the
+    // linked record on success). updateCreateButtonState() re-derives
+    // the correct disabled state instead of assuming it should be false.
+    updateCreateButtonState();
+  }
+});
+
+document.getElementById('resetBtn').addEventListener('click', function(){
+  document.getElementById('registrationForm').reset();
+  document.querySelectorAll('.field').forEach(f => { f.classList.remove('invalid'); f.classList.remove('valid'); });
+  hobbyOtherText.disabled = true;
+  document.getElementById('country').value = 'Liberia';
+  unlinkStudent();
+  setRole('student');
+  showToast('Form cleared.');
+});
+
+setRole('student');
+</script>

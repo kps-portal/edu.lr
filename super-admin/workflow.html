@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; System Workflow Configuration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand img{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; object-fit:cover; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.school-brand img{ width:46px; height:46px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER (ICT signature element) ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* chart bars */
+.chart-bars{ display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:10px; }
+.chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.chart-bar{ width:100%; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--gold-light), var(--gold-deep)); position:relative; transition:filter .15s; }
+.chart-bar:hover{ filter:brightness(1.08); }
+.chart-bar.alt{ background:linear-gradient(180deg, #9FB6E0, var(--navy-3)); }
+.chart-lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+.chart-legend{ display:flex; gap:16px; margin-top:6px; font-size:11.5px; color:var(--muted); }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.chip-dot{ width:8px; height:8px; border-radius:2px; }
+
+/* feed / lists */
+.feed-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px dashed var(--line); }
+.feed-item:last-child{ border-bottom:none; }
+.feed-dot{ width:32px; height:32px; border-radius:9px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex:none; }
+.feed-dot svg{ width:15px; height:15px; color:var(--crimson); }
+.feed-dot.gold svg{ color:var(--gold-deep); }
+.feed-dot.navy svg{ color:var(--navy-3); }
+.feed-text{ font-size:13px; font-weight:600; }
+.feed-sub{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.feed-time{ margin-left:auto; font-size:11px; color:var(--muted); white-space:nowrap; }
+
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+.progress-track{ height:6px; border-radius:20px; background:var(--line); overflow:hidden; flex:1; }
+.progress-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); }
+.progress-fill.ok{ background:linear-gradient(90deg, #8FD8AC, var(--success)); }
+.progress-fill.warn{ background:linear-gradient(90deg, var(--gold-light), var(--warn)); }
+.progress-fill.bad{ background:linear-gradient(90deg, #F0A7AE, var(--danger)); }
+
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.health-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; padding:7px 0; }
+.health-row .hb{ flex:1; height:7px; background:var(--line); border-radius:20px; overflow:hidden; }
+.health-row .hb i{ display:block; height:100%; border-radius:20px; }
+.health-row .hv{ width:74px; text-align:right; font-weight:700; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+button.pill:hover{ filter:brightness(0.96); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* Module placeholder cards */
+.module-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.module-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.module-ic{ width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.module-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.module-card h4{ margin:0; font-size:14.5px; }
+.module-card p{ margin:0; font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* Device status card (network) */
+.device-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
+.device-top{ display:flex; align-items:center; justify-content:space-between; }
+.device-ic{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.device-ic svg{ width:19px; height:19px; }
+.device-name{ font-weight:700; font-size:13.5px; margin-top:2px; }
+.device-meta{ font-size:11.5px; color:var(--muted); }
+
+/* Restricted note */
+.restricted-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#FBE6E6; border:1px solid #F3C7CB; margin-top:14px; }
+.restricted-note svg{ width:16px; height:16px; color:var(--danger); flex:none; margin-top:1px; }
+.restricted-note div{ font-size:12px; color:#7A2530; line-height:1.55; }
+.restricted-note b{ color:var(--danger); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field input[type=text], .field input[type=password], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.settings-list .row-line{ align-items:flex-start; }
+.settings-list .rl-name{ font-size:13.5px; }
+.settings-list .rl-sub{ margin-top:2px; max-width:52ch; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .bento{ grid-template-columns:1fr; }
+  .grid-3,.grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .tbl-actions, .toolbar, .tabs, .toast-wrap, .modal-backdrop, .footer-ribbon, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .view{ display:none !important; }
+  .view.active{ display:block !important; }
+  .card, .stat-card, .module-card, .device-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid,.grid-3,.grid-2,.grid-4{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+  .school-brand .sb-t2{ display:none; }
+  .topbar-divider{ display:none; }
+}
+
+/* ============================= USER ROLES SPECIFIC ============================= */
+.filter-bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.filter-bar .search-pill{ width:300px; }
+
+.pager{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:16px; flex-wrap:wrap; }
+.pager .pg-info{ font-size:12px; color:var(--muted); }
+.pager .pg-btns{ display:flex; gap:6px; }
+.pager button{ width:32px; height:32px; border-radius:9px; border:1px solid var(--line); background:var(--paper); font-size:12.6px; font-weight:700; }
+.pager button:hover{ border-color:var(--gold); }
+.pager button.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; border-color:transparent; }
+.pager button:disabled{ opacity:.4; cursor:default; }
+
+.ic-btn{ width:20px; height:20px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; flex:none; }
+.ic-btn.login{ background:#E4E9F4; color:var(--navy-3); }
+.ic-btn.create{ background:#E4F3E9; color:var(--success); }
+.ic-btn.update{ background:#FBEED2; color:var(--gold-deep); }
+.ic-btn.delete{ background:#FBE6E6; color:var(--danger); }
+.ic-btn.approve{ background:#E4F3E9; color:var(--success); }
+.ic-btn svg{ width:11px; height:11px; }
+
+/* Role cards */
+.role-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:16px; margin-bottom:26px; }
+.role-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px;
+  box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; display:flex; flex-direction:column; gap:10px;
+}
+.role-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.role-card-top{ display:flex; align-items:center; justify-content:space-between; }
+.role-ic{ width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--navy-3), var(--navy)); flex:none; }
+.role-ic svg{ width:18px; height:18px; color:var(--gold-light); }
+.role-ic.crimson{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.role-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.role-name{ font-family:'Fraunces',serif; font-size:16.5px; font-weight:700; margin:0; }
+.role-desc{ font-size:12px; color:var(--muted); line-height:1.5; margin:0; min-height:34px; }
+.role-meta{ display:flex; align-items:center; gap:14px; font-size:11.8px; color:var(--muted); }
+.role-meta b{ color:var(--ink); font-weight:700; }
+.role-card-foot{ display:flex; gap:8px; margin-top:2px; }
+.role-card-foot .btn{ flex:1; justify-content:center; }
+
+/* Permission matrix (inside modal) */
+.perm-group{ margin-bottom:16px; }
+.perm-group:last-child{ margin-bottom:0; }
+.perm-group-title{ font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--gold-deep); font-weight:800; margin:0 0 8px; }
+.perm-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px dashed var(--line); }
+.perm-row:last-child{ border-bottom:none; }
+.perm-row-text{ font-size:12.8px; }
+.perm-row-text .rl-name{ font-weight:700; font-size:13px; display:block; }
+.perm-row-text .rl-sub{ font-size:11.4px; color:var(--muted); margin-top:1px; }
+
+/* Role pill colors reuse .pill; role select in table */
+select.role-select{ border:1px solid var(--line); background:var(--paper); border-radius:8px; padding:6px 10px; font-size:12px; font-family:inherit; color:var(--ink); }
+
+@media (max-width: 900px){
+  .filter-bar .search-pill{ width:100%; }
+}
+
+/* ============================= WORKFLOW CONFIGURATION SPECIFIC ============================= */
+.lock-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:15px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(200,20,48,.10), rgba(217,138,36,.08));
+  border:1px solid #F3C7CB; border-left:4px solid var(--crimson); margin-bottom:20px;
+}
+.lock-banner svg{ width:19px; height:19px; color:var(--crimson); flex:none; margin-top:2px; }
+.lock-banner .sb-t{ font-size:13px; font-weight:800; color:var(--crimson-deep); letter-spacing:.01em; }
+.lock-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:3px; line-height:1.55; max-width:82ch; }
+.lock-banner .sb-s b{ color:var(--ink); }
+
+.cat-tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.cat-tab{ padding:8px 15px; border-radius:9px; font-size:12.3px; font-weight:700; color:var(--muted); white-space:nowrap; }
+.cat-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.wf-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:16px; margin-bottom:30px; }
+.wf-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:19px;
+  box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; display:flex; flex-direction:column; gap:11px;
+  position:relative;
+}
+.wf-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.wf-card-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.wf-ic{ width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--navy-3), var(--navy)); flex:none; }
+.wf-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.wf-ic.ict{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.wf-name{ font-family:'Fraunces',serif; font-size:16px; font-weight:700; margin:0; line-height:1.25; }
+.wf-desc{ font-size:12px; color:var(--muted); line-height:1.55; margin:0; min-height:36px; }
+.wf-cat-pill{ font-size:10px; text-transform:uppercase; letter-spacing:.06em; font-weight:800; color:var(--gold-deep); }
+.wf-meta{ display:flex; align-items:center; gap:14px; font-size:11.6px; color:var(--muted); flex-wrap:wrap; }
+.wf-meta b{ color:var(--ink); font-weight:700; }
+.wf-modules{ display:flex; flex-wrap:wrap; gap:5px; }
+.wf-mod-chip{ font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; background:var(--cream); border:1px solid var(--line); color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
+.wf-mod-chip.ict{ background:#FBE6E6; color:var(--danger); border-color:#F3C7CB; }
+.wf-card-foot{ display:flex; gap:8px; align-items:center; margin-top:2px; }
+.wf-card-foot .btn{ flex:1; justify-content:center; }
+.wf-status-row{ display:flex; align-items:center; justify-content:space-between; }
+
+/* step chain (inside modal) */
+.step-chain{ display:flex; flex-direction:column; gap:0; }
+.step-item{ display:flex; gap:12px; position:relative; padding-bottom:22px; }
+.step-item:last-child{ padding-bottom:0; }
+.step-item::before{ content:""; position:absolute; left:15px; top:32px; bottom:0; width:2px; background:var(--line); }
+.step-item:last-child::before{ display:none; }
+.step-num{ width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:13px; flex:none; box-shadow:0 0 0 4px var(--paper); z-index:1; }
+.step-body{ flex:1; background:var(--cream); border:1px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:6px; }
+.step-body-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.step-role-role{ display:flex; align-items:center; gap:8px; }
+.step-label{ font-size:13px; font-weight:700; }
+.step-desc{ font-size:11.6px; color:var(--muted); line-height:1.5; }
+.step-actions{ display:flex; gap:6px; }
+.step-actions button{ width:26px; height:26px; border-radius:7px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.step-actions button:hover{ border-color:var(--gold); }
+.step-actions svg{ width:12px; height:12px; }
+.step-required{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; padding:2px 7px; border-radius:20px; background:#E4F3E9; color:var(--success); }
+.step-optional{ background:#EFEAE0; color:var(--muted); }
+
+.mod-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:14px; }
+.mod-card{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:8px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.mod-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); }
+.mod-card.ict{ border-color:#F3C7CB; background:linear-gradient(180deg, #FFFEFB, #FBEEEE); }
+.mod-card-top{ display:flex; align-items:center; justify-content:space-between; }
+.mod-ic{ width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:var(--cream); }
+.mod-ic svg{ width:16px; height:16px; color:var(--navy-3); }
+.mod-card.ict .mod-ic{ background:#FBE6E6; }
+.mod-card.ict .mod-ic svg{ color:var(--crimson); }
+.mod-name{ font-size:13.5px; font-weight:700; }
+.mod-count{ font-size:11px; color:var(--muted); }
+.mod-access{ font-size:9.6px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--crimson); }
+
+.sev-select{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); width:100%; }
+
+@media (max-width:1180px){
+  .wf-grid{ grid-template-columns:1fr 1fr; }
+}
+@media (max-width:880px){
+  .wf-grid{ grid-template-columns:1fr; }
+  .mod-grid{ grid-template-columns:repeat(2,1fr); }
+}
+
+</style>
+<style>
+.app{ display:block; grid-template-columns:none; min-height:100vh; }
+.main{ min-width:0; }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+  <main class="main">
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="school-brand">
+        <img src="../assets/images/img-32d08477299d907c.jpg" alt="Kingsville Public School crest">
+        <div>
+          <div class="sb-t1">Kingsville #7 &middot; Careysburg</div>
+          <div class="sb-t2">Kingsville Public School</div>
+        </div>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia &middot; Ministry of Education</div>
+        <div class="page-title">System Workflow Configuration</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search workflows or modules&hellip;">
+      </div>
+      <a class="btn btn-ghost" href="audit-log.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        View Audit Log
+      </a>
+      <button type="button" class="btn btn-primary" id="addWorkflowBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        New Workflow
+      </button>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="view active" id="view-workflow">
+
+        <div class="lock-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></svg>
+          <div>
+            <div class="sb-t">Super Administrator &mdash; Exclusive Access</div>
+            <div class="sb-s">This console defines and configures the <b>approval workflows and process chains</b> that run across every module of the Kingsville MIS &mdash; Admissions, Discipline &amp; Welfare, Academics, Finance, Library, HR &amp; Staff, Communication, and <b>ICT Systems</b>. No other role can view, edit, or bypass a workflow from here. Every change is written immediately to the <b class="sa">Audit Log</b> and takes effect platform-wide the moment it is saved.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>System Workflow Configuration</h2>
+            <p>Build, sequence, and lock down the multi-role approval chains that power the entire institution &mdash; including account provisioning, device deployment, and backup escalation handled by ICT.</p>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></div>
+              <span class="stat-trend flat" id="statWfTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statActiveWorkflows">&ndash;</div>
+            <div class="stat-label">Active workflows</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic navy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+              <span class="stat-trend flat" id="statStepsTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statTotalSteps">&ndash;</div>
+            <div class="stat-label">Configured approval steps</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+              <span class="stat-trend flat" id="statPendingTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statPendingApprovals">&ndash;</div>
+            <div class="stat-label">Pending approvals today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic" style="background:linear-gradient(135deg, var(--danger), #8C0F26);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></svg></div>
+              <span class="stat-trend flat" id="statModulesTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statModulesCovered">&ndash;</div>
+            <div class="stat-label">Modules covered (incl. ICT)</div>
+          </div>
+        </div>
+
+        <div class="section-head" style="margin-bottom:14px;">
+          <div>
+            <h3 style="margin:0 0 3px; font-size:16.5px; font-family:'Fraunces',serif;">Workflows</h3>
+            <p style="font-size:12.5px;">Click a workflow to inspect or reorder its approval chain. Toggle a card&rsquo;s footer switch to activate or suspend it instantly.</p>
+          </div>
+        </div>
+
+        <div class="cat-tabs" id="catTabs">
+          <button type="button" class="cat-tab active" data-cat="all">All</button>
+          <button type="button" class="cat-tab" data-cat="admissions">Admissions</button>
+          <button type="button" class="cat-tab" data-cat="welfare">Discipline &amp; Welfare</button>
+          <button type="button" class="cat-tab" data-cat="academics">Academics</button>
+          <button type="button" class="cat-tab" data-cat="finance">Finance</button>
+          <button type="button" class="cat-tab" data-cat="library">Library</button>
+          <button type="button" class="cat-tab" data-cat="hr">HR &amp; Staff</button>
+          <button type="button" class="cat-tab" data-cat="comms">Communication</button>
+          <button type="button" class="cat-tab" data-cat="ict">ICT &amp; Systems</button>
+        </div>
+
+        <div class="wf-grid" id="wfGrid">
+          <!-- populated by JS -->
+        </div>
+        <div class="empty-state" id="wfEmptyState" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 6l6 6-6 6"/></svg>
+          <h4 id="wfEmptyTitle">No workflows found</h4>
+          <p id="wfEmptyBody">Try a different category or create a new workflow.</p>
+        </div>
+
+        <div class="section-head" style="margin-top:8px;">
+          <div>
+            <h3 style="margin:0 0 3px; font-size:16.5px; font-family:'Fraunces',serif;">System Module Directory</h3>
+            <p style="font-size:12.5px;">Every role dashboard in the Kingsville MIS, including the ICT control panel. Super Admin has configuration authority over all of them &mdash; the workflows above are what wire these modules together.</p>
+          </div>
+        </div>
+
+        <div class="mod-grid" id="modGrid">
+          <!-- populated by JS -->
+        </div>
+        <div class="empty-state" id="modEmptyState" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
+          <h4>No modules found</h4>
+          <p>The module directory could not be loaded from the server.</p>
+        </div>
+
+        <div class="restricted-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div><b>Access restriction:</b> Registrar, Principal, Teacher, Student, and ICT accounts can only view workflow steps that name their own role, and only from within their own dashboard. Only the Super Administrator role can reach this configuration screen, reorder steps, reassign a step to a different role, or deactivate a workflow.</div>
+        </div>
+
+      </section>
+
+      <!-- Workflow step-chain modal -->
+      <div class="modal-backdrop" id="stepModalBackdrop">
+        <div class="modal" style="width:600px;">
+          <div class="modal-head">
+            <h3 id="stepModalTitle">Workflow &mdash; Approval Chain</h3>
+            <button type="button" id="stepModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div class="modal-body" id="stepModalBody" style="max-height:62vh; overflow-y:auto;">
+            <!-- populated by JS -->
+          </div>
+          <div class="modal-foot" style="justify-content:space-between;">
+            <button type="button" class="btn btn-ghost btn-sm" id="addStepBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Add Step
+            </button>
+            <div style="display:flex; gap:10px;">
+              <button type="button" class="btn btn-ghost" id="stepCancelBtn">Cancel</button>
+              <button type="button" class="btn btn-primary" id="stepSaveBtn">Save Chain</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add step modal -->
+      <div class="modal-backdrop" id="addStepModalBackdrop">
+        <div class="modal">
+          <div class="modal-head">
+            <h3>Add Approval Step</h3>
+            <button type="button" id="addStepModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div class="modal-body">
+            <div class="field">
+              <label for="newStepRole">Responsible role</label>
+              <select id="newStepRole" class="sev-select">
+                <option>Registrar</option>
+                <option>Principal</option>
+                <option>Teacher</option>
+                <option>ICT Officer</option>
+                <option>Super Administrator</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="newStepAction">Action type</label>
+              <select id="newStepAction" class="sev-select">
+                <option>Submit</option>
+                <option>Verify</option>
+                <option>Review</option>
+                <option>Approve</option>
+                <option>Reject</option>
+                <option>Notify</option>
+                <option>Provision</option>
+                <option>Escalate</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="newStepLabel">Step label</label>
+              <input type="text" id="newStepLabel" placeholder="e.g. Verify supporting documents">
+            </div>
+            <div class="field">
+              <label for="newStepDesc">Short description</label>
+              <textarea id="newStepDesc" rows="2" placeholder="What happens at this step and why it matters"></textarea>
+            </div>
+            <div class="field">
+              <label for="newStepRequired">Requirement</label>
+              <select id="newStepRequired" class="sev-select">
+                <option value="required">Required &mdash; blocks the chain until complete</option>
+                <option value="optional">Optional &mdash; can be skipped</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button type="button" class="btn btn-ghost" id="addStepCancelBtn">Cancel</button>
+            <button type="button" class="btn btn-primary" id="addStepConfirmBtn">Add to Chain</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- New workflow modal -->
+      <div class="modal-backdrop" id="newWfModalBackdrop">
+        <div class="modal">
+          <div class="modal-head">
+            <h3>New Workflow</h3>
+            <button type="button" id="newWfModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div class="modal-body">
+            <div class="field">
+              <label for="newWfName">Workflow name</label>
+              <input type="text" id="newWfName" placeholder="e.g. Textbook Damage Assessment">
+            </div>
+            <div class="field">
+              <label for="newWfCategory">Category</label>
+              <select id="newWfCategory" class="sev-select">
+                <option value="admissions">Admissions</option>
+                <option value="welfare">Discipline &amp; Welfare</option>
+                <option value="academics">Academics</option>
+                <option value="finance">Finance</option>
+                <option value="library">Library</option>
+                <option value="hr">HR &amp; Staff</option>
+                <option value="comms">Communication</option>
+                <option value="ict">ICT &amp; Systems</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="newWfDesc">Description</label>
+              <textarea id="newWfDesc" rows="3" placeholder="What this workflow governs and who is involved"></textarea>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button type="button" class="btn btn-ghost" id="newWfCancelBtn">Cancel</button>
+            <button type="button" class="btn btn-primary" id="newWfConfirmBtn">Create Workflow</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-ribbon">
+        <img class="footer-crest" src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="">
+        Kingsville Public High School &middot; Super Administrator Console &middot; <b>Knowledge is Power</b> &middot; Kingsville #7, Careysburg District
+        <img class="footer-crest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+        Republic of Liberia &middot; Ministry of Education
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+</body>
+</html>
+<script>
+/* ---------- Toast ---------- */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function formatNumber(n){
+  if(n === null || n === undefined) return '&mdash;';
+  return Number(n).toLocaleString();
+}
+
+/* =========================================================================
+   Live data wiring — Supabase-backed (no fake /api/... endpoints, no
+   localStorage). Every list below starts empty and is populated from the
+   real `workflows` / `workflow_steps` tables via the RPCs shipped in
+   supabase/migrations/000_MASTER_SCHEMA.sql (013) and
+   supabase/migrations/012_addendum_workflow_ui_fields.sql:
+
+     list_workflows_full()                 -> workflows + embedded steps
+     workflow_summary()                     -> { total, active, inactive, total_steps }
+     create_workflow(name, category, desc, kind, modules)
+     update_workflow_status(workflow_id, status)
+     replace_workflow_steps(workflow_id, steps jsonb)
+
+   "pendingApprovals" comes from the real approval_requests table (status
+   = 'pending') — the same table registrar/principal approval screens
+   already write to. "modulesCovered" is a distinct count of every module
+   key referenced across all workflows' `modules` arrays.
+
+   The Module Directory tab is NOT a live per-user data source — it lists
+   the ERP's actual role folders and how many real pages exist in each
+   (registrar, principal, ict, teacher, student), which is fixed
+   application structure, not something any user record could change, so
+   there's nothing to fetch here beyond what's already true of this
+   codebase.
+   ========================================================================= */
+const MODULE_DIRECTORY = [
+  { key:'registrar', label:'Registrar', count:21, ict:false },
+  { key:'principal',  label:'Principal', count:18, ict:false },
+  { key:'ict',        label:'ICT',       count:14, ict:true  },
+  { key:'teacher',    label:'Teacher',   count:19, ict:false },
+  { key:'student',    label:'Student',   count:25, ict:false }
+];
+
+/* ---------- Role -> pill color mapping ---------- */
+const ROLE_COLOR = {
+  'Registrar':'navy', 'Principal':'red', 'Teacher':'grey',
+  'ICT Officer':'red', 'Super Administrator':'red'
+};
+function pillClassFor(role){
+  const c = ROLE_COLOR[role] || 'grey';
+  return c === 'red' ? 'red' : c === 'green' ? 'green' : c === 'gold' ? 'gold' : c === 'navy' ? 'navy' : 'grey';
+}
+
+/* ---------- Live state (populated from the database, no fake data) ---------- */
+let allWorkflows = [];
+let moduleDirectory = [];
+let totalStepsCache = 0;
+let activeStepModalWorkflowId = null;
+let stagedSteps = [];
+
+/* ---------- Loaders ---------- */
+async function loadWorkflows(){
+  try{
+    const rows = await KPS.db.rpc('list_workflows_full');
+    allWorkflows = Array.isArray(rows) ? rows.map(r => ({
+      id: r.id,
+      name: r.name,
+      category: r.category,
+      description: r.description || '',
+      status: r.status,
+      modules: Array.isArray(r.modules) ? r.modules : [],
+      steps: Array.isArray(r.steps) ? r.steps : []
+    })) : [];
+  }catch(err){
+    console.error('Failed to load workflows from the database', err);
+    allWorkflows = [];
+    showToast('Could not load workflows from the database.');
+  }
+}
+
+function loadModules(){
+  // Real, fixed application structure — see note above MODULE_DIRECTORY.
+  moduleDirectory = MODULE_DIRECTORY;
+}
+
+async function loadSummary(){
+  try{
+    const [wfSummaryRows, pendingRows] = await Promise.all([
+      KPS.db.rpc('workflow_summary'),
+      KPS.sb.from('approval_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending')
+    ]);
+    const s = Array.isArray(wfSummaryRows) ? wfSummaryRows[0] : wfSummaryRows;
+    const pendingApprovals = pendingRows && typeof pendingRows.count === 'number' ? pendingRows.count : null;
+    const modulesCovered = new Set(allWorkflows.flatMap(w => w.modules)).size;
+
+    totalStepsCache = (s && s.total_steps) || 0;
+    document.getElementById('statActiveWorkflows').textContent = formatNumber(s ? s.active : null);
+    document.getElementById('statTotalSteps').textContent = formatNumber(s ? s.total_steps : null);
+    document.getElementById('statPendingApprovals').textContent = formatNumber(pendingApprovals);
+    document.getElementById('statModulesCovered').textContent = formatNumber(modulesCovered);
+    // No historical snapshot exists yet to compute a real trend against,
+    // so trends show flat ("–") rather than a fabricated delta.
+    ['statWfTrend','statStepsTrend','statPendingTrend','statModulesTrend'].forEach(id => setTrend(id, null));
+  }catch(err){
+    console.error('Failed to load workflow summary from the database', err);
+    ['statActiveWorkflows','statTotalSteps','statPendingApprovals','statModulesCovered'].forEach(id => {
+      document.getElementById(id).textContent = formatNumber(null);
+    });
+    ['statWfTrend','statStepsTrend','statPendingTrend','statModulesTrend'].forEach(id => setTrend(id, null));
+    showToast('Could not load summary stats from the database.');
+  }
+}
+function setTrend(id, value){
+  const el = document.getElementById(id);
+  if(!value){ el.textContent = '\u2013'; el.className = 'stat-trend flat'; return; }
+  el.textContent = value;
+  el.className = 'stat-trend ' + (value.startsWith('+') ? 'up' : value.startsWith('-') ? 'down' : 'flat');
+}
+
+/* ---------- Category labels/icons ---------- */
+const CAT_LABEL = {
+  admissions:'Admissions', welfare:'Discipline & Welfare', academics:'Academics',
+  finance:'Finance', library:'Library', hr:'HR & Staff', comms:'Communication', ict:'ICT & Systems'
+};
+
+let activeCategory = 'all';
+let activeSearchTerm = '';
+
+function wfIcon(cat){
+  if(cat === 'ict') return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></svg>';
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>';
+}
+
+function getFilteredWorkflows(){
+  let list = activeCategory === 'all' ? allWorkflows : allWorkflows.filter(w => w.category === activeCategory);
+  if(activeSearchTerm){
+    const q = activeSearchTerm;
+    list = list.filter(w => w.name.toLowerCase().includes(q) || w.description.toLowerCase().includes(q) || w.modules.some(m => m.toLowerCase().includes(q)));
+  }
+  return list;
+}
+
+function renderWorkflows(){
+  const grid = document.getElementById('wfGrid');
+  const emptyState = document.getElementById('wfEmptyState');
+  const list = getFilteredWorkflows();
+  grid.innerHTML = '';
+
+  if(!list.length){
+    emptyState.style.display = '';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  list.forEach(wf => {
+    const card = document.createElement('div');
+    card.className = 'wf-card';
+    const modChips = wf.modules.slice(0,4).map(m => {
+      const isIct = m.indexOf('ict/') === 0;
+      return '<span class="wf-mod-chip' + (isIct ? ' ict' : '') + '">' + escapeHtml(m) + '</span>';
+    }).join('');
+    card.innerHTML =
+      '<div class="wf-card-top">' +
+        '<div class="wf-ic' + (wf.category === 'ict' ? ' ict' : '') + '">' + wfIcon(wf.category) + '</div>' +
+        '<span class="wf-cat-pill">' + escapeHtml(CAT_LABEL[wf.category] || wf.category) + '</span>' +
+      '</div>' +
+      '<h4 class="wf-name">' + escapeHtml(wf.name) + '</h4>' +
+      '<p class="wf-desc">' + escapeHtml(wf.description) + '</p>' +
+      '<div class="wf-meta"><span><b>' + wf.steps.length + '</b> steps</span><span><b>' + wf.modules.length + '</b> modules linked</span></div>' +
+      '<div class="wf-modules">' + modChips + '</div>' +
+      '<div class="wf-status-row">' +
+        '<span class="pill ' + (wf.status === 'active' ? 'green' : 'grey') + '">' + (wf.status === 'active' ? 'Active' : 'Suspended') + '</span>' +
+        '<button type="button" class="toggle ' + (wf.status === 'active' ? 'on' : '') + '" data-id="' + wf.id + '" title="Toggle active"></button>' +
+      '</div>' +
+      '<div class="wf-card-foot">' +
+        '<button type="button" class="btn btn-ghost btn-sm configure-btn">Configure Chain</button>' +
+      '</div>';
+    card.querySelector('.configure-btn').addEventListener('click', () => openStepModal(wf.id));
+    card.querySelector('.toggle').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const newStatus = wf.status === 'active' ? 'inactive' : 'active';
+      try{
+        await KPS.db.rpc('update_workflow_status', { p_workflow_id: wf.id, p_status: newStatus });
+        wf.status = newStatus;
+        showToast(wf.name + ' is now ' + (wf.status === 'active' ? 'active' : 'suspended') + '.');
+        renderWorkflows();
+        loadSummary();
+      }catch(err){
+        console.error('Failed to update workflow status', err);
+        showToast('Could not update status &mdash; please try again.');
+      }
+    });
+    grid.appendChild(card);
+  });
+}
+
+document.getElementById('catTabs').addEventListener('click', (e) => {
+  const btn = e.target.closest('.cat-tab');
+  if(!btn) return;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  activeCategory = btn.dataset.cat;
+  renderWorkflows();
+});
+
+/* ---------- Module directory ---------- */
+function renderModules(){
+  const grid = document.getElementById('modGrid');
+  const emptyState = document.getElementById('modEmptyState');
+  grid.innerHTML = '';
+
+  if(!moduleDirectory.length){
+    emptyState.style.display = '';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  moduleDirectory.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'mod-card' + (m.ict ? ' ict' : '');
+    card.innerHTML =
+      '<div class="mod-card-top">' +
+        '<div class="mod-ic">' + (m.ict ?
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></svg>' :
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>') +
+        '</div>' +
+        '<span class="mod-access">Super Admin</span>' +
+      '</div>' +
+      '<div class="mod-name">' + escapeHtml(m.label) + '</div>' +
+      '<div class="mod-count">' + m.count + ' pages configured</div>';
+    grid.appendChild(card);
+  });
+}
+
+/* ---------- Step-chain modal ---------- */
+const stepModalBackdrop = document.getElementById('stepModalBackdrop');
+const stepModalBody = document.getElementById('stepModalBody');
+
+function openStepModal(wfId){
+  const wf = allWorkflows.find(w => w.id === wfId);
+  if(!wf) return;
+  activeStepModalWorkflowId = wfId;
+  stagedSteps = wf.steps.map(s => Object.assign({}, s));
+  document.getElementById('stepModalTitle').textContent = wf.name + ' \u2014 Approval Chain';
+  renderStepChain();
+  stepModalBackdrop.classList.add('open');
+}
+function renderStepChain(){
+  if(!stagedSteps.length){
+    stepModalBody.innerHTML = '<div style="text-align:center; padding:20px; color:var(--muted);">No steps yet. Use &ldquo;Add Step&rdquo; below to build this chain.</div>';
+    return;
+  }
+  let html = '<div class="step-chain">';
+  stagedSteps.forEach((s, i) => {
+    html +=
+      '<div class="step-item">' +
+        '<div class="step-num">' + (i+1) + '</div>' +
+        '<div class="step-body">' +
+          '<div class="step-body-top">' +
+            '<div class="step-role-role"><span class="pill ' + pillClassFor(s.role) + '">' + escapeHtml(s.role) + '</span><span class="pill grey">' + escapeHtml(s.action) + '</span></div>' +
+            '<div class="step-actions">' +
+              '<button type="button" class="up-btn" data-i="' + i + '" title="Move up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>' +
+              '<button type="button" class="down-btn" data-i="' + i + '" title="Move down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button>' +
+              '<button type="button" class="del-btn" data-i="' + i + '" title="Remove step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="step-label">' + escapeHtml(s.label) + '</div>' +
+          '<div class="step-desc">' + escapeHtml(s.desc) + '</div>' +
+          '<div><span class="step-required ' + (s.required ? '' : 'step-optional') + '">' + (s.required ? 'Required' : 'Optional') + '</span></div>' +
+        '</div>' +
+      '</div>';
+  });
+  html += '</div>';
+  stepModalBody.innerHTML = html;
+
+  stepModalBody.querySelectorAll('.up-btn').forEach(b => b.addEventListener('click', () => {
+    const i = Number(b.dataset.i);
+    if(i > 0){ [stagedSteps[i-1], stagedSteps[i]] = [stagedSteps[i], stagedSteps[i-1]]; renderStepChain(); }
+  }));
+  stepModalBody.querySelectorAll('.down-btn').forEach(b => b.addEventListener('click', () => {
+    const i = Number(b.dataset.i);
+    if(i < stagedSteps.length - 1){ [stagedSteps[i+1], stagedSteps[i]] = [stagedSteps[i], stagedSteps[i+1]]; renderStepChain(); }
+  }));
+  stepModalBody.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', () => {
+    const i = Number(b.dataset.i);
+    stagedSteps.splice(i, 1);
+    renderStepChain();
+  }));
+}
+document.getElementById('stepModalClose').addEventListener('click', () => stepModalBackdrop.classList.remove('open'));
+document.getElementById('stepCancelBtn').addEventListener('click', () => stepModalBackdrop.classList.remove('open'));
+stepModalBackdrop.addEventListener('click', (e) => { if(e.target === stepModalBackdrop) stepModalBackdrop.classList.remove('open'); });
+
+document.getElementById('stepSaveBtn').addEventListener('click', async () => {
+  const wf = allWorkflows.find(w => w.id === activeStepModalWorkflowId);
+  if(!wf) return;
+  const steps = stagedSteps.map((s, i) => Object.assign({}, s, { step_order: i + 1 }));
+  try{
+    await KPS.db.rpc('replace_workflow_steps', { p_workflow_id: wf.id, p_steps: steps });
+    wf.steps = steps;
+    showToast('Approval chain saved for ' + wf.name + '.');
+    stepModalBackdrop.classList.remove('open');
+    renderWorkflows();
+    loadSummary();
+  }catch(err){
+    console.error('Failed to save approval chain', err);
+    showToast('Could not save the approval chain &mdash; please try again.');
+  }
+});
+
+/* ---------- Add step modal ---------- */
+const addStepModalBackdrop = document.getElementById('addStepModalBackdrop');
+document.getElementById('addStepBtn').addEventListener('click', () => addStepModalBackdrop.classList.add('open'));
+document.getElementById('addStepModalClose').addEventListener('click', () => addStepModalBackdrop.classList.remove('open'));
+document.getElementById('addStepCancelBtn').addEventListener('click', () => addStepModalBackdrop.classList.remove('open'));
+addStepModalBackdrop.addEventListener('click', (e) => { if(e.target === addStepModalBackdrop) addStepModalBackdrop.classList.remove('open'); });
+
+document.getElementById('addStepConfirmBtn').addEventListener('click', () => {
+  const role = document.getElementById('newStepRole').value;
+  const action = document.getElementById('newStepAction').value;
+  const label = document.getElementById('newStepLabel').value.trim();
+  const desc = document.getElementById('newStepDesc').value.trim();
+  const required = document.getElementById('newStepRequired').value === 'required';
+  if(!label){ showToast('Give the step a short label first.'); return; }
+  stagedSteps.push({ role, action, label, desc: desc || 'No additional notes.', required });
+  document.getElementById('newStepLabel').value = '';
+  document.getElementById('newStepDesc').value = '';
+  addStepModalBackdrop.classList.remove('open');
+  renderStepChain();
+  showToast('Step added. Remember to Save Chain.');
+});
+
+/* ---------- New workflow modal ---------- */
+const newWfModalBackdrop = document.getElementById('newWfModalBackdrop');
+document.getElementById('addWorkflowBtn').addEventListener('click', () => newWfModalBackdrop.classList.add('open'));
+document.getElementById('newWfModalClose').addEventListener('click', () => newWfModalBackdrop.classList.remove('open'));
+document.getElementById('newWfCancelBtn').addEventListener('click', () => newWfModalBackdrop.classList.remove('open'));
+newWfModalBackdrop.addEventListener('click', (e) => { if(e.target === newWfModalBackdrop) newWfModalBackdrop.classList.remove('open'); });
+
+document.getElementById('newWfConfirmBtn').addEventListener('click', async () => {
+  const name = document.getElementById('newWfName').value.trim();
+  const category = document.getElementById('newWfCategory').value;
+  const description = document.getElementById('newWfDesc').value.trim();
+  if(!name){ showToast('Give the workflow a name first.'); return; }
+  try{
+    const rows = await KPS.db.rpc('create_workflow', { p_name: name, p_category: category, p_description: description });
+    const row = Array.isArray(rows) ? rows[0] : rows;
+    const created = {
+      id: row.id, name: row.name, category: row.category, status: row.status,
+      description: row.description || 'No description yet.', modules: row.modules || [], steps: []
+    };
+    allWorkflows.unshift(created);
+    document.getElementById('newWfName').value = '';
+    document.getElementById('newWfDesc').value = '';
+    newWfModalBackdrop.classList.remove('open');
+    activeCategory = 'all';
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.cat-tab[data-cat="all"]').classList.add('active');
+    renderWorkflows();
+    loadSummary();
+    showToast('Workflow created. Open it to build its approval chain.');
+  }catch(err){
+    console.error('Failed to create workflow', err);
+    showToast('Could not create the workflow &mdash; please try again.');
+  }
+});
+
+/* ---------- Global search ---------- */
+document.getElementById('globalSearch').addEventListener('input', (e) => {
+  activeSearchTerm = e.target.value.trim().toLowerCase();
+  renderWorkflows();
+});
+
+/* ---------- Initial load ---------- */
+async function initWorkflowScreen(){
+  await Promise.all([loadWorkflows(), loadModules()]);
+  renderWorkflows();
+  renderModules();
+  loadSummary();
+}
+initWorkflowScreen();
+</script>

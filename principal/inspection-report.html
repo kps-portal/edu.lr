@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — School Inspection Report</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;justify-content:center;gap:12px;}
+  header.topbar .left img{height:28px;width:28px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .kps-logo{height:30px;width:30px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+
+  .ticker-bar{
+    background:#fff4d6;border-bottom:1px solid #ecd9a0;
+    display:flex;align-items:center;overflow:hidden;flex-shrink:0;
+    height:clamp(30px,4.2vh,36px);
+  }
+  .ticker-label{
+    flex-shrink:0;display:flex;align-items:center;gap:6px;
+    background:var(--crimson);color:#fff;font-size:11px;font-weight:800;
+    letter-spacing:.4px;text-transform:uppercase;height:100%;padding:0 14px;white-space:nowrap;
+  }
+  .ticker-label svg{width:13px;height:13px;flex-shrink:0;}
+  .ticker-viewport{flex:1;overflow:hidden;position:relative;height:100%;}
+  .ticker-track{
+    display:flex;align-items:center;gap:56px;position:absolute;white-space:nowrap;
+    height:100%;will-change:transform;animation:tickerScroll 30s linear infinite;
+  }
+  .ticker-viewport:hover .ticker-track{animation-play-state:paused;}
+  .ticker-track span{font-size:12.5px;color:var(--ink);font-weight:600;}
+  .ticker-track span.pinned::before{content:"📋 ";}
+  @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  .ticker-bar.ticker-empty .ticker-track{animation:none;position:static;}
+  .ticker-bar.ticker-empty .ticker-track span{color:var(--muted);font-weight:400;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1060px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;max-height:100%;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,38px) clamp(20px,7vw,36px) clamp(16px,3vh,30px);text-align:left;}
+  .seal-stage{position:relative;width:clamp(70px,12vh,110px);height:clamp(70px,12vh,110px);margin:0 auto clamp(8px,2vh,14px);display:flex;align-items:center;justify-content:center;}
+  .card img.seal{position:relative;z-index:2;height:clamp(60px,10vh,92px);width:clamp(60px,10vh,92px);object-fit:contain;border-radius:50%;background:#fff;padding:4px;box-shadow:0 10px 22px rgba(11,23,48,.25), 0 0 0 4px #fff;}
+  .card h1{font-size:clamp(14.5px,3vh,16.5px);color:var(--navy);font-weight:700;line-height:1.45;margin-bottom:6px;letter-spacing:.2px;text-align:center;}
+  .card h1 .school-line{color:var(--crimson);font-size:clamp(13px,2.7vh,15px);}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:clamp(8px,2vh,14px) auto clamp(12px,3vh,22px);border-radius:2px;}
+
+  .section-tabs{display:flex;gap:6px;background:#f1f1ef;border-radius:8px;padding:4px;margin-bottom:clamp(16px,2.6vh,22px);}
+  .section-tabs button{flex:1;border:none;background:transparent;padding:10px 14px;border-radius:6px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .section-tabs button.active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(11,23,48,.15);}
+  .section-tabs button svg{width:15px;height:15px;}
+  .stat-section{display:none;}
+  .stat-section.active{display:block;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(9px,1.6vh,11px) 13px;border:1px solid var(--line);border-radius:4px;
+    font-size:14px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:90px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .compose-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+  @media (max-width:720px){.compose-grid, .compose-grid.cols-3{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(16px,2.6vh,22px);}
+  .panel h2{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+  .panel h3{font-size:12.5px;font-weight:700;color:var(--navy);margin:16px 0 10px;letter-spacing:.2px;}
+  p.table-hint{font-size:11.5px;color:var(--muted);margin:-4px 0 8px;}
+
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:clamp(14px,2.4vh,20px);}
+  select.scope-select{padding:7px 11px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:#fff;color:var(--ink);}
+  button.refresh-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+  button.refresh-btn:hover{background:#fafafa;}
+  button.refresh-btn svg{width:14px;height:14px;}
+  button.refresh-btn.spinning svg{animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:clamp(18px,3vh,26px);}
+  @media (max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;box-shadow:0 2px 6px rgba(11,23,48,.05);}
+  .kpi-label{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);}
+  .kpi-value{font-size:26px;font-weight:800;color:var(--navy);margin-top:4px;line-height:1.1;}
+  .kpi-value.danger{color:var(--danger);}
+  .kpi-value.ok{color:var(--ok);}
+
+  .table-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .table-filters{display:flex;flex-wrap:wrap;gap:8px;flex:1;}
+  .table-filters input{max-width:240px;}
+  .table-filters select{padding:9px 11px;border:1px solid var(--line);border-radius:4px;font-size:13px;background:#fff;color:var(--ink);}
+  button.export-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;padding:9px 13px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  button.export-btn:hover{background:#fafafa;}
+
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:10px;vertical-align:middle;}
+  .badge.pass{background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .badge.fail{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .badge.role{background:#eef1fb;color:var(--navy);border:1px solid #dbe1f5;}
+  .badge.pending{background:#fff4d6;color:#8a6d1a;border:1px solid #ecd9a0;}
+
+  .request-list{display:flex;flex-direction:column;gap:10px;}
+  .request-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;display:flex;flex-direction:column;gap:6px;position:relative;}
+  .request-card.approved{border-left:4px solid var(--ok);}
+  .request-card.rejected{border-left:4px solid var(--danger);}
+  .request-card.pending{border-left:4px solid var(--gold);}
+  .request-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .request-title{font-size:14.5px;font-weight:700;color:var(--navy);}
+  .request-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .request-fees{font-size:12.5px;color:var(--ink);}
+  .request-actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;}
+  button.btn-ghost{border:none;background:none;color:var(--navy);font-weight:600;font-size:12px;cursor:pointer;padding:3px 6px;}
+  button.btn-ghost:hover{text-decoration:underline;}
+  button.btn-ghost.danger{color:var(--danger);}
+  button.btn-ghost.accent{color:var(--crimson);}
+
+  button.btn-primary{padding:10px 20px;border:none;border-radius:4px;background:var(--crimson);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;transition:background .15s;}
+  button.btn-primary:hover{background:var(--crimson-dark);}
+  button.btn-secondary{padding:10px 20px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13.5px;cursor:pointer;}
+  button.btn-secondary:hover{background:#fafafa;}
+  button.btn-generate{padding:10px 20px;border:1px solid var(--navy);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+  button.btn-generate:hover{background:var(--navy);color:#fff;}
+  button.btn-generate svg{width:15px;height:15px;}
+  .compose-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap;}
+
+  .areas-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:8px;}
+  .areas-table th, .areas-table td{border:1px solid var(--line);padding:6px 7px;text-align:left;vertical-align:top;}
+  .areas-table th{background:var(--panel);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);}
+  .areas-table input[type="text"], .areas-table textarea{width:100%;padding:6px 6px;border:1px solid var(--line);border-radius:3px;font-size:12.5px;font-family:inherit;}
+  .areas-table textarea{min-height:38px;resize:vertical;}
+  .areas-table select{width:100%;padding:6px 4px;border:1px solid var(--line);border-radius:3px;font-size:12.5px;background:#fff;}
+  .areas-table td.area-remove{text-align:center;vertical-align:middle;}
+  .areas-table td.area-remove button{border:none;background:none;color:var(--danger);cursor:pointer;font-weight:700;font-size:14px;}
+
+  .reco-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:8px;}
+  .reco-table th, .reco-table td{border:1px solid var(--line);padding:6px 7px;text-align:left;vertical-align:top;}
+  .reco-table th{background:var(--panel);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);}
+  .reco-table input[type="text"], .reco-table input[type="date"]{width:100%;padding:6px 6px;border:1px solid var(--line);border-radius:3px;font-size:12.5px;}
+  .reco-table select{width:100%;padding:6px 4px;border:1px solid var(--line);border-radius:3px;font-size:12.5px;background:#fff;}
+  .reco-table td.reco-remove{text-align:center;vertical-align:middle;}
+  .reco-table td.reco-remove button{border:none;background:none;color:var(--danger);cursor:pointer;font-weight:700;font-size:14px;}
+
+  button.add-row-btn{border:1px dashed var(--line);background:#fff;color:var(--navy);border-radius:4px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:14px;}
+  button.add-row-btn:hover{background:#fafafa;}
+
+  .checklist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .checklist label{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink);font-weight:400;text-transform:none;}
+  .checklist input{width:17px;height:17px;accent-color:var(--ok);}
+
+  .back-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:clamp(10px,2vh,16px);font-size:13px;}
+  .back-row a{color:var(--navy);text-decoration:none;font-weight:600;}
+  .back-row a:hover{text-decoration:underline;}
+  .back-row svg{width:14px;height:14px;flex-shrink:0;}
+
+  .msg{margin-top:clamp(8px,1.6vh,14px);font-size:12.5px;padding:9px 11px;border-radius:4px;display:none;text-align:left;}
+  .msg.err{display:block;background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .msg.ok{display:block;background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .empty-state{font-size:12.5px;color:var(--muted);text-align:center;padding:18px 4px;}
+  .updated-note{font-size:11px;color:var(--muted);text-align:right;margin-top:8px;}
+
+  footer.site-footer{background:var(--navy-deep);color:#c9d2e8;font-size:11px;text-align:center;padding:clamp(8px,1.4vh,12px) 10px;border-top:2px solid var(--gold);flex-shrink:0;}
+  footer.site-footer .footer-line-1{font-weight:600;letter-spacing:.2px;}
+  footer.site-footer .footer-line-2{margin-top:3px;font-size:10.5px;color:var(--gold);letter-spacing:.3px;}
+
+  /* ===== Edit modal ===== */
+  .edit-overlay{position:fixed;inset:0;background:rgba(11,23,48,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
+  .edit-overlay.open{display:flex;}
+  .edit-modal{width:100%;max-width:820px;max-height:90vh;overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 20px 50px rgba(11,23,48,.3);padding:22px;}
+  .edit-modal h3{font-size:15px;color:var(--navy);margin-bottom:14px;}
+
+  /* ===== Shared generated-document overlay ===== */
+  .doc-overlay{position:fixed;inset:0;background:rgba(11,23,48,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:16px;}
+  .doc-overlay.open{display:flex;}
+  .doc-modal{width:100%;max-width:820px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 24px 60px rgba(11,23,48,.35);}
+  .doc-paper{padding:clamp(20px,4vw,40px);font-family:Georgia,"Times New Roman",serif;color:#111;}
+  .doc-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:14px clamp(18px,4vw,34px);border-top:1px solid var(--line);background:var(--panel);border-radius:0 0 10px 10px;font-family:"Segoe UI",Arial,sans-serif;}
+  button.btn-share, button.btn-download, button.btn-print, button.btn-doc-delete{padding:10px 18px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-share:hover, button.btn-download:hover{background:#fafafa;}
+  button.btn-print{border:none;background:var(--navy);color:#fff;}
+  button.btn-print:hover{background:var(--navy-deep);}
+  button.btn-doc-delete{border:1px solid #f6c9c4;color:var(--danger);}
+  button.btn-doc-delete:hover{background:#fdecea;}
+
+  /* --- letterhead --- */
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:62px;width:62px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:22px;font-weight:800;color:var(--navy);letter-spacing:.3px;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-office-row{display:flex;justify-content:space-between;align-items:flex-end;font-size:12.5px;font-style:italic;margin-bottom:16px;}
+  .doc-office-row .doc-date{font-style:normal;}
+  .doc-office-row .doc-date b{border-bottom:1px dotted #333;padding-bottom:1px;}
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:10px;text-transform:uppercase;}
+
+  /* --- inspection report specific --- */
+  .insp-status-flag{display:inline-block;margin:4px 0 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:4px 12px;border-radius:12px;}
+  .insp-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;margin:14px 0 18px;}
+  @media (max-width:600px){.insp-info-grid{grid-template-columns:1fr;}}
+  .insp-info-row{display:flex;gap:10px;margin-bottom:6px;font-size:13.5px;}
+  .insp-info-row .lbl{font-weight:700;min-width:150px;}
+  .insp-info-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;}
+  .insp-section-title{font-weight:700;font-size:13.5px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.3px;color:#20242e;border-bottom:1px solid #ccc;padding-bottom:4px;}
+  table.insp-areas-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0 18px;}
+  table.insp-areas-table th, table.insp-areas-table td{border:1px solid #333;padding:6px 8px;text-align:left;vertical-align:top;}
+  table.insp-areas-table th{background:#f1f1ef;font-style:italic;}
+  .rating-tag{font-weight:700;}
+  .rating-tag.excellent{color:var(--ok);}
+  .rating-tag.good{color:var(--ok);}
+  .rating-tag.fair{color:#8a6d1a;}
+  .rating-tag.poor{color:var(--danger);}
+  .insp-list{list-style:none;margin:0 0 16px 4px;padding:0;}
+  .insp-list li{font-size:13px;line-height:1.9;padding-left:20px;position:relative;}
+  .insp-list li::before{content:"\2756";position:absolute;left:0;top:1px;color:var(--crimson);font-size:11px;}
+  .priority-high{color:var(--danger);font-weight:700;}
+  .priority-medium{color:#8a6d1a;font-weight:700;}
+  .priority-low{color:var(--ok);font-weight:700;}
+  .insp-body p{font-size:13.5px;line-height:1.7;margin-bottom:10px;text-align:justify;}
+  .insp-signoff{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin:30px 0 10px;}
+  @media (max-width:600px){.insp-signoff{grid-template-columns:1fr;}}
+  .insp-signoff div{font-size:12.5px;}
+  .insp-signoff .sig-script{font-family:"Brush Script MT",cursive;font-size:20px;margin-bottom:-6px;min-height:24px;}
+  .insp-signoff .sig-name{border-top:1px solid #333;padding-top:4px;font-weight:700;}
+  .insp-signoff .sig-title{color:#555;font-size:11px;}
+  .insp-note{font-size:11.5px;color:#333;margin-top:20px;line-height:1.6;}
+  .insp-ref{font-size:11.5px;margin-top:10px;font-weight:700;}
+
+  @media print{
+    body *{visibility:hidden;}
+    .doc-overlay.open, .doc-overlay.open *{visibility:visible;}
+    .doc-overlay.open{position:absolute;inset:auto;background:none;padding:0;display:block !important;}
+    .doc-overlay.open .doc-modal{position:absolute;top:0;left:0;max-width:100%;max-height:none;box-shadow:none;border-radius:0;overflow:visible;}
+    .doc-actions{display:none !important;}
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left" id="topbarCrestWrap">
+    <img class="kps-logo" src="../assets/images/img-63d9fc79f267bd59.png" alt="Kingsville Public School logo">
+    <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+  </div>
+  <img class="moe-mini" src="../assets/images/img-738ccabf41d2ffd8.png" alt="Ministry of Education seal">
+</header>
+
+<div class="ticker-bar" id="tickerBar">
+  <div class="ticker-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Inspection Reports
+  </div>
+  <div class="ticker-viewport">
+    <div class="ticker-track" id="tickerTrack">
+      <span>Loading school inspection updates&hellip;</span>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+      <div class="seal-stage">
+        <img class="seal" src="../assets/images/img-63d9fc79f267bd59.png" alt="School seal">
+      </div>
+      <h1>School Inspection Report<br><span class="school-line">Kingsville Public High School</span></h1>
+      <div class="subtitle-rule"></div>
+
+      <div class="section-tabs" id="sectionTabs">
+        <button data-section="compose" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          New Inspection
+        </button>
+        <button data-section="manage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M3 12h18M3 19h18"/></svg>
+          All Inspections
+        </button>
+      </div>
+
+      <!-- ================= COMPOSE SECTION ================= -->
+      <section class="stat-section active" id="composeSection">
+        <div class="panel">
+          <h2>New School Inspection Report</h2>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newInspectorName">Inspector Name</label>
+              <input id="newInspectorName" type="text" placeholder="e.g. Mr. Joseph K. Doe" autocomplete="off" maxlength="150">
+            </div>
+            <div class="field">
+              <label for="newInspectorTitle">Inspector Title / Office</label>
+              <input id="newInspectorTitle" type="text" placeholder="e.g. County Education Officer" autocomplete="off" maxlength="150">
+            </div>
+            <div class="field">
+              <label for="newInspectionType">Inspection Type</label>
+              <select id="newInspectionType">
+                <option value="routine">Routine</option>
+                <option value="follow_up">Follow-up</option>
+                <option value="special">Special / Complaint-Based</option>
+                <option value="accreditation">Accreditation</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newInspectionDate">Inspection Date</label>
+              <input id="newInspectionDate" type="date">
+            </div>
+            <div class="field">
+              <label for="newTerm">Academic Year / Term</label>
+              <input id="newTerm" type="text" placeholder="e.g. 2025/2026, 2nd Term" autocomplete="off" maxlength="60">
+            </div>
+            <div class="field">
+              <label for="newOverallRating">Overall Rating</label>
+              <select id="newOverallRating">
+                <option value="excellent">Excellent</option>
+                <option value="satisfactory" selected>Satisfactory</option>
+                <option value="needs_improvement">Needs Improvement</option>
+                <option value="unsatisfactory">Unsatisfactory</option>
+              </select>
+            </div>
+          </div>
+
+          <h3>Areas Evaluated</h3>
+          <p class="table-hint">Add or remove areas to match the scope of this inspection.</p>
+          <table class="areas-table" id="areasInputTable">
+            <thead>
+              <tr><th style="width:26%;">Area</th><th style="width:14%;">Rating</th><th>Comments</th><th style="width:36px;"></th></tr>
+            </thead>
+            <tbody id="areasInputBody"></tbody>
+          </table>
+          <button type="button" class="add-row-btn" id="addAreaRowBtn">+ Add Area</button>
+
+          <h3>Strengths Noted</h3>
+          <div class="field">
+            <label for="newStrengths">List one strength per line</label>
+            <textarea id="newStrengths" placeholder="e.g. Strong attendance record among teaching staff"></textarea>
+          </div>
+
+          <h3>Recommendations</h3>
+          <table class="reco-table" id="recoTable">
+            <thead>
+              <tr><th>Recommendation</th><th style="width:110px;">Priority</th><th style="width:130px;">Target Date</th><th style="width:36px;"></th></tr>
+            </thead>
+            <tbody id="recoTableBody"></tbody>
+          </table>
+          <button type="button" class="add-row-btn" id="addRecoRowBtn">+ Add Recommendation</button>
+
+          <div class="compose-grid">
+            <div class="field">
+              <label for="newFollowUpRequired">Follow-up Required?</label>
+              <select id="newFollowUpRequired">
+                <option value="no" selected>No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="newFollowUpDate">Follow-up Date (if applicable)</label>
+              <input id="newFollowUpDate" type="date">
+            </div>
+          </div>
+
+          <div class="compose-grid">
+            <div class="field">
+              <label for="newPrincipalRemarks">Principal's Remarks</label>
+              <textarea id="newPrincipalRemarks" placeholder="Any response or remarks from the principal regarding this inspection…" maxlength="1000"></textarea>
+            </div>
+            <div class="field">
+              <label for="newPrincipalName">Principal Name (Acknowledged By)</label>
+              <input id="newPrincipalName" type="text" placeholder="e.g. Principal Varfee" autocomplete="off" maxlength="100">
+            </div>
+          </div>
+
+          <div class="compose-actions">
+            <button class="btn-secondary" id="clearComposeBtn" type="button">Clear</button>
+            <button class="btn-generate" id="generateReportBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/><path d="M9 11h6"/></svg>
+              Generate Report
+            </button>
+            <button class="btn-primary" id="postRequestBtn" type="button">Save Inspection</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MANAGE SECTION ================= -->
+      <section class="stat-section" id="manageSection">
+
+        <div class="toolbar">
+          <select class="scope-select" id="manageRatingFilter">
+            <option value="">All ratings</option>
+            <option value="excellent">Excellent</option>
+            <option value="satisfactory">Satisfactory</option>
+            <option value="needs_improvement">Needs Improvement</option>
+            <option value="unsatisfactory">Unsatisfactory</option>
+          </select>
+          <button class="refresh-btn" id="manageRefreshBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Inspections</div>
+            <div class="kpi-value" id="kpiTotal">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Excellent / Satisfactory</div>
+            <div class="kpi-value ok" id="kpiGood">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Needs Improvement</div>
+            <div class="kpi-value" id="kpiNeedsImprovement">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Unsatisfactory</div>
+            <div class="kpi-value danger" id="kpiUnsatisfactory">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Follow-ups Pending</div>
+            <div class="kpi-value danger" id="kpiFollowUps">—</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>School Inspection Reports</h2>
+          <div class="table-toolbar">
+            <div class="table-filters">
+              <input id="manageSearch" type="text" placeholder="Search by inspector, term, or type…" autocomplete="off">
+            </div>
+            <button class="export-btn" id="manageExportBtn">Export CSV</button>
+          </div>
+          <div class="request-list" id="requestList">
+            <div class="empty-state">Loading…</div>
+          </div>
+          <div class="updated-note" id="manageUpdatedNote">&nbsp;</div>
+        </div>
+      </section>
+
+      <div class="back-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <a href="dashboard.html">Back to Principal Dashboard</a>
+      </div>
+
+      <div class="msg" id="msgBox"></div>
+
+    </div>
+  </div>
+</main>
+
+<!-- ================= EDIT MODAL ================= -->
+<div class="edit-overlay" id="editOverlay">
+  <div class="edit-modal">
+    <h3>Edit School Inspection Report</h3>
+
+    <div class="compose-grid cols-3">
+      <div class="field"><label for="editInspectorName">Inspector Name</label><input id="editInspectorName" type="text" maxlength="150"></div>
+      <div class="field"><label for="editInspectorTitle">Inspector Title / Office</label><input id="editInspectorTitle" type="text" maxlength="150"></div>
+      <div class="field">
+        <label for="editInspectionType">Inspection Type</label>
+        <select id="editInspectionType">
+          <option value="routine">Routine</option>
+          <option value="follow_up">Follow-up</option>
+          <option value="special">Special / Complaint-Based</option>
+          <option value="accreditation">Accreditation</option>
+        </select>
+      </div>
+    </div>
+    <div class="compose-grid cols-3">
+      <div class="field"><label for="editInspectionDate">Inspection Date</label><input id="editInspectionDate" type="date"></div>
+      <div class="field"><label for="editTerm">Academic Year / Term</label><input id="editTerm" type="text" maxlength="60"></div>
+      <div class="field">
+        <label for="editOverallRating">Overall Rating</label>
+        <select id="editOverallRating">
+          <option value="excellent">Excellent</option>
+          <option value="satisfactory">Satisfactory</option>
+          <option value="needs_improvement">Needs Improvement</option>
+          <option value="unsatisfactory">Unsatisfactory</option>
+        </select>
+      </div>
+    </div>
+
+    <h3 style="font-size:12.5px;margin:16px 0 10px;">Areas Evaluated</h3>
+    <table class="areas-table" id="editAreasInputTable">
+      <thead>
+        <tr><th style="width:26%;">Area</th><th style="width:14%;">Rating</th><th>Comments</th><th style="width:36px;"></th></tr>
+      </thead>
+      <tbody id="editAreasInputBody"></tbody>
+    </table>
+    <button type="button" class="add-row-btn" id="editAddAreaRowBtn">+ Add Area</button>
+
+    <div class="field">
+      <label for="editStrengths">Strengths Noted (one per line)</label>
+      <textarea id="editStrengths"></textarea>
+    </div>
+
+    <h3 style="font-size:12.5px;margin:16px 0 10px;">Recommendations</h3>
+    <table class="reco-table" id="editRecoTable">
+      <thead>
+        <tr><th>Recommendation</th><th style="width:110px;">Priority</th><th style="width:130px;">Target Date</th><th style="width:36px;"></th></tr>
+      </thead>
+      <tbody id="editRecoTableBody"></tbody>
+    </table>
+    <button type="button" class="add-row-btn" id="editAddRecoRowBtn">+ Add Recommendation</button>
+
+    <div class="compose-grid">
+      <div class="field">
+        <label for="editFollowUpRequired">Follow-up Required?</label>
+        <select id="editFollowUpRequired">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+      <div class="field"><label for="editFollowUpDate">Follow-up Date</label><input id="editFollowUpDate" type="date"></div>
+    </div>
+
+    <div class="compose-grid">
+      <div class="field"><label for="editPrincipalRemarks">Principal's Remarks</label><textarea id="editPrincipalRemarks" maxlength="1000"></textarea></div>
+      <div class="field"><label for="editPrincipalName">Principal Name (Acknowledged By)</label><input id="editPrincipalName" type="text" maxlength="100"></div>
+    </div>
+
+    <div class="compose-actions">
+      <button class="btn-secondary" id="editCancelBtn" type="button">Cancel</button>
+      <button class="btn-primary" id="editSaveBtn" type="button">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= INSPECTION REPORT DOCUMENT MODAL ================= -->
+<div class="doc-overlay" id="reportOverlay">
+  <div class="doc-modal">
+    <div class="doc-paper">
+      <div class="doc-letterhead">
+        <img id="rSchoolLogo" src="" alt="School logo">
+        <div class="doc-headtext">
+          <div class="school-name">Kingsville Public High School</div>
+          <div class="school-address">
+            Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia<br>
+            Office of the Principal
+          </div>
+        </div>
+        <img id="rMoeLogo" src="" alt="Ministry of Education seal">
+      </div>
+      <div class="doc-office-row">
+        <span>Office of the Principal</span>
+        <span class="doc-date">Date: <b id="rDate">—</b></span>
+      </div>
+
+      <div class="doc-banner">Official School Inspection Report</div>
+      <div style="text-align:center;"><span class="insp-status-flag" id="rStatusFlag">Satisfactory</span></div>
+
+      <div class="insp-info-grid">
+        <div class="insp-info-row"><span class="lbl">Inspector:</span><span class="val" id="rInspectorName">—</span></div>
+        <div class="insp-info-row"><span class="lbl">Title / Office:</span><span class="val" id="rInspectorTitle">—</span></div>
+        <div class="insp-info-row"><span class="lbl">Inspection Type:</span><span class="val" id="rInspectionType">—</span></div>
+        <div class="insp-info-row"><span class="lbl">Academic Year / Term:</span><span class="val" id="rTerm">—</span></div>
+      </div>
+
+      <div class="insp-section-title">Areas Evaluated</div>
+      <table class="insp-areas-table" id="rAreasTable">
+        <thead><tr><th>Area</th><th>Rating</th><th>Comments</th></tr></thead>
+        <tbody id="rAreasTableBody"></tbody>
+      </table>
+
+      <div class="insp-section-title">Strengths Noted</div>
+      <ul class="insp-list" id="rStrengthsList"></ul>
+
+      <div class="insp-section-title">Recommendations</div>
+      <ul class="insp-list" id="rRecoList"></ul>
+
+      <div class="insp-body">
+        <p id="rFollowUpPara" style="display:none;"><b>Follow-up:</b> A follow-up inspection is scheduled for <span id="rFollowUpDate"></span>.</p>
+        <p id="rRemarksPara" style="display:none;"><b>Principal's Remarks:</b> <span id="rRemarksText"></span></p>
+      </div>
+
+      <div class="insp-signoff">
+        <div>
+          <div class="sig-script">Signed</div>
+          <div class="sig-name" id="rInspectorSigName">&nbsp;</div>
+          <div class="sig-title">Inspector</div>
+        </div>
+        <div>
+          <div class="sig-script">&nbsp;</div>
+          <div class="sig-name" id="rPrincipalSigName">ACKNOWLEDGED:</div>
+          <div class="sig-title">Principal, Kingsville Public High School</div>
+        </div>
+      </div>
+
+      <div class="insp-note">
+        NOTE: This report reflects the findings of the Ministry of Education inspection team on the date shown above. Where a follow-up date is indicated, the school is expected to demonstrate measurable progress on the recommendations by that date.
+      </div>
+      <div class="insp-ref">Report Reference: <span id="rRef">—</span></div>
+    </div>
+
+    <div class="doc-actions">
+      <button class="btn-doc-delete" id="rDeleteBtn" type="button">Delete</button>
+      <button class="btn-share" id="rShareBtn" type="button">Share</button>
+      <button class="btn-download" id="rDownloadBtn" type="button">Download</button>
+      <button class="btn-print" id="rPrintBtn" type="button">Print</button>
+      <button class="btn-secondary" id="rCloseBtn" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-line-1">© <span id="year"></span> Kingsville Public High School</div>
+  <div class="footer-line-2">Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia</div>
+  <div class="footer-line-2">Developed by Mr. Fomba S. Varfee</div>
+</footer>
+
+<script>
+  const KPS_LOGO_SRC = "../assets/images/img-63d9fc79f267bd59.png";
+  const MOE_LOGO_SRC = "../assets/images/img-738ccabf41d2ffd8.png";
+  // sb comes from the shared client in js/supabase-config.js
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const SCHOOL_NAME = "Kingsville Public High School";
+  const SCHOOL_ADDRESS = "Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia";
+  const DEFAULT_AREAS = [
+    "Instructional Leadership & Administration",
+    "Teaching & Learning (Academic Performance)",
+    "Student Discipline & Welfare",
+    "Infrastructure & Facilities",
+    "Records & Regulatory Compliance",
+    "Community & Parental Engagement"
+  ];
+  const RATING_LABEL = { excellent: "Excellent", good: "Good", fair: "Fair", poor: "Poor" };
+  const OVERALL_LABEL = { excellent: "Excellent", satisfactory: "Satisfactory", needs_improvement: "Needs Improvement", unsatisfactory: "Unsatisfactory" };
+  const OVERALL_BADGE = { excellent: "pass", satisfactory: "pass", needs_improvement: "pending", unsatisfactory: "fail" };
+  const OVERALL_CARD_CLASS = { excellent: "approved", satisfactory: "approved", needs_improvement: "pending", unsatisfactory: "rejected" };
+  const TYPE_LABEL = { routine: "Routine", follow_up: "Follow-up", special: "Special / Complaint-Based", accreditation: "Accreditation" };
+  const PRIORITY_LABEL = { high: "High", medium: "Medium", low: "Low" };
+
+  const msgBox = document.getElementById("msgBox");
+  function showMsg(text, type) { msgBox.textContent = text; msgBox.className = "msg " + type; }
+  function clearMsg() { msgBox.className = "msg"; msgBox.textContent = ""; }
+  function escapeHtml(str) {
+    return String(str ?? "").replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+  function fmtDate(iso) {
+    if (!iso) return "—";
+    return new Date(iso).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+  }
+  function downloadCsv(filename, headers, rows) {
+    const lines = [headers.join(",")];
+    for (const row of rows) {
+      lines.push(row.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","));
+    }
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // ================= Section tab switching =================
+  document.getElementById("sectionTabs").addEventListener("click", e => {
+    const btn = e.target.closest("button[data-section]");
+    if (!btn) return;
+    document.querySelectorAll("#sectionTabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".stat-section").forEach(s => s.classList.remove("active"));
+    document.getElementById(btn.dataset.section + "Section").classList.add("active");
+    if (btn.dataset.section === "manage") loadInspections();
+  });
+
+  /* =========================================================================
+     SCHOOL INSPECTION REPORTS
+     Assumes a table `inspection_reports`:
+     id, inspector_name, inspector_title, inspection_type, inspection_date, term,
+     areas (jsonb array [{name, rating, comments}]),
+     strengths (jsonb array of strings),
+     recommendations (jsonb array [{item, priority, target_date}]),
+     overall_rating ('excellent'|'satisfactory'|'needs_improvement'|'unsatisfactory'),
+     follow_up_required (bool), follow_up_date, principal_remarks, principal_name,
+     created_at
+  ========================================================================= */
+
+  let inspections = [];
+
+  // ---------- Areas table builders (dynamic area list) ----------
+  function areaRowHtml(prefix, idx, row) {
+    row = row || {};
+    return `<tr data-idx="${idx}">
+      <td><input type="text" class="${prefix}-area-name" value="${escapeHtml(row.name || "")}" placeholder="Area name"></td>
+      <td>
+        <select class="${prefix}-area-rating">
+          <option value="excellent" ${row.rating === "excellent" ? "selected" : ""}>Excellent</option>
+          <option value="good" ${row.rating === "good" ? "selected" : ""}>Good</option>
+          <option value="fair" ${row.rating === "fair" ? "selected" : ""}>Fair</option>
+          <option value="poor" ${row.rating === "poor" ? "selected" : ""}>Poor</option>
+        </select>
+      </td>
+      <td><textarea class="${prefix}-area-comments" placeholder="Comments">${escapeHtml(row.comments || "")}</textarea></td>
+      <td class="area-remove"><button type="button" class="${prefix}-area-remove" title="Remove area">✕</button></td>
+    </tr>`;
+  }
+
+  function defaultAreaRows() {
+    return DEFAULT_AREAS.map(name => ({ name, rating: "good", comments: "" }));
+  }
+
+  function renderAreasTable(prefix, rows) {
+    const tbody = document.getElementById(prefix === "new" ? "areasInputBody" : "editAreasInputBody");
+    tbody.innerHTML = rows.map((row, idx) => areaRowHtml(prefix, idx, row)).join("");
+  }
+
+  function readAreas(prefix) {
+    const tbody = document.getElementById(prefix === "new" ? "areasInputBody" : "editAreasInputBody");
+    return Array.from(tbody.querySelectorAll("tr")).map(tr => ({
+      name: tr.querySelector(`.${prefix}-area-name`).value.trim(),
+      rating: tr.querySelector(`.${prefix}-area-rating`).value,
+      comments: tr.querySelector(`.${prefix}-area-comments`).value.trim()
+    })).filter(a => a.name);
+  }
+
+  function writeAreas(prefix, areas) {
+    const rows = (areas && areas.length) ? areas : defaultAreaRows();
+    renderAreasTable(prefix, rows);
+  }
+
+  renderAreasTable("new", defaultAreaRows());
+  renderAreasTable("edit", defaultAreaRows());
+
+  function wireAreasTable(prefix) {
+    const tbody = document.getElementById(prefix === "new" ? "areasInputBody" : "editAreasInputBody");
+    tbody.addEventListener("click", e => {
+      const btn = e.target.closest(`.${prefix}-area-remove`);
+      if (!btn) return;
+      btn.closest("tr").remove();
+    });
+  }
+  wireAreasTable("new");
+  wireAreasTable("edit");
+
+  document.getElementById("addAreaRowBtn").addEventListener("click", () => {
+    const tbody = document.getElementById("areasInputBody");
+    const idx = tbody.querySelectorAll("tr").length;
+    tbody.insertAdjacentHTML("beforeend", areaRowHtml("new", idx, { name: "", rating: "good", comments: "" }));
+  });
+  document.getElementById("editAddAreaRowBtn").addEventListener("click", () => {
+    const tbody = document.getElementById("editAreasInputBody");
+    const idx = tbody.querySelectorAll("tr").length;
+    tbody.insertAdjacentHTML("beforeend", areaRowHtml("edit", idx, { name: "", rating: "good", comments: "" }));
+  });
+
+  // ---------- Recommendations table builders ----------
+  function recoRowHtml(prefix, idx, item) {
+    item = item || {};
+    return `<tr data-idx="${idx}">
+      <td><input type="text" class="${prefix}-reco-item" value="${escapeHtml(item.item || "")}" placeholder="Recommendation"></td>
+      <td>
+        <select class="${prefix}-reco-priority">
+          <option value="high" ${item.priority === "high" ? "selected" : ""}>High</option>
+          <option value="medium" ${(!item.priority || item.priority === "medium") ? "selected" : ""}>Medium</option>
+          <option value="low" ${item.priority === "low" ? "selected" : ""}>Low</option>
+        </select>
+      </td>
+      <td><input type="date" class="${prefix}-reco-date" value="${escapeHtml(item.target_date || "")}"></td>
+      <td class="reco-remove"><button type="button" class="${prefix}-reco-remove" title="Remove">✕</button></td>
+    </tr>`;
+  }
+
+  function renderRecoTable(prefix, items) {
+    const tbody = document.getElementById(prefix === "new" ? "recoTableBody" : "editRecoTableBody");
+    tbody.innerHTML = items.map((item, idx) => recoRowHtml(prefix, idx, item)).join("");
+  }
+
+  function readReco(prefix) {
+    const tbody = document.getElementById(prefix === "new" ? "recoTableBody" : "editRecoTableBody");
+    return Array.from(tbody.querySelectorAll("tr")).map(tr => ({
+      item: tr.querySelector(`.${prefix}-reco-item`).value.trim(),
+      priority: tr.querySelector(`.${prefix}-reco-priority`).value,
+      target_date: tr.querySelector(`.${prefix}-reco-date`).value
+    })).filter(r => r.item);
+  }
+
+  function wireRecoTable(prefix) {
+    const tbody = document.getElementById(prefix === "new" ? "recoTableBody" : "editRecoTableBody");
+    tbody.addEventListener("click", e => {
+      const btn = e.target.closest(`.${prefix}-reco-remove`);
+      if (!btn) return;
+      btn.closest("tr").remove();
+    });
+  }
+  wireRecoTable("new");
+  wireRecoTable("edit");
+
+  document.getElementById("addRecoRowBtn").addEventListener("click", () => {
+    const tbody = document.getElementById("recoTableBody");
+    const idx = tbody.querySelectorAll("tr").length;
+    tbody.insertAdjacentHTML("beforeend", recoRowHtml("new", idx, {}));
+  });
+  document.getElementById("editAddRecoRowBtn").addEventListener("click", () => {
+    const tbody = document.getElementById("editRecoTableBody");
+    const idx = tbody.querySelectorAll("tr").length;
+    tbody.insertAdjacentHTML("beforeend", recoRowHtml("edit", idx, {}));
+  });
+
+  renderRecoTable("new", []);
+
+  // ---------- Strengths helpers ----------
+  function strengthsToLines(strengths) { return (strengths || []).join("\n"); }
+  function linesToStrengths(text) { return text.split("\n").map(s => s.trim()).filter(Boolean); }
+
+  // ---------- Compose section fields ----------
+  const newInspectorName = document.getElementById("newInspectorName");
+  const newInspectorTitle = document.getElementById("newInspectorTitle");
+  const newInspectionType = document.getElementById("newInspectionType");
+  const newInspectionDate = document.getElementById("newInspectionDate");
+  const newTerm = document.getElementById("newTerm");
+  const newOverallRating = document.getElementById("newOverallRating");
+  const newStrengths = document.getElementById("newStrengths");
+  const newFollowUpRequired = document.getElementById("newFollowUpRequired");
+  const newFollowUpDate = document.getElementById("newFollowUpDate");
+  const newPrincipalRemarks = document.getElementById("newPrincipalRemarks");
+  const newPrincipalName = document.getElementById("newPrincipalName");
+  const postBtn = document.getElementById("postRequestBtn");
+  const clearBtn = document.getElementById("clearComposeBtn");
+
+  function clearCompose() {
+    newInspectorName.value = ""; newInspectorTitle.value = ""; newInspectionType.value = "routine";
+    newInspectionDate.value = ""; newTerm.value = ""; newOverallRating.value = "satisfactory";
+    newStrengths.value = ""; newFollowUpRequired.value = "no"; newFollowUpDate.value = "";
+    newPrincipalRemarks.value = ""; newPrincipalName.value = "";
+    writeAreas("new", defaultAreaRows());
+    renderRecoTable("new", []);
+  }
+  clearBtn.addEventListener("click", clearCompose);
+
+  function composeInspectionPayload() {
+    return {
+      inspector_name: newInspectorName.value.trim(),
+      inspector_title: newInspectorTitle.value.trim(),
+      inspection_type: newInspectionType.value,
+      inspection_date: newInspectionDate.value || null,
+      term: newTerm.value.trim(),
+      areas: readAreas("new"),
+      strengths: linesToStrengths(newStrengths.value),
+      recommendations: readReco("new"),
+      overall_rating: newOverallRating.value,
+      follow_up_required: newFollowUpRequired.value === "yes",
+      follow_up_date: newFollowUpRequired.value === "yes" ? (newFollowUpDate.value || null) : null,
+      principal_remarks: newPrincipalRemarks.value.trim(),
+      principal_name: newPrincipalName.value.trim()
+    };
+  }
+
+  postBtn.addEventListener("click", async () => {
+    clearMsg();
+    const payload = composeInspectionPayload();
+    if (!payload.inspector_name) { showMsg("Please enter the inspector's name.", "err"); return; }
+    if (!payload.inspection_date) { showMsg("Please choose the inspection date.", "err"); return; }
+
+    postBtn.disabled = true;
+    const { error } = await sb.from("inspection_reports").insert(payload);
+    postBtn.disabled = false;
+
+    if (error) { showMsg("Couldn't save inspection: " + error.message, "err"); return; }
+    showMsg("School inspection report saved.", "ok");
+    clearCompose();
+    loadInspections();
+  });
+
+  // ---------- Manage / list ----------
+  const manageRatingFilter = document.getElementById("manageRatingFilter");
+  const manageSearch = document.getElementById("manageSearch");
+  const manageRefreshBtn = document.getElementById("manageRefreshBtn");
+  const manageUpdatedNote = document.getElementById("manageUpdatedNote");
+  const requestList = document.getElementById("requestList");
+
+  async function loadInspections() {
+    clearMsg();
+    manageRefreshBtn.classList.add("spinning");
+
+    const { data, error } = await sb
+      .from("inspection_reports")
+      .select("id, inspector_name, inspector_title, inspection_type, inspection_date, term, areas, strengths, recommendations, overall_rating, follow_up_required, follow_up_date, principal_remarks, principal_name, created_at")
+      .order("created_at", { ascending: false })
+      .limit(500);
+
+    manageRefreshBtn.classList.remove("spinning");
+
+    if (error) {
+      showMsg("Couldn't load inspections: " + error.message, "err");
+      inspections = [];
+    } else {
+      inspections = data || [];
+    }
+
+    renderKpis();
+    renderList();
+    renderTicker();
+    manageUpdatedNote.textContent = "Last updated " + new Date().toLocaleTimeString();
+  }
+
+  function renderTicker() {
+    const tickerBar = document.getElementById("tickerBar");
+    const tickerTrack = document.getElementById("tickerTrack");
+    const dueFollowUps = inspections.filter(r => r.follow_up_required);
+
+    if (!dueFollowUps.length) {
+      tickerBar.classList.add("ticker-empty");
+      tickerTrack.innerHTML = "<span>No school inspections currently require a follow-up visit.</span>";
+      return;
+    }
+
+    tickerBar.classList.remove("ticker-empty");
+    const items = dueFollowUps.map(r => {
+      const parts = [r.inspector_title || r.inspector_name, r.term, r.follow_up_date ? "Follow-up due " + fmtDate(r.follow_up_date) : "Follow-up pending"].filter(Boolean);
+      return `<span class="pinned">${escapeHtml(parts.join(" — "))}</span>`;
+    });
+    tickerTrack.innerHTML = items.join("") + items.join("");
+    const seconds = Math.max(20, Math.min(120, dueFollowUps.length * 8 + 12));
+    tickerTrack.style.animationDuration = seconds + "s";
+  }
+
+  function renderKpis() {
+    document.getElementById("kpiTotal").textContent = inspections.length || "—";
+    document.getElementById("kpiGood").textContent = inspections.filter(r => r.overall_rating === "excellent" || r.overall_rating === "satisfactory").length || "—";
+    document.getElementById("kpiNeedsImprovement").textContent = inspections.filter(r => r.overall_rating === "needs_improvement").length || "—";
+    document.getElementById("kpiUnsatisfactory").textContent = inspections.filter(r => r.overall_rating === "unsatisfactory").length || "—";
+    document.getElementById("kpiFollowUps").textContent = inspections.filter(r => r.follow_up_required).length || "—";
+  }
+
+  function filteredInspections() {
+    const term = manageSearch.value.trim().toLowerCase();
+    const rating = manageRatingFilter.value;
+    return inspections.filter(r => {
+      if (rating && r.overall_rating !== rating) return false;
+      if (term && !`${r.inspector_name} ${r.inspector_title} ${r.term} ${TYPE_LABEL[r.inspection_type] || ""}`.toLowerCase().includes(term)) return false;
+      return true;
+    });
+  }
+
+  function renderList() {
+    const rows = filteredInspections();
+    if (!rows.length) {
+      requestList.innerHTML = '<div class="empty-state">No school inspection reports match.</div>';
+      return;
+    }
+    requestList.innerHTML = rows.map(r => {
+      return `
+      <div class="request-card ${OVERALL_CARD_CLASS[r.overall_rating] || ""}" data-id="${r.id}">
+        <div class="request-top">
+          <div>
+            <div class="request-title">${escapeHtml(r.inspector_name)}${r.term ? " — " + escapeHtml(r.term) : ""}</div>
+            <div class="request-meta">
+              <span class="badge ${OVERALL_BADGE[r.overall_rating] || "role"}">${OVERALL_LABEL[r.overall_rating] || r.overall_rating}</span>
+              ${r.inspector_title ? " · " + escapeHtml(r.inspector_title) : ""}
+              ${r.inspection_type ? " · " + escapeHtml(TYPE_LABEL[r.inspection_type] || r.inspection_type) : ""}
+              ${r.inspection_date ? " · " + fmtDate(r.inspection_date) : ""}
+            </div>
+          </div>
+        </div>
+        <div class="request-fees">${r.follow_up_required ? `<span style="color:var(--danger);font-weight:700;">Follow-up required${r.follow_up_date ? " by " + fmtDate(r.follow_up_date) : ""}</span>` : `<span style="color:var(--ok);font-weight:700;">No follow-up required</span>`}</div>
+        <div class="request-actions">
+          <button class="btn-ghost accent" data-action="report" data-id="${r.id}">Generate Report</button>
+          <button class="btn-ghost" data-action="edit" data-id="${r.id}">Edit</button>
+          <button class="btn-ghost danger" data-action="delete" data-id="${r.id}">Delete</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  manageSearch.addEventListener("input", renderList);
+  manageRatingFilter.addEventListener("change", renderList);
+  manageRefreshBtn.addEventListener("click", loadInspections);
+
+  document.getElementById("manageExportBtn").addEventListener("click", () => {
+    const rows = filteredInspections();
+    if (!rows.length) { showMsg("Nothing to export.", "err"); return; }
+    downloadCsv(
+      `kingsville-inspection-reports-${new Date().toISOString().slice(0, 10)}.csv`,
+      ["Inspector", "Title", "Type", "Inspection Date", "Term", "Overall Rating", "Follow-up Required", "Follow-up Date", "Principal", "Remarks"],
+      rows.map(r => [r.inspector_name, r.inspector_title, TYPE_LABEL[r.inspection_type] || r.inspection_type, r.inspection_date, r.term, OVERALL_LABEL[r.overall_rating] || r.overall_rating, r.follow_up_required ? "Yes" : "No", r.follow_up_date, r.principal_name, r.principal_remarks])
+    );
+  });
+
+  // ---------- Edit modal ----------
+  const editOverlay = document.getElementById("editOverlay");
+  const editInspectorName = document.getElementById("editInspectorName");
+  const editInspectorTitle = document.getElementById("editInspectorTitle");
+  const editInspectionType = document.getElementById("editInspectionType");
+  const editInspectionDate = document.getElementById("editInspectionDate");
+  const editTerm = document.getElementById("editTerm");
+  const editOverallRating = document.getElementById("editOverallRating");
+  const editStrengths = document.getElementById("editStrengths");
+  const editFollowUpRequired = document.getElementById("editFollowUpRequired");
+  const editFollowUpDate = document.getElementById("editFollowUpDate");
+  const editPrincipalRemarks = document.getElementById("editPrincipalRemarks");
+  const editPrincipalName = document.getElementById("editPrincipalName");
+  let editingId = null;
+
+  function openEdit(r) {
+    editingId = r.id;
+    editInspectorName.value = r.inspector_name || "";
+    editInspectorTitle.value = r.inspector_title || "";
+    editInspectionType.value = r.inspection_type || "routine";
+    editInspectionDate.value = r.inspection_date || "";
+    editTerm.value = r.term || "";
+    editOverallRating.value = r.overall_rating || "satisfactory";
+    writeAreas("edit", r.areas && r.areas.length ? r.areas : defaultAreaRows());
+    editStrengths.value = strengthsToLines(r.strengths);
+    renderRecoTable("edit", r.recommendations || []);
+    editFollowUpRequired.value = r.follow_up_required ? "yes" : "no";
+    editFollowUpDate.value = r.follow_up_date || "";
+    editPrincipalRemarks.value = r.principal_remarks || "";
+    editPrincipalName.value = r.principal_name || "";
+    editOverlay.classList.add("open");
+  }
+
+  document.getElementById("editCancelBtn").addEventListener("click", () => editOverlay.classList.remove("open"));
+  editOverlay.addEventListener("click", e => { if (e.target === editOverlay) editOverlay.classList.remove("open"); });
+
+  document.getElementById("editSaveBtn").addEventListener("click", async () => {
+    if (!editingId) return;
+    const payload = {
+      inspector_name: editInspectorName.value.trim(),
+      inspector_title: editInspectorTitle.value.trim(),
+      inspection_type: editInspectionType.value,
+      inspection_date: editInspectionDate.value || null,
+      term: editTerm.value.trim(),
+      areas: readAreas("edit"),
+      strengths: linesToStrengths(editStrengths.value),
+      recommendations: readReco("edit"),
+      overall_rating: editOverallRating.value,
+      follow_up_required: editFollowUpRequired.value === "yes",
+      follow_up_date: editFollowUpRequired.value === "yes" ? (editFollowUpDate.value || null) : null,
+      principal_remarks: editPrincipalRemarks.value.trim(),
+      principal_name: editPrincipalName.value.trim()
+    };
+    if (!payload.inspector_name) { showMsg("Please enter the inspector's name.", "err"); return; }
+
+    const { error } = await sb.from("inspection_reports").update(payload).eq("id", editingId);
+    if (error) { showMsg("Couldn't update inspection: " + error.message, "err"); return; }
+    showMsg("School inspection report updated.", "ok");
+    editOverlay.classList.remove("open");
+    loadInspections();
+  });
+
+  // ---------- List action delegation ----------
+  requestList.addEventListener("click", async e => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const r = inspections.find(x => String(x.id) === String(id));
+    if (!r) return;
+    const action = btn.dataset.action;
+
+    if (action === "edit") { openEdit(r); return; }
+
+    if (action === "report") { openReportDoc(r); return; }
+
+    if (action === "delete") {
+      if (!confirm("Delete this school inspection report? This cannot be undone.")) return;
+      const { error } = await sb.from("inspection_reports").delete().eq("id", id);
+      if (error) { showMsg("Couldn't delete inspection: " + error.message, "err"); return; }
+      showMsg("School inspection report deleted.", "ok");
+      loadInspections();
+    }
+  });
+
+  // ---------- Report document generation ----------
+  const reportOverlay = document.getElementById("reportOverlay");
+  let currentReportRequest = null;
+  let refCounter = 1;
+
+  function nextRef(prefix) {
+    const n = String(refCounter++).padStart(4, "0");
+    return `${prefix}-${new Date().getFullYear()}-${n}`;
+  }
+
+  function inspectionFromComposeForm() {
+    return {
+      inspector_name: newInspectorName.value.trim(),
+      inspector_title: newInspectorTitle.value.trim(),
+      inspection_type: newInspectionType.value,
+      inspection_date: newInspectionDate.value || null,
+      term: newTerm.value.trim(),
+      areas: readAreas("new"),
+      strengths: linesToStrengths(newStrengths.value),
+      recommendations: readReco("new"),
+      overall_rating: newOverallRating.value,
+      follow_up_required: newFollowUpRequired.value === "yes",
+      follow_up_date: newFollowUpRequired.value === "yes" ? (newFollowUpDate.value || null) : null,
+      principal_remarks: newPrincipalRemarks.value.trim(),
+      principal_name: newPrincipalName.value.trim()
+    };
+  }
+
+  document.getElementById("generateReportBtn").addEventListener("click", () => {
+    clearMsg();
+    const r = inspectionFromComposeForm();
+    if (!r.inspector_name) { showMsg("Please enter the inspector's name before generating a report.", "err"); return; }
+    openReportDoc(r);
+  });
+
+  function openReportDoc(r) {
+    currentReportRequest = r;
+    document.getElementById("rSchoolLogo").src = KPS_LOGO_SRC;
+    document.getElementById("rMoeLogo").src = MOE_LOGO_SRC;
+    document.getElementById("rDate").textContent = fmtDate(r.inspection_date || new Date().toISOString());
+    document.getElementById("rInspectorName").textContent = r.inspector_name || "—";
+    document.getElementById("rInspectorTitle").textContent = r.inspector_title || "—";
+    document.getElementById("rInspectionType").textContent = TYPE_LABEL[r.inspection_type] || r.inspection_type || "—";
+    document.getElementById("rTerm").textContent = r.term || "—";
+
+    const flag = document.getElementById("rStatusFlag");
+    flag.textContent = OVERALL_LABEL[r.overall_rating] || r.overall_rating;
+    const flagColors = {
+      excellent: ["#eafaf1", "var(--ok)", "#b9e6c9"],
+      satisfactory: ["#eafaf1", "var(--ok)", "#b9e6c9"],
+      needs_improvement: ["#fff4d6", "#8a6d1a", "#ecd9a0"],
+      unsatisfactory: ["#fdecea", "var(--danger)", "#f6c9c4"]
+    };
+    const c = flagColors[r.overall_rating] || flagColors.satisfactory;
+    flag.style.background = c[0]; flag.style.color = c[1]; flag.style.border = "1px solid " + c[2];
+
+    const areas = (r.areas && r.areas.length) ? r.areas : [];
+    document.getElementById("rAreasTableBody").innerHTML = areas.map(a => `
+      <tr>
+        <td>${escapeHtml(a.name)}</td>
+        <td><span class="rating-tag ${a.rating}">${RATING_LABEL[a.rating] || a.rating}</span></td>
+        <td>${escapeHtml(a.comments || "—")}</td>
+      </tr>`).join("") || `<tr><td colspan="3">No areas recorded.</td></tr>`;
+
+    const strengths = r.strengths || [];
+    document.getElementById("rStrengthsList").innerHTML = strengths.length
+      ? strengths.map(s => `<li>${escapeHtml(s)}</li>`).join("")
+      : "<li>No specific strengths recorded.</li>";
+
+    const recos = r.recommendations || [];
+    document.getElementById("rRecoList").innerHTML = recos.length
+      ? recos.map(item => `<li><span class="priority-${item.priority || "medium"}">[${PRIORITY_LABEL[item.priority] || "Medium"}]</span> ${escapeHtml(item.item)}${item.target_date ? " — Target: " + fmtDate(item.target_date) : ""}</li>`).join("")
+      : "<li>No recommendations recorded.</li>";
+
+    const followUpPara = document.getElementById("rFollowUpPara");
+    if (r.follow_up_required) {
+      followUpPara.style.display = "";
+      document.getElementById("rFollowUpDate").textContent = r.follow_up_date ? fmtDate(r.follow_up_date) : "a date to be confirmed";
+    } else {
+      followUpPara.style.display = "none";
+    }
+
+    const remarksPara = document.getElementById("rRemarksPara");
+    if (r.principal_remarks) {
+      remarksPara.style.display = "";
+      document.getElementById("rRemarksText").textContent = r.principal_remarks;
+    } else {
+      remarksPara.style.display = "none";
+    }
+
+    document.getElementById("rInspectorSigName").textContent = r.inspector_name || "\u00A0";
+    document.getElementById("rPrincipalSigName").textContent = r.principal_name ? r.principal_name.toUpperCase() : "ACKNOWLEDGED:";
+    document.getElementById("rRef").textContent = nextRef("INSP");
+
+    document.getElementById("rDeleteBtn").style.display = currentReportRequest && currentReportRequest.id ? "" : "none";
+    reportOverlay.classList.add("open");
+  }
+
+  function closeReportDoc() { reportOverlay.classList.remove("open"); currentReportRequest = null; }
+  document.getElementById("rCloseBtn").addEventListener("click", closeReportDoc);
+  reportOverlay.addEventListener("click", e => { if (e.target === reportOverlay) closeReportDoc(); });
+
+  // ---------- share / download / print / delete ----------
+  function docPlainText() {
+    const areaRows = Array.from(document.querySelectorAll("#rAreasTableBody tr")).map(tr =>
+      Array.from(tr.children).map(td => td.textContent).join(" | ")
+    );
+    const strengthItems = Array.from(document.querySelectorAll("#rStrengthsList li")).map(li => "- " + li.textContent);
+    const recoItems = Array.from(document.querySelectorAll("#rRecoList li")).map(li => "- " + li.textContent);
+    return [
+      SCHOOL_NAME.toUpperCase(), SCHOOL_ADDRESS, "OFFICIAL SCHOOL INSPECTION REPORT", "",
+      "Inspector: " + document.getElementById("rInspectorName").textContent,
+      "Title/Office: " + document.getElementById("rInspectorTitle").textContent,
+      "Inspection Type: " + document.getElementById("rInspectionType").textContent,
+      "Academic Year / Term: " + document.getElementById("rTerm").textContent,
+      "Overall Rating: " + document.getElementById("rStatusFlag").textContent, "",
+      "Area | Rating | Comments", ...areaRows, "",
+      "Strengths Noted:", ...strengthItems, "",
+      "Recommendations:", ...recoItems, "",
+      "Report Reference: " + document.getElementById("rRef").textContent
+    ].join("\n");
+  }
+
+  function docFilenameBase() {
+    const name = document.getElementById("rInspectorName").textContent || "inspection";
+    const safe = name.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+    return "inspection-report-" + safe;
+  }
+
+  document.getElementById("rShareBtn").addEventListener("click", async () => {
+    const text = docPlainText();
+    const title = "School Inspection Report — " + document.getElementById("rInspectorName").textContent;
+    if (navigator.share) {
+      try { await navigator.share({ title, text }); } catch (err) { /* cancelled */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      showMsg("Sharing isn't available on this device, so the report was copied to your clipboard instead.", "ok");
+    } catch (err) {
+      window.open("mailto:?subject=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(text), "_blank");
+    }
+  });
+
+  document.getElementById("rDownloadBtn").addEventListener("click", () => {
+    const paper = reportOverlay.querySelector(".doc-paper").outerHTML;
+    const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>${escapeHtml(docFilenameBase())}</title>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;padding:24px;background:#f2f2f0;font-family:Georgia,"Times New Roman",serif;color:#111;}
+  .doc-paper{max-width:820px;margin:0 auto;background:#fff;padding:32px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);}
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:62px;width:62px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:22px;font-weight:800;color:#122148;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-office-row{display:flex;justify-content:space-between;font-size:12.5px;font-style:italic;margin-bottom:16px;}
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:10px;text-transform:uppercase;}
+  .insp-status-flag{display:inline-block;margin:4px 0 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:4px 12px;border-radius:12px;}
+  .insp-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;margin:14px 0 18px;}
+  .insp-info-row{display:flex;gap:10px;margin-bottom:6px;font-size:13.5px;}
+  .insp-info-row .lbl{font-weight:700;min-width:150px;}
+  .insp-info-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;}
+  .insp-section-title{font-weight:700;font-size:13.5px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.3px;color:#20242e;border-bottom:1px solid #ccc;padding-bottom:4px;}
+  table.insp-areas-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0 18px;}
+  table.insp-areas-table th, table.insp-areas-table td{border:1px solid #333;padding:6px 8px;text-align:left;vertical-align:top;}
+  table.insp-areas-table th{background:#f1f1ef;font-style:italic;}
+  .rating-tag{font-weight:700;}
+  .rating-tag.excellent{color:#1e8449;}
+  .rating-tag.good{color:#1e8449;}
+  .rating-tag.fair{color:#8a6d1a;}
+  .rating-tag.poor{color:#c0392b;}
+  .insp-list{list-style:none;margin:0 0 16px 4px;padding:0;}
+  .insp-list li{font-size:13px;line-height:1.9;padding-left:20px;position:relative;}
+  .insp-list li::before{content:"\\2756";position:absolute;left:0;top:1px;color:#c8102e;font-size:11px;}
+  .priority-high{color:#c0392b;font-weight:700;}
+  .priority-medium{color:#8a6d1a;font-weight:700;}
+  .priority-low{color:#1e8449;font-weight:700;}
+  .insp-body p{font-size:13.5px;line-height:1.7;margin-bottom:10px;text-align:justify;}
+  .insp-signoff{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin:30px 0 10px;}
+  .insp-signoff div{font-size:12.5px;}
+  .insp-signoff .sig-script{font-family:"Brush Script MT",cursive;font-size:20px;margin-bottom:-6px;min-height:24px;}
+  .insp-signoff .sig-name{border-top:1px solid #333;padding-top:4px;font-weight:700;}
+  .insp-signoff .sig-title{color:#555;font-size:11px;}
+  .insp-note{font-size:11.5px;color:#333;margin-top:20px;line-height:1.6;}
+  .insp-ref{font-size:11.5px;margin-top:10px;font-weight:700;}
+</style></head><body>${paper}</body></html>`;
+    const blob = new Blob([html], { type: "text/html;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = docFilenameBase() + ".html";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("rPrintBtn").addEventListener("click", () => window.print());
+
+  document.getElementById("rDeleteBtn").addEventListener("click", async () => {
+    if (!currentReportRequest || !currentReportRequest.id) return;
+    if (!confirm("Delete this school inspection report? This cannot be undone.")) return;
+    const { error } = await sb.from("inspection_reports").delete().eq("id", currentReportRequest.id);
+    if (error) { showMsg("Couldn't delete report: " + error.message, "err"); return; }
+    showMsg("School inspection report deleted.", "ok");
+    reportOverlay.classList.remove("open");
+    currentReportRequest = null;
+    loadInspections();
+  });
+
+  // ================= Initial load =================
+  loadInspections();
+</script>
+
+<!-- KPS ERP Core -->
+
+</body>
+</html>
