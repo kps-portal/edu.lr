@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Application Rejection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --gold-soft:#fbe4b3;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;gap:12px;}
+  header.topbar .kps-logo{height:32px;width:32px;object-fit:contain;border-radius:6px;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .left .page-label{font-weight:400;font-size:11.5px;opacity:.75;letter-spacing:.4px;margin-left:2px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .live-pill{
+    display:flex;align-items:center;gap:6px;background:rgba(200,16,46,.18);
+    border:1px solid rgba(255,140,140,.4);color:#ffd7d7;border-radius:20px;
+    padding:4px 10px;font-size:10.5px;font-weight:700;letter-spacing:.4px;
+  }
+  header.topbar .live-pill .dot{width:6px;height:6px;border-radius:50%;background:#ff6b6b;box-shadow:0 0 0 0 rgba(255,107,107,.6);animation:pulseDot 1.8s infinite;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(255,107,107,.55);}70%{box-shadow:0 0 0 7px rgba(255,107,107,0);}100%{box-shadow:0 0 0 0 rgba(255,107,107,0);}}
+
+  .notice-strip{
+    background:var(--gold-soft);border-bottom:1px solid #ecd090;color:#5c3c0c;
+    font-size:12px;font-weight:600;text-align:center;padding:8px 16px;line-height:1.5;
+  }
+  .notice-strip b{color:#3a2205;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1240px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,32px) clamp(20px,4vw,32px) clamp(16px,3vh,28px);text-align:left;}
+
+  .page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:clamp(10px,2vh,16px);flex-wrap:wrap;}
+  .page-head .id{display:flex;align-items:center;gap:16px;}
+  .seal-stage{position:relative;width:56px;height:56px;flex-shrink:0;}
+  .seal-stage img.seal{height:56px;width:56px;object-fit:contain;border-radius:10px;background:#fff;padding:3px;box-shadow:0 6px 16px rgba(11,23,48,.2), 0 0 0 3px #fff, 0 0 0 4px var(--line);}
+  .page-head h1{font-size:clamp(16px,3vh,19px);color:var(--navy);font-weight:800;line-height:1.35;letter-spacing:.2px;}
+  .page-head h1 .school-line{display:block;color:var(--crimson);font-size:clamp(12.5px,2.4vh,13.5px);font-weight:700;margin-top:2px;}
+  .db-status{font-size:11px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px;}
+  .db-status .n{color:var(--navy);font-weight:800;}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:0 0 clamp(14px,2.6vh,20px);border-radius:2px;}
+
+  .layout{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start;}
+  @media (max-width:960px){.layout{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(14px,2.4vh,18px);}
+  .panel h2{font-size:11.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;}
+  .panel h2 .num{width:18px;height:18px;border-radius:5px;background:var(--navy);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .panel.danger-panel h2 .num{background:var(--danger);}
+
+  .find-row{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:var(--panel);}
+  .find-row .fr-info{display:flex;flex-direction:column;min-width:0;}
+  .find-row .fr-name{font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .find-row .fr-meta{font-size:10.5px;color:var(--muted);}
+  .find-row button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;}
+  .find-row button:hover{background:#eef0f6;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field label .hint{font-weight:400;text-transform:none;color:var(--muted);font-size:10px;letter-spacing:0;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(8px,1.5vh,10px) 12px;border:1px solid var(--line);border-radius:4px;
+    font-size:13.5px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:64px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .field input[readonly]{background:var(--panel);color:var(--muted);font-weight:700;}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  @media (max-width:720px){.compose-grid,.grid3{grid-template-columns:1fr;}}
+  .radio-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px;}
+  .radio-row label{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink);text-transform:none;letter-spacing:0;}
+  .radio-row input{width:auto;}
+
+  .topbar-actions{display:flex;gap:8px;}
+  .topbar-actions button{
+    background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.35);
+    border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .topbar-actions button.gold{background:var(--gold);border-color:var(--gold);color:#3a2600;}
+  .topbar-actions button:hover{background:rgba(255,255,255,.18);}
+  .topbar-actions button.gold:hover{filter:brightness(0.96);}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--navy-deep);color:#fff;border:1px solid var(--gold);
+    border-radius:8px;padding:11px 20px;font-size:13px;font-weight:600;
+    box-shadow:0 10px 30px rgba(11,23,48,.35);opacity:0;pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;z-index:999;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{border-color:var(--danger);}
+
+  /* ---------- Directory (database view, on-screen only) ---------- */
+  .directory-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .directory-toolbar span{font-size:11.5px;color:var(--muted);}
+
+  .db-table-wrap{border:1px solid var(--line);border-radius:8px;overflow:auto;background:#fff;}
+  table.db-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.db-table th{
+    background:var(--navy);color:#fff;text-align:left;padding:9px 12px;font-size:10.5px;
+    text-transform:uppercase;letter-spacing:.4px;font-weight:800;position:sticky;top:0;
+  }
+  table.db-table td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  table.db-table tr:last-child td{border-bottom:none;}
+  table.db-table tr:hover td{background:var(--panel);}
+  table.db-table td.name{font-weight:700;color:var(--ink);}
+  table.db-table td.muted{color:var(--muted);}
+  .status-pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;}
+  .status-pill.active{background:#e3f6ea;color:var(--ok);}
+  .status-pill.pending{background:var(--gold-soft);color:#8a5a06;}
+  .status-pill.withdrawn{background:#fdecea;color:var(--danger);}
+  .status-pill.graduated{background:#e7edfb;color:var(--navy);}
+  .status-pill.rejected{background:#fdecea;color:var(--danger);}
+  .status-pill.disabled{background:#e7e7ea;color:#4a4e58;}
+  .row-actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .row-actions button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:4px 9px;font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .row-actions button:hover{background:#eef0f6;}
+  .row-actions button.del{border-color:var(--danger);color:var(--danger);}
+  .row-actions button.reject{border-color:var(--crimson);color:var(--crimson);}
+  .row-actions button.disable{border-color:#4a4e58;color:#4a4e58;}
+  td.cell-edit input, td.cell-edit select{
+    width:100%;border:1px solid transparent;background:transparent;border-radius:4px;
+    padding:5px 6px;font-size:12.5px;font-family:inherit;color:var(--ink);
+  }
+  td.cell-edit input:hover, td.cell-edit select:hover{border-color:var(--line);background:#fff;}
+  td.cell-edit input:focus, td.cell-edit select:focus{outline:none;border-color:var(--crimson);background:#fff;box-shadow:0 0 0 2px rgba(200,16,46,.08);}
+  td.cell-edit.name input{font-weight:700;}
+  .db-empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:12.5px;font-style:italic;}
+  .db-summary{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px;}
+  .db-summary .stat{border:1px solid var(--line);border-radius:8px;padding:10px 16px;background:var(--panel);min-width:110px;}
+  .db-summary .stat .n{font-size:20px;font-weight:800;color:var(--navy);}
+  .db-summary .stat .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;font-weight:700;}
+
+  .active-badge{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fdecea;border:1px solid #f6c7c0;border-radius:8px;padding:9px 13px;font-size:12px;font-weight:700;color:var(--crimson-dark);margin-bottom:16px;}
+  .active-badge button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;}
+
+  /* ---------- Top search panel ---------- */
+  .top-search{
+    background:linear-gradient(180deg,#f8fafc 0%,#fff 100%);
+    border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;margin-bottom:clamp(14px,2.6vh,20px);
+    box-shadow:0 2px 10px rgba(11,23,48,.05);
+  }
+  .top-search .ts-head{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+  .top-search .ts-head .num{width:20px;height:20px;border-radius:6px;background:var(--crimson);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .top-search .ts-head h2{font-size:12.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;}
+  .top-search .ts-head .ts-sub{font-size:11px;color:var(--muted);font-weight:500;margin-left:auto;text-transform:none;letter-spacing:0;}
+  .top-search .ts-bar{display:flex;gap:10px;align-items:center;}
+  .top-search .ts-bar input{
+    flex:1;padding:11px 14px;border:1.5px solid var(--line);border-radius:8px;
+    font-size:14px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .top-search .ts-bar input:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 3px rgba(200,16,46,.08);}
+  .top-search .ts-icon{width:38px;height:38px;border-radius:8px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  #findResults{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;margin-top:10px;}
+  #findResults.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  @media (max-width:720px){#findResults.grid2{grid-template-columns:1fr;}}
+
+  .decision-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+  .decision-row button{flex:1;min-width:150px;border-radius:6px;padding:11px 14px;font-size:12.5px;font-weight:800;cursor:pointer;letter-spacing:.2px;}
+  .btn-reject{background:var(--crimson);border:1px solid var(--crimson);color:#fff;}
+  .btn-reject:hover{background:var(--crimson-dark);}
+  .btn-disable{background:#4a4e58;border:1px solid #4a4e58;color:#fff;}
+  .btn-disable:hover{background:#33363e;}
+  .btn-delete{background:#fff;border:1px solid var(--danger);color:var(--danger);}
+  .btn-delete:hover{background:#fdecea;}
+  .decision-row button:disabled{opacity:.45;cursor:not-allowed;}
+
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left">
+    <img class="kps-logo" id="topbarKpsLogo" alt="Kingsville Public School logo">
+    <div>
+      <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+      <span class="page-label">Office of the Registrar · Application Rejection</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="live-pill no-print"><span class="dot"></span>REGISTRATION DATABASE · CONNECTED</div>
+    <div class="topbar-actions">
+      <button id="refreshBtn" class="gold">Refresh Database</button>
+    </div>
+    <img class="moe-mini" id="topbarMoeLogo" alt="Ministry of Education seal">
+  </div>
+</header>
+
+<div class="notice-strip">
+  <b>Registrar use only:</b> this tool acts directly on records stored in the shared school registration database. Rejecting, disabling, or deleting a record here takes effect immediately and is not designed to be printed.
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+
+      <div class="page-head">
+        <div class="id">
+          <div class="seal-stage"><img class="seal" id="cardSeal" alt="School seal"></div>
+          <h1>Application Rejection Record<span class="school-line">Kingsville Public High School — Office of the Registrar</span></h1>
+        </div>
+        <div class="db-status">Records in database: <span class="n" id="progressBadge">0</span></div>
+      </div>
+      <div class="subtitle-rule"></div>
+
+      <div class="top-search" id="findPanel">
+        <div class="ts-head">
+          <span class="num">&#128269;</span>
+          <h2>Search the Database</h2>
+          <span class="ts-sub">by student name, registration number, or ID</span>
+        </div>
+        <div class="ts-bar">
+          <span class="ts-icon">&#128269;</span>
+          <input id="findInput" type="text" placeholder="e.g. Doe, 000002, or a Student ID#">
+        </div>
+        <div id="findResults" class="grid2" style="display:none;"></div>
+        <p id="findEmpty" style="font-size:11.5px;color:var(--muted);font-style:italic;margin-top:10px;">Search the database above, or select a record directly from the table, to load it here.</p>
+      </div>
+
+      <div class="layout">
+
+        <!-- FORM COLUMN -->
+        <div>
+
+          <div id="activeBadgeWrap"></div>
+
+          <div class="panel">
+            <h2><span class="num">1</span>Selected Applicant</h2>
+            <div class="compose-grid">
+              <div class="field"><label>Registration number</label><input id="regNumber" type="text" readonly placeholder="Load a record above"></div>
+              <div class="field"><label>Current status</label><input id="currentStatus" type="text" readonly></div>
+            </div>
+            <div class="field"><label>Student name</label><input id="stuName" type="text" readonly></div>
+            <div class="compose-grid">
+              <div class="field"><label>Student ID#</label><input id="stuId" type="text" readonly></div>
+              <div class="field"><label>Grade level</label><input id="gradeLevel" type="text" readonly></div>
+            </div>
+            <div class="field" style="margin-bottom:0;"><label>Registered by</label><input id="registeredBy" type="text" readonly></div>
+          </div>
+
+          <div class="panel danger-panel">
+            <h2><span class="num">2</span>Rejection / Account Action</h2>
+            <div class="field"><label>Reason <span class="hint">(required for reject/disable)</span></label><textarea id="reason" placeholder="Reason for rejection or disabling this account"></textarea></div>
+            <div class="compose-grid">
+              <div class="field"><label>Actioned by (Registrar)</label><input id="actionedBy" type="text" placeholder="Your name"></div>
+              <div class="field"><label>Action date</label><input id="actionDate" type="text" readonly></div>
+            </div>
+            <div class="decision-row">
+              <button type="button" id="rejectBtn" class="btn-reject" disabled>Reject Application</button>
+              <button type="button" id="disableBtn" class="btn-disable" disabled>Disable Account</button>
+            </div>
+            <div class="decision-row" style="margin-top:10px;">
+              <button type="button" id="deleteBtn" class="btn-delete" disabled>Delete Record Permanently</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- DATABASE / DIRECTORY COLUMN -->
+        <div>
+          <div class="panel">
+            <h2><span class="num">&#128193;</span>Registration Database</h2>
+            <div class="db-summary">
+              <div class="stat"><div class="n" id="statTotal">0</div><div class="l">Total</div></div>
+              <div class="stat"><div class="n" id="statActive">0</div><div class="l">Active</div></div>
+              <div class="stat"><div class="n" id="statPending">0</div><div class="l">Pending</div></div>
+              <div class="stat"><div class="n" id="statRejected">0</div><div class="l">Rejected</div></div>
+              <div class="stat"><div class="n" id="statDisabled">0</div><div class="l">Disabled</div></div>
+            </div>
+            <div class="directory-toolbar">
+              <span>Select "Load" to bring a record into the form on the left, or act on it directly with the row buttons.</span>
+            </div>
+            <div class="db-table-wrap">
+              <table class="db-table">
+                <thead>
+                  <tr>
+                    <th>Reg. Number</th>
+                    <th>Student</th>
+                    <th>ID#</th>
+                    <th>Grade</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="dbTableBody"></tbody>
+              </table>
+              <div class="db-empty" id="dbEmpty">No records in the database yet.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  function el(id){ return document.getElementById(id); }
+  function val(id){ return el(id).value.trim(); }
+  function setInput(id, v){ el(id).value = v || ''; }
+
+  // -------- Logos --------
+    const KPS_LOGO = "../assets/images/img-05ddf6d498159c2e.png";
+    const MOE_SEAL = "../assets/images/img-2c6f3402d893a11c.png";
+  ['topbarKpsLogo','cardSeal'].forEach(id => el(id).src = KPS_LOGO);
+  ['topbarMoeLogo'].forEach(id => el(id).src = MOE_SEAL);
+
+  // -------- Database (shared local registry — same store as Registration) --------
+  const REGISTRY_KEY = '__kps_registration_registry';
+  function getRegistry(){
+    try{ return JSON.parse(localStorage.getItem(REGISTRY_KEY) || '[]'); }
+    catch(err){ return []; }
+  }
+  function setRegistry(list){
+    localStorage.setItem(REGISTRY_KEY, JSON.stringify(list));
+  }
+
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+  // -------- Toast --------
+  function showToast(msg, isErr){
+    const t = el('toast');
+    t.textContent = msg;
+    t.classList.toggle('err', !!isErr);
+    t.classList.add('show');
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  // -------- Load a record into the action form --------
+  let currentRegNumber = '';
+
+  function loadByRegNumber(regNumber){
+    const record = getRegistry().find(r => r.regNumber === regNumber);
+    if(!record) return;
+    currentRegNumber = record.regNumber;
+    setInput('regNumber', record.regNumber);
+    setInput('currentStatus', record.regStatus || 'Active');
+    setInput('stuName', record.name || 'Unnamed student');
+    setInput('stuId', record.stuId || '');
+    setInput('gradeLevel', record.gradeLevel || '');
+    setInput('registeredBy', record.registeredBy || '');
+    setInput('reason', '');
+    setInput('actionedBy', record.actionedBy || '');
+    setInput('actionDate', todayStr());
+    el('rejectBtn').disabled = false;
+    el('disableBtn').disabled = false;
+    el('deleteBtn').disabled = false;
+    showActiveBadge(record);
+    el('findInput').value = '';
+    renderFindResults();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('Loaded ' + (record.name || 'record') + ' — ' + record.regNumber + '.');
+  }
+
+  function clearForm(){
+    currentRegNumber = '';
+    setInput('regNumber', '');
+    setInput('currentStatus', '');
+    setInput('stuName', '');
+    setInput('stuId', '');
+    setInput('gradeLevel', '');
+    setInput('registeredBy', '');
+    setInput('reason', '');
+    setInput('actionedBy', '');
+    setInput('actionDate', '');
+    el('rejectBtn').disabled = true;
+    el('disableBtn').disabled = true;
+    el('deleteBtn').disabled = true;
+    hideActiveBadge();
+  }
+
+  function showActiveBadge(record){
+    el('activeBadgeWrap').innerHTML = `
+      <div class="active-badge">
+        <span>Acting on: ${escapeHtml(record.name || 'Unnamed student')} — ${escapeHtml(record.regNumber || '')} (${escapeHtml(record.regStatus || 'Active')})</span>
+        <button type="button" id="stopEditingBtn">Clear Selection</button>
+      </div>`;
+    el('stopEditingBtn').addEventListener('click', () => { clearForm(); showToast('Selection cleared.'); });
+  }
+  function hideActiveBadge(){ el('activeBadgeWrap').innerHTML = ''; }
+
+  // -------- Actions: Reject / Disable / Delete --------
+  function applyStatusChange(regNumber, newStatus, successMsg){
+    const list = getRegistry();
+    const idx = list.findIndex(r => r.regNumber === regNumber);
+    if(idx < 0){ showToast('Record not found in database.', true); return; }
+
+    const reason = val('reason');
+    const actionedBy = val('actionedBy');
+    if(!reason){
+      showToast('Please enter a reason before continuing.', true);
+      return;
+    }
+    if(!actionedBy){
+      showToast('Please enter the Registrar\u2019s name in "Actioned by" first.', true);
+      return;
+    }
+
+    const record = { ...list[idx] };
+    record.regStatus = newStatus;
+    record.reason = reason;
+    record.actionedBy = actionedBy;
+    record.updatedBy = actionedBy;
+    record.updatedDate = todayStr();
+    list[idx] = record;
+    setRegistry(list);
+
+    renderDirectory();
+    if(currentRegNumber === regNumber){ loadByRegNumber(regNumber); }
+    showToast(successMsg + ' ' + (record.name || 'Record') + '.');
+  }
+
+  function rejectRecord(regNumber){
+    if(!regNumber) return;
+    if(!confirm('Reject this student\u2019s application? Their status will be set to Rejected in the database.')) return;
+    applyStatusChange(regNumber, 'Rejected', 'Application rejected for');
+  }
+
+  function disableRecord(regNumber){
+    if(!regNumber) return;
+    if(!confirm('Disable this account? The record will be marked Disabled in the database.')) return;
+    applyStatusChange(regNumber, 'Disabled', 'Account disabled for');
+  }
+
+  function deleteRecord(regNumber){
+    if(!regNumber) return;
+    if(!confirm('Permanently delete this record from the database? This cannot be undone.')) return;
+    const list = getRegistry().filter(r => r.regNumber !== regNumber);
+    setRegistry(list);
+    renderDirectory();
+    if(currentRegNumber === regNumber){ clearForm(); }
+    showToast('Record deleted from the database.');
+  }
+
+  el('rejectBtn').addEventListener('click', () => rejectRecord(currentRegNumber));
+  el('disableBtn').addEventListener('click', () => disableRecord(currentRegNumber));
+  el('deleteBtn').addEventListener('click', () => deleteRecord(currentRegNumber));
+  el('refreshBtn').addEventListener('click', () => { renderDirectory(); renderFindResults(); showToast('Database refreshed.'); });
+
+  // -------- Search --------
+  function renderFindResults(){
+    const q = val('findInput').toLowerCase();
+    const box = el('findResults');
+    const empty = el('findEmpty');
+    if(!q){
+      box.style.display = 'none';
+      empty.style.display = 'block';
+      empty.textContent = 'Search the database above, or select a record directly from the table, to load it here.';
+      return;
+    }
+    const results = getRegistry().filter(r =>
+      (r.name || '').toLowerCase().includes(q) ||
+      (r.regNumber || '').toLowerCase().includes(q) ||
+      (r.stuId || '').toLowerCase().includes(q));
+    if(!results.length){
+      box.style.display = 'none';
+      empty.style.display = 'block';
+      empty.textContent = 'No records match that search.';
+      return;
+    }
+    empty.style.display = 'none';
+    box.style.display = 'flex';
+    box.innerHTML = results.slice(0, 12).map(r => `
+      <div class="find-row">
+        <div class="fr-info">
+          <span class="fr-name">${escapeHtml(r.name || 'Unnamed student')}</span>
+          <span class="fr-meta">${escapeHtml(r.regNumber || '')}${r.stuId ? ' \u00b7 ' + escapeHtml(r.stuId) : ''} \u00b7 ${escapeHtml(r.regStatus || 'Active')}</span>
+        </div>
+        <button type="button" data-load="${escapeHtml(r.regNumber)}">Load</button>
+      </div>`).join('');
+    box.querySelectorAll('[data-load]').forEach(btn => {
+      btn.addEventListener('click', () => loadByRegNumber(btn.getAttribute('data-load')));
+    });
+  }
+  el('findInput').addEventListener('input', renderFindResults);
+
+  // -------- Directory table --------
+  function statusClass(status){
+    return (status || 'active').toLowerCase();
+  }
+
+  function renderDirectory(){
+    const list = getRegistry().slice().sort((a,b) => (b.updatedDate || '').localeCompare(a.updatedDate || ''));
+    const body = el('dbTableBody');
+    const empty = el('dbEmpty');
+
+    el('progressBadge').textContent = list.length;
+    el('statTotal').textContent = list.length;
+    el('statActive').textContent = list.filter(r => r.regStatus === 'Active').length;
+    el('statPending').textContent = list.filter(r => r.regStatus === 'Pending').length;
+    el('statRejected').textContent = list.filter(r => r.regStatus === 'Rejected').length;
+    el('statDisabled').textContent = list.filter(r => r.regStatus === 'Disabled').length;
+
+    if(!list.length){
+      body.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    body.innerHTML = list.map(r => `
+      <tr data-row="${escapeHtml(r.regNumber)}">
+        <td class="muted">${escapeHtml(r.regNumber || '\u2014')}</td>
+        <td class="name">${escapeHtml(r.name || 'Unnamed student')}</td>
+        <td class="muted">${escapeHtml(r.stuId || '\u2014')}</td>
+        <td class="muted">${escapeHtml(r.gradeLevel || '\u2014')}</td>
+        <td><span class="status-pill ${statusClass(r.regStatus)}">${escapeHtml(r.regStatus || 'Active')}</span></td>
+        <td class="muted">${escapeHtml(r.updatedBy || '\u2014')}</td>
+        <td>
+          <div class="row-actions">
+            <button type="button" data-load="${escapeHtml(r.regNumber)}">Load</button>
+            <button type="button" class="reject" data-reject="${escapeHtml(r.regNumber)}">Reject</button>
+            <button type="button" class="disable" data-disable="${escapeHtml(r.regNumber)}">Disable</button>
+            <button type="button" class="del" data-del="${escapeHtml(r.regNumber)}">Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+
+    body.querySelectorAll('[data-load]').forEach(btn => {
+      btn.addEventListener('click', () => loadByRegNumber(btn.getAttribute('data-load')));
+    });
+    body.querySelectorAll('[data-reject]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        loadByRegNumber(btn.getAttribute('data-reject'));
+        showToast('Loaded record. Enter a reason and Registrar name, then click "Reject Application".');
+      });
+    });
+    body.querySelectorAll('[data-disable]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        loadByRegNumber(btn.getAttribute('data-disable'));
+        showToast('Loaded record. Enter a reason and Registrar name, then click "Disable Account".');
+      });
+    });
+    body.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', () => deleteRecord(btn.getAttribute('data-del')));
+    });
+  }
+
+  // ---------------- Init ----------------
+  renderDirectory();
+  renderFindResults();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Institution Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand img{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; object-fit:cover; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.school-brand img{ width:46px; height:46px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER (ICT signature element) ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* chart bars */
+.chart-bars{ display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:10px; }
+.chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.chart-bar{ width:100%; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--gold-light), var(--gold-deep)); position:relative; transition:filter .15s; }
+.chart-bar:hover{ filter:brightness(1.08); }
+.chart-bar.alt{ background:linear-gradient(180deg, #9FB6E0, var(--navy-3)); }
+.chart-lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+.chart-legend{ display:flex; gap:16px; margin-top:6px; font-size:11.5px; color:var(--muted); }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.chip-dot{ width:8px; height:8px; border-radius:2px; }
+
+/* feed / lists */
+.feed-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px dashed var(--line); }
+.feed-item:last-child{ border-bottom:none; }
+.feed-dot{ width:32px; height:32px; border-radius:9px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex:none; }
+.feed-dot svg{ width:15px; height:15px; color:var(--crimson); }
+.feed-dot.gold svg{ color:var(--gold-deep); }
+.feed-dot.navy svg{ color:var(--navy-3); }
+.feed-text{ font-size:13px; font-weight:600; }
+.feed-sub{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.feed-time{ margin-left:auto; font-size:11px; color:var(--muted); white-space:nowrap; }
+
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+.progress-track{ height:6px; border-radius:20px; background:var(--line); overflow:hidden; flex:1; }
+.progress-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); }
+.progress-fill.ok{ background:linear-gradient(90deg, #8FD8AC, var(--success)); }
+.progress-fill.warn{ background:linear-gradient(90deg, var(--gold-light), var(--warn)); }
+.progress-fill.bad{ background:linear-gradient(90deg, #F0A7AE, var(--danger)); }
+
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.health-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; padding:7px 0; }
+.health-row .hb{ flex:1; height:7px; background:var(--line); border-radius:20px; overflow:hidden; }
+.health-row .hb i{ display:block; height:100%; border-radius:20px; }
+.health-row .hv{ width:74px; text-align:right; font-weight:700; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+button.pill:hover{ filter:brightness(0.96); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* Module placeholder cards */
+.module-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.module-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.module-ic{ width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.module-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.module-card h4{ margin:0; font-size:14.5px; }
+.module-card p{ margin:0; font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* Device status card (network) */
+.device-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
+.device-top{ display:flex; align-items:center; justify-content:space-between; }
+.device-ic{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.device-ic svg{ width:19px; height:19px; }
+.device-name{ font-weight:700; font-size:13.5px; margin-top:2px; }
+.device-meta{ font-size:11.5px; color:var(--muted); }
+
+/* Restricted note */
+.restricted-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#FBE6E6; border:1px solid #F3C7CB; margin-top:14px; }
+.restricted-note svg{ width:16px; height:16px; color:var(--danger); flex:none; margin-top:1px; }
+.restricted-note div{ font-size:12px; color:#7A2530; line-height:1.55; }
+.restricted-note b{ color:var(--danger); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field input[type=text], .field input[type=password], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.settings-list .row-line{ align-items:flex-start; }
+.settings-list .rl-name{ font-size:13.5px; }
+.settings-list .rl-sub{ margin-top:2px; max-width:52ch; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .bento{ grid-template-columns:1fr; }
+  .grid-3,.grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .tbl-actions, .toolbar, .tabs, .toast-wrap, .modal-backdrop, .footer-ribbon, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .view{ display:none !important; }
+  .view.active{ display:block !important; }
+  .card, .stat-card, .module-card, .device-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid,.grid-3,.grid-2,.grid-4{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+  .school-brand .sb-t2{ display:none; }
+  .topbar-divider{ display:none; }
+}
+
+/* ============================= FORM-SPECIFIC (Create User / Registration) ============================= */
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:700; color:var(--muted); border:none; background:transparent; }
+.role-tab svg{ width:16px; height:16px; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.form-shell{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; }
+.form-head{ padding:22px 26px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; }
+.form-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.form-head h2{ color:#fff; margin:0 0 4px; font-size:20px; }
+.form-head p{ margin:0; color:rgba(255,255,255,.65); font-size:12.6px; max-width:60ch; }
+.form-body{ padding:26px; display:flex; flex-direction:column; gap:26px; }
+
+.fsection{ border:1px dashed var(--line); border-radius:14px; padding:20px 22px; }
+.fsection-title{ display:flex; align-items:center; gap:10px; margin:0 0 16px; font-size:14px; font-weight:800; color:var(--navy); }
+.fsection-title .num{ width:24px; height:24px; border-radius:8px; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex:none; }
+
+.fgrid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+.fgrid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+.fgrid.cols-4{ grid-template-columns:repeat(4, 1fr); }
+.fspan-2{ grid-column:span 2; }
+.fspan-3{ grid-column:span 3; }
+
+.field .hint{ font-size:10.8px; color:var(--muted); font-weight:500; }
+.field .err{ font-size:10.8px; color:var(--danger); font-weight:700; display:none; }
+.field.invalid input, .field.invalid select, .field.invalid textarea{ border-color:var(--danger); background:#FEF4F4; }
+.field.invalid .err{ display:block; }
+.field.valid input, .field.valid select{ border-color:#9CD3AF; }
+
+.field input[type=text], .field input[type=email], .field input[type=tel], .field input[type=password],
+.field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit;
+  background:var(--paper); width:100%; transition:border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); }
+.field textarea{ resize:vertical; min-height:70px; }
+
+.dob-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+.radio-row, .check-row{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
+.radio-opt, .check-opt{ display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; cursor:pointer; }
+.radio-opt input, .check-opt input{ width:16px; height:16px; accent-color:var(--crimson-bright); cursor:pointer; }
+
+.role-fields{ display:none; }
+.role-fields.active{ display:block; }
+
+table.qual{ width:100%; border-collapse:collapse; font-size:12.6px; }
+table.qual th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:8px 10px; border-bottom:2px solid var(--line); }
+table.qual td{ padding:7px 10px; border-bottom:1px solid var(--line); }
+table.qual input{ border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-size:12.6px; width:100%; font-family:inherit; }
+table.qual tr:last-child td{ border-bottom:none; }
+
+.role-pill-preview{ display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:20px; font-size:11.5px; font-weight:800; }
+
+.form-foot{ padding:20px 26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:#FBF8F0; }
+.form-foot .fp-note{ font-size:11.8px; color:var(--muted); max-width:52ch; }
+.form-actions{ display:flex; gap:10px; }
+
+@media (max-width: 900px){
+  .fgrid, .fgrid.cols-2, .fgrid.cols-4{ grid-template-columns:1fr; }
+  .dob-row{ grid-template-columns:1fr 1fr 1fr; }
+}
+
+/* ============================= INSTITUTION SETUP (page-specific) ============================= */
+.setup-steps{ display:flex; align-items:center; gap:0; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.setup-step{ display:flex; align-items:center; gap:9px; padding:9px 18px; border-radius:10px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.setup-step .stepnum{ width:22px; height:22px; border-radius:50%; background:var(--line); color:var(--muted); display:flex; align-items:center; justify-content:center; font-size:11px; flex:none; }
+.setup-step.active{ color:var(--navy); }
+.setup-step.active .stepnum{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+.setup-step.done .stepnum{ background:linear-gradient(135deg, #8FD8AC, var(--success)); color:#fff; }
+.setup-step.done{ color:var(--success); }
+.setup-arrow{ width:14px; height:14px; color:var(--line); margin:0 2px; flex:none; }
+
+.color-field{ display:flex; align-items:center; gap:10px; }
+.color-swatch{ position:relative; width:44px; height:44px; border-radius:12px; border:1px solid var(--line); flex:none; box-shadow:var(--shadow-sm); overflow:hidden; }
+.color-swatch input[type=color]{ position:absolute; inset:-4px; width:calc(100% + 8px); height:calc(100% + 8px); border:none; padding:0; cursor:pointer; }
+.color-hex{ font-family:'IBM Plex Mono',monospace; text-transform:uppercase; }
+.color-presets{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.color-preset{ width:26px; height:26px; border-radius:8px; border:2px solid #fff; box-shadow:0 0 0 1px var(--line); cursor:pointer; flex:none; transition:transform .12s; }
+.color-preset:hover{ transform:scale(1.12); }
+.color-preset.selected{ box-shadow:0 0 0 2px var(--paper), 0 0 0 4px var(--gold-deep); }
+
+.logo-drop{ display:flex; align-items:center; gap:16px; padding:16px; border:1.5px dashed var(--line); border-radius:14px; background:var(--cream); }
+.logo-drop .lp{ width:64px; height:64px; border-radius:14px; background:var(--paper); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; flex:none; }
+.logo-drop .lp img{ width:100%; height:100%; object-fit:cover; }
+.logo-drop .lp svg{ width:24px; height:24px; color:var(--muted); }
+.logo-drop-txt{ font-size:12px; color:var(--muted); line-height:1.5; }
+.logo-drop-txt b{ color:var(--ink); display:block; font-size:13px; margin-bottom:2px; }
+
+.preview-card{ border-radius:16px; overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow); position:sticky; top:96px; }
+.preview-top{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); padding:16px 18px; display:flex; align-items:center; gap:12px; transition:background .25s; }
+.preview-logo{ width:38px; height:38px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 4px rgba(217,138,36,.18); background:#fff; object-fit:cover; flex:none; transition:box-shadow .25s; }
+.preview-name{ color:#fff; font-family:'Fraunces',serif; font-size:14.5px; font-weight:700; line-height:1.2; }
+.preview-motto{ color:rgba(255,255,255,.6); font-size:10.5px; margin-top:2px; }
+.preview-body{ padding:18px; background:var(--paper); display:flex; flex-direction:column; gap:12px; }
+.preview-btn-row{ display:flex; gap:8px; }
+.preview-btn{ flex:1; text-align:center; padding:9px; border-radius:9px; font-size:11.5px; font-weight:800; color:#fff; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); transition:background .25s; }
+.preview-btn.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; }
+.preview-btn.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.preview-mini-card{ border:1px solid var(--line); border-radius:11px; padding:12px; display:flex; align-items:center; gap:10px; }
+.preview-mini-ic{ width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; transition:background .25s; }
+.preview-mini-lines{ flex:1; }
+.preview-mini-lines i{ display:block; height:6px; border-radius:4px; background:var(--line); margin-bottom:5px; }
+.preview-mini-lines i:first-child{ width:70%; }
+.preview-mini-lines i:last-child{ width:45%; margin-bottom:0; }
+.preview-foot{ padding:12px 18px; background:var(--cream); font-size:10.5px; color:var(--muted); text-align:center; border-top:1px solid var(--line); }
+
+.propagate-list{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.propagate-item{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:11px; background:var(--cream); border:1px solid var(--line); font-size:12px; font-weight:600; }
+.propagate-item svg{ width:15px; height:15px; color:var(--success); flex:none; }
+
+.switch-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px dashed var(--line); }
+.switch-row:last-child{ border-bottom:none; }
+.switch-row .sw-label{ font-size:13px; font-weight:700; }
+.switch-row .sw-sub{ font-size:11.5px; color:var(--muted); margin-top:2px; max-width:48ch; }
+
+.setup-grid{ display:grid; grid-template-columns:1.6fr 1fr; gap:20px; align-items:start; }
+@media (max-width:1100px){ .setup-grid{ grid-template-columns:1fr; } .preview-card{ position:static; } .propagate-list{ grid-template-columns:1fr 1fr; } }
+@media (max-width:640px){ .propagate-list{ grid-template-columns:1fr; } }
+
+</style>
+<style>
+.app{ display:block; grid-template-columns:none; min-height:100vh; }
+.main{ min-width:0; }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+  <main class="main">
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="school-brand">
+        <img src="../assets/images/img-32d08477299d907c.jpg" alt="Kingsville Public School crest">
+        <div>
+          <div class="sb-t1">Kingsville #7 &middot; Careysburg</div>
+          <div class="sb-t2">Kingsville Public School</div>
+        </div>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia &middot; Ministry of Education</div>
+        <div class="page-title">Institution Setup</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search settings&hellip;">
+      </div>
+      <a class="btn btn-ghost" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+        Go to Dashboard
+      </a>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Initial System Setup</div>
+        </div>
+      </div>
+    </header>
+
+    <div id="maintenanceBannerSlot"></div>
+
+    <div class="content">
+
+      <section class="view active" id="view-institution-setup">
+
+        <div class="setup-steps">
+          <div class="setup-step active"><span class="stepnum">1</span> Institution Setup</div>
+          <svg class="setup-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg>
+          <div class="setup-step"><span class="stepnum">2</span> Create Super Admin</div>
+        </div>
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div>
+            <div class="sb-t">Global System Configuration</div>
+            <div class="sb-s">Everything on this page is the single source of truth for the entire MIS. Institution identity, branding colors, and logo saved here are applied live to <b class="sa">every module, dashboard, form, printout and login screen</b> across all roles &mdash; Registrar, Principal, Teacher, Student, ICT, and Super Admin.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Institution Setup</h2>
+            <p>Define the school&rsquo;s identity, contact details, and system-wide branding. Save &amp; Apply pushes these settings to the whole system instantly.</p>
+          </div>
+        </div>
+
+        <div class="setup-grid">
+          <!-- ================= LEFT: FORM ================= -->
+          <form id="institutionForm" novalidate>
+            <div class="form-shell">
+
+              <div class="form-head">
+                <h2>Institution Profile &amp; Branding</h2>
+                <p>Kingsville Public High School &middot; Super Administrator Console &middot; Institution Setup</p>
+              </div>
+
+              <div class="form-body">
+
+                <!-- SECTION 1: Identity -->
+                <div class="fsection">
+                  <div class="fsection-title"><span class="num">1</span> Institution Identity</div>
+                  <div class="fgrid">
+                    <div class="field fspan-2" id="f-name">
+                      <label>Institution Name *</label>
+                      <input type="text" id="instName" maxlength="80" placeholder="e.g. Kingsville Public High School">
+                      <span class="err">Institution name is required</span>
+                    </div>
+                    <div class="field" id="f-shortName">
+                      <label>Short Name / Acronym *</label>
+                      <input type="text" id="instShortName" maxlength="12" placeholder="e.g. KPHS">
+                      <span class="hint">Used on ID cards, badges &amp; reports</span>
+                      <span class="err">Required, up to 12 characters</span>
+                    </div>
+                    <div class="field fspan-2" id="f-motto">
+                      <label>Motto / Tagline</label>
+                      <input type="text" id="instMotto" maxlength="60" placeholder="e.g. Knowledge is Power">
+                    </div>
+                    <div class="field" id="f-type">
+                      <label>Institution Type *</label>
+                      <select id="instType">
+                        <option>Public High School</option>
+                        <option>Private High School</option>
+                        <option>Junior High School</option>
+                        <option>Elementary School</option>
+                        <option>Vocational / Technical Institute</option>
+                        <option>Mixed (K-12)</option>
+                      </select>
+                    </div>
+                    <div class="field" id="f-established">
+                      <label>Year Established</label>
+                      <input type="text" id="instEstablished" maxlength="4" placeholder="e.g. 1998">
+                    </div>
+                    <div class="field" id="f-regno">
+                      <label>MoE Registration / License No.</label>
+                      <input type="text" id="instRegNo" maxlength="30" placeholder="e.g. MOE-LR-00231">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SECTION 2: Contact & Address -->
+                <div class="fsection">
+                  <div class="fsection-title"><span class="num">2</span> Contact &amp; Address</div>
+                  <div class="fgrid">
+                    <div class="field fspan-3" id="f-address">
+                      <label>Address *</label>
+                      <textarea id="instAddress" placeholder="House/campus number, street, community"></textarea>
+                      <span class="err">Address is required</span>
+                    </div>
+                  </div>
+                  <div class="fgrid" style="margin-top:16px;">
+                    <div class="field" id="f-county">
+                      <label>County / State *</label>
+                      <input type="text" id="instCounty" maxlength="30" placeholder="e.g. Montserrado">
+                      <span class="err">Required</span>
+                    </div>
+                    <div class="field" id="f-country">
+                      <label>Country *</label>
+                      <input type="text" id="instCountry" maxlength="30" placeholder="Liberia">
+                      <span class="err">Required</span>
+                    </div>
+                    <div class="field" id="f-phone">
+                      <label>Phone Number</label>
+                      <input type="tel" id="instPhone" maxlength="20" placeholder="e.g. 0770123456">
+                    </div>
+                    <div class="field" id="f-email">
+                      <label>Official Email</label>
+                      <input type="email" id="instEmail" placeholder="info@school.edu.lr">
+                    </div>
+                    <div class="field fspan-2" id="f-website">
+                      <label>Website</label>
+                      <input type="text" id="instWebsite" placeholder="www.school.edu.lr">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SECTION 3: Branding -->
+                <div class="fsection">
+                  <div class="fsection-title"><span class="num">3</span> Branding &amp; Appearance <span style="font-weight:500; color:var(--muted); font-size:11.5px;">(applies system-wide)</span></div>
+
+                  <div class="field" style="margin-bottom:16px;">
+                    <label>Institution Logo</label>
+                    <div class="logo-drop">
+                      <div class="lp" id="logoPreviewBox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+                      </div>
+                      <div class="logo-drop-txt">
+                        <b>Upload a crest, seal or logo</b>
+                        Square image recommended (PNG or JPG). This replaces the placeholder seal on every sidebar, topbar, login page, ID card and printed report.
+                      </div>
+                      <input type="file" id="logoInput" accept="image/*" style="margin-left:auto;">
+                    </div>
+                  </div>
+
+                  <div class="fgrid cols-2">
+                    <div class="field">
+                      <label>Primary Brand Color</label>
+                      <div class="color-field">
+                        <div class="color-swatch" id="swatchPrimary" style="background:#A81530;"><input type="color" id="colorPrimary" value="#A81530"></div>
+                        <input type="text" class="color-hex" id="hexPrimary" value="#A81530" maxlength="7">
+                      </div>
+                      <div class="color-presets" id="presetsPrimary">
+                        <div class="color-preset" style="background:#A81530;" data-color="#A81530" title="Crimson (default)"></div>
+                        <div class="color-preset" style="background:#0D4D8B;" data-color="#0D4D8B" title="Royal Blue"></div>
+                        <div class="color-preset" style="background:#0F6E3D;" data-color="#0F6E3D" title="Forest Green"></div>
+                        <div class="color-preset" style="background:#5B2A86;" data-color="#5B2A86" title="Deep Purple"></div>
+                        <div class="color-preset" style="background:#0F172A;" data-color="#0F172A" title="Slate Black"></div>
+                        <div class="color-preset" style="background:#B45309;" data-color="#B45309" title="Amber Brown"></div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label>Accent / Gold Color</label>
+                      <div class="color-field">
+                        <div class="color-swatch" id="swatchGold" style="background:#D98A24;"><input type="color" id="colorGold" value="#D98A24"></div>
+                        <input type="text" class="color-hex" id="hexGold" value="#D98A24" maxlength="7">
+                      </div>
+                      <div class="color-presets" id="presetsGold">
+                        <div class="color-preset" style="background:#D98A24;" data-color="#D98A24" title="Gold (default)"></div>
+                        <div class="color-preset" style="background:#C9A227;" data-color="#C9A227" title="Bronze"></div>
+                        <div class="color-preset" style="background:#2E9E8C;" data-color="#2E9E8C" title="Teal"></div>
+                        <div class="color-preset" style="background:#9CA3AF;" data-color="#9CA3AF" title="Silver"></div>
+                        <div class="color-preset" style="background:#E0B84B;" data-color="#E0B84B" title="Sunflower"></div>
+                        <div class="color-preset" style="background:#7C8B3F;" data-color="#7C8B3F" title="Olive"></div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label>Navy / Sidebar Base Color</label>
+                      <div class="color-field">
+                        <div class="color-swatch" id="swatchNavy" style="background:#0D1730;"><input type="color" id="colorNavy" value="#0D1730"></div>
+                        <input type="text" class="color-hex" id="hexNavy" value="#0D1730" maxlength="7">
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label>Favicon</label>
+                      <input type="file" id="faviconInput" accept="image/*">
+                      <span class="hint">Small icon shown in the browser tab (optional, falls back to logo)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SECTION 4: Regional -->
+                <div class="fsection">
+                  <div class="fsection-title"><span class="num">4</span> Regional &amp; Academic Defaults</div>
+                  <div class="fgrid cols-4">
+                    <div class="field">
+                      <label>Currency</label>
+                      <select id="instCurrency">
+                        <option value="LRD">LRD &mdash; Liberian Dollar</option>
+                        <option value="USD">USD &mdash; US Dollar</option>
+                        <option value="GHS">GHS &mdash; Ghanaian Cedi</option>
+                        <option value="NGN">NGN &mdash; Nigerian Naira</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label>Timezone</label>
+                      <select id="instTimezone">
+                        <option value="GMT">GMT &mdash; Monrovia</option>
+                        <option value="GMT+1">GMT+1</option>
+                        <option value="GMT+0">GMT+0 (UTC)</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label>Date Format</label>
+                      <select id="instDateFormat">
+                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label>Academic Year Starts</label>
+                      <select id="instAcademicStart">
+                        <option>September</option>
+                        <option>August</option>
+                        <option>January</option>
+                        <option>October</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SECTION 5: System-wide switches -->
+                <div class="fsection">
+                  <div class="fsection-title"><span class="num">5</span> System-Wide Controls</div>
+                  <div class="switch-row">
+                    <div>
+                      <div class="sw-label">Maintenance Mode</div>
+                      <div class="sw-sub">Temporarily restrict sign-in to Super Administrators only while you finish configuring the system. Shows a banner across every page.</div>
+                    </div>
+                    <button type="button" class="toggle" id="toggleMaintenance"></button>
+                  </div>
+                  <div class="switch-row">
+                    <div>
+                      <div class="sw-label">Lock Branding for Other Admins</div>
+                      <div class="sw-sub">Only the Super Administrator role can change institution branding once this is on. Recommended after initial setup is complete.</div>
+                    </div>
+                    <button type="button" class="toggle on" id="toggleLockBranding"></button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="form-foot">
+                <div class="fp-note" id="workflowNote">Saving updates the institution record used by every module in the system. This action is audit-logged and can be changed again at any time.</div>
+                <div class="form-actions">
+                  <button type="button" class="btn btn-ghost" id="resetBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+                    Reset to Defaults
+                  </button>
+                  <button type="submit" class="btn btn-primary" id="saveApplyBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                    Save &amp; Apply to Entire System
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </form>
+
+          <!-- ================= RIGHT: LIVE PREVIEW ================= -->
+          <div>
+            <div class="preview-card">
+              <div class="preview-top" id="prevTop">
+                <img class="preview-logo" id="prevLogo" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+                <div>
+                  <div class="preview-name" id="prevName">Kingsville Public High School</div>
+                  <div class="preview-motto" id="prevMotto">Knowledge is Power</div>
+                </div>
+              </div>
+              <div class="preview-body">
+                <div class="preview-btn-row">
+                  <div class="preview-btn" id="prevBtn1">Create User</div>
+                  <div class="preview-btn gold" id="prevBtn2">Approve</div>
+                  <div class="preview-btn navy" id="prevBtn3">Reports</div>
+                </div>
+                <div class="preview-mini-card">
+                  <div class="preview-mini-ic" id="prevIc1"></div>
+                  <div class="preview-mini-lines"><i></i><i></i></div>
+                </div>
+                <div class="preview-mini-card">
+                  <div class="preview-mini-ic" id="prevIc2"></div>
+                  <div class="preview-mini-lines"><i></i><i></i></div>
+                </div>
+              </div>
+              <div class="preview-foot" id="prevFoot">Live preview &middot; updates as you edit</div>
+            </div>
+
+            <div class="card" style="margin-top:16px;">
+              <div class="card-head"><h3>This will update everywhere</h3></div>
+              <div class="card-body">
+                <div class="propagate-list">
+                  <div class="propagate-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Sidebars &amp; topbars</div>
+                  <div class="propagate-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Login &amp; OTP screens</div>
+                  <div class="propagate-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> All role dashboards</div>
+                  <div class="propagate-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Forms &amp; workflows</div>
+                  <div class="propagate-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> ID cards &amp; letters</div>
+                  <div class="propagate-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Report card design</div>
+                  <div class="propagate-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Certificates</div>
+                  <div class="propagate-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Printed reports</div>
+                  <div class="propagate-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Notifications</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="allowed-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          <div><b>How this works:</b> Institution Setup writes one record that every page in the system reads on load through a shared theme engine. Saving here is instant and system-wide &mdash; no need to edit individual modules. In production this record lives in the Institution table of the database; this build stores it locally so you can see the full effect immediately.</div>
+        </div>
+
+      </section>
+
+      <div class="footer-ribbon">
+        <img class="footer-crest js-inst-logo" id="footerCrest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+        <span class="js-inst-name">Kingsville Public High School</span> &middot; Super Administrator Console &middot; <b class="js-inst-motto">Knowledge is Power</b> &middot; <span class="js-inst-address">Kingsville #7, Careysburg District</span>
+        <img class="footer-crest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+        Republic of Liberia &middot; Ministry of Education
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================= Institution Setup — page logic =============================
+   Wired to the real Supabase `institutions` table (see
+   supabase/migrations/011_addendum_institution_setup_wiring.sql). This is a
+   single-tenant system, so the frontend always reads/writes one fixed row —
+   no searching, no risk of ever creating a second "institution". */
+(function(){
+
+  var INSTITUTION_ID = '00000000-0000-0000-0000-000000000001';
+  var DEFAULT_LOGO = document.getElementById('prevLogo').src;
+  var currentRow = null; // last row fetched from Supabase, used by Reset
+
+  var fields = {
+    name: document.getElementById('instName'),
+    shortName: document.getElementById('instShortName'),
+    motto: document.getElementById('instMotto'),
+    type: document.getElementById('instType'),
+    established: document.getElementById('instEstablished'),
+    regNo: document.getElementById('instRegNo'),
+    address: document.getElementById('instAddress'),
+    county: document.getElementById('instCounty'),
+    country: document.getElementById('instCountry'),
+    phone: document.getElementById('instPhone'),
+    email: document.getElementById('instEmail'),
+    website: document.getElementById('instWebsite'),
+    currency: document.getElementById('instCurrency'),
+    timezone: document.getElementById('instTimezone'),
+    dateFormat: document.getElementById('instDateFormat'),
+    academicYearStart: document.getElementById('instAcademicStart')
+  };
+
+  var state = {
+    logoDataUrl: '',
+    faviconDataUrl: '',
+    primary: '#A81530', gold: '#D98A24', navy: '#0D1730',
+    maintenanceMode: false, lockBranding: true
+  };
+
+  /* ---------- Map a Supabase `institutions` row onto the form + state ---------- */
+  function applyRowToForm(row){
+    row = row || {};
+    fields.name.value = row.name || 'Kingsville Public High School';
+    fields.shortName.value = row.short_code || 'KPHS';
+    fields.motto.value = row.motto || '';
+    if(row.type) fields.type.value = row.type;
+    fields.established.value = row.established_year || '';
+    fields.regNo.value = row.registration_no || '';
+    fields.address.value = row.address || '';
+    fields.county.value = row.county || '';
+    fields.country.value = row.country || 'Liberia';
+    fields.phone.value = row.phone || '';
+    fields.email.value = row.email || '';
+    fields.website.value = row.website || '';
+    if(row.currency) fields.currency.value = row.currency;
+    if(row.timezone) fields.timezone.value = row.timezone;
+    if(row.date_format) fields.dateFormat.value = row.date_format;
+    if(row.academic_year_start) fields.academicYearStart.value = row.academic_year_start;
+
+    state.logoDataUrl = row.logo_url || '';
+    state.faviconDataUrl = row.favicon_url || '';
+    state.primary = row.color_primary || '#A81530';
+    state.gold = row.color_gold || '#D98A24';
+    state.navy = row.color_navy || '#0D1730';
+    state.maintenanceMode = !!row.maintenance_mode;
+    state.lockBranding = row.lock_branding !== false;
+
+    document.getElementById('colorPrimary').value = state.primary;
+    document.getElementById('hexPrimary').value = state.primary;
+    document.getElementById('swatchPrimary').style.background = state.primary;
+    document.getElementById('colorGold').value = state.gold;
+    document.getElementById('hexGold').value = state.gold;
+    document.getElementById('swatchGold').style.background = state.gold;
+    document.getElementById('colorNavy').value = state.navy;
+    document.getElementById('hexNavy').value = state.navy;
+    document.getElementById('swatchNavy').style.background = state.navy;
+
+    document.getElementById('logoPreviewBox').innerHTML = state.logoDataUrl
+      ? '<img src="'+state.logoDataUrl+'" alt="">'
+      : '<span class="ph">No logo uploaded</span>';
+
+    toggleEl(document.getElementById('toggleMaintenance'), state.maintenanceMode);
+    toggleEl(document.getElementById('toggleLockBranding'), state.lockBranding);
+
+    refreshPreview();
+  }
+
+  /* ---------- Load the live institution row from Supabase ---------- */
+  async function loadIntoForm(){
+    try{
+      var auth = await window.KPS.requireRole(['super_admin']);
+      if(!auth || !auth.user) return; // requireRole already redirected
+
+      var { data, error } = await window.sb
+        .from('institutions')
+        .select('*')
+        .eq('id', INSTITUTION_ID)
+        .maybeSingle();
+
+      if(error) throw error;
+      currentRow = data;
+      applyRowToForm(data);
+    }catch(err){
+      console.error('[institution-setup] failed to load institution row', err);
+      showToast('Could not load institution settings from the database. See console for details.');
+      applyRowToForm(null);
+    }
+  }
+
+  /* ---------- Live preview ---------- */
+  function refreshPreview(){
+    document.getElementById('prevName').textContent = fields.name.value || 'Institution Name';
+    document.getElementById('prevMotto').textContent = fields.motto.value || '';
+    document.getElementById('prevFoot').textContent = (fields.shortName.value || 'KPHS') + ' \u00b7 Live preview \u00b7 updates as you edit';
+    document.getElementById('prevLogo').src = state.logoDataUrl || DEFAULT_LOGO;
+
+    document.getElementById('prevTop').style.background = 'linear-gradient(135deg,' + shade(state.navy,0.22) + ',' + state.navy + ')';
+    document.getElementById('prevBtn1').style.background = 'linear-gradient(135deg,' + shade(state.primary,0.18) + ',' + shade(state.primary,-0.28) + ')';
+    document.getElementById('prevBtn2').style.background = 'linear-gradient(135deg,' + state.gold + ',' + shade(state.gold,-0.25) + ')';
+    document.getElementById('prevBtn3').style.background = 'linear-gradient(135deg,' + shade(state.navy,0.22) + ',' + state.navy + ')';
+    document.getElementById('prevIc1').style.background = 'linear-gradient(135deg,' + shade(state.primary,0.18) + ',' + shade(state.primary,-0.28) + ')';
+    document.getElementById('prevIc2').style.background = 'linear-gradient(135deg,' + state.gold + ',' + shade(state.gold,-0.25) + ')';
+  }
+
+  function shade(hex, percent){
+    try{
+      hex = hex.replace('#','');
+      if(hex.length===3) hex = hex.split('').map(function(c){return c+c;}).join('');
+      var num = parseInt(hex,16);
+      var r=(num>>16)&255, g=(num>>8)&255, b=num&255;
+      r = Math.max(0,Math.min(255,Math.round(r+(percent<0?r:255-r)*percent)));
+      g = Math.max(0,Math.min(255,Math.round(g+(percent<0?g:255-g)*percent)));
+      b = Math.max(0,Math.min(255,Math.round(b+(percent<0?b:255-b)*percent)));
+      return '#'+[r,g,b].map(function(v){return v.toString(16).padStart(2,'0');}).join('');
+    }catch(e){ return hex; }
+  }
+
+  Object.keys(fields).forEach(function(k){ fields[k].addEventListener('input', refreshPreview); fields[k].addEventListener('change', refreshPreview); });
+
+  /* ---------- Color pickers (native input <-> hex text, two-way) ---------- */
+  function wireColor(colorId, hexId, swatchId, stateKey){
+    var colorEl = document.getElementById(colorId), hexEl = document.getElementById(hexId), swatchEl = document.getElementById(swatchId);
+    colorEl.addEventListener('input', function(){
+      hexEl.value = colorEl.value.toUpperCase();
+      swatchEl.style.background = colorEl.value;
+      state[stateKey] = colorEl.value;
+      refreshPreview();
+    });
+    hexEl.addEventListener('input', function(){
+      var v = hexEl.value.trim();
+      if(/^#[0-9A-Fa-f]{6}$/.test(v)){
+        colorEl.value = v; swatchEl.style.background = v; state[stateKey] = v; refreshPreview();
+      }
+    });
+  }
+  wireColor('colorPrimary','hexPrimary','swatchPrimary','primary');
+  wireColor('colorGold','hexGold','swatchGold','gold');
+  wireColor('colorNavy','hexNavy','swatchNavy','navy');
+
+  document.querySelectorAll('#presetsPrimary .color-preset').forEach(function(p){
+    p.addEventListener('click', function(){
+      var c = p.dataset.color;
+      document.getElementById('colorPrimary').value = c;
+      document.getElementById('hexPrimary').value = c;
+      document.getElementById('swatchPrimary').style.background = c;
+      state.primary = c;
+      document.querySelectorAll('#presetsPrimary .color-preset').forEach(function(x){ x.classList.remove('selected'); });
+      p.classList.add('selected');
+      refreshPreview();
+    });
+  });
+  document.querySelectorAll('#presetsGold .color-preset').forEach(function(p){
+    p.addEventListener('click', function(){
+      var c = p.dataset.color;
+      document.getElementById('colorGold').value = c;
+      document.getElementById('hexGold').value = c;
+      document.getElementById('swatchGold').style.background = c;
+      state.gold = c;
+      document.querySelectorAll('#presetsGold .color-preset').forEach(function(x){ x.classList.remove('selected'); });
+      p.classList.add('selected');
+      refreshPreview();
+    });
+  });
+
+  /* ---------- Logo / favicon upload ---------- */
+  function readAsDataUrl(file, cb){
+    var reader = new FileReader();
+    reader.onload = function(){ cb(reader.result); };
+    reader.readAsDataURL(file);
+  }
+  document.getElementById('logoInput').addEventListener('change', function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    readAsDataUrl(file, function(dataUrl){
+      state.logoDataUrl = dataUrl;
+      document.getElementById('logoPreviewBox').innerHTML = '<img src="'+dataUrl+'" alt="">';
+      refreshPreview();
+    });
+  });
+  document.getElementById('faviconInput').addEventListener('change', function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    readAsDataUrl(file, function(dataUrl){ state.faviconDataUrl = dataUrl; });
+  });
+
+  /* ---------- Toggles ---------- */
+  function toggleEl(el, on){ el.classList.toggle('on', !!on); }
+  document.getElementById('toggleMaintenance').addEventListener('click', function(){
+    state.maintenanceMode = !state.maintenanceMode;
+    toggleEl(this, state.maintenanceMode);
+  });
+  document.getElementById('toggleLockBranding').addEventListener('click', function(){
+    state.lockBranding = !state.lockBranding;
+    toggleEl(this, state.lockBranding);
+  });
+
+  /* ---------- Validation ---------- */
+  function markInvalid(fieldId, invalid){
+    var el = document.getElementById('f-'+fieldId);
+    if(!el) return;
+    el.classList.toggle('invalid', invalid);
+    el.classList.toggle('valid', !invalid);
+  }
+  function validateForm(){
+    var ok = true;
+    if(!fields.name.value.trim()){ markInvalid('name', true); ok = false; } else markInvalid('name', false);
+    if(!fields.shortName.value.trim()){ markInvalid('shortName', true); ok = false; } else markInvalid('shortName', false);
+    if(!fields.address.value.trim()){ markInvalid('address', true); ok = false; } else markInvalid('address', false);
+    if(!fields.county.value.trim()){ markInvalid('county', true); ok = false; } else markInvalid('county', false);
+    if(!fields.country.value.trim()){ markInvalid('country', true); ok = false; } else markInvalid('country', false);
+    return ok;
+  }
+
+  /* ---------- Toast ---------- */
+  function showToast(msg){
+    var wrap = document.getElementById('toastWrap');
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg><span>'+msg+'</span>';
+    wrap.appendChild(t);
+    setTimeout(function(){ t.remove(); }, 3600);
+  }
+
+  /* ---------- Save & apply ---------- */
+  document.getElementById('institutionForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!validateForm()){ showToast('Please complete the required fields highlighted below.'); return; }
+
+    var saveBtn = document.getElementById('saveApplyBtn') || e.submitter;
+    var payload = {
+      id: INSTITUTION_ID,
+      name: fields.name.value.trim(),
+      short_code: fields.shortName.value.trim(),
+      motto: fields.motto.value.trim(),
+      type: fields.type.value,
+      established_year: fields.established.value.trim(),
+      registration_no: fields.regNo.value.trim(),
+      address: fields.address.value.trim(),
+      county: fields.county.value.trim(),
+      country: fields.country.value.trim(),
+      phone: fields.phone.value.trim(),
+      email: fields.email.value.trim(),
+      website: fields.website.value.trim(),
+      currency: fields.currency.value,
+      timezone: fields.timezone.value,
+      date_format: fields.dateFormat.value,
+      academic_year_start: fields.academicYearStart.value,
+      logo_url: state.logoDataUrl,
+      favicon_url: state.faviconDataUrl,
+      color_primary: state.primary,
+      color_gold: state.gold,
+      color_navy: state.navy,
+      maintenance_mode: state.maintenanceMode,
+      lock_branding: state.lockBranding
+    };
+
+    if(saveBtn) saveBtn.disabled = true;
+
+    window.sb
+      .from('institutions')
+      .upsert(payload, { onConflict: 'id' })
+      .select()
+      .maybeSingle()
+      .then(function(res){
+        if(res.error) throw res.error;
+        currentRow = res.data;
+        showToast('Saved &mdash; applied system-wide. Every module now reflects these settings.');
+      })
+      .catch(function(err){
+        console.error('[institution-setup] save failed', err);
+        showToast('Save failed: ' + (err.message || 'check your connection and try again.'));
+      })
+      .finally(function(){
+        if(saveBtn) saveBtn.disabled = false;
+      });
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    if(!confirm('Discard unsaved changes and reload the last saved settings?')) return;
+    applyRowToForm(currentRow);
+    showToast('Reverted to the last saved settings.');
+  });
+
+  /* ---------- Init ---------- */
+  loadIntoForm();
+
+})();
+</script>
+
+</body>
+</html>

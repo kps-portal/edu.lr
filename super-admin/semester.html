@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Semester Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+.app{ display:block; min-height:100vh; }
+.main{ min-width:0; }
+
+/* -------- Main -------- */
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.school-brand img{ width:46px; height:46px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:260px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+
+/* Role tabs */
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:9px 15px; border-radius:10px; font-size:12.6px; font-weight:700; color:var(--muted); border:none; background:transparent; white-space:nowrap; }
+.role-tab svg{ width:15px; height:15px; flex:none; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.form-shell{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; }
+.form-head{ padding:22px 26px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; }
+.form-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.form-head h2{ color:#fff; margin:0 0 4px; font-size:20px; }
+.form-head p{ margin:0; color:rgba(255,255,255,.65); font-size:12.6px; max-width:70ch; }
+.form-body{ padding:26px; }
+
+.perm-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+table.perm{ width:100%; border-collapse:collapse; font-size:13px; }
+table.perm thead th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:800; padding:12px 16px; border-bottom:2px solid var(--line); background:#FBF8F0; white-space:nowrap; }
+table.perm tbody td{ padding:11px 16px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.perm tbody tr:last-child td{ border-bottom:none; }
+table.perm tbody tr:hover{ background:#FBF4E6; }
+.perm-mod-ic{ width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; flex:none; }
+.perm-mod-ic svg{ width:14px; height:14px; color:#fff; }
+.perm-mod{ display:flex; align-items:center; gap:11px; }
+.perm-mod-name{ font-weight:700; font-size:13px; }
+.perm-mod-sub{ font-size:11.2px; color:var(--muted); margin-top:1px; }
+
+.level-select{
+  border:1px solid var(--line); border-radius:20px; padding:7px 30px 7px 13px; font-size:12px; font-weight:700;
+  font-family:inherit; background:var(--paper) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%237A7064" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right 9px center / 13px;
+  appearance:none; -webkit-appearance:none; cursor:pointer; min-width:118px; transition:border-color .15s;
+}
+.level-select:focus{ outline:none; border-color:var(--gold-deep); }
+.level-select.lvl-none{ color:var(--muted); border-color:var(--line); }
+.level-select.lvl-view{ color:var(--navy-3); border-color:#B9C6E8; background-color:#EEF1FA; }
+.level-select.lvl-edit{ color:var(--gold-deep); border-color:#EAD2A1; background-color:#FBF1DD; }
+.level-select.lvl-full{ color:var(--success); border-color:#A9D9BC; background-color:#E4F3E9; }
+
+.role-summary{ display:flex; align-items:center; gap:14px; padding:16px 26px; background:#FBF8F0; border-top:1px solid var(--line); flex-wrap:wrap; }
+.role-summary .rs-av{ width:42px; height:42px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:15px; flex:none; }
+.role-summary .rs-name{ font-weight:700; font-size:14.5px; }
+.role-summary .rs-sub{ font-size:11.8px; color:var(--muted); margin-top:1px; }
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.form-foot{ padding:20px 26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:#FBF8F0; }
+.form-foot .fp-note{ font-size:11.8px; color:var(--muted); max-width:56ch; }
+.form-actions{ display:flex; gap:10px; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+@media (max-width:880px){
+  .search-pill{ display:none; }
+  .school-brand .sb-t2{ display:none; }
+  .topbar-divider{ display:none; }
+}
+
+/* ============================= ACADEMIC YEAR SPECIFIC ============================= */
+.stat-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:24px; }
+.stat-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.stat-ic{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.stat-ic svg{ width:16px; height:16px; color:var(--gold-light); }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.gold svg{ color:#fff; }
+.stat-ic.crimson{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.stat-ic.crimson svg{ color:#fff; }
+.stat-num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; line-height:1; }
+.stat-label{ font-size:11.8px; color:var(--muted); margin-top:5px; }
+
+.term-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+table.term{ width:100%; border-collapse:collapse; font-size:13px; }
+table.term thead th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:800; padding:12px 16px; border-bottom:2px solid var(--line); background:#FBF8F0; white-space:nowrap; }
+table.term tbody td{ padding:11px 16px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.term tbody tr:last-child td{ border-bottom:none; }
+table.term tbody tr:hover{ background:#FBF4E6; }
+.term-name{ font-weight:700; font-size:13px; }
+.term-dates{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.icon-btn{ width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:inline-flex; align-items:center; justify-content:center; }
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn svg{ width:13px; height:13px; }
+.row-actions{ display:flex; gap:6px; }
+
+.past-years-wrap{ display:flex; flex-direction:column; gap:12px; }
+.past-year-row{ display:flex; align-items:center; gap:16px; background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px 20px; box-shadow:var(--shadow-sm); flex-wrap:wrap; }
+.py-ic{ width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, #A6A090, #7A7064); display:flex; align-items:center; justify-content:center; flex:none; }
+.py-ic svg{ width:19px; height:19px; color:#fff; }
+.py-main{ flex:1; min-width:180px; }
+.py-year{ font-family:'Fraunces',serif; font-weight:700; font-size:16px; }
+.py-sub{ font-size:11.8px; color:var(--muted); margin-top:2px; }
+.py-meta{ display:flex; gap:20px; flex-wrap:wrap; }
+.py-meta-item{ text-align:center; }
+.py-meta-num{ font-family:'Fraunces',serif; font-weight:700; font-size:16px; }
+.py-meta-lab{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:34px; height:34px; margin-bottom:10px; opacity:.5; }
+.empty-state h4{ margin:0 0 4px; font-size:14.5px; color:var(--ink); }
+.empty-state p{ margin:0; font-size:12.5px; }
+
+.restricted-note{ display:flex; gap:12px; padding:14px 18px; border-radius:14px; background:#FBF8F0; border:1px solid var(--line); margin-top:26px; font-size:12px; color:var(--muted); line-height:1.6; }
+.restricted-note svg{ width:17px; height:17px; color:var(--gold-deep); flex:none; margin-top:1px; }
+.restricted-note b{ color:var(--ink); }
+
+/* Modals */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,6,.55); backdrop-filter:blur(2px); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:rise .25s ease; }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--line); }
+.modal-head h3{ margin:0; font-size:16.5px; }
+.modal-head button{ width:30px; height:30px; border-radius:9px; border:1px solid var(--line); background:transparent; display:flex; align-items:center; justify-content:center; }
+.modal-head button svg{ width:14px; height:14px; }
+.modal-body{ padding:22px 24px; display:flex; flex-direction:column; gap:16px; }
+.modal-foot{ padding:18px 24px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; background:#FBF8F0; }
+.field label{ display:block; font-size:11.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.field input, .field select, .field textarea{ width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 13px; font-size:13.5px; font-family:inherit; color:var(--ink); background:var(--paper); }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); }
+.field textarea{ resize:vertical; }
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.danger-zone{ margin-top:22px; padding:18px 22px; border-radius:14px; background:#FBEEEE; border:1px solid #F3C7CB; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.danger-zone .dz-t{ font-size:13px; font-weight:700; color:var(--crimson-deep); }
+.danger-zone .dz-s{ font-size:11.8px; color:var(--muted); margin-top:2px; max-width:52ch; }
+.btn-danger{ background:linear-gradient(135deg, var(--danger), #8C0F26); color:#fff; }
+.btn-danger:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.5); }
+
+@media (max-width:980px){
+  .stat-grid{ grid-template-columns:1fr 1fr; }
+}
+@media (max-width:640px){
+  .stat-grid{ grid-template-columns:1fr; }
+  .field-row{ grid-template-columns:1fr; }
+}
+
+/* ============================= SUBJECTS SPECIFIC ============================= */
+.stat-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:24px; }
+.stat-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.stat-ic{ width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.stat-ic svg{ width:16px; height:16px; color:var(--gold-light); }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.gold svg{ color:#fff; }
+.stat-ic.crimson{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.stat-ic.crimson svg{ color:#fff; }
+.stat-num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; line-height:1; }
+.stat-label{ font-size:11.8px; color:var(--muted); margin-top:5px; }
+
+.subject-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(268px, 1fr)); gap:16px; }
+.subject-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:var(--shadow-sm); position:relative; overflow:hidden; transition:transform .15s, box-shadow .15s; cursor:pointer; }
+.subject-card:hover{ transform:translateY(-2px); box-shadow:0 16px 30px -14px rgba(20,10,10,.3); border-color:var(--gold); }
+.subject-card::before{ content:""; position:absolute; right:-30px; top:-30px; width:110px; height:110px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.sc-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:14px; }
+.sc-level{ font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--gold-deep); font-weight:800; }
+.sc-name{ font-family:'Fraunces',serif; font-size:19px; font-weight:700; margin-top:2px; }
+.sc-meta{ font-size:12px; color:var(--muted); margin-top:2px; }
+.sc-menu{ width:28px; height:28px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; flex:none; }
+.sc-menu svg{ width:14px; height:14px; }
+.sc-teacher{ display:flex; align-items:center; gap:9px; padding:10px 0; border-top:1px dashed var(--line); margin-top:6px; }
+.sc-teacher .tav{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12.5px; flex:none; }
+.sc-teacher.unassigned .tav{ background:linear-gradient(135deg, #B8AF9E, #8C8272); }
+.sc-teacher .tn{ font-size:12.8px; font-weight:700; }
+.sc-teacher .tr{ font-size:10.8px; color:var(--muted); }
+.sc-bottom{ display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+.sc-count{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); font-weight:600; }
+.sc-count svg{ width:14px; height:14px; }
+.empty-state{ text-align:center; padding:60px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--line); margin-bottom:12px; }
+.empty-state .es-t{ font-family:'Fraunces',serif; font-size:17px; color:var(--ink); margin-bottom:4px; }
+.empty-state .es-s{ font-size:12.8px; max-width:40ch; margin:0 auto; }
+
+.roster-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+table.roster{ width:100%; border-collapse:collapse; font-size:13px; }
+table.roster thead th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:800; padding:12px 16px; border-bottom:2px solid var(--line); background:#FBF8F0; white-space:nowrap; }
+table.roster tbody td{ padding:10px 16px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.roster tbody tr:last-child td{ border-bottom:none; }
+table.roster tbody tr:hover{ background:#FBF4E6; }
+.stu-name-cell{ display:flex; align-items:center; gap:10px; }
+.stu-av{ width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; color:#fff; flex:none; }
+.stu-av.m{ background:linear-gradient(135deg, #3E6FB0, #22315C); }
+.stu-av.f{ background:linear-gradient(135deg, #C86E9A, #8E2F58); }
+.stu-name{ font-weight:700; font-size:13px; }
+.stu-id{ font-size:11px; color:var(--muted); margin-top:1px; }
+.sex-pill{ display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:10.8px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; }
+.sex-pill.m{ background:#E4E9F4; color:var(--navy-3); }
+.sex-pill.f{ background:#FBE6F1; color:#8E2F58; }
+.grade-input{ width:78px; border:1.5px solid var(--line); border-radius:9px; padding:7px 10px; font-size:13.5px; font-weight:700; font-family:inherit; text-align:center; background:var(--paper); text-transform:uppercase; transition:border-color .15s, box-shadow .15s; }
+.grade-input:focus{ outline:none; border-color:var(--gold-deep); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.grade-input.filled{ border-color:#A9D9BC; background:#F1FAF4; color:var(--success); }
+.grade-saved-tag{ font-size:10.5px; color:var(--success); font-weight:700; display:flex; align-items:center; gap:4px; margin-top:3px; }
+.grade-saved-tag svg{ width:10px; height:10px; }
+.remove-stu-btn{ width:28px; height:28px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:inline-flex; align-items:center; justify-content:center; color:var(--danger); }
+.remove-stu-btn:hover{ border-color:var(--danger); background:#FBE6E6; }
+.remove-stu-btn svg{ width:13px; height:13px; }
+
+.roster-panel-head{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
+.roster-panel-title{ display:flex; align-items:center; gap:12px; }
+.rp-badge{ width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Fraunces',serif; font-weight:700; font-size:16px; flex:none; }
+.rp-t1{ font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--gold-deep); font-weight:700; }
+.rp-t2{ font-family:'Fraunces',serif; font-size:20px; font-weight:700; }
+.rp-t3{ font-size:12px; color:var(--muted); margin-top:1px; }
+
+.add-student-row{ display:flex; gap:10px; margin-bottom:16px; align-items:center; flex-wrap:wrap; }
+.add-student-row select{ flex:1; min-width:220px; border:1px solid var(--line); border-radius:10px; padding:10px 13px; font-size:13.5px; font-family:inherit; background:var(--paper); }
+.add-student-row select:focus{ outline:none; border-color:var(--gold-deep); }
+
+.viewer-bar{ display:flex; align-items:center; gap:12px; background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:22px; box-shadow:var(--shadow-sm); flex-wrap:wrap; }
+.viewer-bar label{ font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+.viewer-bar select{ border:1px solid var(--line); border-radius:10px; padding:8px 30px 8px 12px; font-size:13px; font-weight:700; font-family:inherit; background:var(--paper) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%237A7064" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right 10px center / 13px; appearance:none; -webkit-appearance:none; cursor:pointer; min-width:220px; }
+.viewer-bar select:focus{ outline:none; border-color:var(--gold-deep); }
+
+.tdash-subject-card{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow-sm); cursor:pointer; transition:transform .15s, border-color .15s; }
+.tdash-subject-card:hover{ transform:translateY(-2px); border-color:var(--gold); }
+.tdash-subject-card.selected{ border-color:var(--crimson); box-shadow:0 0 0 3px rgba(200,20,40,.12); }
+.tdash-subject-card .tc-name{ font-family:'Fraunces',serif; font-weight:700; font-size:16px; }
+.tdash-subject-card .tc-sub{ font-size:11.6px; color:var(--muted); margin-top:2px; }
+.tdash-subject-card .tc-meta{ display:flex; align-items:center; gap:6px; margin-top:10px; font-size:11.5px; color:var(--gold-deep); font-weight:700; }
+.tdash-subject-card .tc-meta svg{ width:13px; height:13px; }
+
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:9px 15px; border-radius:10px; font-size:12.6px; font-weight:700; color:var(--muted); border:none; background:transparent; white-space:nowrap; }
+.role-tab svg{ width:15px; height:15px; flex:none; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.icon-btn{ width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:inline-flex; align-items:center; justify-content:center; }
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn svg{ width:13px; height:13px; }
+.row-actions{ display:flex; gap:6px; }
+
+.report-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:linear-gradient(90deg, rgba(46,125,79,.07), rgba(217,138,36,.07)); border:1px solid #CDE7D7; margin-top:16px; }
+.report-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.report-note span{ font-size:12px; color:var(--muted); line-height:1.5; }
+.report-note b{ color:var(--success); }
+
+@media (max-width:880px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .subject-grid{ grid-template-columns:1fr; }
+}
+
+/* ============================= SEMESTER / PERIOD SPECIFIC ============================= */
+.semester-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.semester-tab{ display:flex; align-items:center; gap:9px; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:700; color:var(--muted); border:none; background:transparent; white-space:nowrap; }
+.semester-tab svg{ width:15px; height:15px; flex:none; }
+.semester-tab .st-count{ font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:20px; background:rgba(122,112,100,.14); color:inherit; }
+.semester-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+.semester-tab.active .st-count{ background:rgba(255,255,255,.22); color:#fff; }
+
+.weight-pill-wrap{ display:flex; align-items:center; gap:10px; }
+.weight-bar-track{ width:84px; height:7px; border-radius:20px; background:#EFEAE0; overflow:hidden; flex:none; }
+.weight-bar-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); transition:width .25s ease; }
+.weight-bar-fill.full{ background:linear-gradient(90deg, #4FA876, var(--success)); }
+.weight-bar-fill.over{ background:linear-gradient(90deg, var(--crimson-bright), var(--crimson-deep)); }
+.weight-num{ font-weight:800; font-size:12.5px; font-family:'IBM Plex Mono',monospace; }
+
+.period-order-badge{ width:26px; height:26px; border-radius:8px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11.5px; flex:none; }
+.period-name-cell{ display:flex; align-items:center; gap:10px; }
+.period-name{ font-weight:700; font-size:13px; }
+.period-tag{ font-size:10.6px; color:var(--muted); margin-top:1px; }
+
+.exam-badge{ display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px; font-size:10.2px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; background:#E4E9F4; color:var(--navy-3); }
+
+.semester-summary-note{ display:flex; align-items:flex-start; gap:12px; padding:14px 18px; border-radius:14px; margin-top:18px; border:1px solid var(--line); }
+.semester-summary-note.ok{ background:#E4F3E9; border-color:#A9D9BC; }
+.semester-summary-note.warn{ background:#FBF1DD; border-color:#EAD2A1; }
+.semester-summary-note svg{ width:17px; height:17px; flex:none; margin-top:1px; }
+.semester-summary-note.ok svg{ color:var(--success); }
+.semester-summary-note.warn svg{ color:var(--gold-deep); }
+.semester-summary-note .ssn-t{ font-size:12.8px; font-weight:700; }
+.semester-summary-note.ok .ssn-t{ color:var(--success); }
+.semester-summary-note.warn .ssn-t{ color:var(--gold-deep); }
+.semester-summary-note .ssn-s{ font-size:11.8px; color:var(--muted); margin-top:1px; line-height:1.5; }
+
+.toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 14px; border:1px solid var(--line); border-radius:10px; background:#FBF8F0; }
+.toggle-row .tr-t{ font-size:12.6px; font-weight:700; }
+.toggle-row .tr-s{ font-size:11.2px; color:var(--muted); margin-top:1px; }
+.switch{ position:relative; width:40px; height:22px; flex:none; }
+.switch input{ opacity:0; width:0; height:0; }
+.switch .slider{ position:absolute; inset:0; background:#D9CFBA; border-radius:20px; cursor:pointer; transition:.15s; }
+.switch .slider::before{ content:""; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.15s; box-shadow:0 1px 3px rgba(0,0,0,.25); }
+.switch input:checked + .slider{ background:var(--success); }
+.switch input:checked + .slider::before{ transform:translateX(18px); }
+
+@media (max-width:640px){
+  .weight-pill-wrap{ flex-direction:column; align-items:flex-start; gap:4px; }
+}
+</style>
+
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="app">
+  <main class="main">
+
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="school-brand">
+        <img src="../assets/images/img-32d08477299d907c.jpg" alt="Kingsville Public School crest">
+        <div>
+          <div class="sb-t1">Kingsville #7 &middot; Careysburg</div>
+          <div class="sb-t2">Kingsville Public School</div>
+        </div>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Super Admin Console</div>
+        <div class="page-title">Semester Management</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search periods&hellip;">
+      </div>
+      <button type="button" class="btn btn-primary" id="addPeriodBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        New Period
+      </button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ================= ADMIN: MANAGE SEMESTERS & PERIODS ================= -->
+      <section class="view active" id="view-admin">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+          <div>
+            <div class="sb-t">Managing Semesters &amp; Grading Periods</div>
+            <div class="sb-s">Each semester is built from grading periods &mdash; 1st Period, 2nd Period, 3rd Period, and Exam. These are exactly the columns every teacher sees when entering grades, and they're what every student's <b class="sa">Report Card</b> reads from to calculate the Semester Average.</div>
+          </div>
+        </div>
+
+        <div class="stat-grid" id="statGrid">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg></div>
+            </div>
+            <div class="stat-num" id="statSemesters">2</div>
+            <div class="stat-label">Semesters</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg></div>
+            </div>
+            <div class="stat-num" id="statTotalPeriods">&mdash;</div>
+            <div class="stat-label">Total Periods</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic crimson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            </div>
+            <div class="stat-num" id="statExamPeriods">&mdash;</div>
+            <div class="stat-label">Exam Periods</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></div>
+            </div>
+            <div class="stat-num" id="statWeightTotal">&mdash;</div>
+            <div class="stat-label">Weight Assigned (This Semester)</div>
+          </div>
+        </div>
+
+        <div class="semester-tabs" id="semesterTabs">
+          <button type="button" class="semester-tab active" data-semester="First Semester">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v3M16 4v3"/></svg>
+            First Semester
+            <span class="st-count" id="countFirstSemester">0</span>
+          </button>
+          <button type="button" class="semester-tab" data-semester="Second Semester">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v3M16 4v3"/></svg>
+            Second Semester
+            <span class="st-count" id="countSecondSemester">0</span>
+          </button>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2 id="semesterHeading">First Semester &mdash; Periods</h2>
+            <p id="semesterSub">The grading periods that make up this semester, in the order they appear on the Report Card.</p>
+          </div>
+        </div>
+
+        <div class="term-table-wrap">
+          <table class="term">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Period</th>
+                <th>Weight</th>
+                <th>In Semester Average</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="periodTableBody">
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-state" id="periodsEmptyState" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>
+          <div class="es-t">No periods yet</div>
+          <div class="es-s">Add periods like 1st Period, 2nd Period, 3rd Period and Exam to build out this semester.</div>
+        </div>
+
+        <div class="semester-summary-note" id="semesterSummaryNote">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg>
+          <div>
+            <div class="ssn-t" id="ssnTitle">Weight not yet configured</div>
+            <div class="ssn-s" id="ssnSub">The weights of every period included in the Semester Average should add up to 100% so report cards calculate correctly.</div>
+          </div>
+        </div>
+
+        <div class="restricted-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16v-4M12 8h.01"/><circle cx="12" cy="12" r="10"/></svg>
+          <div><b>How this connects:</b> Every subject a teacher manages uses these exact periods as its grade-entry columns. Changing a period's name or order here updates it everywhere &mdash; grade entry screens and every student's Report Card &mdash; automatically.</div>
+        </div>
+
+        <div class="footer-ribbon">
+          <b>Kingsville Public School</b> &middot; Kingsville #7, Careysburg District &middot; Super Admin Console
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- New / Edit Period modal -->
+    <div class="modal-backdrop" id="periodModalBackdrop">
+      <div class="modal">
+        <div class="modal-head">
+          <h3 id="periodModalTitle">New Period</h3>
+          <button type="button" id="periodModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="perName">Period name</label>
+            <input type="text" id="perName" list="periodNameSuggestions" placeholder="e.g. 1st Period, 2nd Period, Exam">
+            <datalist id="periodNameSuggestions">
+              <option value="1st Period">
+              <option value="2nd Period">
+              <option value="3rd Period">
+              <option value="Exam">
+            </datalist>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="perSemester">Semester</label>
+              <select id="perSemester">
+                <option>First Semester</option>
+                <option>Second Semester</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="perOrder">Order</label>
+              <input type="number" id="perOrder" min="1" step="1" placeholder="e.g. 1">
+            </div>
+          </div>
+          <div class="field">
+            <label for="perWeight">Weight (%)</label>
+            <input type="number" id="perWeight" min="0" max="100" step="1" placeholder="e.g. 25">
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="tr-t">Include in Semester Average</div>
+              <div class="tr-s">Turn off for periods that are informational only and shouldn't count toward Sem. Ave.</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="perIncludeAvg" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="tr-t">This is an Exam period</div>
+              <div class="tr-s">Marks this period with an Exam badge on the periods table.</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="perIsExam">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="periodCancelBtn">Cancel</button>
+          <button type="button" class="btn btn-primary" id="periodConfirmBtn">Save Period</button>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="periodEditingId" value="">
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATABASE WIRING
+   This screen renders only what the API returns — nothing is seeded or
+   hard-coded. On load it pulls every grading period; the empty state guides
+   the Super Admin until real records exist.
+
+   Backed by the real `grading_periods` table (001_addendum_super_admin_wiring.sql).
+   These periods are the exact columns every teacher sees when entering
+   grades on a subject, and what every student's Report Card reads from to
+   calculate the Semester Average (Sem. Ave) for each semester.
+   ========================================================================= */
+const sbc = () => window.sb;
+function rowToPeriod(r){
+  return { id: r.id, name: r.name, semester: r.semester, order: r.order_num, weight: r.weight, includeInAverage: r.include_in_average, isExam: r.is_exam };
+}
+const SEMESTERS = ['First Semester', 'Second Semester'];
+
+/* ---------- Shared helpers ---------- */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+/* ---------- State (populated only from the API) ---------- */
+let periods = [];
+let currentSemester = 'First Semester';
+
+/* =========================================================================
+   SEMESTER TABS
+   ========================================================================= */
+document.querySelectorAll('#semesterTabs .semester-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#semesterTabs .semester-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentSemester = tab.dataset.semester;
+    document.getElementById('semesterHeading').textContent = currentSemester + ' — Periods';
+    renderPeriods();
+  });
+});
+
+/* =========================================================================
+   LOAD & RENDER PERIODS
+   ========================================================================= */
+async function loadPeriods(){
+  try{
+    const { data, error } = await sbc().from('grading_periods').select('*');
+    if (error) throw error;
+    periods = (data || []).map(rowToPeriod);
+  }catch(err){
+    console.error('Failed to load periods', err);
+    showToast('Could not reach the database to load periods.');
+    periods = [];
+  }
+  renderPeriods();
+  refreshStats();
+}
+
+function periodsFor(semester){
+  return periods
+    .filter(p => p.semester === semester)
+    .slice()
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+}
+
+function renderPeriods(){
+  const tbody = document.getElementById('periodTableBody');
+  const empty = document.getElementById('periodsEmptyState');
+  const q = (document.getElementById('globalSearch').value || '').toLowerCase();
+
+  const list = periodsFor(currentSemester).filter(p => !q || (p.name || '').toLowerCase().includes(q));
+
+  if(!list.length){
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = list.map(p => {
+      const weight = Number(p.weight) || 0;
+      const included = !!p.includeInAverage;
+      const barClass = weight >= 100 ? 'over' : '';
+      return `
+      <tr data-id="${p.id}">
+        <td><span class="period-order-badge">${p.order ?? '&mdash;'}</span></td>
+        <td>
+          <div class="period-name-cell">
+            <div>
+              <div class="period-name">${escapeHtml(p.name)} ${p.isExam ? '<span class="exam-badge">Exam</span>' : ''}</div>
+              <div class="period-tag">${currentSemester}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="weight-pill-wrap">
+            <div class="weight-bar-track"><div class="weight-bar-fill ${barClass}" style="width:${Math.min(weight,100)}%;"></div></div>
+            <span class="weight-num">${weight}%</span>
+          </div>
+        </td>
+        <td>${included ? '<span class="pill green">Included</span>' : '<span class="pill grey">Excluded</span>'}</td>
+        <td>${included ? '<span class="pill navy">Active</span>' : '<span class="pill grey">Inactive</span>'}</td>
+        <td>
+          <div class="row-actions">
+            <button type="button" class="icon-btn edit-period-btn" data-id="${p.id}" title="Edit period">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </button>
+            <button type="button" class="icon-btn delete-period-btn" data-id="${p.id}" title="Delete period" style="color:var(--danger);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('.edit-period-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const p = periods.find(x => String(x.id) === String(btn.dataset.id));
+        if(p) openPeriodModal(p);
+      });
+    });
+    tbody.querySelectorAll('.delete-period-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const p = periods.find(x => String(x.id) === String(btn.dataset.id));
+        if(p) deletePeriod(p);
+      });
+    });
+  }
+
+  document.getElementById('countFirstSemester').textContent = periodsFor('First Semester').length;
+  document.getElementById('countSecondSemester').textContent = periodsFor('Second Semester').length;
+
+  renderSemesterSummary(list);
+}
+
+function renderSemesterSummary(list){
+  const note = document.getElementById('semesterSummaryNote');
+  const title = document.getElementById('ssnTitle');
+  const sub = document.getElementById('ssnSub');
+  const totalWeight = list.filter(p => p.includeInAverage).reduce((sum, p) => sum + (Number(p.weight) || 0), 0);
+
+  document.getElementById('statWeightTotal').textContent = totalWeight + '%';
+
+  if(!list.length){
+    note.className = 'semester-summary-note warn';
+    title.textContent = 'No periods set up yet';
+    sub.textContent = 'Add periods like 1st Period, 2nd Period, 3rd Period and Exam so this semester can be graded.';
+  } else if(totalWeight === 100){
+    note.className = 'semester-summary-note ok';
+    title.textContent = 'Weight configured correctly — 100%';
+    sub.textContent = 'Every period counted toward the Semester Average adds up to 100%, so report cards for ' + currentSemester + ' will calculate correctly.';
+  } else {
+    note.className = 'semester-summary-note warn';
+    title.textContent = `Weight adds up to ${totalWeight}%, not 100%`;
+    sub.textContent = 'Adjust the weights of the periods included in the Semester Average for ' + currentSemester + ' so they total 100%.';
+  }
+}
+
+function refreshStats(){
+  document.getElementById('statTotalPeriods').textContent = periods.length;
+  document.getElementById('statExamPeriods').textContent = periods.filter(p => p.isExam).length;
+}
+
+/* ---------- Global search ---------- */
+document.getElementById('globalSearch').addEventListener('input', () => renderPeriods());
+
+/* =========================================================================
+   ADD / EDIT PERIOD MODAL
+   ========================================================================= */
+const periodModalBackdrop = document.getElementById('periodModalBackdrop');
+function openPeriodModal(existing){
+  document.getElementById('periodModalTitle').textContent = existing ? 'Edit Period' : 'New Period';
+  document.getElementById('periodConfirmBtn').textContent = existing ? 'Save Changes' : 'Save Period';
+  document.getElementById('periodEditingId').value = existing ? existing.id : '';
+  document.getElementById('perName').value = existing ? existing.name : '';
+  document.getElementById('perSemester').value = existing ? existing.semester : currentSemester;
+  document.getElementById('perOrder').value = existing ? (existing.order ?? '') : (periodsFor(currentSemester).length + 1);
+  document.getElementById('perWeight').value = existing ? (existing.weight ?? '') : '';
+  document.getElementById('perIncludeAvg').checked = existing ? !!existing.includeInAverage : true;
+  document.getElementById('perIsExam').checked = existing ? !!existing.isExam : false;
+  periodModalBackdrop.classList.add('open');
+}
+document.getElementById('addPeriodBtn').addEventListener('click', () => openPeriodModal(null));
+document.getElementById('periodModalClose').addEventListener('click', () => periodModalBackdrop.classList.remove('open'));
+document.getElementById('periodCancelBtn').addEventListener('click', () => periodModalBackdrop.classList.remove('open'));
+periodModalBackdrop.addEventListener('click', (e) => { if(e.target === periodModalBackdrop) periodModalBackdrop.classList.remove('open'); });
+
+document.getElementById('periodConfirmBtn').addEventListener('click', async () => {
+  const name = document.getElementById('perName').value.trim();
+  const semester = document.getElementById('perSemester').value;
+  const order = Number(document.getElementById('perOrder').value) || 0;
+  const weight = Number(document.getElementById('perWeight').value) || 0;
+  const includeInAverage = document.getElementById('perIncludeAvg').checked;
+  const isExam = document.getElementById('perIsExam').checked;
+  const editingId = document.getElementById('periodEditingId').value;
+
+  if(!name){ showToast('Give the period a name first, e.g. 1st Period.'); return; }
+
+  const payload = { name, semester, order_num: order, weight, include_in_average: includeInAverage, is_exam: isExam };
+
+  try{
+    if(editingId){
+      await sbc().from('grading_periods').update(payload).eq('id', editingId).throwOnError();
+      showToast(name + ' updated.');
+    } else {
+      await sbc().from('grading_periods').insert(payload).throwOnError();
+      showToast(name + ' added to ' + semester + '.');
+    }
+    periodModalBackdrop.classList.remove('open');
+    if(semester !== currentSemester){
+      currentSemester = semester;
+      document.querySelectorAll('#semesterTabs .semester-tab').forEach(t => t.classList.toggle('active', t.dataset.semester === semester));
+      document.getElementById('semesterHeading').textContent = currentSemester + ' — Periods';
+    }
+    await loadPeriods();
+  }catch(err){
+    console.error('Failed to save period', err);
+    showToast('Could not save that period — the database did not confirm it.');
+  }
+});
+
+async function deletePeriod(p){
+  if(!confirm(`Delete "${p.name}" from ${p.semester}? Any grades recorded under this period will no longer show on report cards.`)) return;
+  try{
+    await sbc().from('grading_periods').delete().eq('id', p.id).throwOnError();
+    showToast(p.name + ' deleted.');
+    await loadPeriods();
+  }catch(err){
+    console.error('Failed to delete period', err);
+    showToast('Could not delete that period — the database did not confirm it.');
+  }
+}
+
+/* ---------- Initial load: everything comes from the database ---------- */
+(async function init(){
+  await loadPeriods();
+})();
+</script>
+
+</body>
+</html>

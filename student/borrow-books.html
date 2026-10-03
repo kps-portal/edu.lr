@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Library — Borrow Books — Kingsville Public High School</title>
+<style>
+  :root{
+    --red:#a3181c;
+    --red-bright:#d31f24;
+    --gold:#d4af37;
+    --gold-light:#f4e5a3;
+    --ink:#1a1a1a;
+    --line:#000;
+    --paper:#ffffff;
+    --grey-band:#e9e9e9;
+    --slate:#5c5f66;
+    --good:#1f7a3d;
+    --glow:rgba(163,24,28,.45);
+    --glow-gold:rgba(212,175,55,.65);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(163,24,28,.06), transparent 60%),
+      #f2f2f0;
+    margin:0;
+    padding:24px 12px 60px;
+  }
+  a{color:inherit;text-decoration:none}
+
+  .sheet{
+    position:relative;
+    max-width:1180px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:26px 34px 40px;
+    border:1px solid transparent;
+    border-radius:6px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    isolation:isolate;
+  }
+
+  /* Premium animated gold/crimson glowing frame */
+  .sheet::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:8px;
+    padding:2px;
+    background:conic-gradient(from var(--frame-angle,0deg),
+      var(--gold), var(--red-bright), var(--gold-light), var(--red), var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    z-index:-1;
+    animation: frame-spin 7s linear infinite;
+    filter:drop-shadow(0 0 6px var(--glow-gold));
+  }
+  @property --frame-angle{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:0deg;
+  }
+  @keyframes frame-spin{
+    to{ --frame-angle:360deg; }
+  }
+
+  .letterhead{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:3px double #333;
+    padding-bottom:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .letterhead::after{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:40%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.35), transparent);
+    animation: sweep 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{ left:-60%; }
+    45%{ left:120%; }
+    100%{ left:120%; }
+  }
+  .letterhead img{
+    height:64px;
+    width:64px;
+    object-fit:contain;
+    flex-shrink:0;
+    border-radius:50%;
+    background:#fff;
+    padding:3px;
+    box-shadow:
+      0 0 0 2px var(--gold),
+      0 0 10px 2px var(--glow-gold);
+    animation: crest-glow 2.6s ease-in-out infinite;
+  }
+  @keyframes crest-glow{
+    0%, 100%{
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 8px 1px var(--glow-gold);
+    }
+    50%{
+      box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 0 18px 6px var(--glow-gold);
+    }
+  }
+  .letterhead .headtext{
+    flex:1;
+    text-align:center;
+  }
+  .school-name{
+    font-weight:800;
+    font-size:26px;
+    letter-spacing:.5px;
+    margin:0 0 4px;
+    background:linear-gradient(100deg,
+      var(--red) 0%, var(--gold) 22%, var(--red-bright) 45%,
+      var(--gold-light) 60%, var(--red) 82%, var(--gold) 100%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 14px rgba(163,24,28,.18);
+    animation: text-shine 5s linear infinite;
+  }
+  @keyframes text-shine{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:250% 50%; }
+  }
+  .sub{ font-weight:700; font-size:13px; margin:0; color:#333; }
+  .motto{ font-style:italic; font-size:12.5px; color:#555; margin-top:2px; }
+
+  .master-title{
+    color:var(--red);
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:1px;
+    margin:8px 0 6px;
+    text-align:center;
+    text-shadow:0 0 10px rgba(163,24,28,.15);
+  }
+
+  .band{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    background:linear-gradient(180deg,var(--grey-band),#f4f4f2);
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    color:var(--red);
+    padding:7px 0;
+    margin:4px 0 20px;
+    letter-spacing:2px;
+    border-radius:3px;
+    box-shadow:inset 0 0 0 1px rgba(212,175,55,.35), 0 0 10px rgba(163,24,28,.08);
+  }
+  .band::before{
+    content:"";
+    position:absolute;
+    top:0; left:-40%;
+    width:25%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.55), transparent);
+    animation: sweep 4.5s ease-in-out infinite;
+    animation-delay:1s;
+    pointer-events:none;
+  }
+  .year-select{
+    font-family:inherit;
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:1px;
+    color:var(--red);
+    background:#fff;
+    border:1px solid rgba(163,24,28,.4);
+    border-radius:4px;
+    padding:4px 10px;
+  }
+
+  /* HERO STRIP */
+  .hero-strip{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:24px;
+  }
+  .hero-card{
+    position:relative;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:16px 18px;
+    overflow:hidden;
+    box-shadow:0 1px 4px rgba(0,0,0,.05);
+  }
+  .hero-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:8px;
+    padding:1.5px;
+    background:linear-gradient(135deg, var(--gold), transparent 40%, transparent 60%, var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity:.6;
+  }
+  .hero-card .label{
+    font-family:Georgia, serif;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--slate);
+    font-weight:700;
+  }
+  .hero-card .value{
+    font-size:28px;
+    font-weight:800;
+    color:var(--ink);
+    margin-top:6px;
+  }
+  .hero-card .value small{
+    font-size:13px;
+    color:var(--slate);
+    font-weight:400;
+  }
+  .hero-card.rank .value{
+    background:linear-gradient(100deg, var(--red) 0%, var(--gold) 40%, var(--red-bright) 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    animation:text-shine 6s linear infinite;
+  }
+  .hero-card.conduct .value{ color:var(--good); }
+  .hero-card::after{
+    content:"";
+    position:absolute;
+    top:12px;
+    right:14px;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    box-shadow:0 0 8px 2px currentColor;
+  }
+  .hero-card.rank::after{ background:var(--red-bright); color:var(--red-bright); }
+  .hero-card.semave::after{ background:var(--gold); color:var(--gold); }
+  .hero-card.yrave::after{ background:var(--red); color:var(--red); }
+  .hero-card.conduct::after{ background:var(--good); color:var(--good); }
+
+  /* EMPTY-STATE / STATUS NOTICE */
+  .notice{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#FBF6E6;
+    border:1px solid var(--gold);
+    border-radius:6px;
+    padding:10px 16px;
+    margin-bottom:26px;
+    font-size:12.5px;
+    color:#5E4A20;
+    box-shadow:0 0 10px rgba(212,175,55,.2);
+  }
+  .notice .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--gold);
+    flex-shrink:0;
+    box-shadow:0 0 6px 2px var(--glow-gold);
+    animation:crest-glow 2.2s ease-in-out infinite;
+  }
+
+  section.block{ margin-bottom:36px; }
+  .block-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .block-head h2{
+    font-size:19px;
+    font-weight:800;
+    color:var(--red);
+    margin:0;
+    text-shadow:0 0 8px rgba(163,24,28,.12);
+  }
+  .block-head .meta{
+    font-size:12px;
+    color:var(--slate);
+    font-style:italic;
+  }
+
+  /* GRADES TABLE */
+  .table-wrap{
+    overflow-x:auto;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+  }
+  table.grades{
+    width:100%;
+    border-collapse:collapse;
+    min-width:960px;
+    font-size:13px;
+  }
+  table.grades thead tr.semrow th{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--red) 100%);
+    color:#fdf6e3;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    padding:9px 6px;
+    text-align:center;
+  }
+  table.grades thead tr.pdrow th{
+    background:var(--grey-band);
+    font-size:10.5px;
+    color:#444;
+    font-weight:700;
+    padding:7px 6px;
+    text-align:center;
+    border-bottom:2px solid var(--red);
+  }
+  table.grades tbody td{
+    padding:10px 8px;
+    border-bottom:1px solid #ece5d2;
+    text-align:center;
+    color:#333;
+  }
+  table.grades tbody td.subject{
+    text-align:left;
+    font-weight:700;
+    color:var(--ink);
+    padding-left:14px;
+  }
+  table.grades tbody td.subject .teacher{
+    display:block;
+    font-weight:400;
+    font-style:italic;
+    font-size:11px;
+    color:var(--slate);
+    margin-top:2px;
+  }
+  table.grades tbody td.sem-ave{
+    font-weight:800;
+    background:#fbf6e6;
+    color:var(--red);
+  }
+  table.grades tbody td.low{ color:var(--red-bright); font-weight:800; }
+  table.grades tbody tr:hover td{ background:#fffaf0; }
+  table.grades tbody tr:last-child td{ border-bottom:none; }
+
+  .empty-row td{
+    padding:32px 8px;
+    color:#999;
+    font-style:italic;
+  }
+
+  .legend{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    font-size:11.5px;
+    color:var(--slate);
+    margin-top:12px;
+    padding:0 4px;
+  }
+  .legend b{ color:var(--ink); }
+
+  footer.note{
+    margin-top:44px;
+    padding-top:16px;
+    border-top:1px solid #e3ddc9;
+    font-size:11.5px;
+    color:var(--slate);
+    text-align:center;
+  }
+
+  :focus-visible{ outline:2px solid var(--red); outline-offset:2px; }
+
+  /* TOOLBAR + PREMIUM BUTTONS */
+  .toolbar{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  button.premium{
+    position:relative;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    padding:9px 18px;
+    cursor:pointer;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--gold) 100%);
+    background-size:220% 100%;
+    background-position:0% 50%;
+    box-shadow:0 0 8px 1px var(--glow-gold);
+    transition:box-shadow .25s ease, transform .15s ease, background-position .3s ease;
+  }
+  button.premium:hover{
+    background-position:100% 50%;
+    box-shadow:0 0 14px 3px var(--glow-gold);
+    transform:translateY(-1px);
+  }
+  button.premium:active{ transform:translateY(0); }
+  button.premium:disabled{ opacity:.55; cursor:wait; transform:none; }
+  button.premium.print{
+    background:linear-gradient(100deg, #333 0%, #555 45%, var(--gold) 100%);
+    background-size:220% 100%;
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .sheet{ box-shadow:none; border:1px solid #999; }
+    .sheet::before{ display:none; }
+    .toolbar{ display:none !important; }
+  }
+
+  @media (max-width:820px){
+    .sheet{ padding:16px; }
+    .school-name{ font-size:20px; }
+    .letterhead img{ height:44px; width:44px; }
+    .hero-strip{ grid-template-columns:repeat(2,1fr); }
+  }
+
+  /* ============ LIBRARY / BORROW BOOKS STYLES ============ */
+  .hero-strip.library{ grid-template-columns:repeat(3,1fr); }
+  .hero-card.books .value{
+    background:linear-gradient(100deg, var(--red) 0%, var(--gold) 40%, var(--red-bright) 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent; -webkit-text-fill-color:transparent;
+    animation:text-shine 6s linear infinite;
+  }
+  .hero-card.books::after{ background:var(--gold); color:var(--gold); }
+  .hero-card.grades::after{ background:var(--red); color:var(--red); }
+  .hero-card.subjects::after{ background:var(--good); color:var(--good); }
+
+  .lib-controls{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-end;
+    margin-bottom:18px;
+  }
+  .lib-search{
+    font-family:inherit;
+    font-size:13.5px;
+    padding:9px 14px;
+    border:1px solid rgba(163,24,28,.4);
+    border-radius:5px;
+    min-width:220px;
+    flex:1;
+    max-width:320px;
+  }
+
+  .grade-section{ margin-bottom:34px; }
+  .grade-section-title{
+    font-family:Georgia, serif;
+    font-size:17px;
+    font-weight:800;
+    color:var(--red);
+    border-bottom:2px solid var(--gold);
+    padding-bottom:6px;
+    margin:0 0 16px;
+    text-shadow:0 0 8px rgba(163,24,28,.12);
+  }
+
+  .book-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:16px;
+  }
+  .book-card{
+    position:relative;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:16px 16px 14px;
+    box-shadow:0 1px 4px rgba(0,0,0,.05);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .book-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 16px rgba(0,0,0,.1);
+  }
+  .book-card::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:5px;
+  }
+  .subj-biology::before{ background:#2e8b57; }
+  .subj-chemistry::before{ background:#1f5f9e; }
+  .subj-physics::before{ background:#7a4fb5; }
+  .subj-mathematics::before{ background:#d4a017; }
+  .subj-literature::before{ background:var(--red-bright); }
+
+  .book-icon{
+    font-size:26px;
+    margin-bottom:8px;
+  }
+  .book-title{
+    font-family:Georgia, serif;
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 4px;
+    line-height:1.3;
+  }
+  .book-meta{
+    font-size:11.5px;
+    color:var(--slate);
+    margin-bottom:12px;
+  }
+  .book-meta .grade-pill{
+    display:inline-block;
+    background:#fbf6e6;
+    border:1px solid var(--gold);
+    color:#5E4A20;
+    font-weight:700;
+    border-radius:20px;
+    padding:2px 9px;
+    margin-right:6px;
+    font-size:10.5px;
+  }
+  .book-actions{
+    margin-top:auto;
+    display:flex;
+    gap:8px;
+  }
+  .book-actions .premium.small{
+    padding:7px 12px;
+    font-size:12px;
+    flex:1;
+    text-align:center;
+    text-decoration:none;
+    display:inline-block;
+  }
+  .book-actions .premium.ghost.small{
+    background:#fff;
+    color:var(--red);
+    border:1px solid var(--red);
+    box-shadow:none;
+  }
+
+  .no-results{
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:32px 8px;
+    text-align:center;
+    color:#999;
+    font-style:italic;
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="sheet" id="sheet">
+
+  <div class="letterhead">
+    <img src="../assets/images/img-1005aedff1a0c5ea.png" alt="Kingsville Public High School crest">
+    <div class="headtext">
+      <p class="school-name">Kingsville Public High School</p>
+      <p class="sub">Kingsville Township, Careysburg District &middot; Montserrado County, Liberia</p>
+      <p class="motto">Motto: "Knowledge Is Power"</p>
+    </div>
+    <img src="../assets/images/img-a7df6c3d8d6e390b.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+
+    <p class="master-title">SCHOOL LIBRARY — BORROW BOOKS</p>
+  <div class="band">
+    GRADE:
+    <select class="year-select" id="gradeSelect" aria-label="Filter by grade">
+      <option value="all">All Grades</option>
+      <option value="Grade 10">Grade 10</option>
+      <option value="Grade 11">Grade 11</option>
+      <option value="Grade 12">Grade 12</option>
+    </select>
+  </div>
+
+  <div class="lib-controls">
+    <input type="text" class="lib-search" id="searchInput" placeholder="Search by title or subject…">
+    <button class="premium ghost small" onclick="clearFilters()">Clear Filters</button>
+  </div>
+
+  <div class="hero-strip library" id="heroStrip">
+    <div class="hero-card books">
+      <div class="label">Books Available</div>
+      <div class="value" id="totalBooksValue">—</div>
+    </div>
+    <div class="hero-card grades">
+      <div class="label">Grades Covered</div>
+      <div class="value" id="gradesValue">—</div>
+    </div>
+    <div class="hero-card subjects">
+      <div class="label">Subjects</div>
+      <div class="value" id="subjectsValue">—</div>
+    </div>
+  </div>
+
+  <div class="notice" id="statusNotice">
+    <span class="dot"></span>
+    All textbooks below are free to borrow — click Download to save a copy, or View to open it in your browser. No physical checkout is required.
+  </div>
+
+  <div id="catalogContainer">
+    <div class="no-results" id="noResults" style="display:none;">No books match your search.</div>
+  </div>
+
+  <footer class="note">
+    Textbooks are provided by Kingsville Public High School for enrolled students. Please do not redistribute these files outside the school community.
+  </footer>
+
+  <div class="back-row" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:13px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <a href="dashboard.html" style="color:var(--red, var(--navy, var(--blue, #333)));text-decoration:none;font-weight:600;">Back to Dashboard</a>
+  </div>
+
+</div>
+
+<script>
+  /*
+    ================================================================
+    LIBRARY CATALOG
+    ================================================================
+    Each entry points to a PDF stored alongside this page in the
+    "books/" folder (e.g. books/grade-10/grade-10-biology.pdf). To add
+    a new title, drop the PDF into the matching grade folder and add
+    a matching row below — no other code changes are needed.
+  */
+  const libraryCatalog = [
+    { grade: "Grade 10", subject: "Biology",                title: "Biology",                 file: "books/grade-10/grade-10-biology.pdf",                sizeMB: 32.0 },
+    { grade: "Grade 10", subject: "Chemistry",              title: "Chemistry",               file: "books/grade-10/grade-10-chemistry.pdf",              sizeMB: 18.8 },
+    { grade: "Grade 10", subject: "Literature",             title: "Literature in English",   file: "books/grade-10/grade-10-literature-in-english.pdf", sizeMB: 34.3 },
+    { grade: "Grade 10", subject: "Mathematics",            title: "Mathematics",             file: "books/grade-10/grade-10-mathematics.pdf",            sizeMB: 20.5 },
+    { grade: "Grade 10", subject: "Physics",                title: "Physics",                 file: "books/grade-10/grade-10-physics.pdf",                sizeMB: 7.1  },
+
+    { grade: "Grade 11", subject: "Biology",                title: "Biology",                 file: "books/grade-11/grade-11-biology.pdf",                sizeMB: 21.0 },
+    { grade: "Grade 11", subject: "Chemistry",              title: "Chemistry",               file: "books/grade-11/grade-11-chemistry.pdf",              sizeMB: 12.6 },
+    { grade: "Grade 11", subject: "Literature",             title: "Literature in English",   file: "books/grade-11/grade-11-literature-in-english.pdf", sizeMB: 24.7 },
+    { grade: "Grade 11", subject: "Mathematics",            title: "Mathematics",             file: "books/grade-11/grade-11-mathematics.pdf",            sizeMB: 14.5 },
+    { grade: "Grade 11", subject: "Physics",                title: "Physics",                 file: "books/grade-11/grade-11-physics.pdf",                sizeMB: 30.5 },
+
+    { grade: "Grade 12", subject: "Biology",                title: "Biology",                 file: "books/grade-12/grade-12-biology.pdf",                sizeMB: 48.7 },
+    { grade: "Grade 12", subject: "Chemistry",              title: "Chemistry",               file: "books/grade-12/grade-12-chemistry.pdf",              sizeMB: 10.6 },
+    { grade: "Grade 12", subject: "Literature",             title: "Literature in English",   file: "books/grade-12/grade-12-literature-in-english.pdf", sizeMB: 27.9 },
+    { grade: "Grade 12", subject: "Mathematics",            title: "Mathematics I",           file: "books/grade-12/grade-12-mathematics-1.pdf",          sizeMB: 11.5 },
+    { grade: "Grade 12", subject: "Mathematics",            title: "Mathematics II",          file: "books/grade-12/grade-12-mathematics-2.pdf",          sizeMB: 18.1 },
+    { grade: "Grade 12", subject: "Physics",                title: "Physics",                 file: "books/grade-12/grade-12-physics.pdf",                sizeMB: 16.2 }
+  ];
+
+  const SUBJECT_ICON = {
+    Biology: "🧬",
+    Chemistry: "⚗️",
+    Physics: "⚛️",
+    Mathematics: "➗",
+    Literature: "📖"
+  };
+
+  function subjClass(subject){
+    return "subj-" + subject.toLowerCase().replace(/[^a-z]/g, '');
+  }
+
+  function escapeHtml(str){
+    if(str === undefined || str === null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function renderCatalog(){
+    const container = document.getElementById('catalogContainer');
+    const noResults = document.getElementById('noResults');
+    const gradeFilter = document.getElementById('gradeSelect').value;
+    const search = document.getElementById('searchInput').value.trim().toLowerCase();
+
+    const filtered = libraryCatalog.filter(b => {
+      if(gradeFilter !== 'all' && b.grade !== gradeFilter) return false;
+      if(search && !(b.title.toLowerCase().includes(search) || b.subject.toLowerCase().includes(search))) return false;
+      return true;
+    });
+
+    // stats always reflect the FULL catalog, not the current filter
+    document.getElementById('totalBooksValue').textContent = libraryCatalog.length;
+    document.getElementById('gradesValue').textContent = new Set(libraryCatalog.map(b => b.grade)).size;
+    document.getElementById('subjectsValue').textContent = new Set(libraryCatalog.map(b => b.subject)).size;
+
+    if(filtered.length === 0){
+      container.querySelectorAll('.grade-section').forEach(el => el.remove());
+      noResults.style.display = 'block';
+      return;
+    }
+    noResults.style.display = 'none';
+
+    const grades = ["Grade 10", "Grade 11", "Grade 12"].filter(g =>
+      filtered.some(b => b.grade === g)
+    );
+
+    const html = grades.map(grade => {
+      const books = filtered.filter(b => b.grade === grade);
+      const cards = books.map(b => `
+        <div class="book-card ${subjClass(b.subject)}">
+          <div class="book-icon">${SUBJECT_ICON[b.subject] || '📘'}</div>
+          <h3 class="book-title">${escapeHtml(b.title)}</h3>
+          <div class="book-meta">
+            <span class="grade-pill">${escapeHtml(b.grade)}</span>${escapeHtml(b.subject)} &middot; ${b.sizeMB} MB
+          </div>
+          <div class="book-actions">
+            <a class="premium small" href="${encodeURI(b.file)}" download>⬇ Download</a>
+            <a class="premium ghost small" href="${encodeURI(b.file)}" target="_blank" rel="noopener">👁 View</a>
+          </div>
+        </div>
+      `).join('');
+      return `<div class="grade-section">
+        <h2 class="grade-section-title">${escapeHtml(grade)} Textbooks</h2>
+        <div class="book-grid">${cards}</div>
+      </div>`;
+    }).join('');
+
+    container.querySelectorAll('.grade-section').forEach(el => el.remove());
+    container.insertAdjacentHTML('beforeend', html);
+  }
+
+  function clearFilters(){
+    document.getElementById('gradeSelect').value = 'all';
+    document.getElementById('searchInput').value = '';
+    renderCatalog();
+  }
+
+  document.getElementById('gradeSelect').addEventListener('change', renderCatalog);
+  document.getElementById('searchInput').addEventListener('input', renderCatalog);
+  renderCatalog();
+</script>
+
+</body>
+</html>

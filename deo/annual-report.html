@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>EDU.LR — DEO — Annual District Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches DEO Dashboard / Statistics / Monthly / Quarterly Report) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand-mark{ width:46px; height:46px; flex:none; border-radius:14px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); box-shadow:0 0 0 2px rgba(217,138,36,.18); }
+.brand-mark svg{ width:24px; height:24px; color:#2A1806; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.icon-btn.logout svg{ color:var(--crimson); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.content{ padding:22px 32px 60px; }
+
+/* ============================= SCOPE BANNER ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+.btn[disabled]{ opacity:.4; cursor:not-allowed; pointer-events:none; }
+
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-body{ padding:14px 20px 20px; }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+/* Control bar (year picker + actions) */
+.control-bar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:14px 18px; }
+.control-bar .field-inline{ display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; color:var(--muted); }
+select.select{
+  font-family:inherit; appearance:none; -webkit-appearance:none;
+  border:1px solid var(--line); background:var(--paper); border-radius:9px;
+  padding:9px 30px 9px 12px; font-size:12.5px; font-weight:600; color:var(--ink);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7064' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat; background-position:right 8px center; background-size:13px;
+  transition:border-color .15s;
+}
+select.select:focus{ outline:none; border-color:var(--gold); }
+.save-meta{ font-size:11.5px; color:var(--muted); margin-left:auto; }
+
+/* Stat cards (live district snapshot) */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:16px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:28px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+.stat-sub{ font-size:11px; color:var(--gold-deep); margin-top:3px; font-weight:600; }
+
+/* Report section grid */
+.report-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:16px; }
+.field-card .card-head p{ margin:2px 0 0; font-size:11.5px; color:var(--muted); font-weight:500; }
+.field-card textarea{
+  width:100%; min-height:110px; resize:vertical;
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px;
+  font-family:inherit; font-size:12.5px; color:var(--ink); background:var(--cream);
+  transition:border-color .15s, box-shadow .15s;
+}
+.field-card textarea:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); background:var(--paper); }
+.field-card textarea::placeholder{ color:#B7AC98; }
+
+/* Restricted / allowed notes */
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.toast.warn{ border-left-color:var(--danger); }
+
+/* Responsive */
+@media (max-width:1180px){
+  .report-grid{ grid-template-columns:repeat(2,1fr); }
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:640px){
+  .report-grid{ grid-template-columns:1fr; }
+  .stat-grid{ grid-template-columns:1fr; }
+}
+@media print{
+  .sidebar, .topbar, .btn, .control-bar select, .toast-wrap, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .hamburger{ display:flex; }
+}
+</style>
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+
+<div class="app">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M4 21V9.5L12 4l8 5.5V21"/><path d="M9 21v-6h6v6"/><path d="M8 9.5h.01M12 9.5h.01M16 9.5h.01M8 13h.01M16 13h.01"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="k1">Careysburg District</div>
+        <div class="k2">DEO Portal</div>
+      </div>
+    </div>
+
+    <div class="role-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></svg>
+      <span>DEO &middot; DISTRICT SUPERVISION &amp; OVERSIGHT</span>
+    </div>
+
+    <div class="nav-group-label">Overview</div>
+    <div class="nav">
+      <a class="nav-item" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Command Center
+      </a>
+    </div>
+
+    <div class="nav-group-label">District Supervision</div>
+    <div class="nav">
+      <a class="nav-item" href="schools.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+        All Schools
+      </a>
+      <a class="nav-item" href="school-profile.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        School Profiles
+      </a>
+      <a class="nav-item" href="school-visits.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Supervision Plan
+      </a>
+      <a class="nav-item" href="inspection.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Inspections
+      </a>
+      <a class="nav-item" href="inspection-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        Inspection Reports
+      </a>
+    </div>
+
+    <div class="nav-group-label">People Oversight</div>
+    <div class="nav">
+      <a class="nav-item" href="principals.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/></svg>
+        Principals &amp; Administrators
+      </a>
+      <a class="nav-item" href="teachers.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>
+        Teacher Register
+      </a>
+      <a class="nav-item" href="students.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+        Learner Register
+      </a>
+      <a class="nav-item" href="student-attendance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 14l2 2 4-4"/></svg>
+        Learner Attendance
+      </a>
+    </div>
+
+    <div class="nav-group-label">Academics</div>
+    <div class="nav">
+      <a class="nav-item" href="academic-monitoring.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V5a2 2 0 00-2-2H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M9 8h7M9 12h7"/></svg>
+        Teaching &amp; Learning
+      </a>
+      <a class="nav-item" href="curriculum.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6.5C10 4.8 6.8 4 4 4v13c2.8 0 6 .8 8 2.5 2-1.7 5.2-2.5 8-2.5V4c-2.8 0-6 .8-8 2.5z"/></svg>
+        Curriculum
+      </a>
+      <a class="nav-item" href="assessment-results.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        Assessment &amp; Examinations
+      </a>
+      <a class="nav-item" href="school-performance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        School Performance
+      </a>
+    </div>
+
+    <div class="nav-group-label">Governance</div>
+    <div class="nav">
+      <a class="nav-item" href="lsmc.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+        LSMC
+      </a>
+      <a class="nav-item" href="policies-directives.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>District Compliance</a>
+      <a class="nav-item" href="complaints-incidents.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        Complaints &amp; Incidents
+      </a>
+    </div>
+
+    <div class="nav-group-label">Statistics &amp; Reports</div>
+    <div class="nav">
+      <a class="nav-item" href="statistics.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        District Statistics
+      </a>
+      <a class="nav-item" href="reports.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        Reports Center
+      </a>
+      <a class="nav-item" href="monthly-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Monthly Report
+      </a>
+      <a class="nav-item" href="quarterly-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Quarterly Report
+      </a>
+      <a class="nav-item active" href="annual-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Annual Report
+      </a>
+      <a class="nav-item" href="special-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Special Report
+      </a>
+    </div>
+
+    <div class="nav-group-label">Risk &amp; Accountability</div>
+    <div class="nav">
+      <a class="nav-item" href="risk-register.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        Risk &amp; Safeguarding
+      </a>
+      <a class="nav-item" href="audit-log.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+        Audit &amp; Accountability
+      </a>
+    </div>
+
+    <div class="cannot-box">
+      <div class="title">✕ Restricted</div>
+      <ul style="margin:0; padding:0; list-style:none;">
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">Your draft is private — visible only to your own account until submitted</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">"Finalize Report" marks status only, see "What this page shows"</li>
+      </ul>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sys-health">
+        <div class="pulse-dot warn" id="healthDot"></div>
+        <div class="sys-health-text">
+          <b id="healthLabel">Not connected</b>
+          <span id="healthSub">Connect your database to load your saved report</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="page-title-wrap">
+        <div class="page-title">Annual District Report</div>
+      </div>
+      <button class="icon-btn" onclick="window.print()" title="Print this view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+      </button>
+      <button class="icon-btn" onclick="location.href='notifications.html'" title="Alerts &amp; notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
+      </button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">—</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting DEO account</div>
+        </div>
+      </div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <div class="scope-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+        <div>
+          <div class="sb-t">Scope of Access &amp; How This Report Is Saved</div>
+          <div class="sb-s">There is no dedicated <code>reports</code> table anywhere in this schema (checked every <code>.from('...')</code> call in the codebase). This page saves what you type through <code>KPS.kv</code> — a real Supabase-backed key/value bridge (<code>kv_store</code> table), the same one already used for genuine persistence by <code>monthly-report.html</code>, <code>quarterly-report.html</code>, <code>special-report.html</code>, and several Super Admin settings pages. Each year's report is one JSON record, private to your account (<code>shared:false</code>) until you choose to finalize it. <b class="sa">"Finalize Report" marks status only</b> — there is no external delivery role or working notification schema yet to actually deliver it; see "What this page shows".</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>Compile the Annual District Report</h2>
+          <p>Fill in verified district evidence for each area below. The live snapshot underneath gives you real, current district figures as reference while you write — nothing in it is auto-copied into your narrative for you.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="control-bar">
+          <div class="field-inline">
+            Report Year
+            <select class="select" id="yearPicker"></select>
+          </div>
+          <span class="pill" id="statusPill">—</span>
+          <button class="btn btn-primary btn-sm" id="saveDraftBtn" type="button">Save draft</button>
+          <button class="btn btn-gold btn-sm" id="submitBtn" type="button">Finalize Report</button>
+          <button class="btn btn-ghost btn-sm" type="button" onclick="window.print()">Print</button>
+          <span class="save-meta" id="saveMeta">—</span>
+        </div>
+      </div>
+
+      <!-- ============================= LIVE DISTRICT SNAPSHOT ============================= -->
+      <div class="section-head" style="margin-bottom:12px;">
+        <div>
+          <h2 style="font-size:19px;">District Year-in-Numbers — Live Snapshot</h2>
+          <p id="snapshotAsOf">Real figures computed live from Supabase, refreshed on every load — use these as supporting evidence while you write the sections below.</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="refreshSnapshotBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div class="stat-grid" id="snapshotGrid"></div>
+
+      <div class="report-grid" id="sectionsGrid">
+        <div class="card field-card">
+          <div class="card-head"><h3>District Profile &amp; Education Statistics</h3></div>
+          <div class="card-body"><textarea data-key="districtProfile" placeholder="Enter verified district evidence and supporting figures…"></textarea></div>
+        </div>
+        <div class="card field-card">
+          <div class="card-head"><h3>School Operations &amp; Compliance</h3></div>
+          <div class="card-body"><textarea data-key="schoolOps" placeholder="Enter verified district evidence and supporting figures…"></textarea></div>
+        </div>
+        <div class="card field-card">
+          <div class="card-head"><h3>Staffing &amp; Teacher Performance</h3></div>
+          <div class="card-body"><textarea data-key="staffing" placeholder="Enter verified district evidence and supporting figures…"></textarea></div>
+        </div>
+        <div class="card field-card">
+          <div class="card-head"><h3>Teaching, Learning &amp; Assessment</h3></div>
+          <div class="card-body"><textarea data-key="teachingLearning" placeholder="Enter verified district evidence and supporting figures…"></textarea></div>
+        </div>
+        <div class="card field-card">
+          <div class="card-head"><h3>Learner Welfare &amp; Attendance</h3></div>
+          <div class="card-body"><textarea data-key="learnerWelfare" placeholder="Enter verified district evidence and supporting figures…"></textarea></div>
+        </div>
+        <div class="card field-card">
+          <div class="card-head"><h3>Infrastructure &amp; Facilities</h3></div>
+          <div class="card-body"><textarea data-key="infrastructure" placeholder="Enter verified district evidence and supporting figures…"></textarea></div>
+        </div>
+        <div class="card field-card">
+          <div class="card-head"><h3>Projects &amp; Community Participation</h3></div>
+          <div class="card-body"><textarea data-key="projects" placeholder="Enter verified district evidence and supporting figures…"></textarea></div>
+        </div>
+        <div class="card field-card">
+          <div class="card-head"><h3>Major Challenges &amp; Recommendations</h3></div>
+          <div class="card-body"><textarea data-key="challenges" placeholder="Enter verified district evidence and supporting figures…"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head"><h3>What this page shows</h3></div>
+        <div class="card-body" style="font-size:12px; color:var(--muted); line-height:1.7;">
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Storage</b> — each year's report is one JSON record in the real <code>kv_store</code> table, keyed <code>deo_annual_report:&lt;year&gt;</code> and scoped private (<code>shared:false</code>) to your own account. Nothing is stored only in your browser — it survives refresh and device changes.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Year picker</b> — covers the current year plus the five before it. Switching years loads that year's own saved record, so you can go back and finish an earlier year's report without losing this year's draft.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Save draft vs. Finalize Report</b> — both write to the same record. Submitting sets <code>status: 'submitted'</code> and stamps <code>submittedAt</code>, but does <b>not</b> notify any external account or route anywhere: there is no external delivery role defined in this codebase yet, and the <code>notifications</code> table's columns are inconsistent across the two places that already read it. A future pass can wire real delivery once those exist.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">The Year-in-Numbers snapshot above</b> is a genuinely live query against Supabase (schools, staffing, enrollment, attendance, marks, inspections, safeguarding, guardian coverage), read fresh on every page load — but it always reflects <i>current</i> data, not an archived record for whichever past year is selected in the picker. This system does not yet retain year-over-year historical archives, so treat the snapshot as reference evidence for the year currently in progress, not as certified historical data for a prior year's report.</p>
+          <p style="margin:0;">No figures are auto-copied into the text fields below — every section is free-text you write yourself, matching how the original report form worked. Automated evidence pulls directly into the narrative would be a real feature to add later, not something to fake here.</p>
+        </div>
+      </div>
+
+      <div class="allowed-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><b>DEO can:</b> draft, save, and submit the annual district report for the current year or any of the five before it, entirely within their own private account — real persistence, not a demo. The live snapshot above is read-only reference evidence and edits nothing.</div>
+      </div>
+
+      <div class="footer-ribbon">
+        EDU.LR · District Education Officer's Console · <b>Careysburg District</b> · Montserrado County
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATA LAYER — DEO / Annual District Report (premium build)
+   Two independent data sources on this page:
+
+   1. THE REPORT ITSELF (free-text, editable) — same KPS.kv bridge
+      (public.kv_store) already used for real persistence by
+      monthly-report.html, quarterly-report.html, special-report.html,
+      super-admin/dashboard-settings.html, etc. No new table/migration
+      needed. There is no dedicated `reports`/`deo_reports` table anywhere
+      in this codebase (checked every .from('...') call before writing
+      this file) — inventing one and running an unapproved migration
+      against the live project isn't warranted for free-text storage that
+      kv_store already handles correctly.
+
+        key:   deo_annual_report:<calendar-year>
+        value: JSON.stringify({
+                 sections: { districtProfile, schoolOps, staffing,
+                             teachingLearning, learnerWelfare,
+                             infrastructure, projects, challenges },
+                 status: 'draft' | 'submitted',
+                 savedAt: ISO string,
+                 submittedAt: ISO string | null
+               })
+        shared: false — the draft belongs to the signed-in DEO's own
+                account (KPS.kv scopes shared=false rows to auth.uid()
+                as owner_id).
+
+      Unlike a monthly cadence, an annual report has a longer look-back
+      need (finishing last year's report early in the new year, or
+      revisiting one from a few years back), so the year picker covers
+      the current year plus the five before it. SECTION_KEYS matches the
+      original (pre-premium-build) version of this page exactly, so any
+      draft already saved under the old UI still loads correctly here.
+
+      "Finalize Report" only flips status/submittedAt on this same
+      record — there is no external delivery role in
+      js/supabase-api.js's ROLE_FOLDER_MAP yet, and the `notifications`
+      table's columns are inconsistent across the two places that
+      already read it (deo/dashboard.html expects `read`,
+      student/dashboard.html expects `is_read`), so this page does not
+      fabricate a delivery/notification step to an account that doesn't
+      provably exist yet — same reasoning as monthly-report.html and
+      quarterly-report.html.
+
+   2. THE LIVE DISTRICT SNAPSHOT (read-only, new this session) — real
+      SELECT-only Supabase queries, the same ones deo/statistics.html
+      already uses and verifies against the live schema, condensed into
+      a single supporting-evidence strip:
+
+        institutions              -> Schools in District
+        profiles                  -> Principals / Teachers
+                                      (role + is_active filters, same as
+                                      deo/statistics.html)
+        students                  -> Learners (status='active'), gender
+                                      split. Has no institution_id column
+                                      of its own — not needed here since
+                                      this is a single district total,
+                                      not a per-school breakdown.
+        attendance_daily_summary  -> district Learner Attendance %,
+                                      latest reported day inside a
+                                      rolling 14-day window
+        marks                     -> Average Mark % / Pass Rate %,
+                                      published only (.eq('published', true))
+        inspection_reports        -> Inspection Reports total
+        staff_evaluations         -> Staff Evaluations total
+        suspensions                -> Active Safeguarding Cases
+        student_guardians         -> Guardian Contact Coverage % (the
+                                      'deo' role's SELECT policy on this
+                                      table was added in migration
+                                      007_deo_read_guardians_for_statistics.sql
+                                      during the statistics.html session)
+        sections                  -> Sections in District (head count)
+
+      This never writes to the database and is intentionally NOT tied to
+      the year picker above — it's always "right now," clearly labeled
+      as such, because this system does not retain year-over-year
+      historical archives. Every card degrades to "—" rather than
+      fabricating a number if its query returns nothing or a permission
+      is missing.
+   ========================================================================= */
+const SECTION_KEYS = ['districtProfile','schoolOps','staffing','teachingLearning','learnerWelfare','infrastructure','projects','challenges'];
+
+function currentYear(){ return new Date().getFullYear(); }
+function yearKey(year){ return `deo_annual_report:${year}`; }
+function buildYearOptions(){
+  const cy = currentYear();
+  const opts = [];
+  for (let i = 0; i < 6; i++) opts.push(cy - i);
+  return opts;
+}
+
+let profile = null;
+let selectedYear = currentYear();
+let reportState = { sections: {}, status: 'draft', savedAt: null, submittedAt: null };
+
+function showToast(msg, kind){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind === 'warn' ? ' warn' : '');
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),250); }, 3600);
+}
+
+function escapeHtml(s){
+  return (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+function initials(name){ return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''); }
+function isFemale(g){ return (g || '').toString().trim().toUpperCase().startsWith('F'); }
+function isMale(g){ return (g || '').toString().trim().toUpperCase().startsWith('M'); }
+function fmtPct(v){ return (v === null || v === undefined) ? '—' : v + '%'; }
+
+function renderProfileChip(){
+  const chipAvatar = document.getElementById('chipAvatar');
+  const chipName = document.getElementById('chipName');
+  const chipRole = document.getElementById('chipRole');
+  if (profile && profile.full_name){
+    chipAvatar.textContent = initials(profile.full_name);
+    chipName.textContent = profile.full_name;
+    chipRole.textContent = 'District Education Officer';
+  } else {
+    chipAvatar.textContent = '—';
+    chipName.textContent = 'Not signed in';
+    chipRole.textContent = 'Awaiting DEO account';
+  }
+}
+
+function renderConnectionStatus(){
+  const dot = document.getElementById('healthDot');
+  const label = document.getElementById('healthLabel');
+  const sub = document.getElementById('healthSub');
+  dot.classList.remove('warn');
+  label.textContent = 'Live data connected';
+  sub.textContent = (window.KPS && KPS.SUPABASE_URL) || '';
+}
+
+function fmtDateTime(v){
+  if (!v) return null;
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+function renderYearPicker(){
+  const sel = document.getElementById('yearPicker');
+  sel.innerHTML = buildYearOptions().map(y =>
+    `<option value="${y}"${y === selectedYear ? ' selected' : ''}>${y}</option>`
+  ).join('');
+}
+
+function renderStatus(){
+  const pill = document.getElementById('statusPill');
+  if (reportState.status === 'submitted'){
+    pill.className = 'pill green';
+    pill.textContent = `Submitted ${fmtDateTime(reportState.submittedAt) || ''}`;
+  } else {
+    pill.className = 'pill gold';
+    pill.textContent = 'Draft — not yet submitted';
+  }
+  document.getElementById('saveMeta').textContent = reportState.savedAt
+    ? `Last saved ${fmtDateTime(reportState.savedAt)}`
+    : 'Not saved yet';
+}
+
+function fillTextareas(){
+  document.querySelectorAll('#sectionsGrid textarea[data-key]').forEach(ta => {
+    ta.value = reportState.sections[ta.dataset.key] || '';
+  });
+}
+function collectSections(){
+  const sections = {};
+  document.querySelectorAll('#sectionsGrid textarea[data-key]').forEach(ta => {
+    sections[ta.dataset.key] = ta.value;
+  });
+  return sections;
+}
+
+async function loadReport(){
+  reportState = { sections: {}, status: 'draft', savedAt: null, submittedAt: null };
+  try {
+    const res = await KPS.kv.get(yearKey(selectedYear), false);
+    if (res && res.value){
+      const parsed = JSON.parse(res.value);
+      reportState = {
+        sections: parsed.sections || {},
+        status: parsed.status || 'draft',
+        savedAt: parsed.savedAt || null,
+        submittedAt: parsed.submittedAt || null
+      };
+    }
+  } catch (err) {
+    // KPS.kv.get throws "Key not found" when no draft exists yet for this
+    // year — that's the normal first-time state, not an error to surface.
+    if (!/key not found/i.test(err.message || '')){
+      console.error('[DEO Annual Report] failed to load saved report', err);
+      showToast('Could not load your saved report — check your Supabase connection', 'warn');
+    }
+  }
+  fillTextareas();
+  renderStatus();
+}
+
+async function persist(nextStatus){
+  const sections = collectSections();
+  const now = new Date().toISOString();
+  reportState = {
+    sections,
+    status: nextStatus,
+    savedAt: now,
+    submittedAt: nextStatus === 'submitted' ? now : reportState.submittedAt
+  };
+  try {
+    await KPS.kv.set(yearKey(selectedYear), JSON.stringify(reportState), false);
+    renderStatus();
+    showToast(nextStatus === 'submitted' ? `${selectedYear} annual report submitted` : 'Draft saved');
+  } catch (err) {
+    console.error('[DEO Annual Report] failed to save report', err);
+    showToast('Could not save — check your Supabase connection and try again', 'warn');
+  }
+}
+
+document.getElementById('yearPicker').addEventListener('change', async (e) => {
+  selectedYear = Number(e.target.value);
+  await loadReport();
+});
+document.getElementById('saveDraftBtn').addEventListener('click', () => persist('draft'));
+document.getElementById('submitBtn').addEventListener('click', () => {
+  if (!confirm(`Finalize the ${selectedYear} annual report? You can still edit and re-submit afterward.`)) return;
+  persist('submitted');
+});
+
+/* ============================= LIVE DISTRICT SNAPSHOT ============================= */
+const icons = {
+  users: '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/>',
+  disk: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.4"/><path d="M12 3v6.6M20.2 8l-5.7 3.3"/>',
+  shield: '<path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/>',
+  staff: '<path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/>',
+  eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+  ticket: '<path d="M4 8a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/>',
+  alert: '<path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  percent: '<circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/><path d="M18 6L6 18"/>',
+  chart: '<path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/>',
+  check: '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>',
+};
+const snapshot = [
+  { label: 'Schools in District', ic: 'disk', color: 'navy' },
+  { label: 'Principals', ic: 'shield' },
+  { label: 'Teachers', ic: 'staff', color: 'navy' },
+  { label: 'Learners', ic: 'users' },
+  { label: 'Learner Attendance %', ic: 'percent', color: 'navy' },
+  { label: 'Average Mark % (Published)', ic: 'chart', color: 'gold' },
+  { label: 'Pass Rate %', ic: 'check' },
+  { label: 'Inspection Reports', ic: 'eye', color: 'navy' },
+  { label: 'Staff Evaluations', ic: 'ticket', color: 'gold' },
+  { label: 'Safeguarding Cases (Active)', ic: 'alert' },
+  { label: 'Guardian Contact Coverage', ic: 'shield', color: 'navy' },
+  { label: 'Sections in District', ic: 'staff' },
+];
+
+function renderSnapshotGrid(){
+  document.getElementById('snapshotGrid').innerHTML = snapshot.map(s => `
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-ic ${s.color || ''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${icons[s.ic]}</svg></div>
+        <span class="stat-trend flat">live</span>
+      </div>
+      <div class="stat-num mono">${s.value ?? '—'}</div>
+      <div class="stat-label">${s.label}</div>
+      ${s.sub ? `<div class="stat-sub">${s.sub}</div>` : ''}
+    </div>`).join('');
+}
+
+async function loadSnapshot(){
+  renderSnapshotGrid(); // show placeholders immediately
+  try {
+    const sbc = () => window.sb;
+    if (!sbc()) throw new Error('Supabase client not initialised');
+    const today = new Date();
+    const cutoff14 = new Date(today.getTime() - 13 * 86400000).toISOString().slice(0, 10);
+
+    const [
+      institutionsRes, principalRes, teacherRes, studentRes, attendRes, marksRes,
+      inspectionCountRes, evalCountRes, suspRes, guardianLinkRes, sectionsRes
+    ] = await Promise.all([
+      sbc().from('institutions').select('id', { count: 'exact', head: true }),
+      sbc().from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'principal').eq('is_active', true),
+      sbc().from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'teacher').eq('is_active', true),
+      sbc().from('students').select('id, gender', { count: 'exact' }).eq('status', 'active').limit(20000),
+      sbc().from('attendance_daily_summary').select('date, present_count, absent_count, late_count, excused_count').gte('date', cutoff14).limit(8000),
+      sbc().from('marks').select('score, max_score').eq('published', true).limit(20000),
+      sbc().from('inspection_reports').select('id', { count: 'exact', head: true }),
+      sbc().from('staff_evaluations').select('id', { count: 'exact', head: true }),
+      sbc().from('suspensions').select('id, end_date').limit(5000),
+      sbc().from('student_guardians').select('student_id').limit(20000),
+      sbc().from('sections').select('id', { count: 'exact', head: true }),
+    ]);
+
+    [institutionsRes, principalRes, teacherRes, studentRes, attendRes, marksRes, suspRes]
+      .forEach(r => { if (r && r.error) throw r.error; });
+
+    const studentRows = studentRes.data || [];
+    const totalGirls = studentRows.filter(s => isFemale(s.gender)).length;
+    const totalBoys = studentRows.filter(s => isMale(s.gender)).length;
+    const learnersCount = studentRes.count ?? studentRows.length;
+    const teachersCount = teacherRes.count ?? 0;
+
+    // ---- district attendance: most-recent reported day inside the 14-day window ----
+    const attendRows = attendRes.data || [];
+    let attendancePct = null;
+    if (attendRows.length){
+      const latestDate = attendRows.reduce((max, r) => (r.date > max ? r.date : max), attendRows[0].date);
+      const latestRows = attendRows.filter(r => r.date === latestDate);
+      const totals = latestRows.reduce((acc, r) => {
+        acc.present += r.present_count || 0;
+        acc.total += (r.present_count || 0) + (r.absent_count || 0) + (r.late_count || 0) + (r.excused_count || 0);
+        return acc;
+      }, { present: 0, total: 0 });
+      if (totals.total > 0) attendancePct = Math.round((totals.present / totals.total) * 1000) / 10;
+    }
+
+    // ---- published marks: average % and pass rate ----
+    const marksRows = marksRes.data || [];
+    let markSum = 0, markCount = 0, passCount = 0;
+    marksRows.forEach(m => {
+      if (!m.max_score) return;
+      const pct = (m.score / m.max_score) * 100;
+      markSum += pct; markCount++;
+      if (pct >= 50) passCount++;
+    });
+    const avgMarkPct = markCount ? Math.round((markSum / markCount) * 10) / 10 : null;
+    const passRatePct = markCount ? Math.round((passCount / markCount) * 1000) / 10 : null;
+
+    // ---- active safeguarding cases ----
+    const todayStr = today.toISOString().slice(0, 10);
+    const activeSuspensions = (suspRes.data || []).filter(s => !s.end_date || s.end_date >= todayStr).length;
+
+    // ---- guardian contact coverage (best-effort: degrades to — if RLS ever blocks it) ----
+    let guardianCoveragePct = null, guardianSub = 'Awaiting permission';
+    if (guardianLinkRes && !guardianLinkRes.error){
+      const linkedIds = new Set((guardianLinkRes.data || []).map(g => g.student_id));
+      const activeIds = new Set(studentRows.map(s => s.id));
+      let covered = 0;
+      activeIds.forEach(id => { if (linkedIds.has(id)) covered++; });
+      guardianCoveragePct = activeIds.size ? Math.round((covered / activeIds.size) * 1000) / 10 : null;
+      guardianSub = `${covered} of ${activeIds.size} learners`;
+    }
+
+    snapshot.forEach(s => {
+      if (s.label === 'Schools in District') s.value = institutionsRes.count ?? '—';
+      if (s.label === 'Principals') s.value = principalRes.count ?? '—';
+      if (s.label === 'Teachers') s.value = teachersCount || '—';
+      if (s.label === 'Learners'){
+        s.value = learnersCount ?? '—';
+        s.sub = `${totalGirls} girls · ${totalBoys} boys`;
+      }
+      if (s.label === 'Learner Attendance %') s.value = fmtPct(attendancePct);
+      if (s.label === 'Average Mark % (Published)') s.value = fmtPct(avgMarkPct);
+      if (s.label === 'Pass Rate %') s.value = fmtPct(passRatePct);
+      if (s.label === 'Inspection Reports') s.value = inspectionCountRes.count ?? '—';
+      if (s.label === 'Staff Evaluations') s.value = evalCountRes.count ?? '—';
+      if (s.label === 'Safeguarding Cases (Active)') s.value = activeSuspensions;
+      if (s.label === 'Guardian Contact Coverage'){ s.value = fmtPct(guardianCoveragePct); s.sub = guardianSub; }
+      if (s.label === 'Sections in District') s.value = sectionsRes && !sectionsRes.error ? (sectionsRes.count ?? '—') : '—';
+    });
+
+    document.getElementById('snapshotAsOf').textContent =
+      `Real figures computed live from Supabase as of ${new Date().toLocaleString()} — use these as supporting evidence while you write the sections below.`;
+    renderSnapshotGrid();
+  } catch (err) {
+    console.error('[DEO Annual Report] failed to load live snapshot', err);
+    document.getElementById('snapshotAsOf').textContent = 'Could not load the live snapshot — check your Supabase connection.';
+    snapshot.forEach(s => { s.value = '—'; s.sub = null; });
+    renderSnapshotGrid();
+  }
+}
+document.getElementById('refreshSnapshotBtn').addEventListener('click', () => { loadSnapshot(); });
+
+(async function init(){
+  const auth = await KPS.requireRole(['deo', 'super_admin']);
+  if (!auth.user) return; // requireRole already redirected to login
+  profile = auth.profile;
+  renderProfileChip();
+  renderConnectionStatus();
+  renderYearPicker();
+  renderSnapshotGrid();
+  await Promise.all([ loadReport(), loadSnapshot() ]);
+})();
+</script>
+</body>
+</html>

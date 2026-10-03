@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public School — Lesson Plan Portal | Fill-In Lesson Plan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --info:#1a5fb4;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    padding:clamp(8px,1.4vh,11px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;position:relative;
+  }
+  header.topbar .left{display:flex;align-items:center;justify-content:center;gap:10px;}
+  header.topbar .header-logo{
+    height:30px;width:30px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;
+  }
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(14px,3vh,30px) 16px;}
+  .card{
+    width:100%;max-width:960px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;
+    animation:cardRise .5s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,30px) clamp(18px,5vw,32px) clamp(18px,3vh,26px);}
+
+  .toolbar{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;
+    margin-bottom:clamp(14px,2.4vh,20px);
+  }
+  .toolbar .toolbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  select.scope-select{padding:9px 11px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:#fff;color:var(--ink);max-width:230px;}
+  button.btn-primary{padding:10px 18px;border:none;border-radius:4px;background:var(--crimson);color:#fff;font-weight:700;font-size:13px;cursor:pointer;transition:background .15s;}
+  button.btn-primary:hover{background:var(--crimson-dark);}
+  button.btn-secondary{padding:10px 18px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-secondary:hover{background:#fafafa;}
+  button.btn-print{padding:10px 18px;border:none;border-radius:4px;background:var(--navy);color:#fff;font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-print:hover{background:var(--navy-deep);}
+  button.btn-doc-delete{padding:10px 16px;border:1px solid #f6c9c4;border-radius:4px;background:#fff;color:var(--danger);font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-doc-delete:hover{background:#fdecea;}
+
+  .msg{margin-bottom:14px;font-size:12.5px;padding:9px 12px;border-radius:4px;display:none;}
+  .msg.show{display:block;}
+  .msg.err{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .msg.ok{background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+
+  /* ---------- Document / letterhead area (this is what prints & downloads) ---------- */
+  .doc-paper{
+    font-family:Georgia,"Times New Roman",serif;color:#111;
+    border:1px solid var(--line);border-radius:8px;padding:clamp(18px,4vw,34px);background:#fff;
+  }
+  .doc-letterhead{display:flex;align-items:center;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:14px;}
+  .doc-letterhead .crest-img{
+    height:64px;width:64px;object-fit:contain;flex-shrink:0;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;
+  }
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:20px;font-weight:800;color:var(--navy);letter-spacing:.3px;}
+  .doc-headtext .school-sub{font-size:11.5px;color:#444;margin-top:3px;}
+  .doc-headtext .school-motto{font-size:11.5px;color:var(--crimson-dark);font-style:italic;margin-top:2px;}
+  .school-address-field{display:flex;align-items:baseline;justify-content:center;gap:5px;font-size:11px;color:#444;margin-top:4px;}
+  .school-address-field input{
+    font-family:inherit;font-size:11px;color:#444;border:none;border-bottom:1px solid #d8d8d2;background:#fbfbf9;
+    padding:1px 4px;text-align:center;width:100%;max-width:420px;
+  }
+  .school-address-field input:focus{outline:none;border-bottom:1px solid var(--crimson);}
+  .doc-banner{
+    background:var(--navy-deep);color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;
+    padding:9px;margin-bottom:16px;text-transform:uppercase;border-radius:3px;
+  }
+
+  .lp-meta-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 24px;font-size:13.5px;margin-bottom:16px;}
+  @media (max-width:640px){.lp-meta-row{grid-template-columns:1fr 1fr;}}
+  .lp-meta-item{display:flex;align-items:baseline;gap:6px;}
+  .lp-meta-item b{white-space:nowrap;color:#111;}
+  .lp-meta-item input{
+    flex:1;min-width:0;font-family:inherit;font-size:13.5px;color:#111;
+    border:none;border-bottom:1px solid #cfcfc9;background:#fbfbf9;padding:3px 4px;
+  }
+  .lp-meta-item input:focus{outline:none;border-bottom:1px solid var(--crimson);}
+
+  .lp-topic-row{margin:0 0 16px;border-bottom:1px solid #ccc;padding-bottom:8px;display:flex;align-items:baseline;gap:8px;}
+  .lp-topic-row b{font-size:14.5px;flex-shrink:0;}
+  .lp-topic-row input{
+    flex:1;font-family:inherit;font-size:14.5px;border:none;background:#fbfbf9;padding:3px 5px;border-bottom:1px solid #cfcfc9;
+  }
+  .lp-topic-row input:focus{outline:none;border-bottom:1px solid var(--crimson);}
+
+  .lp-section-title{
+    font-weight:700;font-size:13.5px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.3px;
+    color:var(--navy);border-bottom:1px solid #ccc;padding-bottom:4px;
+  }
+  .lp-sub{font-size:13px;font-weight:700;margin:2px 0 8px;color:#333;}
+
+  .list-rows{margin:0;}
+  .list-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;padding-left:22px;position:relative;}
+  .list-row .marker{position:absolute;left:0;top:6px;font-size:13.5px;width:20px;color:var(--navy);font-weight:700;}
+  .list-row input{
+    flex:1;font-family:inherit;font-size:13.5px;border:none;border-bottom:1px solid #cfcfc9;background:#fbfbf9;padding:4px 5px;
+  }
+  .list-row input:focus{outline:none;border-bottom:1px solid var(--crimson);}
+  .list-row .rm-btn{border:none;background:none;color:var(--danger);cursor:pointer;font-size:16px;line-height:1;padding:4px 5px;font-family:Arial,sans-serif;}
+  .add-row-btn{
+    font-family:Arial,sans-serif;font-size:11.5px;font-weight:700;color:var(--crimson);
+    background:none;border:1px dashed var(--crimson);border-radius:5px;padding:5px 10px;cursor:pointer;margin-top:2px;
+  }
+
+  .lp-opener-line{font-size:13.5px;margin:6px 0;}
+  textarea.inline-ta{
+    width:100%;font-family:inherit;font-size:13.5px;border:none;border-bottom:1px solid #cfcfc9;background:#fbfbf9;
+    padding:4px 5px;resize:none;overflow:hidden;line-height:1.55;
+  }
+  textarea.inline-ta:focus{outline:none;border-bottom:1px solid var(--crimson);}
+
+  table.lp-cct{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px;}
+  table.lp-cct th{background:#f1f1ef;text-align:left;padding:8px 10px;border:1px solid #ccc;font-size:11px;text-transform:uppercase;letter-spacing:.3px;}
+  table.lp-cct td{padding:8px 10px;border:1px solid #ccc;vertical-align:top;}
+  table.lp-cct td.theme-cell{font-weight:700;color:var(--navy);width:22%;}
+  table.lp-cct textarea{
+    width:100%;min-height:64px;font-family:inherit;font-size:12.5px;border:none;background:#fbfbf9;resize:none;overflow:hidden;line-height:1.55;padding:2px;
+  }
+  table.lp-cct textarea:focus{outline:none;background:#fffef2;}
+
+  textarea.assignment-ta{
+    width:100%;min-height:56px;font-family:inherit;font-size:13.5px;border:none;border-bottom:1px solid #cfcfc9;
+    background:#fbfbf9;resize:none;overflow:hidden;line-height:1.55;padding:4px 5px;
+  }
+  textarea.assignment-ta:focus{outline:none;border-bottom:1px solid var(--crimson);}
+
+  .lp-ref{font-size:11px;margin-top:16px;font-weight:700;color:#333;}
+
+  .doc-actions{
+    display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);
+  }
+
+  footer.site-footer{background:var(--navy-deep);color:#c9d2e8;font-size:11px;text-align:center;padding:clamp(9px,1.4vh,12px) 10px;border-top:2px solid var(--gold);flex-shrink:0;}
+  footer.site-footer .footer-line-1{font-weight:600;letter-spacing:.2px;}
+  footer.site-footer .footer-line-2{margin-top:3px;font-size:10.5px;color:var(--gold);letter-spacing:.3px;}
+
+  @media print{
+    header.topbar, footer.site-footer, .toolbar, .msg, .doc-actions, .rm-btn, .add-row-btn{display:none !important;}
+    body{background:#fff;}
+    main{padding:0;}
+    .card{box-shadow:none;border:none;max-width:none;}
+    .card .accent{display:none;}
+    .card .body{padding:0;}
+    .doc-paper{border:none;padding:0;}
+    input, textarea{border-color:transparent !important;background:transparent !important;}
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<a href="dashboard.html" class="kps-back-btn" title="Back to Teacher Dashboard" style="position:fixed;top:14px;right:14px;z-index:9999;display:flex;align-items:center;gap:6px;background:#a3181c;color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 14px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.25);font-family:Arial,Helvetica,sans-serif;">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  Back to Dashboard
+</a>
+<style>@media print{ .kps-back-btn{ display:none !important; } }</style>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+  <div class="left">
+    <img class="header-logo" src="../assets/images/img-3017f844b16322ef.png" alt="Kingsville Public School logo">
+    <b>KINGSVILLE PUBLIC SCHOOL &mdash; LESSON PLAN PORTAL</b>
+    <img class="header-logo" src="../assets/images/img-3ca5314e4a31fea3.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <select class="scope-select" id="savedPlansSelect">
+            <option value="">— My saved plans —</option>
+          </select>
+          <button class="btn-secondary" id="newBtn">New</button>
+          <button class="btn-doc-delete" id="deleteBtn">Delete</button>
+        </div>
+        <div class="toolbar-left">
+          <button class="btn-print" id="printBtn">Print</button>
+          <button class="btn-secondary" id="downloadPdfBtn">Download PDF</button>
+          <button class="btn-primary" id="saveBtn">Save Lesson Plan</button>
+        </div>
+      </div>
+
+      <div class="msg" id="statusMsg"></div>
+
+      <div class="doc-paper" id="paper">
+        <div class="doc-letterhead">
+          <img class="crest-img" src="../assets/images/img-3017f844b16322ef.png" alt="Kingsville Public School logo">
+          <div class="doc-headtext">
+            <div class="school-name">Kingsville Public School</div>
+            <div class="school-address-field"><span>Address:</span><input id="fSchoolAddress" value="Kingsville #7, Careysburg District, Montserrado County, Liberia"></div>
+            <div class="school-motto">Motto: &ldquo;Knowledge is Power&rdquo;</div>
+          </div>
+          <img class="crest-img" src="../assets/images/img-3ca5314e4a31fea3.png" alt="Ministry of Education, Republic of Liberia seal">
+        </div>
+
+        <div class="doc-banner">Teacher's Lesson Plan</div>
+
+        <div class="lp-meta-row">
+          <div class="lp-meta-item"><b>Name:</b><input id="fTeacher" placeholder="Teacher's name"></div>
+          <div class="lp-meta-item"><b>Grade:</b><input id="fGrade" placeholder="e.g. Eleven (11)"></div>
+          <div class="lp-meta-item"><b>Duration:</b><input id="fDuration" placeholder="e.g. 55 Minutes"></div>
+          <div class="lp-meta-item"><b>Date:</b><input id="fDate" type="date"></div>
+          <div class="lp-meta-item"><b>Subject:</b><input id="fSubject" placeholder="e.g. Physics"></div>
+          <div class="lp-meta-item"><b>Period:</b><input id="fPeriod" placeholder="e.g. Four (4)"></div>
+        </div>
+
+        <div class="lp-topic-row"><b>Topic:</b><input id="fTopic" placeholder="Lesson topic"></div>
+
+        <div class="lp-section-title">Objectives</div>
+        <div class="lp-sub">By the end of the lesson, learners should be able to:</div>
+        <div class="list-rows" id="objectivesRows"></div>
+        <button class="add-row-btn" data-target="objectivesRows" data-type="ol">+ Add objective</button>
+
+        <div class="lp-section-title">Materials</div>
+        <div class="list-rows" id="materialsRows"></div>
+        <button class="add-row-btn" data-target="materialsRows" data-type="ol">+ Add material</button>
+
+        <div class="lp-section-title">Opener</div>
+        <div class="lp-opener-line"><b>Teacher asks:</b></div>
+        <textarea class="inline-ta" id="fOpenerQuestion" rows="1" placeholder='e.g. "Why does...?"'></textarea>
+        <div class="lp-opener-line" style="margin-top:10px;"><b>Learners respond:</b></div>
+        <div class="list-rows" id="responsesRows"></div>
+        <button class="add-row-btn" data-target="responsesRows" data-type="ul">+ Add learner response</button>
+        <div class="lp-opener-line" style="margin-top:10px;"><b>Teacher links responses:</b></div>
+        <textarea class="inline-ta" id="fOpenerLink" rows="1" placeholder="How the teacher connects responses to today's lesson"></textarea>
+
+        <div class="lp-section-title">Activities Aligned with Cross-Cutting Topics</div>
+        <table class="lp-cct">
+          <thead>
+            <tr><th style="width:22%;">Cross-Cutting Theme</th><th>Teacher's Role</th><th>Learners' Role</th></tr>
+          </thead>
+          <tbody id="activitiesBody"></tbody>
+        </table>
+
+        <div class="lp-section-title">Evaluation</div>
+        <div class="list-rows" id="evaluationRows"></div>
+        <button class="add-row-btn" data-target="evaluationRows" data-type="ol">+ Add evaluation question</button>
+
+        <div class="lp-section-title">Assignment</div>
+        <textarea class="assignment-ta" id="fAssignment" rows="2" placeholder="Homework or follow-up assignment"></textarea>
+
+        <div class="lp-ref" id="lpRef"></div>
+      </div>
+
+      <div class="doc-actions">
+        <button class="btn-print" id="printBtn2">Print</button>
+        <button class="btn-secondary" id="downloadPdfBtn2">Download PDF</button>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-line-1">Kingsville Public School — Lesson Plan Portal</div>
+  <div class="footer-line-2">Fill in · Save · Print · Download</div>
+</footer>
+
+<script>
+(function(){
+  const THEMES = [
+    "Competency-Based Approach & Assessment",
+    "Active Learner-Centered Pedagogy & Universal Design for Learning (UDL)",
+    "Inclusive & Gender Responsive Pedagogy",
+    "Digital Literacy"
+  ];
+
+  function autoresize(ta){ ta.style.height = "auto"; ta.style.height = (ta.scrollHeight) + "px"; }
+  function bindAutoresize(ta){ autoresize(ta); ta.addEventListener("input", () => autoresize(ta)); }
+
+  const activitiesBody = document.getElementById("activitiesBody");
+  THEMES.forEach((theme, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="theme-cell">${theme}</td>
+      <td><textarea id="actT${i}" placeholder="What the teacher does"></textarea></td>
+      <td><textarea id="actL${i}" placeholder="What the learners do"></textarea></td>`;
+    activitiesBody.appendChild(tr);
+  });
+  document.querySelectorAll("table.lp-cct textarea").forEach(bindAutoresize);
+  bindAutoresize(document.getElementById("fOpenerQuestion"));
+  bindAutoresize(document.getElementById("fOpenerLink"));
+  bindAutoresize(document.getElementById("fAssignment"));
+
+  function addRow(containerId, type, value){
+    const container = document.getElementById(containerId);
+    const row = document.createElement("div");
+    row.className = "list-row";
+    const marker = document.createElement("span");
+    marker.className = "marker";
+    row.appendChild(marker);
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = value || "";
+    input.placeholder = type === "ul" ? "Learner response" : "Enter text";
+    row.appendChild(input);
+    const rm = document.createElement("button");
+    rm.className = "rm-btn"; rm.type = "button"; rm.textContent = "×";
+    rm.addEventListener("click", () => { row.remove(); renumber(containerId, type); });
+    row.appendChild(rm);
+    container.appendChild(row);
+    renumber(containerId, type);
+  }
+  function renumber(containerId, type){
+    document.getElementById(containerId).querySelectorAll(".list-row").forEach((row, idx) => {
+      row.querySelector(".marker").textContent = type === "ul" ? "•" : (idx + 1) + ".";
+    });
+  }
+  document.querySelectorAll(".add-row-btn").forEach(btn => {
+    btn.addEventListener("click", () => addRow(btn.dataset.target, btn.dataset.type));
+  });
+  function getListValues(containerId){
+    return Array.from(document.getElementById(containerId).querySelectorAll("input")).map(i => i.value.trim()).filter(v => v.length);
+  }
+  function setListValues(containerId, type, values){
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    (values && values.length ? values : [""]).forEach(v => addRow(containerId, type, v));
+  }
+
+  addRow("objectivesRows", "ol");
+  addRow("materialsRows", "ol");
+  addRow("responsesRows", "ul");
+  addRow("evaluationRows", "ol");
+
+  const statusMsg = document.getElementById("statusMsg");
+  function showMsg(text, kind){
+    statusMsg.textContent = text;
+    statusMsg.className = "msg show " + (kind || "ok");
+    setTimeout(() => statusMsg.classList.remove("show"), 3200);
+  }
+
+  let currentId = null;
+  function refCode(){ return "LP-" + Math.random().toString(36).slice(2, 8).toUpperCase(); }
+
+  function collectData(){
+    return {
+      id: currentId || ("lp_" + Date.now()),
+      teacher: document.getElementById("fTeacher").value,
+      grade: document.getElementById("fGrade").value,
+      duration: document.getElementById("fDuration").value,
+      date: document.getElementById("fDate").value,
+      subject: document.getElementById("fSubject").value,
+      period: document.getElementById("fPeriod").value,
+      topic: document.getElementById("fTopic").value,
+      objectives: getListValues("objectivesRows"),
+      materials: getListValues("materialsRows"),
+      openerQuestion: document.getElementById("fOpenerQuestion").value,
+      responses: getListValues("responsesRows"),
+      openerLink: document.getElementById("fOpenerLink").value,
+      activities: THEMES.map((theme, i) => ({
+        theme,
+        teacher: document.getElementById("actT" + i).value,
+        learner: document.getElementById("actL" + i).value
+      })),
+      evaluation: getListValues("evaluationRows"),
+      assignment: document.getElementById("fAssignment").value
+    };
+  }
+
+  function populate(data){
+    currentId = data.id || null;
+    document.getElementById("fTeacher").value = data.teacher || "";
+    document.getElementById("fGrade").value = data.grade || "";
+    document.getElementById("fDuration").value = data.duration || "";
+    document.getElementById("fDate").value = data.date || "";
+    document.getElementById("fSubject").value = data.subject || "";
+    document.getElementById("fPeriod").value = data.period || "";
+    document.getElementById("fTopic").value = data.topic || "";
+    setListValues("objectivesRows", "ol", data.objectives);
+    setListValues("materialsRows", "ol", data.materials);
+    document.getElementById("fOpenerQuestion").value = data.openerQuestion || "";
+    autoresize(document.getElementById("fOpenerQuestion"));
+    setListValues("responsesRows", "ul", data.responses);
+    document.getElementById("fOpenerLink").value = data.openerLink || "";
+    autoresize(document.getElementById("fOpenerLink"));
+    (data.activities || []).forEach((a, i) => {
+      const t = document.getElementById("actT" + i), l = document.getElementById("actL" + i);
+      if (t){ t.value = a.teacher || ""; autoresize(t); }
+      if (l){ l.value = a.learner || ""; autoresize(l); }
+    });
+    setListValues("evaluationRows", "ol", data.evaluation);
+    document.getElementById("fAssignment").value = data.assignment || "";
+    autoresize(document.getElementById("fAssignment"));
+    document.getElementById("lpRef").textContent = "Lesson Plan Reference: " + refCode();
+  }
+
+  function clearForm(){ currentId = null; populate({}); }
+
+  async function refreshSavedList(){
+    const select = document.getElementById("savedPlansSelect");
+    select.innerHTML = '<option value="">— My saved plans —</option>';
+    try {
+      const idxResult = await window.storage.get("kps-lessonplans:index");
+      const index = idxResult ? JSON.parse(idxResult.value) : [];
+      index.forEach(entry => {
+        const opt = document.createElement("option");
+        opt.value = entry.id;
+        opt.textContent = (entry.topic || "Untitled") + (entry.date ? " — " + entry.date : "");
+        select.appendChild(opt);
+      });
+    } catch (err) {}
+  }
+
+  async function saveCurrent(){
+    const data = collectData();
+    currentId = data.id;
+    try {
+      await window.storage.set("kps-lessonplans:" + data.id, JSON.stringify(data), false);
+      let index = [];
+      try {
+        const idxResult = await window.storage.get("kps-lessonplans:index");
+        index = idxResult ? JSON.parse(idxResult.value) : [];
+      } catch (e) { index = []; }
+      index = index.filter(e => e.id !== data.id);
+      index.push({ id: data.id, topic: data.topic, date: data.date });
+      await window.storage.set("kps-lessonplans:index", JSON.stringify(index), false);
+      await refreshSavedList();
+      document.getElementById("savedPlansSelect").value = data.id;
+      showMsg("Lesson plan saved.", "ok");
+    } catch (err) {
+      showMsg("Couldn't save the lesson plan. Please try again.", "err");
+    }
+  }
+  document.getElementById("saveBtn").addEventListener("click", saveCurrent);
+
+  document.getElementById("savedPlansSelect").addEventListener("change", async (e) => {
+    const id = e.target.value;
+    if (!id) { clearForm(); return; }
+    try {
+      const result = await window.storage.get("kps-lessonplans:" + id);
+      if (result) populate(JSON.parse(result.value));
+    } catch (err) { showMsg("Couldn't load that lesson plan.", "err"); }
+  });
+
+  document.getElementById("newBtn").addEventListener("click", () => {
+    clearForm();
+    document.getElementById("savedPlansSelect").value = "";
+    showMsg("Started a new blank lesson plan.", "ok");
+  });
+
+  document.getElementById("deleteBtn").addEventListener("click", async () => {
+    const select = document.getElementById("savedPlansSelect");
+    const id = select.value;
+    if (!id) { showMsg("Select a saved plan first to delete it.", "err"); return; }
+    if (!confirm("Delete this saved lesson plan? This cannot be undone.")) return;
+    try {
+      await window.storage.delete("kps-lessonplans:" + id);
+      const idxResult = await window.storage.get("kps-lessonplans:index");
+      let index = idxResult ? JSON.parse(idxResult.value) : [];
+      index = index.filter(e => e.id !== id);
+      await window.storage.set("kps-lessonplans:index", JSON.stringify(index), false);
+      clearForm();
+      await refreshSavedList();
+      showMsg("Lesson plan deleted.", "ok");
+    } catch (err) { showMsg("Couldn't delete the lesson plan.", "err"); }
+  });
+
+  function doPrint(){ window.print(); }
+  document.getElementById("printBtn").addEventListener("click", doPrint);
+  document.getElementById("printBtn2").addEventListener("click", doPrint);
+
+  function doDownload(){
+    const data = collectData();
+    const filename = "kps-lesson-plan-" + (data.topic || "untitled").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + ".pdf";
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: filename,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["css", "legacy"] }
+    };
+    const paper = document.getElementById("paper");
+    html2pdf().set(opt).from(paper).save().catch(() => {
+      showMsg("PDF export failed — try Print instead and choose 'Save as PDF'.", "err");
+    });
+  }
+  document.getElementById("downloadPdfBtn").addEventListener("click", doDownload);
+  document.getElementById("downloadPdfBtn2").addEventListener("click", doDownload);
+
+  document.getElementById("lpRef").textContent = "Lesson Plan Reference: " + refCode();
+  refreshSavedList();
+})();
+</script>
+</body>
+</html>

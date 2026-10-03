@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance — Kingsville Public High School</title>
+<style>
+  :root{
+    --red:#a3181c;
+    --red-bright:#d31f24;
+    --gold:#d4af37;
+    --gold-light:#f4e5a3;
+    --ink:#1a1a1a;
+    --line:#000;
+    --paper:#ffffff;
+    --grey-band:#e9e9e9;
+    --slate:#5c5f66;
+    --good:#1f7a3d;
+    --glow:rgba(163,24,28,.45);
+    --glow-gold:rgba(212,175,55,.65);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(163,24,28,.06), transparent 60%),
+      #f2f2f0;
+    margin:0;
+    padding:24px 12px 60px;
+  }
+  a{color:inherit;text-decoration:none}
+
+  .sheet{
+    position:relative;
+    max-width:1180px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:26px 34px 40px;
+    border:1px solid transparent;
+    border-radius:6px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    isolation:isolate;
+  }
+
+  /* Premium animated gold/crimson glowing frame */
+  .sheet::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:8px;
+    padding:2px;
+    background:conic-gradient(from var(--frame-angle,0deg),
+      var(--gold), var(--red-bright), var(--gold-light), var(--red), var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    z-index:-1;
+    animation: frame-spin 7s linear infinite;
+    filter:drop-shadow(0 0 6px var(--glow-gold));
+  }
+  @property --frame-angle{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:0deg;
+  }
+  @keyframes frame-spin{
+    to{ --frame-angle:360deg; }
+  }
+
+  .letterhead{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:3px double #333;
+    padding-bottom:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .letterhead::after{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:40%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.35), transparent);
+    animation: sweep 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{ left:-60%; }
+    45%{ left:120%; }
+    100%{ left:120%; }
+  }
+  .letterhead img{
+    height:64px;
+    width:64px;
+    object-fit:contain;
+    flex-shrink:0;
+    border-radius:50%;
+    background:#fff;
+    padding:3px;
+    box-shadow:
+      0 0 0 2px var(--gold),
+      0 0 10px 2px var(--glow-gold);
+    animation: crest-glow 2.6s ease-in-out infinite;
+  }
+  @keyframes crest-glow{
+    0%, 100%{
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 8px 1px var(--glow-gold);
+    }
+    50%{
+      box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 0 18px 6px var(--glow-gold);
+    }
+  }
+  .letterhead .headtext{
+    flex:1;
+    text-align:center;
+  }
+  .school-name{
+    font-weight:800;
+    font-size:26px;
+    letter-spacing:.5px;
+    margin:0 0 4px;
+    background:linear-gradient(100deg,
+      var(--red) 0%, var(--gold) 22%, var(--red-bright) 45%,
+      var(--gold-light) 60%, var(--red) 82%, var(--gold) 100%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 14px rgba(163,24,28,.18);
+    animation: text-shine 5s linear infinite;
+  }
+  @keyframes text-shine{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:250% 50%; }
+  }
+  .sub{ font-weight:700; font-size:13px; margin:0; color:#333; }
+  .motto{ font-style:italic; font-size:12.5px; color:#555; margin-top:2px; }
+
+  .master-title{
+    color:var(--red);
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:1px;
+    margin:8px 0 6px;
+    text-align:center;
+    text-shadow:0 0 10px rgba(163,24,28,.15);
+  }
+
+  .band{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    background:linear-gradient(180deg,var(--grey-band),#f4f4f2);
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    color:var(--red);
+    padding:7px 0;
+    margin:4px 0 20px;
+    letter-spacing:2px;
+    border-radius:3px;
+    box-shadow:inset 0 0 0 1px rgba(212,175,55,.35), 0 0 10px rgba(163,24,28,.08);
+  }
+  .band::before{
+    content:"";
+    position:absolute;
+    top:0; left:-40%;
+    width:25%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.55), transparent);
+    animation: sweep 4.5s ease-in-out infinite;
+    animation-delay:1s;
+    pointer-events:none;
+  }
+  .year-select{
+    font-family:inherit;
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:1px;
+    color:var(--red);
+    background:#fff;
+    border:1px solid rgba(163,24,28,.4);
+    border-radius:4px;
+    padding:4px 10px;
+  }
+
+  /* HERO STRIP */
+  .hero-strip{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:24px;
+  }
+  .hero-card{
+    position:relative;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+    padding:16px 18px;
+    overflow:hidden;
+    box-shadow:0 1px 4px rgba(0,0,0,.05);
+  }
+  .hero-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:8px;
+    padding:1.5px;
+    background:linear-gradient(135deg, var(--gold), transparent 40%, transparent 60%, var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity:.6;
+  }
+  .hero-card .label{
+    font-family:Georgia, serif;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--slate);
+    font-weight:700;
+  }
+  .hero-card .value{
+    font-size:28px;
+    font-weight:800;
+    color:var(--ink);
+    margin-top:6px;
+  }
+  .hero-card .value small{
+    font-size:13px;
+    color:var(--slate);
+    font-weight:400;
+  }
+  .hero-card.rank .value{
+    background:linear-gradient(100deg, var(--red) 0%, var(--gold) 40%, var(--red-bright) 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    animation:text-shine 6s linear infinite;
+  }
+  .hero-card.conduct .value{ color:var(--good); }
+  .hero-card::after{
+    content:"";
+    position:absolute;
+    top:12px;
+    right:14px;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    box-shadow:0 0 8px 2px currentColor;
+  }
+  .hero-card.rank::after{ background:var(--red-bright); color:var(--red-bright); }
+  .hero-card.semave::after{ background:var(--gold); color:var(--gold); }
+  .hero-card.yrave::after{ background:var(--red); color:var(--red); }
+  .hero-card.conduct::after{ background:var(--good); color:var(--good); }
+
+  /* EMPTY-STATE / STATUS NOTICE */
+  .notice{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#FBF6E6;
+    border:1px solid var(--gold);
+    border-radius:6px;
+    padding:10px 16px;
+    margin-bottom:26px;
+    font-size:12.5px;
+    color:#5E4A20;
+    box-shadow:0 0 10px rgba(212,175,55,.2);
+  }
+  .notice .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--gold);
+    flex-shrink:0;
+    box-shadow:0 0 6px 2px var(--glow-gold);
+    animation:crest-glow 2.2s ease-in-out infinite;
+  }
+
+  section.block{ margin-bottom:36px; }
+  .block-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .block-head h2{
+    font-size:19px;
+    font-weight:800;
+    color:var(--red);
+    margin:0;
+    text-shadow:0 0 8px rgba(163,24,28,.12);
+  }
+  .block-head .meta{
+    font-size:12px;
+    color:var(--slate);
+    font-style:italic;
+  }
+
+  /* GRADES TABLE */
+  .table-wrap{
+    overflow-x:auto;
+    background:#fff;
+    border:1px solid #e3ddc9;
+    border-radius:8px;
+  }
+  table.grades{
+    width:100%;
+    border-collapse:collapse;
+    min-width:960px;
+    font-size:13px;
+  }
+  table.grades thead tr.semrow th{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--red) 100%);
+    color:#fdf6e3;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    padding:9px 6px;
+    text-align:center;
+  }
+  table.grades thead tr.pdrow th{
+    background:var(--grey-band);
+    font-size:10.5px;
+    color:#444;
+    font-weight:700;
+    padding:7px 6px;
+    text-align:center;
+    border-bottom:2px solid var(--red);
+  }
+  table.grades tbody td{
+    padding:10px 8px;
+    border-bottom:1px solid #ece5d2;
+    text-align:center;
+    color:#333;
+  }
+  table.grades tbody td.subject{
+    text-align:left;
+    font-weight:700;
+    color:var(--ink);
+    padding-left:14px;
+  }
+  table.grades tbody td.subject .teacher{
+    display:block;
+    font-weight:400;
+    font-style:italic;
+    font-size:11px;
+    color:var(--slate);
+    margin-top:2px;
+  }
+  table.grades tbody td.sem-ave{
+    font-weight:800;
+    background:#fbf6e6;
+    color:var(--red);
+  }
+  table.grades tbody td.low{ color:var(--red-bright); font-weight:800; }
+  table.grades tbody tr:hover td{ background:#fffaf0; }
+  table.grades tbody tr:last-child td{ border-bottom:none; }
+
+  .empty-row td{
+    padding:32px 8px;
+    color:#999;
+    font-style:italic;
+  }
+
+  .legend{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    font-size:11.5px;
+    color:var(--slate);
+    margin-top:12px;
+    padding:0 4px;
+  }
+  .legend b{ color:var(--ink); }
+
+  footer.note{
+    margin-top:44px;
+    padding-top:16px;
+    border-top:1px solid #e3ddc9;
+    font-size:11.5px;
+    color:var(--slate);
+    text-align:center;
+  }
+
+  :focus-visible{ outline:2px solid var(--red); outline-offset:2px; }
+
+  /* TOOLBAR + PREMIUM BUTTONS */
+  .toolbar{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  button.premium{
+    position:relative;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    padding:9px 18px;
+    cursor:pointer;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--gold) 100%);
+    background-size:220% 100%;
+    background-position:0% 50%;
+    box-shadow:0 0 8px 1px var(--glow-gold);
+    transition:box-shadow .25s ease, transform .15s ease, background-position .3s ease;
+  }
+  button.premium:hover{
+    background-position:100% 50%;
+    box-shadow:0 0 14px 3px var(--glow-gold);
+    transform:translateY(-1px);
+  }
+  button.premium:active{ transform:translateY(0); }
+  button.premium:disabled{ opacity:.55; cursor:wait; transform:none; }
+  button.premium.print{
+    background:linear-gradient(100deg, #333 0%, #555 45%, var(--gold) 100%);
+    background-size:220% 100%;
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .sheet{ box-shadow:none; border:1px solid #999; }
+    .sheet::before{ display:none; }
+    .toolbar{ display:none !important; }
+  }
+
+  @media (max-width:820px){
+    .sheet{ padding:16px; }
+    .school-name{ font-size:20px; }
+    .letterhead img{ height:44px; width:44px; }
+    .hero-strip{ grid-template-columns:repeat(2,1fr); }
+  }
+
+  /* ============ ATTENDANCE-SPECIFIC STYLES ============ */
+  .hero-card.rate .value{
+    background:linear-gradient(100deg, var(--red) 0%, var(--gold) 40%, var(--red-bright) 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent; -webkit-text-fill-color:transparent;
+    animation:text-shine 6s linear infinite;
+  }
+  .hero-card.present .value{ color:var(--good); }
+  .hero-card.absent .value{ color:var(--red-bright); }
+  .hero-card.late .value{ color:#a8790a; }
+  .hero-card.rate::after{ background:var(--gold); color:var(--gold); }
+  .hero-card.present::after{ background:var(--good); color:var(--good); }
+  .hero-card.absent::after{ background:var(--red-bright); color:var(--red-bright); }
+  .hero-card.late::after{ background:#d4a017; color:#d4a017; }
+
+  .rate-bar-wrap{
+    margin-top:8px;
+    height:6px;
+    border-radius:4px;
+    background:#eee7d0;
+    overflow:hidden;
+  }
+  .rate-bar-fill{
+    height:100%;
+    border-radius:4px;
+    background:linear-gradient(100deg, var(--red) 0%, var(--gold) 60%, var(--red-bright) 100%);
+    transition:width .6s ease;
+  }
+
+  .filters-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .filters-row .year-select{ margin-left:0; }
+
+  /* ATTENDANCE TABLE */
+  table.attendance{
+    width:100%;
+    border-collapse:collapse;
+    min-width:760px;
+    font-size:13px;
+  }
+  table.attendance thead th{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--red) 100%);
+    color:#fdf6e3;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    padding:10px 8px;
+    text-align:left;
+  }
+  table.attendance thead th.center{ text-align:center; }
+  table.attendance tbody td{
+    padding:10px 8px;
+    border-bottom:1px solid #ece5d2;
+    color:#333;
+  }
+  table.attendance tbody td.center{ text-align:center; }
+  table.attendance tbody td.date-cell{
+    font-weight:700;
+    color:var(--ink);
+    white-space:nowrap;
+  }
+  table.attendance tbody td.date-cell .day-name{
+    display:block;
+    font-weight:400;
+    font-style:italic;
+    font-size:11px;
+    color:var(--slate);
+  }
+  table.attendance tbody td.subject-cell .teacher{
+    display:block;
+    font-weight:400;
+    font-style:italic;
+    font-size:11px;
+    color:var(--slate);
+    margin-top:2px;
+  }
+  table.attendance tbody tr:hover td{ background:#fffaf0; }
+  table.attendance tbody tr:last-child td{ border-bottom:none; }
+  table.attendance tbody td.remarks-cell{
+    color:var(--slate);
+    font-style:italic;
+    font-size:12px;
+  }
+
+  .att-badge{
+    display:inline-block;
+    font-size:10.5px;
+    font-weight:800;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    padding:4px 11px;
+    border-radius:20px;
+    color:#fff;
+  }
+  .badge-present{ background:var(--good); }
+  .badge-absent{ background:var(--red-bright); }
+  .badge-late{ background:#d4a017; }
+  .badge-excused{ background:#1f5f9e; }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="sheet" id="sheet">
+
+  <div class="letterhead">
+    <img src="../assets/images/img-1005aedff1a0c5ea.png" alt="Kingsville Public High School crest">
+    <div class="headtext">
+      <p class="school-name">Kingsville Public High School</p>
+      <p class="sub">Kingsville Township, Careysburg District &middot; Montserrado County, Liberia</p>
+      <p class="motto">Motto: "Knowledge Is Power"</p>
+    </div>
+    <img src="../assets/images/img-a7df6c3d8d6e390b.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+
+    <p class="master-title">STUDENT ATTENDANCE RECORD</p>
+  <div class="band">
+    <div class="filters-row">
+      ACADEMIC YEAR:
+      <select class="year-select" id="yearSelect" aria-label="Select academic year">
+        <option value="2025/2026">2025/2026 — Current Year</option>
+        <option value="2024/2025">2024/2025</option>
+      </select>
+      &nbsp;&nbsp;MONTH:
+      <select class="year-select" id="monthSelect" aria-label="Select month">
+        <option value="all">All Months</option>
+      </select>
+      &nbsp;&nbsp;STATUS:
+      <select class="year-select" id="statusSelect" aria-label="Filter by status">
+        <option value="all">All</option>
+        <option value="present">Present</option>
+        <option value="absent">Absent</option>
+        <option value="late">Late</option>
+        <option value="excused">Excused</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="premium" id="downloadBtn" onclick="downloadPDF()">⬇ Download PDF</button>
+    <button class="premium print" onclick="window.print()">🖨 Print</button>
+  </div>
+
+  <div class="hero-strip" id="heroStrip">
+    <div class="hero-card rate">
+      <div class="label">Attendance Rate</div>
+      <div class="value" id="rateValue">—</div>
+      <div class="rate-bar-wrap"><div class="rate-bar-fill" id="rateBar" style="width:0%"></div></div>
+    </div>
+    <div class="hero-card present">
+      <div class="label">Days Present</div>
+      <div class="value" id="presentValue">—</div>
+    </div>
+    <div class="hero-card absent">
+      <div class="label">Days Absent</div>
+      <div class="value" id="absentValue">—</div>
+    </div>
+    <div class="hero-card late">
+      <div class="label">Late / Excused</div>
+      <div class="value" id="lateValue">—</div>
+    </div>
+  </div>
+
+  <div class="notice" id="statusNotice">
+    <span class="dot"></span>
+    No attendance has been posted yet. Records will appear here as soon as your teachers take attendance.
+  </div>
+
+  <section class="block">
+    <div class="block-head">
+      <h2>Attendance Log</h2>
+      <span class="meta" id="lastUpdated">Not yet updated</span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="attendance">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Subject / Period</th>
+            <th class="center">Status</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceBody">
+          <tr class="empty-row">
+            <td colspan="4">No attendance records on file yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <div><span class="att-badge badge-present">Present</span></div>
+      <div><span class="att-badge badge-late">Late</span></div>
+      <div><span class="att-badge badge-excused">Excused</span> — absence approved in advance</div>
+      <div><span class="att-badge badge-absent">Absent</span> — unexcused</div>
+    </div>
+  </section>
+
+  <footer class="note">
+    Attendance shown here is taken by your subject teachers and cannot be edited by students. If you believe a record is incorrect, please speak with your teacher or the school office.
+  </footer>
+
+  <div class="back-row" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:13px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <a href="dashboard.html" style="color:var(--red, var(--navy, var(--blue, #333)));text-decoration:none;font-weight:600;">Back to Dashboard</a>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  async function downloadPDF(){
+    const btn = document.getElementById('downloadBtn');
+    const sheet = document.getElementById('sheet');
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Preparing…';
+    try{
+      const canvas = await html2canvas(sheet, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+
+      const pageWidth = 612; // pt (8.5in)
+      const pageHeight = 792; // pt (11in)
+      const margin = 24;
+      const usableWidth = pageWidth - margin * 2;
+      const imgWidthPt = usableWidth;
+      const imgHeightPt = (canvas.height / canvas.width) * imgWidthPt;
+
+      const pdf = new jsPDF('p', 'pt', 'letter');
+      let heightLeft = imgHeightPt;
+      let position = margin;
+
+      pdf.addImage(imgData, 'PNG', margin, position, imgWidthPt, imgHeightPt);
+      heightLeft -= (pageHeight - margin * 2);
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeightPt + margin;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', margin, position, imgWidthPt, imgHeightPt);
+        heightLeft -= (pageHeight - margin * 2);
+      }
+
+      pdf.save('Attendance_KPS.pdf');
+    }catch(err){
+      console.error(err);
+      alert('Could not generate the PDF. You can still use the Print button to save a copy.');
+    }finally{
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  }
+
+  /*
+    ================================================================
+    DATA CONTRACT — now live (see loadAttendance() below)
+    ================================================================
+    Real data path: signed-in student's auth.uid() -> profiles.id ->
+    students row (via students.profile_id) -> students.id -> every row in
+    public.attendance where attendance.student_id matches. This is the
+    exact same students.id link teacher/attendance.html writes against
+    (it inserts { student_id, section_id, date, status } rows per grade
+    taken) — so a mark taken by ANY of the student's teachers for ANY
+    section shows up here automatically, with no per-teacher wiring.
+
+    public.attendance is one row per student per day (whole-day status:
+    present/absent/late/excused — see 000_MASTER_SCHEMA.sql), not one row
+    per subject/period, so there is no real `subject`/`period` value to
+    show. The table already renders "All Day" whenever `subject` is
+    blank, so that's left as-is. `remarks` has no backing column either
+    (attendance.recorded_by is who recorded it, not a note) — it renders
+    "—" here, matching the empty-state placeholder that was already in
+    the markup.
+  */
+  let studentAttendance = null;
+
+  const STATUS_LABEL = { present: 'Present', absent: 'Absent', late: 'Late', excused: 'Excused' };
+
+  function escapeHtml(str){
+    if(str === undefined || str === null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function formatDate(d){
+    if(!d) return '—';
+    const dt = new Date(d + 'T00:00:00');
+    if(isNaN(dt.getTime())) return d;
+    return dt.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+  }
+
+  function dayName(d){
+    if(!d) return '';
+    const dt = new Date(d + 'T00:00:00');
+    if(isNaN(dt.getTime())) return '';
+    return dt.toLocaleDateString(undefined, { weekday:'long' });
+  }
+
+  function monthKey(d){
+    if(!d) return '';
+    return d.slice(0, 7); // "YYYY-MM"
+  }
+
+  function monthLabel(key){
+    const dt = new Date(key + '-01T00:00:00');
+    if(isNaN(dt.getTime())) return key;
+    return dt.toLocaleDateString(undefined, { year:'numeric', month:'long' });
+  }
+
+  function populateMonthOptions(records){
+    const sel = document.getElementById('monthSelect');
+    const existing = sel.value;
+    const months = Array.from(new Set(records.map(r => monthKey(r.date)))).sort().reverse();
+    sel.innerHTML = '<option value="all">All Months</option>' +
+      months.map(m => `<option value="${m}">${escapeHtml(monthLabel(m))}</option>`).join('');
+    if(months.includes(existing)) sel.value = existing;
+  }
+
+  function renderAttendance(){
+    const body = document.getElementById('attendanceBody');
+    const notice = document.getElementById('statusNotice');
+    const lastUpdated = document.getElementById('lastUpdated');
+
+    const data = studentAttendance;
+    if(!data || !data.records || data.records.length === 0){
+      body.innerHTML = '<tr class="empty-row"><td colspan="4">No attendance records on file yet.</td></tr>';
+      notice.innerHTML = '<span class="dot"></span> No attendance has been posted yet. Records will appear here as soon as your teachers take attendance.';
+      ['rateValue','presentValue','absentValue','lateValue'].forEach(id => document.getElementById(id).textContent = '—');
+      document.getElementById('rateBar').style.width = '0%';
+      lastUpdated.textContent = 'Not yet updated';
+      return;
+    }
+
+    populateMonthOptions(data.records);
+
+    const monthFilter = document.getElementById('monthSelect').value;
+    const statusFilter = document.getElementById('statusSelect').value;
+
+    // Stats are computed from the FULL record set (not the current filter)
+    // so the hero numbers always reflect the whole academic year.
+    const total = data.records.length;
+    const present = data.records.filter(r => r.status === 'present').length;
+    const absent = data.records.filter(r => r.status === 'absent').length;
+    const late = data.records.filter(r => r.status === 'late').length;
+    const excused = data.records.filter(r => r.status === 'excused').length;
+    const rate = total > 0 ? Math.round(((present + late + excused) / total) * 1000) / 10 : 0;
+
+    document.getElementById('rateValue').textContent = rate + '%';
+    document.getElementById('presentValue').textContent = present;
+    document.getElementById('absentValue').textContent = absent;
+    document.getElementById('lateValue').textContent = (late + excused);
+    document.getElementById('rateBar').style.width = Math.min(100, rate) + '%';
+    lastUpdated.textContent = data.lastUpdated ? ('Updated ' + data.lastUpdated) : 'Live';
+    notice.innerHTML = '<span class="dot"></span> Attendance below is as recorded by your teachers.';
+
+    const sorted = data.records.slice().sort((a, b) => (a.date < b.date ? 1 : -1));
+    const filtered = sorted.filter(r => {
+      if(monthFilter !== 'all' && monthKey(r.date) !== monthFilter) return false;
+      if(statusFilter !== 'all' && r.status !== statusFilter) return false;
+      return true;
+    });
+
+    if(filtered.length === 0){
+      body.innerHTML = '<tr class="empty-row"><td colspan="4">No attendance records match this filter.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = filtered.map(r => `<tr>
+      <td class="date-cell">${formatDate(r.date)}<span class="day-name">${escapeHtml(dayName(r.date))}</span></td>
+      <td class="subject-cell">${escapeHtml(r.subject || 'All Day')}${r.period ? ' &middot; ' + escapeHtml(r.period) : ''}${r.teacher ? `<span class="teacher">${escapeHtml(r.teacher)}</span>` : ''}</td>
+      <td class="center"><span class="att-badge badge-${r.status}">${STATUS_LABEL[r.status] || r.status}</span></td>
+      <td class="remarks-cell">${escapeHtml(r.remarks || '—')}</td>
+    </tr>`).join('');
+  }
+
+  async function loadAttendance(){
+    const notice = document.getElementById('statusNotice');
+    try{
+      const auth = await KPS.requireRole(['student']);
+      if(!auth.user){ renderAttendance(); return; }
+
+      const sb = KPS.sb;
+      const { data: studentRow, error: studentErr } = await sb.from('students')
+        .select('id')
+        .eq('profile_id', auth.user.id).single();
+      if(studentErr || !studentRow){ renderAttendance(); return; }
+
+      // RLS policy "attendance: own" (public.is_own_student(student_id))
+      // already restricts this to the signed-in student's own rows —
+      // same students.id link teacher/attendance.html writes against.
+      const { data: rows, error: attErr } = await sb.from('attendance')
+        .select('date, status, recorded_by, profiles(full_name)')
+        .eq('student_id', studentRow.id)
+        .order('date', { ascending: false });
+      if(attErr) throw attErr;
+
+      if(!rows || rows.length === 0){
+        studentAttendance = null;
+        renderAttendance();
+        return;
+      }
+
+      studentAttendance = {
+        lastUpdated: 'Live',
+        records: rows.map(r => ({
+          date: r.date,
+          status: r.status,
+          teacher: (r.profiles && r.profiles.full_name) || undefined
+        }))
+      };
+      renderAttendance();
+    }catch(err){
+      console.error('[KPS] Attendance load failed:', err);
+      notice.innerHTML = '<span class="dot"></span> Could not load attendance right now — check the browser console.';
+      studentAttendance = null;
+      renderAttendance();
+    }
+  }
+
+  document.getElementById('yearSelect').addEventListener('change', renderAttendance);
+  document.getElementById('monthSelect').addEventListener('change', renderAttendance);
+  document.getElementById('statusSelect').addEventListener('change', renderAttendance);
+  loadAttendance();
+
+</script>
+
+</body>
+</html>

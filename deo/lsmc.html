@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>EDU.LR — Local School Management Committee (LSMC) Participation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --crimson-deep:#6E0F1E; --crimson:#A81530; --crimson-bright:#E01B2E;
+  --gold:#D98A24; --gold-deep:#A8631A; --gold-light:#F3CD8E;
+  --navy:#0D1730; --navy-2:#182548; --navy-3:#22315C;
+  --cream:#FBF4E6; --paper:#FFFEFB; --ink:#1E1712; --muted:#7A7064; --line:#EBE0CA;
+  --success:#2E7D4F; --warn:#B9750D; --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{ margin:0; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+.sidebar{ position:sticky; top:0; height:100vh; overflow-y:auto;
+  background: radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%), linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18); padding:26px 16px 30px; display:flex; flex-direction:column; }
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand-mark{ width:46px; height:46px; flex:none; border-radius:14px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); box-shadow:0 0 0 2px rgba(217,138,36,.18); }
+.brand-mark svg{ width:24px; height:24px; color:#2A1806; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{ display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500; position:relative; border-left:3px solid transparent; transition:background .15s ease, color .15s ease, border-color .15s ease; }
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{ background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05)); color:#fff; border-left-color:var(--gold); }
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:16px; padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+.search-pill{ display:flex; align-items:center; gap:9px; background:var(--paper); border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px; transition:border-color .15s, box-shadow .15s; }
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+.icon-btn{ width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--paper); border:1px solid var(--line); position:relative; flex:none; transition:border-color .15s, transform .1s; }
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.content{ padding:22px 32px 60px; }
+
+.scope-banner{ display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px; background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08)); border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px; }
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:62ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-danger-ghost{ background:var(--paper); border-color:#F3C6C6; color:#B42318; }
+.btn-danger-ghost:hover{ background:#FBE6E6; }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+.btn[disabled]{ opacity:.4; cursor:not-allowed; pointer-events:none; }
+
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px; position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s; }
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; flex-wrap:wrap; gap:10px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head p{ margin:2px 0 0; font-size:12px; color:var(--muted); }
+.card-body{ padding:14px 20px 20px; }
+
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:11.8px; }
+table.data th{ text-align:left; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:9px 10px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:40ch; margin:0 auto; }
+
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+.toast.warn{ border-left-color:var(--crimson-bright); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,23,48,.55); display:none; align-items:center; justify-content:center; z-index:300; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:16px; max-width:680px; width:100%; max-height:88vh; overflow:auto; box-shadow:var(--shadow); }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--line); }
+.modal-head h3{ margin:0; font-size:15.5px; font-family:'Inter',sans-serif; font-weight:700; }
+.modal-close{ width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:var(--cream); display:flex; align-items:center; justify-content:center; }
+.modal-close svg{ width:14px; height:14px; }
+.modal-body{ padding:18px 20px 22px; }
+.modal-foot{ display:flex; align-items:center; gap:10px; padding:14px 20px 20px; border-top:1px solid var(--line); flex-wrap:wrap; }
+
+.field-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px 16px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field.span2{ grid-column:1 / -1; }
+.field label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+.field .hint{ font-size:11px; color:var(--muted); font-weight:400; text-transform:none; letter-spacing:0; }
+.field input, .field select, .field textarea{ font-family:inherit; font-size:13.5px; color:var(--ink); background:var(--cream); border:1px solid var(--line); border-radius:10px; padding:10px 12px; width:100%; transition:border-color .15s, box-shadow .15s, background .15s; }
+.field select{ appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7064' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>"); background-repeat:no-repeat; background-position:right 12px center; background-size:13px; padding-right:32px; }
+.field textarea{ resize:vertical; min-height:70px; }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold); background:var(--paper); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.field-actions{ display:flex; align-items:center; gap:10px; margin-top:6px; flex-wrap:wrap; }
+
+.meeting-type-tag{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.meeting-type-tag::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+.mt-regular{ background:#E4E9F4; color:var(--navy-3); }
+.mt-emergency{ background:#FBE6E6; color:var(--danger); }
+.mt-community{ background:#E4F3E9; color:var(--success); }
+.mt-project{ background:#FBEED2; color:var(--gold-deep); }
+.school-name-cell{ font-weight:700; }
+.decisions-cell{ max-width:230px; white-space:normal; font-size:11.8px; line-height:1.4; }
+
+select.btn{ font-family:inherit; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7064' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>"); background-repeat:no-repeat; background-position:right 8px center; background-size:13px; padding-right:26px; }
+
+@media (max-width:1180px){ .stat-grid{ grid-template-columns:repeat(2,1fr); } .field-grid{ grid-template-columns:1fr; } }
+@media print{
+  .sidebar, .topbar, .btn, .toolbar, .toast-wrap, .hamburger, #meetingFormCard, .modal-backdrop{ display:none !important; }
+  .app{ display:block; } .content{ padding:0; }
+  .card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+</style>
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M4 21V9.5L12 4l8 5.5V21"/><path d="M9 21v-6h6v6"/><path d="M8 9.5h.01M12 9.5h.01M16 9.5h.01M8 13h.01M16 13h.01"/></svg></div>
+      <div class="brand-text"><div class="k1">Careysburg District</div><div class="k2">DEO Portal</div></div>
+    </div>
+    <div class="role-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></svg><span>DEO &middot; DISTRICT SUPERVISION &amp; OVERSIGHT</span></div>
+
+    <div class="nav-group-label">Overview</div>
+    <div class="nav">
+      <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Command Center</a>
+    </div>
+
+    <div class="nav-group-label">District Supervision</div>
+    <div class="nav">
+      <a class="nav-item" href="schools.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>All Schools</a>
+      <a class="nav-item" href="school-profile.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>School Profiles</a>
+      <a class="nav-item" href="school-visits.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Supervision Plan</a>
+      <a class="nav-item" href="inspection.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Inspections</a>
+      <a class="nav-item" href="inspection-report.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>Inspection Reports</a>
+    </div>
+
+    <div class="nav-group-label">People Oversight</div>
+    <div class="nav">
+      <a class="nav-item" href="principals.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/></svg>Principals &amp; Administrators</a>
+      <a class="nav-item" href="teachers.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>Teacher Register</a>
+      <a class="nav-item" href="students.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>Learner Register</a>
+      <a class="nav-item" href="student-attendance.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 14l2 2 4-4"/></svg>Learner Attendance</a>
+    </div>
+
+    <div class="nav-group-label">Academics</div>
+    <div class="nav">
+      <a class="nav-item" href="academic-monitoring.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V5a2 2 0 00-2-2H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M9 8h7M9 12h7"/></svg>Teaching &amp; Learning</a>
+      <a class="nav-item" href="curriculum.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6.5C10 4.8 6.8 4 4 4v13c2.8 0 6 .8 8 2.5 2-1.7 5.2-2.5 8-2.5V4c-2.8 0-6 .8-8 2.5z"/></svg>Curriculum</a>
+      <a class="nav-item" href="assessment-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Assessment &amp; Examinations</a>
+      <a class="nav-item" href="school-performance.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>School Performance</a>
+    </div>
+
+    <div class="nav-group-label">Governance</div>
+    <div class="nav">
+      <a class="nav-item active" href="lsmc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>LSMC</a>
+      <a class="nav-item" href="policies-directives.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>District Compliance</a>
+      <a class="nav-item" href="complaints-incidents.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Complaints &amp; Incidents</a>
+    </div>
+
+    <div class="nav-group-label">Statistics &amp; Reports</div>
+    <div class="nav">
+      <a class="nav-item" href="statistics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>District Statistics</a>
+      <a class="nav-item" href="reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Reports Center</a>
+      <a class="nav-item" href="monthly-report.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Monthly Report</a>
+      <a class="nav-item" href="quarterly-report.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Quarterly Report</a>
+      <a class="nav-item" href="annual-report.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Annual Report</a>
+      <a class="nav-item" href="special-report.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Special Report</a>
+    </div>
+
+    <div class="nav-group-label">Risk &amp; Accountability</div>
+    <div class="nav">
+      <a class="nav-item" href="risk-register.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Risk &amp; Safeguarding</a>
+      <a class="nav-item" href="audit-log.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>Audit &amp; Accountability</a>
+    </div>
+
+    <div class="cannot-box">
+      <div class="title">✕ Restricted</div>
+      <ul style="margin:0; padding:0; list-style:none;">
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">Meeting records saved here belong to your own DEO account only — other officers and school-side staff cannot see or edit them</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">There is no dedicated committee-membership/election table, so elected member names and roles are captured as free text within each meeting, not a separate roster</li>
+      </ul>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sys-health">
+        <div class="pulse-dot warn" id="healthDot"></div>
+        <div class="sys-health-text"><b id="healthLabel">Not connected</b><span id="healthSub">Connect your database to load live records</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <div class="page-title-wrap">
+        <div class="page-title">Local School Management Committee (LSMC) Participation</div>
+      </div>
+      <div class="search-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="globalSearch" type="text" placeholder="Search school, decision, follow-up…"></div>
+      <button class="icon-btn" onclick="window.print()" title="Print this view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg></button>
+      <button class="icon-btn" onclick="location.href='notifications.html'" title="Alerts &amp; notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg></button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup"><div class="av-init" id="chipAvatar">—</div><div><div class="pn" id="chipName">Not signed in</div><div class="pr" id="chipRole">Awaiting DEO account</div></div></div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></button>
+    </header>
+
+    <div class="content">
+      <div class="scope-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+        <div>
+          <div class="sb-t">Scope of Access &amp; Storage</div>
+          <div class="sb-s">Meeting records are stored in a dedicated <code>lsmc_meetings</code> table (foreign-keyed to <code>institutions</code>), readable and writable by any DEO / Super Admin account district-wide. Nothing here is demo data, and nothing is stored only in your browser.</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>Local School Management Committee (LSMC) Participation</h2>
+          <p>Record and track Local School Management Committee meetings, member attendance, key decisions and community follow-up actions across every school in the district — with real persistence to your own account.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div class="card" id="meetingFormCard" style="margin-bottom:18px;">
+        <div class="card-head">
+          <div><h3>Record an LSMC meeting</h3><p>Every meeting is saved to your own account and appears in the register below.</p></div>
+        </div>
+        <div class="card-body">
+          <div class="field-grid" id="newMeetingForm">
+            <div class="field"><label>School</label><select id="fSchool"><option value="">Loading schools…</option></select></div>
+            <div class="field"><label>Meeting date</label><input type="date" id="fDate"></div>
+            <div class="field"><label>Meeting type</label>
+              <select id="fType">
+                <option>Regular Meeting</option><option>Emergency Meeting</option><option>Community/Parents Forum</option><option>Project &amp; Fundraising Meeting</option>
+              </select>
+            </div>
+            <div class="field"><label>Chairperson / Facilitator</label><input type="text" id="fChair" placeholder="e.g. Mrs. J. Kollie, LSMC Chair" maxlength="150"></div>
+            <div class="field"><label>Members present</label><input type="number" id="fPresent" min="0" max="99" placeholder="e.g. 8"></div>
+            <div class="field"><label>Total committee members</label><input type="number" id="fTotal" min="0" max="99" placeholder="e.g. 9"></div>
+            <div class="field"><label>Follow-up action required <span class="hint">(optional)</span></label><input type="text" id="fFollowUpAction" placeholder="e.g. WASH repairs, attendance campaign…"></div>
+            <div class="field"><label>Follow-up due date <span class="hint">(optional)</span></label><input type="date" id="fFollowUp"></div>
+            <div class="field span2"><label>Agenda / topics discussed</label><textarea id="fAgenda" placeholder="What was on the agenda for this meeting?"></textarea></div>
+            <div class="field span2"><label>Key decisions &amp; resolutions</label><textarea id="fDecisions" placeholder="What did the committee decide or resolve?"></textarea></div>
+          </div>
+          <div class="field-actions">
+            <button class="btn btn-primary" id="saveMeetingBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Save meeting</button>
+            <button class="btn btn-ghost" id="clearFormBtn">Clear form</button>
+            <span class="hint" id="formHint"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><h3>LSMC meeting register</h3><p>Every meeting you have recorded, most recent first.</p></div></div>
+        <div class="card-body">
+          <div class="toolbar">
+            <div class="search-pill" style="width:260px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="tableFilter" type="text" placeholder="Filter by school, type, decision…"></div>
+            <select class="btn btn-ghost" id="typeFilter">
+              <option value="">All meeting types</option><option>Regular Meeting</option><option>Emergency Meeting</option><option>Community/Parents Forum</option><option>Project &amp; Fundraising Meeting</option>
+            </select>
+            <select class="btn btn-ghost" id="followUpFilter">
+              <option value="">All follow-ups</option><option value="Open">Open follow-ups</option><option value="Closed">Closed follow-ups</option><option value="none">No follow-up set</option>
+            </select>
+            <button class="btn btn-ghost" id="exportBtn" style="margin-left:auto;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M6 9l6 6 6-6"/><path d="M4 21h16"/></svg>Export CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data" id="meetingsTable">
+              <thead><tr><th>Date</th><th>School</th><th>Type</th><th>Attendance</th><th>Key decision(s)</th><th>Follow-up</th><th>Actions</th></tr></thead>
+              <tbody id="meetingsTableBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="meetingsEmpty" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+            <h4>No LSMC meetings recorded yet</h4><p>Use the form above to log the first Local School Management Committee meeting.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="card-head"><h3>What this page shows</h3></div>
+        <div class="card-body" style="font-size:12px; color:var(--muted); line-height:1.7;">
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Attendance</b> is the ratio of <code>membersPresent</code> to <code>membersTotal</code> you enter for each meeting, shown as a coloured pill (green ≥ 80%, gold 60–79%, red below 60%) and rolled up into the <b style="color:var(--ink);">Average Attendance Rate</b> stat above.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Schools represented</b> counts the number of distinct schools with at least one LSMC meeting on record out of the district's total schools in <code>institutions</code> — a coverage measure of committee participation district-wide, not an official LSMC registration count.</p>
+          <p style="margin:0;">Schools are read live from the same <code>institutions</code> table used throughout the DEO portal. Meeting records are read and written directly through a dedicated <code>lsmc_meetings</code> table (foreign-keyed to <code>institutions</code>), visible to every DEO / Super Admin account district-wide — not scoped to whoever created the record.</p>
+        </div>
+      </div>
+
+      <div class="allowed-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><b>DEO can:</b> log an LSMC meeting for any school in the district, record attendance and key decisions, set and track follow-up actions to open/closed, edit or delete a meeting record, search/filter/sort the register, and export it to CSV.</div>
+      </div>
+
+      <div class="footer-ribbon">EDU.LR District Education Management System • <b>DEO workspace</b> • Local School Management Committee participation</div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="editModalBackdrop">
+  <div class="modal">
+    <div class="modal-head"><h3>Edit LSMC meeting</h3><button class="modal-close" id="editModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-body">
+      <div class="field-grid" id="editMeetingForm">
+        <div class="field"><label>School</label><select id="eSchool"></select></div>
+        <div class="field"><label>Meeting date</label><input type="date" id="eDate"></div>
+        <div class="field"><label>Meeting type</label>
+          <select id="eType"><option>Regular Meeting</option><option>Emergency Meeting</option><option>Community/Parents Forum</option><option>Project &amp; Fundraising Meeting</option></select>
+        </div>
+        <div class="field"><label>Chairperson / Facilitator</label><input type="text" id="eChair" maxlength="150"></div>
+        <div class="field"><label>Members present</label><input type="number" id="ePresent" min="0" max="99"></div>
+        <div class="field"><label>Total committee members</label><input type="number" id="eTotal" min="0" max="99"></div>
+        <div class="field"><label>Follow-up due date</label><input type="date" id="eFollowUp"></div>
+        <div class="field"><label>Follow-up status</label><select id="eFollowUpStatus"><option>Open</option><option>Closed</option></select></div>
+        <div class="field span2"><label>Follow-up action required</label><input type="text" id="eFollowUpAction"></div>
+        <div class="field span2"><label>Agenda / topics discussed</label><textarea id="eAgenda"></textarea></div>
+        <div class="field span2"><label>Key decisions &amp; resolutions</label><textarea id="eDecisions"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" id="saveEditBtn">Save changes</button>
+      <button class="btn btn-danger-ghost" id="deleteMeetingBtn">Delete meeting</button>
+      <button class="btn btn-ghost" id="cancelEditBtn" style="margin-left:auto;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATA LAYER — DEO / Local School Management Committee (LSMC) Participation
+   Wired directly to a real relational table in EDU.LR's live Supabase
+   project: public.lsmc_meetings (institution_id FK -> institutions,
+   created_by FK -> profiles). RLS restricts read/write to deo & super_admin
+   (see migration create_lsmc_meetings_table). This is district-wide data —
+   every DEO account sees and can manage the same register, unlike the old
+   kv_store bridge which scoped rows to a single signed-in account.
+
+   Schools are read live from `institutions` (same query deo/school-visits.html,
+   deo/students.html and deo/statistics.html already use).
+   ========================================================================= */
+
+let profile = null;
+let schools = [];
+let meetings = [];
+let editingId = null;
+
+function showToast(msg, kind){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind === 'warn' ? ' warn' : '');
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>${escapeHtml(msg)}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),250); }, 3600);
+}
+function escapeHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function initials(name){ return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function fmtDate(v){
+  if (!v) return null;
+  const d = new Date(v + 'T00:00:00');
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+}
+
+function renderProfileChip(){
+  const chipAvatar = document.getElementById('chipAvatar');
+  const chipName = document.getElementById('chipName');
+  const chipRole = document.getElementById('chipRole');
+  if (profile && profile.full_name){
+    chipAvatar.textContent = initials(profile.full_name);
+    chipName.textContent = profile.full_name;
+    chipRole.textContent = 'District Education Officer';
+  } else {
+    chipAvatar.textContent = '—'; chipName.textContent = 'Not signed in'; chipRole.textContent = 'Awaiting DEO account';
+  }
+}
+function renderConnectionStatus(){
+  const dot = document.getElementById('healthDot');
+  const label = document.getElementById('healthLabel');
+  const sub = document.getElementById('healthSub');
+  dot.classList.remove('warn');
+  label.textContent = 'Live data connected';
+  sub.textContent = (window.KPS && KPS.SUPABASE_URL) || '';
+}
+
+async function loadSchools(){
+  try {
+    const res = await window.sb.from('institutions').select('id, name').order('name', { ascending: true }).limit(1000);
+    if (res.error) throw res.error;
+    schools = res.data || [];
+  } catch (err) {
+    console.error('[DEO LSMC] failed to load schools', err);
+    schools = [];
+  }
+  const opts = schools.length
+    ? schools.map(s => `<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}</option>`).join('')
+    : '<option value="">No schools found</option>';
+  document.getElementById('fSchool').innerHTML = `<option value="">Select school</option>${opts}`;
+  document.getElementById('eSchool').innerHTML = opts;
+}
+
+function rowToMeeting(r){
+  const school = schools.find(s => s.id === r.institution_id);
+  return {
+    id: r.id,
+    schoolId: r.institution_id,
+    schoolName: school ? school.name : (r.institution_name || 'Unknown school'),
+    meetingDate: r.meeting_date,
+    meetingType: r.meeting_type,
+    chairperson: r.chairperson,
+    membersPresent: r.members_present,
+    membersTotal: r.members_total,
+    agenda: r.agenda,
+    keyDecisions: r.key_decisions,
+    followUpAction: r.follow_up_action,
+    followUpDate: r.follow_up_date,
+    followUpStatus: r.follow_up_status,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  };
+}
+
+async function loadMeetings(){
+  try {
+    const res = await window.sb
+      .from('lsmc_meetings')
+      .select('id, institution_id, meeting_date, meeting_type, chairperson, members_present, members_total, agenda, key_decisions, follow_up_action, follow_up_date, follow_up_status, created_at, updated_at, institutions(name)')
+      .order('meeting_date', { ascending: false })
+      .order('created_at', { ascending: false });
+    if (res.error) throw res.error;
+    meetings = (res.data || []).map(r => {
+      const m = rowToMeeting(r);
+      if (r.institutions && r.institutions.name) m.schoolName = r.institutions.name;
+      return m;
+    });
+  } catch (err) {
+    console.error('[DEO LSMC] failed to load meeting register', err);
+    showToast('Could not load the LSMC register — check your Supabase connection', 'warn');
+    meetings = [];
+  }
+  renderStats();
+  renderTable();
+}
+
+function attendanceRate(m){
+  const present = Number(m.membersPresent);
+  const total = Number(m.membersTotal);
+  if (!total || isNaN(present) || isNaN(total) || total <= 0) return null;
+  return Math.round((present / total) * 100);
+}
+
+function renderStats(){
+  const now = new Date();
+  const thisMonth = meetings.filter(m => {
+    if (!m.meetingDate) return false;
+    const d = new Date(m.meetingDate + 'T00:00:00');
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  }).length;
+  const openFollowUps = meetings.filter(m => m.followUpDate && m.followUpStatus !== 'Closed').length;
+  const rates = meetings.map(attendanceRate).filter(r => r !== null);
+  const avgRate = rates.length ? Math.round(rates.reduce((a,b) => a+b, 0) / rates.length) : null;
+  const schoolsWithMeeting = new Set(meetings.map(m => m.schoolId).filter(Boolean)).size;
+
+  const stats = [
+    { label: 'Total Meetings Recorded', value: meetings.length, ic: 'log', color: 'navy', extra: ` &middot; ${schoolsWithMeeting}/${schools.length || '—'} schools represented` },
+    { label: 'Meetings This Month', value: thisMonth, ic: 'calendar' },
+    { label: 'Average Attendance Rate', value: avgRate === null ? '—' : `${avgRate}%`, ic: 'people', color: 'gold' },
+    { label: 'Open Follow-ups', value: openFollowUps, ic: 'alert' },
+  ];
+  const icons = {
+    log: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M8 14h4"/>',
+    calendar: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
+    alert: '<path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+    people: '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/>',
+  };
+  document.getElementById('statGrid').innerHTML = stats.map(s => `
+    <div class="stat-card">
+      <div class="stat-top"><div class="stat-ic ${s.color||''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${icons[s.ic]}</svg></div><span class="stat-trend flat">live</span></div>
+      <div class="stat-num mono">${s.value}</div>
+      <div class="stat-label">${s.label}${s.extra||''}</div>
+    </div>`).join('');
+}
+
+function meetingTypeTag(type){
+  const cls = type === 'Emergency Meeting' ? 'mt-emergency' : type === 'Community/Parents Forum' ? 'mt-community' : type === 'Project & Fundraising Meeting' ? 'mt-project' : 'mt-regular';
+  return `<span class="meeting-type-tag ${cls}">${escapeHtml(type || 'Regular Meeting')}</span>`;
+}
+function attendanceCell(m){
+  const rate = attendanceRate(m);
+  const present = m.membersPresent == null || m.membersPresent === '' ? '—' : m.membersPresent;
+  const total = m.membersTotal == null || m.membersTotal === '' ? '—' : m.membersTotal;
+  if (rate === null) return `<span class="pill grey">${escapeHtml(String(present))}/${escapeHtml(String(total))}</span>`;
+  const cls = rate >= 80 ? 'green' : rate >= 60 ? 'gold' : 'red';
+  return `<span class="pill ${cls}">${present}/${total} &middot; ${rate}%</span>`;
+}
+function followUpCell(m){
+  if (!m.followUpDate) return '<span class="pill grey">Not set</span>';
+  const closed = m.followUpStatus === 'Closed';
+  return `<span class="pill ${closed ? 'green' : 'gold'}">${closed ? 'Closed' : 'Open'} &middot; ${escapeHtml(fmtDate(m.followUpDate) || m.followUpDate)}</span>`;
+}
+
+function renderTable(){
+  const filterText = (document.getElementById('tableFilter').value || '').toLowerCase().trim();
+  const typeFilter = document.getElementById('typeFilter').value;
+  const followUpFilter = document.getElementById('followUpFilter').value;
+
+  let rows = meetings.slice();
+  if (typeFilter) rows = rows.filter(m => m.meetingType === typeFilter);
+  if (followUpFilter === 'Open') rows = rows.filter(m => m.followUpDate && m.followUpStatus !== 'Closed');
+  else if (followUpFilter === 'Closed') rows = rows.filter(m => m.followUpDate && m.followUpStatus === 'Closed');
+  else if (followUpFilter === 'none') rows = rows.filter(m => !m.followUpDate);
+  if (filterText) rows = rows.filter(m => [m.schoolName, m.meetingType, m.chairperson, m.agenda, m.keyDecisions, m.followUpAction].some(f => (f||'').toLowerCase().includes(filterText)));
+
+  const tbody = document.getElementById('meetingsTableBody');
+  const empty = document.getElementById('meetingsEmpty');
+  if (!rows.length){ tbody.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = rows.map(m => `
+    <tr>
+      <td class="mono">${escapeHtml(fmtDate(m.meetingDate) || '—')}</td>
+      <td><div class="school-name-cell">${escapeHtml(m.schoolName || 'Unknown school')}</div></td>
+      <td>${meetingTypeTag(m.meetingType)}</td>
+      <td>${attendanceCell(m)}</td>
+      <td class="decisions-cell">${escapeHtml(m.keyDecisions || '—')}</td>
+      <td>${followUpCell(m)}</td>
+      <td><button class="btn btn-ghost btn-sm" data-edit="${escapeHtml(m.id)}">Edit</button></td>
+    </tr>`).join('');
+
+  tbody.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => openEditModal(btn.dataset.edit)));
+}
+
+function clearForm(){
+  document.getElementById('fSchool').value = '';
+  document.getElementById('fDate').value = todayISO();
+  document.getElementById('fType').value = 'Regular Meeting';
+  document.getElementById('fChair').value = '';
+  document.getElementById('fPresent').value = '';
+  document.getElementById('fTotal').value = '';
+  document.getElementById('fFollowUpAction').value = '';
+  document.getElementById('fFollowUp').value = '';
+  document.getElementById('fAgenda').value = '';
+  document.getElementById('fDecisions').value = '';
+  document.getElementById('formHint').textContent = '';
+}
+
+async function saveNewMeeting(){
+  const schoolId = document.getElementById('fSchool').value;
+  const school = schools.find(s => s.id === schoolId);
+  const meetingDate = document.getElementById('fDate').value;
+  if (!schoolId || !school){ showToast('Select a school before saving.', 'warn'); return; }
+  if (!meetingDate){ showToast('Set a meeting date before saving.', 'warn'); return; }
+
+  const followUpDate = document.getElementById('fFollowUp').value || null;
+  const row = {
+    institution_id: schoolId,
+    meeting_date: meetingDate,
+    meeting_type: document.getElementById('fType').value,
+    chairperson: document.getElementById('fChair').value.trim() || null,
+    members_present: document.getElementById('fPresent').value === '' ? null : Number(document.getElementById('fPresent').value),
+    members_total: document.getElementById('fTotal').value === '' ? null : Number(document.getElementById('fTotal').value),
+    agenda: document.getElementById('fAgenda').value.trim() || null,
+    key_decisions: document.getElementById('fDecisions').value.trim() || null,
+    follow_up_action: document.getElementById('fFollowUpAction').value.trim() || null,
+    follow_up_date: followUpDate,
+    follow_up_status: followUpDate ? 'Open' : null,
+    created_by: profile ? profile.id : null,
+  };
+  try {
+    const res = await window.sb.from('lsmc_meetings').insert(row);
+    if (res.error) throw res.error;
+    showToast('Meeting saved to the register.', 'good');
+    clearForm();
+    await loadMeetings();
+  } catch (err) {
+    console.error('[DEO LSMC] failed to save meeting', err);
+    showToast('Could not save — check your Supabase connection and try again', 'warn');
+  }
+}
+
+function openEditModal(id){
+  const m = meetings.find(x => x.id === id);
+  if (!m){ showToast('Could not find that meeting.', 'warn'); return; }
+  editingId = id;
+  document.getElementById('eSchool').value = m.schoolId || '';
+  document.getElementById('eDate').value = m.meetingDate || '';
+  document.getElementById('eType').value = m.meetingType || 'Regular Meeting';
+  document.getElementById('eChair').value = m.chairperson || '';
+  document.getElementById('ePresent').value = m.membersPresent == null ? '' : m.membersPresent;
+  document.getElementById('eTotal').value = m.membersTotal == null ? '' : m.membersTotal;
+  document.getElementById('eFollowUp').value = m.followUpDate || '';
+  document.getElementById('eFollowUpStatus').value = m.followUpStatus === 'Closed' ? 'Closed' : 'Open';
+  document.getElementById('eFollowUpAction').value = m.followUpAction || '';
+  document.getElementById('eAgenda').value = m.agenda || '';
+  document.getElementById('eDecisions').value = m.keyDecisions || '';
+  document.getElementById('editModalBackdrop').classList.add('open');
+}
+function closeEditModal(){ editingId = null; document.getElementById('editModalBackdrop').classList.remove('open'); }
+
+async function saveEditedMeeting(){
+  if (!editingId) return;
+  const schoolId = document.getElementById('eSchool').value;
+  if (!schoolId){ showToast('Select a school before saving.', 'warn'); return; }
+  const followUpDate = document.getElementById('eFollowUp').value || null;
+  const row = {
+    institution_id: schoolId,
+    meeting_date: document.getElementById('eDate').value,
+    meeting_type: document.getElementById('eType').value,
+    chairperson: document.getElementById('eChair').value.trim() || null,
+    members_present: document.getElementById('ePresent').value === '' ? null : Number(document.getElementById('ePresent').value),
+    members_total: document.getElementById('eTotal').value === '' ? null : Number(document.getElementById('eTotal').value),
+    agenda: document.getElementById('eAgenda').value.trim() || null,
+    key_decisions: document.getElementById('eDecisions').value.trim() || null,
+    follow_up_action: document.getElementById('eFollowUpAction').value.trim() || null,
+    follow_up_date: followUpDate,
+    follow_up_status: followUpDate ? document.getElementById('eFollowUpStatus').value : null,
+  };
+  try {
+    const res = await window.sb.from('lsmc_meetings').update(row).eq('id', editingId);
+    if (res.error) throw res.error;
+    showToast('Meeting updated.', 'good');
+    closeEditModal();
+    await loadMeetings();
+  } catch (err) {
+    console.error('[DEO LSMC] failed to update meeting', err);
+    showToast('Could not save changes — check your Supabase connection', 'warn');
+  }
+}
+
+async function deleteEditedMeeting(){
+  if (!editingId) return;
+  if (!confirm('Delete this LSMC meeting record? This cannot be undone.')) return;
+  try {
+    const res = await window.sb.from('lsmc_meetings').delete().eq('id', editingId);
+    if (res.error) throw res.error;
+    showToast('Meeting deleted.', 'good');
+    closeEditModal();
+    await loadMeetings();
+  } catch (err) {
+    console.error('[DEO LSMC] failed to delete meeting', err);
+    showToast('Could not delete — check your Supabase connection', 'warn');
+  }
+}
+
+function exportCsv(){
+  if (!meetings.length){ showToast('Nothing to export yet.', 'warn'); return; }
+  const header = ['Meeting date','School','Meeting type','Chairperson','Members present','Total members','Attendance rate','Agenda','Key decisions','Follow-up action','Follow-up date','Follow-up status'];
+  const rows = meetings.map(m => {
+    const rate = attendanceRate(m);
+    return [m.meetingDate||'', m.schoolName||'', m.meetingType||'', m.chairperson||'', m.membersPresent ?? '', m.membersTotal ?? '', rate === null ? '' : `${rate}%`, m.agenda||'', m.keyDecisions||'', m.followUpAction||'', m.followUpDate||'', m.followUpStatus||''];
+  });
+  const csvEscape = v => `"${String(v).replace(/"/g, '""')}"`;
+  const csv = [header, ...rows].map(r => r.map(csvEscape).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'district-lsmc-meetings.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`Exported ${meetings.length} meeting record${meetings.length === 1 ? '' : 's'}`);
+}
+
+document.getElementById('saveMeetingBtn').addEventListener('click', saveNewMeeting);
+document.getElementById('clearFormBtn').addEventListener('click', clearForm);
+document.getElementById('tableFilter').addEventListener('input', renderTable);
+document.getElementById('typeFilter').addEventListener('change', renderTable);
+document.getElementById('followUpFilter').addEventListener('change', renderTable);
+document.getElementById('exportBtn').addEventListener('click', exportCsv);
+document.getElementById('editModalClose').addEventListener('click', closeEditModal);
+document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
+document.getElementById('editModalBackdrop').addEventListener('click', (e) => { if (e.target.id === 'editModalBackdrop') closeEditModal(); });
+document.getElementById('saveEditBtn').addEventListener('click', saveEditedMeeting);
+document.getElementById('deleteMeetingBtn').addEventListener('click', deleteEditedMeeting);
+
+(async function init(){
+  const auth = await KPS.requireRole(['deo', 'super_admin']);
+  if (!auth.user) return; // requireRole already redirected to login
+  profile = auth.profile;
+  renderProfileChip();
+  renderConnectionStatus();
+  clearForm();
+  await loadSchools();
+  await loadMeetings();
+})();
+
+document.getElementById('globalSearch').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.value.trim()){
+    document.getElementById('tableFilter').value = e.target.value;
+    renderTable();
+  }
+});
+</script>
+</body>
+</html>

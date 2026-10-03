@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Security</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand img{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; object-fit:cover; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER (ICT signature element) ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* chart bars */
+.chart-bars{ display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:10px; }
+.chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.chart-bar{ width:100%; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--gold-light), var(--gold-deep)); position:relative; transition:filter .15s; }
+.chart-bar:hover{ filter:brightness(1.08); }
+.chart-bar.alt{ background:linear-gradient(180deg, #9FB6E0, var(--navy-3)); }
+.chart-lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+.chart-legend{ display:flex; gap:16px; margin-top:6px; font-size:11.5px; color:var(--muted); }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.chip-dot{ width:8px; height:8px; border-radius:2px; }
+
+/* feed / lists */
+.feed-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px dashed var(--line); }
+.feed-item:last-child{ border-bottom:none; }
+.feed-dot{ width:32px; height:32px; border-radius:9px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex:none; }
+.feed-dot svg{ width:15px; height:15px; color:var(--crimson); }
+.feed-dot.gold svg{ color:var(--gold-deep); }
+.feed-dot.navy svg{ color:var(--navy-3); }
+.feed-text{ font-size:13px; font-weight:600; }
+.feed-sub{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.feed-time{ margin-left:auto; font-size:11px; color:var(--muted); white-space:nowrap; }
+
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+.progress-track{ height:6px; border-radius:20px; background:var(--line); overflow:hidden; flex:1; }
+.progress-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); }
+.progress-fill.ok{ background:linear-gradient(90deg, #8FD8AC, var(--success)); }
+.progress-fill.warn{ background:linear-gradient(90deg, var(--gold-light), var(--warn)); }
+.progress-fill.bad{ background:linear-gradient(90deg, #F0A7AE, var(--danger)); }
+
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.health-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; padding:7px 0; }
+.health-row .hb{ flex:1; height:7px; background:var(--line); border-radius:20px; overflow:hidden; }
+.health-row .hb i{ display:block; height:100%; border-radius:20px; }
+.health-row .hv{ width:74px; text-align:right; font-weight:700; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+button.pill:hover{ filter:brightness(0.96); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* Module placeholder cards */
+.module-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.module-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.module-ic{ width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.module-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.module-card h4{ margin:0; font-size:14.5px; }
+.module-card p{ margin:0; font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* Device status card (network) */
+.device-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
+.device-top{ display:flex; align-items:center; justify-content:space-between; }
+.device-ic{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.device-ic svg{ width:19px; height:19px; }
+.device-name{ font-weight:700; font-size:13.5px; margin-top:2px; }
+.device-meta{ font-size:11.5px; color:var(--muted); }
+
+/* Restricted note */
+.restricted-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#FBE6E6; border:1px solid #F3C7CB; margin-top:14px; }
+.restricted-note svg{ width:16px; height:16px; color:var(--danger); flex:none; margin-top:1px; }
+.restricted-note div{ font-size:12px; color:#7A2530; line-height:1.55; }
+.restricted-note b{ color:var(--danger); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field input[type=text], .field input[type=password], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.settings-list .row-line{ align-items:flex-start; }
+.settings-list .rl-name{ font-size:13.5px; }
+.settings-list .rl-sub{ margin-top:2px; max-width:52ch; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .bento{ grid-template-columns:1fr; }
+  .grid-3,.grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .tbl-actions, .toolbar, .tabs, .toast-wrap, .modal-backdrop, .footer-ribbon, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .view{ display:none !important; }
+  .view.active{ display:block !important; }
+  .card, .stat-card, .module-card, .device-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid,.grid-3,.grid-2,.grid-4{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+
+/* ============================= USER ROLES SPECIFIC ============================= */
+.filter-bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.filter-bar .search-pill{ width:300px; }
+
+.pager{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:16px; flex-wrap:wrap; }
+.pager .pg-info{ font-size:12px; color:var(--muted); }
+.pager .pg-btns{ display:flex; gap:6px; }
+.pager button{ width:32px; height:32px; border-radius:9px; border:1px solid var(--line); background:var(--paper); font-size:12.6px; font-weight:700; }
+.pager button:hover{ border-color:var(--gold); }
+.pager button.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; border-color:transparent; }
+.pager button:disabled{ opacity:.4; cursor:default; }
+
+.ic-btn{ width:20px; height:20px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; flex:none; }
+.ic-btn.login{ background:#E4E9F4; color:var(--navy-3); }
+.ic-btn.create{ background:#E4F3E9; color:var(--success); }
+.ic-btn.update{ background:#FBEED2; color:var(--gold-deep); }
+.ic-btn.delete{ background:#FBE6E6; color:var(--danger); }
+.ic-btn.approve{ background:#E4F3E9; color:var(--success); }
+.ic-btn svg{ width:11px; height:11px; }
+
+/* Role cards */
+.role-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:16px; margin-bottom:26px; }
+.role-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px;
+  box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; display:flex; flex-direction:column; gap:10px;
+}
+.role-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.role-card-top{ display:flex; align-items:center; justify-content:space-between; }
+.role-ic{ width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--navy-3), var(--navy)); flex:none; }
+.role-ic svg{ width:18px; height:18px; color:var(--gold-light); }
+.role-ic.crimson{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.role-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.role-name{ font-family:'Fraunces',serif; font-size:16.5px; font-weight:700; margin:0; }
+.role-desc{ font-size:12px; color:var(--muted); line-height:1.5; margin:0; min-height:34px; }
+.role-meta{ display:flex; align-items:center; gap:14px; font-size:11.8px; color:var(--muted); }
+.role-meta b{ color:var(--ink); font-weight:700; }
+.role-card-foot{ display:flex; gap:8px; margin-top:2px; }
+.role-card-foot .btn{ flex:1; justify-content:center; }
+
+/* Permission matrix (inside modal) */
+.perm-group{ margin-bottom:16px; }
+.perm-group:last-child{ margin-bottom:0; }
+.perm-group-title{ font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--gold-deep); font-weight:800; margin:0 0 8px; }
+.perm-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px dashed var(--line); }
+.perm-row:last-child{ border-bottom:none; }
+.perm-row-text{ font-size:12.8px; }
+.perm-row-text .rl-name{ font-weight:700; font-size:13px; display:block; }
+.perm-row-text .rl-sub{ font-size:11.4px; color:var(--muted); margin-top:1px; }
+
+/* Role pill colors reuse .pill; role select in table */
+select.role-select{ border:1px solid var(--line); background:var(--paper); border-radius:8px; padding:6px 10px; font-size:12px; font-family:inherit; color:var(--ink); }
+
+@media (max-width: 900px){
+  .filter-bar .search-pill{ width:100%; }
+}
+
+</style>
+<style>
+.app{ display:block; grid-template-columns:none; min-height:100vh; }
+.main{ min-width:0; }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+  <main class="main">
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia &middot; Ministry of Education</div>
+        <div class="page-title">Security</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search login activity&hellip;">
+      </div>
+      <a class="btn btn-ghost" href="audit-log.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        View Audit Log
+      </a>
+      <button type="button" class="btn btn-primary" id="addIpBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Add Trusted IP
+      </button>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="view active" id="view-security">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div>
+            <div class="sb-t">Account &amp; Access Security</div>
+            <div class="sb-s">Session policy changes, trusted IP updates, and login activity below are written to the <b class="sa">Audit Log</b> as they happen.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Security</h2>
+            <p>Monitor login activity, manage session policy, and control trusted access for Kingsville Public High School&rsquo;s admin console.</p>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="user-roles.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            Manage Roles
+          </a>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic navy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+              <span class="stat-trend flat" id="statSessionsTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statActiveSessions">&ndash;</div>
+            <div class="stat-label">Active sessions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic" style="background:linear-gradient(135deg, var(--danger), #8C0F26);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/></svg></div>
+              <span class="stat-trend flat" id="statFailedTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statFailedLogins">&ndash;</div>
+            <div class="stat-label">Failed logins (24h)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic" style="background:linear-gradient(135deg, var(--success), #1F5C39);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+              <span class="stat-trend flat" id="statTwofaTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="stat2faCoverage">&ndash;</div>
+            <div class="stat-label">Admins with 2FA</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.8 17a2 2 0 001.7 3h15a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg></div>
+              <span class="stat-trend flat" id="statAlertsTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statOpenAlerts">&ndash;</div>
+            <div class="stat-label">Open alerts</div>
+          </div>
+        </div>
+
+        <div class="section-head" style="margin-bottom:14px;">
+          <div>
+            <h3 style="margin:0 0 3px; font-size:16.5px; font-family:'Fraunces',serif;">Security Settings</h3>
+            <p style="font-size:12.5px;">These policies apply to every admin account on the console.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:26px;">
+          <div class="card-body settings-list">
+            <div class="row-line">
+              <div style="flex:1;">
+                <div class="rl-name">Require two-factor authentication</div>
+                <div class="rl-sub">All admin and staff accounts must verify sign-in with a second factor.</div>
+              </div>
+              <button type="button" class="toggle on" id="toggle2fa"></button>
+            </div>
+            <div class="row-line">
+              <div style="flex:1;">
+                <div class="rl-name">Enforce strong password policy</div>
+                <div class="rl-sub">Require at least 10 characters, mixed case, a number, and a symbol.</div>
+              </div>
+              <button type="button" class="toggle on" id="togglePasswordPolicy"></button>
+            </div>
+            <div class="row-line">
+              <div style="flex:1;">
+                <div class="rl-name">Restrict sign-in to trusted IPs</div>
+                <div class="rl-sub">Block admin sign-in attempts from IP addresses not on the allowlist below.</div>
+              </div>
+              <button type="button" class="toggle" id="toggleIpAllowlist"></button>
+            </div>
+            <div class="row-line">
+              <div style="flex:1;">
+                <div class="rl-name">Auto-lock idle sessions</div>
+                <div class="rl-sub">Sign out automatically after a period of inactivity.</div>
+              </div>
+              <select class="filter" id="sessionTimeoutSelect" style="width:140px;">
+                <option value="15">15 minutes</option>
+                <option value="30" selected>30 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="240">4 hours</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-head" style="margin-bottom:14px;">
+          <div>
+            <h3 style="margin:0 0 3px; font-size:16.5px; font-family:'Fraunces',serif;">Trusted IP Allowlist</h3>
+            <p style="font-size:12.5px;">Only used to filter sign-ins when the restriction above is turned on.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:26px;">
+          <div class="card-body" style="padding-top:14px;">
+            <div class="table-wrap">
+              <table class="data" id="ipTable">
+                <thead>
+                  <tr>
+                    <th>IP Address</th>
+                    <th>Label</th>
+                    <th>Added By</th>
+                    <th>Added On</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="ipTableBody">
+                </tbody>
+              </table>
+
+              <div class="empty-state" id="ipEmptyState" style="display:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                <h4 id="ipEmptyTitle">No trusted IPs yet</h4>
+                <p id="ipEmptyBody">Add an IP address to start building the allowlist.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-head" style="margin-bottom:14px;">
+          <div>
+            <h3 style="margin:0 0 3px; font-size:16.5px; font-family:'Fraunces',serif;">Login Activity</h3>
+            <p style="font-size:12.5px;">Recent sign-in attempts and security-relevant account events.</p>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="eventSearch" type="text" placeholder="Search by name or IP&hellip;">
+          </div>
+          <select class="filter" id="eventTypeFilter">
+            <option value="">All Events</option>
+            <option value="login_success">Login Success</option>
+            <option value="login_failed">Login Failed</option>
+            <option value="password_reset">Password Reset</option>
+            <option value="role_change">Role Change</option>
+            <option value="2fa_enabled">2FA Enabled</option>
+          </select>
+          <select class="filter" id="eventStatusFilter">
+            <option value="">All Statuses</option>
+            <option value="success">Success</option>
+            <option value="flagged">Flagged</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
+
+        <div class="card">
+          <div class="card-body" style="padding-top:14px;">
+            <div class="table-wrap">
+              <table class="data" id="eventTable">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Event</th>
+                    <th>IP Address</th>
+                    <th>Location</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="eventTableBody">
+                </tbody>
+              </table>
+
+              <div class="empty-state" id="eventEmptyState" style="display:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                <h4 id="eventEmptyTitle">No activity found</h4>
+                <p id="eventEmptyBody">There is no login activity matching the current filters.</p>
+              </div>
+            </div>
+
+            <div class="pager">
+              <div class="pg-info" id="eventPgInfo">Loading&hellip;</div>
+              <div class="pg-btns" id="eventPgBtns">
+                <button type="button" id="eventPgPrev" disabled>&lsaquo;</button>
+                <button type="button" id="eventPgNext" disabled>&rsaquo;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Add trusted IP modal -->
+      <div class="modal-backdrop" id="ipModalBackdrop">
+        <div class="modal">
+          <div class="modal-head">
+            <h3>Add Trusted IP</h3>
+            <button type="button" id="ipModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div class="modal-body">
+            <div class="field">
+              <label for="ipFormAddress">IP Address</label>
+              <input type="text" id="ipFormAddress" placeholder="e.g. 41.66.12.4">
+            </div>
+            <div class="field">
+              <label for="ipFormLabel">Label</label>
+              <input type="text" id="ipFormLabel" placeholder="e.g. School office network">
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button type="button" class="btn btn-ghost" id="ipFormCancelBtn">Cancel</button>
+            <button type="button" class="btn btn-primary" id="ipFormSaveBtn">Add IP</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-ribbon">
+        <img class="footer-crest" src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="">
+        Kingsville Public High School &middot; Super Administrator Console &middot; <b>Knowledge is Power</b> &middot; Kingsville #7, Careysburg District
+        <img class="footer-crest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+        Republic of Liberia &middot; Ministry of Education
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ---------- Toast ---------- */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+
+/* ==========================================================================
+   REAL SUPABASE WIRING
+   --------------------------------------------------------------------------
+   - Settings (2FA required / password policy / trusted-IP restriction /
+     session timeout) and the Trusted IP allowlist have no dedicated
+     tables in the schema, so — same pattern already used by
+     super-admin/permissions.html — they're stored as JSON in the
+     `kv_store` bridge table (shared=true, so every admin sees the same
+     values).
+   - Login activity is real, relational data: `login_history`
+     (profile_id, ip_address, user_agent, success, created_at), joined
+     to `profiles` for the name. No kv_store needed for that part.
+   - There is no 2FA/MFA column anywhere in the schema, so "2FA coverage"
+     is shown as "Not tracked yet" rather than a made-up number.
+   ========================================================================== */
+const SETTINGS_KEY = 'security:settings';
+const TRUSTED_IPS_KEY = 'security:trusted-ips';
+
+let currentEventPage = 1;
+const eventPageSize = 10;
+let eventSearchDebounce = null;
+let cachedIps = [];
+
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function formatNumber(n){
+  if(n === null || n === undefined) return '\u2014';
+  return Number(n).toLocaleString();
+}
+
+/* ---------- Summary stat cards (computed from real tables) ---------- */
+async function loadSummary(){
+  try{
+    const last24h = new Date(Date.now() - 24*60*60*1000).toISOString();
+    const prev24h = new Date(Date.now() - 48*60*60*1000).toISOString();
+
+    const [activeSessionsRes, failedTodayRes, failedYestRes, alertProfilesRes] = await Promise.all([
+      Promise.resolve(sb.rpc('active_session_count')).catch(() => ({ data: null })),
+      sb.from('login_history').select('id', { count: 'exact', head: true }).eq('success', false).gte('created_at', last24h),
+      sb.from('login_history').select('id', { count: 'exact', head: true }).eq('success', false).gte('created_at', prev24h).lt('created_at', last24h),
+      // "Open alerts" = distinct accounts with 3+ failed logins in the last 24h — a real signal, not a fabricated stat.
+      sb.from('login_history').select('profile_id').eq('success', false).gte('created_at', last24h)
+    ]);
+
+    const failedToday = failedTodayRes.count || 0;
+    const failedYesterday = failedYestRes.count || 0;
+    const counts = {};
+    (alertProfilesRes.data || []).forEach(r => { if(r.profile_id) counts[r.profile_id] = (counts[r.profile_id] || 0) + 1; });
+    const openAlerts = Object.values(counts).filter(c => c >= 3).length;
+
+    document.getElementById('statActiveSessions').textContent = formatNumber(activeSessionsRes.data ?? null);
+    document.getElementById('statFailedLogins').textContent = formatNumber(failedToday);
+    document.getElementById('stat2faCoverage').textContent = 'Not tracked yet';
+    document.getElementById('statOpenAlerts').textContent = formatNumber(openAlerts);
+    setTrend('statSessionsTrend', null);
+    setTrend('statFailedTrend', failedYesterday ? (failedToday >= failedYesterday ? '+' : '') + (failedToday - failedYesterday) : null);
+    setTrend('statTwofaTrend', null);
+    setTrend('statAlertsTrend', null);
+  }catch(err){
+    console.error('Failed to load security summary', err);
+    ['statActiveSessions','statFailedLogins','stat2faCoverage','statOpenAlerts'].forEach(id => {
+      document.getElementById(id).textContent = '\u2014';
+    });
+    showToast('Could not load summary stats from Supabase.');
+  }
+}
+
+function setTrend(id, value){
+  const el = document.getElementById(id);
+  if(value === null || value === undefined || value === ''){ el.textContent = '\u2013'; el.className = 'stat-trend flat'; return; }
+  el.textContent = value;
+  el.className = 'stat-trend ' + (String(value).startsWith('+') ? 'up' : String(value).startsWith('-') ? 'down' : 'flat');
+}
+
+/* ---------- Security settings toggles (kv_store) ---------- */
+const DEFAULT_SETTINGS = { requireTwofa: false, enforcePasswordPolicy: true, restrictToTrustedIps: false, sessionTimeoutMinutes: 60 };
+
+async function loadSettings(){
+  let s = DEFAULT_SETTINGS;
+  try{
+    const r = await window.storage.get(SETTINGS_KEY, true);
+    s = { ...DEFAULT_SETTINGS, ...JSON.parse(r.value) };
+  }catch(err){
+    // Key not found yet — first time this page has ever been opened. Use defaults.
+  }
+  setToggle('toggle2fa', !!s.requireTwofa);
+  setToggle('togglePasswordPolicy', !!s.enforcePasswordPolicy);
+  setToggle('toggleIpAllowlist', !!s.restrictToTrustedIps);
+  if(s.sessionTimeoutMinutes) document.getElementById('sessionTimeoutSelect').value = String(s.sessionTimeoutMinutes);
+}
+
+function setToggle(id, on){
+  const el = document.getElementById(id);
+  el.classList.toggle('on', on);
+}
+
+async function saveSetting(patch, successMsg){
+  try{
+    let current = DEFAULT_SETTINGS;
+    try{
+      const r = await window.storage.get(SETTINGS_KEY, true);
+      current = { ...DEFAULT_SETTINGS, ...JSON.parse(r.value) };
+    }catch(err){ /* first save */ }
+    const merged = { ...current, ...patch };
+    await window.storage.set(SETTINGS_KEY, JSON.stringify(merged), true);
+    showToast(successMsg);
+  }catch(err){
+    console.error('Failed to save security setting', err);
+    showToast('Could not save this setting. Please try again.');
+  }
+}
+
+document.getElementById('toggle2fa').addEventListener('click', function(){
+  this.classList.toggle('on');
+  saveSetting({ requireTwofa: this.classList.contains('on') }, 'Two-factor authentication setting updated.');
+});
+document.getElementById('togglePasswordPolicy').addEventListener('click', function(){
+  this.classList.toggle('on');
+  saveSetting({ enforcePasswordPolicy: this.classList.contains('on') }, 'Password policy updated.');
+});
+document.getElementById('toggleIpAllowlist').addEventListener('click', function(){
+  this.classList.toggle('on');
+  saveSetting({ restrictToTrustedIps: this.classList.contains('on') }, 'Trusted IP restriction updated.');
+});
+document.getElementById('sessionTimeoutSelect').addEventListener('change', function(){
+  saveSetting({ sessionTimeoutMinutes: Number(this.value) }, 'Session timeout updated.');
+});
+
+/* ---------- Trusted IP allowlist (kv_store) ---------- */
+async function loadIps(){
+  const tbody = document.getElementById('ipTableBody');
+  const emptyState = document.getElementById('ipEmptyState');
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px; color:var(--muted);">Loading trusted IPs&hellip;</td></tr>';
+  emptyState.style.display = 'none';
+
+  try{
+    let ips = [];
+    try{
+      const r = await window.storage.get(TRUSTED_IPS_KEY, true);
+      ips = JSON.parse(r.value) || [];
+    }catch(err){ /* nothing saved yet */ }
+    cachedIps = ips;
+    renderIps(ips);
+  }catch(err){
+    console.error('Failed to load trusted IPs', err);
+    tbody.innerHTML = '';
+    emptyState.style.display = '';
+    document.getElementById('ipEmptyTitle').textContent = 'Could not load trusted IPs';
+    document.getElementById('ipEmptyBody').textContent = 'There was a problem reaching Supabase. Try again shortly.';
+  }
+}
+
+function renderIps(ips){
+  const tbody = document.getElementById('ipTableBody');
+  const emptyState = document.getElementById('ipEmptyState');
+  tbody.innerHTML = '';
+
+  if(!ips.length){
+    emptyState.style.display = '';
+    document.getElementById('ipEmptyTitle').textContent = 'No trusted IPs yet';
+    document.getElementById('ipEmptyBody').textContent = 'Add an IP address to start building the allowlist.';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  ips.forEach(ip => {
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="mono">' + escapeHtml(ip.address) + '</td>' +
+      '<td>' + escapeHtml(ip.label || '') + '</td>' +
+      '<td>' + escapeHtml(ip.addedBy || '') + '</td>' +
+      '<td class="mono">' + escapeHtml(ip.addedOn || '') + '</td>' +
+      '<td class="tbl-actions"><button type="button" class="remove-ip-btn" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button></td>';
+    tr.querySelector('.remove-ip-btn').addEventListener('click', () => removeIp(ip));
+    tbody.appendChild(tr);
+  });
+}
+
+async function removeIp(ip){
+  if(!confirm('Remove ' + ip.address + ' from the trusted allowlist?')) return;
+  try{
+    const next = cachedIps.filter(i => i.id !== ip.id);
+    await window.storage.set(TRUSTED_IPS_KEY, JSON.stringify(next), true);
+    showToast('Trusted IP removed.');
+    loadIps();
+  }catch(err){
+    console.error('Failed to remove trusted IP', err);
+    showToast('Could not remove this IP. Please try again.');
+  }
+}
+
+/* ---------- Add trusted IP modal ---------- */
+const ipModalBackdrop = document.getElementById('ipModalBackdrop');
+document.getElementById('addIpBtn').addEventListener('click', () => {
+  document.getElementById('ipFormAddress').value = '';
+  document.getElementById('ipFormLabel').value = '';
+  ipModalBackdrop.classList.add('open');
+});
+document.getElementById('ipModalClose').addEventListener('click', () => ipModalBackdrop.classList.remove('open'));
+document.getElementById('ipFormCancelBtn').addEventListener('click', () => ipModalBackdrop.classList.remove('open'));
+ipModalBackdrop.addEventListener('click', (e) => { if(e.target === ipModalBackdrop) ipModalBackdrop.classList.remove('open'); });
+
+document.getElementById('ipFormSaveBtn').addEventListener('click', async () => {
+  const address = document.getElementById('ipFormAddress').value.trim();
+  const label = document.getElementById('ipFormLabel').value.trim();
+  if(!address){
+    showToast('Please enter an IP address.');
+    return;
+  }
+  try{
+    const { profile } = await KPS.getSessionProfile();
+    const entry = {
+      id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+      address, label,
+      addedBy: (profile && profile.full_name) || 'Super Admin',
+      addedOn: new Date().toISOString().slice(0, 10)
+    };
+    const next = [...cachedIps, entry];
+    await window.storage.set(TRUSTED_IPS_KEY, JSON.stringify(next), true);
+    showToast('Trusted IP added.');
+    ipModalBackdrop.classList.remove('open');
+    loadIps();
+  }catch(err){
+    console.error('Failed to add trusted IP', err);
+    showToast('Could not add this IP. Please try again.');
+  }
+});
+
+/* ---------- Login activity table (real: login_history + profiles) ---------- */
+async function loadEvents(){
+  const tbody = document.getElementById('eventTableBody');
+  const emptyState = document.getElementById('eventEmptyState');
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">Loading activity&hellip;</td></tr>';
+  emptyState.style.display = 'none';
+
+  const search = document.getElementById('eventSearch').value.trim();
+  const typeFilter = document.getElementById('eventTypeFilter').value; // '' | 'success' | 'failed'
+  const statusFilter = document.getElementById('eventStatusFilter').value;
+
+  try{
+    let query = sb.from('login_history')
+      .select('id, profile_id, ip_address, user_agent, success, created_at, profiles(full_name, username, role)', { count: 'exact' });
+
+    const effectiveStatus = statusFilter || typeFilter;
+    if(effectiveStatus === 'success') query = query.eq('success', true);
+    if(effectiveStatus === 'failed') query = query.eq('success', false);
+
+    if(search){
+      const { data: matches } = await sb.from('profiles').select('id')
+        .or(`full_name.ilike.%${search}%,username.ilike.%${search}%`);
+      const ids = (matches || []).map(m => m.id);
+      query = query.in('profile_id', ids.length ? ids : ['00000000-0000-0000-0000-000000000000']);
+    }
+
+    query = query.order('created_at', { ascending: false })
+      .range((currentEventPage - 1) * eventPageSize, currentEventPage * eventPageSize - 1);
+
+    const { data, error, count } = await query;
+    if(error) throw error;
+
+    const events = (data || []).map(row => {
+      const p = row.profiles || {};
+      return {
+        profileId: row.profile_id || '',
+        userName: p.full_name || p.username || 'Unknown',
+        userEmail: p.username ? ('@' + p.username) : '',
+        typeLabel: row.success ? 'Sign-in' : 'Failed sign-in',
+        ip: row.ip_address || '',
+        location: '',
+        time: row.created_at ? new Date(row.created_at).toLocaleString() : '',
+        status: row.success ? 'Success' : 'Failed',
+        statusColor: row.success ? 'green' : 'red'
+      };
+    });
+    renderEvents(events);
+    renderEventPager(currentEventPage, eventPageSize, count || 0);
+  }catch(err){
+    console.error('Failed to load login activity', err);
+    tbody.innerHTML = '';
+    emptyState.style.display = '';
+    document.getElementById('eventEmptyTitle').textContent = 'Could not load activity';
+    document.getElementById('eventEmptyBody').textContent = 'There was a problem reaching Supabase. Try again shortly.';
+    document.getElementById('eventPgInfo').textContent = 'Showing 0 of 0 events';
+  }
+}
+
+function renderEvents(events){
+  const tbody = document.getElementById('eventTableBody');
+  const emptyState = document.getElementById('eventEmptyState');
+  tbody.innerHTML = '';
+
+  if(!events.length){
+    emptyState.style.display = '';
+    document.getElementById('eventEmptyTitle').textContent = 'No activity found';
+    document.getElementById('eventEmptyBody').textContent = 'There is no login activity matching the current filters.';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  events.forEach(ev => {
+    const tr = document.createElement('tr');
+    const nameHtml = ev.profileId
+      ? '<a href="edit-user.html?id=' + encodeURIComponent(ev.profileId) + '" style="color:inherit; text-decoration:none;">' + escapeHtml(ev.userName) + '</a>'
+      : escapeHtml(ev.userName);
+    tr.innerHTML =
+      '<td><div class="avatar-name"><div>' +
+        '<div class="nm">' + nameHtml + '</div>' +
+        '<div class="sb">' + escapeHtml(ev.userEmail || '') + '</div>' +
+      '</div></div></td>' +
+      '<td>' + escapeHtml(ev.typeLabel || '') + '</td>' +
+      '<td class="mono">' + escapeHtml(ev.ip || '') + '</td>' +
+      '<td>' + escapeHtml(ev.location || '') + '</td>' +
+      '<td class="mono">' + escapeHtml(ev.time || '') + '</td>' +
+      '<td><span class="pill ' + (ev.statusColor || 'grey') + '">' + escapeHtml(ev.status || '') + '</span></td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function renderEventPager(page, size, total){
+  currentEventPage = page;
+  const start = total === 0 ? 0 : (page - 1) * size + 1;
+  const end = Math.min(page * size, total);
+  document.getElementById('eventPgInfo').innerHTML = 'Showing <b>' + start + '&ndash;' + end + '</b> of <b>' + formatNumber(total) + '</b> events';
+
+  const totalPages = Math.max(1, Math.ceil(total / size));
+  const btnsWrap = document.getElementById('eventPgBtns');
+  btnsWrap.innerHTML = '';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.type = 'button'; prevBtn.id = 'eventPgPrev'; prevBtn.textContent = '\u2039';
+  prevBtn.disabled = page <= 1;
+  prevBtn.addEventListener('click', () => { if(currentEventPage > 1){ currentEventPage--; loadEvents(); } });
+  btnsWrap.appendChild(prevBtn);
+
+  const maxButtons = 5;
+  let startPage = Math.max(1, page - Math.floor(maxButtons / 2));
+  let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+  startPage = Math.max(1, endPage - maxButtons + 1);
+
+  for(let p = startPage; p <= endPage; p++){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = p;
+    if(p === page) b.classList.add('active');
+    b.addEventListener('click', () => { currentEventPage = p; loadEvents(); });
+    btnsWrap.appendChild(b);
+  }
+
+  const nextBtn = document.createElement('button');
+  nextBtn.type = 'button'; nextBtn.id = 'eventPgNext'; nextBtn.textContent = '\u203a';
+  nextBtn.disabled = page >= totalPages;
+  nextBtn.addEventListener('click', () => { if(currentEventPage < totalPages){ currentEventPage++; loadEvents(); } });
+  btnsWrap.appendChild(nextBtn);
+}
+
+document.getElementById('eventSearch').addEventListener('input', () => {
+  clearTimeout(eventSearchDebounce);
+  eventSearchDebounce = setTimeout(() => { currentEventPage = 1; loadEvents(); }, 300);
+});
+document.getElementById('eventTypeFilter').addEventListener('change', () => { currentEventPage = 1; loadEvents(); });
+document.getElementById('eventStatusFilter').addEventListener('change', () => { currentEventPage = 1; loadEvents(); });
+
+/* ---------- Global search (topbar) mirrors the activity search field ---------- */
+document.getElementById('globalSearch').addEventListener('input', (e) => {
+  document.getElementById('eventSearch').value = e.target.value;
+  clearTimeout(eventSearchDebounce);
+  eventSearchDebounce = setTimeout(() => { currentEventPage = 1; loadEvents(); }, 300);
+});
+
+/* ---------- Initial load ---------- */
+loadSummary();
+loadSettings();
+loadIps();
+loadEvents();
+</script>
+</body>
+</html>

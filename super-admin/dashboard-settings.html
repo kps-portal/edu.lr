@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Dashboard Settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand img{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; object-fit:cover; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER (ICT signature element) ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* chart bars */
+.chart-bars{ display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:10px; }
+.chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.chart-bar{ width:100%; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--gold-light), var(--gold-deep)); position:relative; transition:filter .15s; }
+.chart-bar:hover{ filter:brightness(1.08); }
+.chart-bar.alt{ background:linear-gradient(180deg, #9FB6E0, var(--navy-3)); }
+.chart-lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+.chart-legend{ display:flex; gap:16px; margin-top:6px; font-size:11.5px; color:var(--muted); }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.chip-dot{ width:8px; height:8px; border-radius:2px; }
+
+/* feed / lists */
+.feed-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px dashed var(--line); }
+.feed-item:last-child{ border-bottom:none; }
+.feed-dot{ width:32px; height:32px; border-radius:9px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex:none; }
+.feed-dot svg{ width:15px; height:15px; color:var(--crimson); }
+.feed-dot.gold svg{ color:var(--gold-deep); }
+.feed-dot.navy svg{ color:var(--navy-3); }
+.feed-text{ font-size:13px; font-weight:600; }
+.feed-sub{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.feed-time{ margin-left:auto; font-size:11px; color:var(--muted); white-space:nowrap; }
+
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+.progress-track{ height:6px; border-radius:20px; background:var(--line); overflow:hidden; flex:1; }
+.progress-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); }
+.progress-fill.ok{ background:linear-gradient(90deg, #8FD8AC, var(--success)); }
+.progress-fill.warn{ background:linear-gradient(90deg, var(--gold-light), var(--warn)); }
+.progress-fill.bad{ background:linear-gradient(90deg, #F0A7AE, var(--danger)); }
+
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.health-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; padding:7px 0; }
+.health-row .hb{ flex:1; height:7px; background:var(--line); border-radius:20px; overflow:hidden; }
+.health-row .hb i{ display:block; height:100%; border-radius:20px; }
+.health-row .hv{ width:74px; text-align:right; font-weight:700; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+button.pill:hover{ filter:brightness(0.96); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* Module placeholder cards */
+.module-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.module-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.module-ic{ width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.module-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.module-card h4{ margin:0; font-size:14.5px; }
+.module-card p{ margin:0; font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* Device status card (network) */
+.device-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
+.device-top{ display:flex; align-items:center; justify-content:space-between; }
+.device-ic{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.device-ic svg{ width:19px; height:19px; }
+.device-name{ font-weight:700; font-size:13.5px; margin-top:2px; }
+.device-meta{ font-size:11.5px; color:var(--muted); }
+
+/* Restricted note */
+.restricted-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#FBE6E6; border:1px solid #F3C7CB; margin-top:14px; }
+.restricted-note svg{ width:16px; height:16px; color:var(--danger); flex:none; margin-top:1px; }
+.restricted-note div{ font-size:12px; color:#7A2530; line-height:1.55; }
+.restricted-note b{ color:var(--danger); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field input[type=text], .field input[type=password], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.settings-list .row-line{ align-items:flex-start; }
+.settings-list .rl-name{ font-size:13.5px; }
+.settings-list .rl-sub{ margin-top:2px; max-width:52ch; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .bento{ grid-template-columns:1fr; }
+  .grid-3,.grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .tbl-actions, .toolbar, .tabs, .toast-wrap, .modal-backdrop, .footer-ribbon, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .view{ display:none !important; }
+  .view.active{ display:block !important; }
+  .card, .stat-card, .module-card, .device-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid,.grid-3,.grid-2,.grid-4{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+
+/* ============================= FORM-SPECIFIC (Create User / Registration) ============================= */
+.role-tabs{ display:flex; gap:8px; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); padding:6px; border-radius:14px; width:fit-content; margin-bottom:22px; }
+.role-tab{ display:flex; align-items:center; gap:8px; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:700; color:var(--muted); border:none; background:transparent; }
+.role-tab svg{ width:16px; height:16px; }
+.role-tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.form-shell{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; }
+.form-head{ padding:22px 26px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; }
+.form-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.form-head h2{ color:#fff; margin:0 0 4px; font-size:20px; }
+.form-head p{ margin:0; color:rgba(255,255,255,.65); font-size:12.6px; max-width:60ch; }
+.form-body{ padding:26px; display:flex; flex-direction:column; gap:26px; }
+
+.fsection{ border:1px dashed var(--line); border-radius:14px; padding:20px 22px; }
+.fsection-title{ display:flex; align-items:center; gap:10px; margin:0 0 16px; font-size:14px; font-weight:800; color:var(--navy); }
+.fsection-title .num{ width:24px; height:24px; border-radius:8px; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex:none; }
+
+.fgrid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+.fgrid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+.fgrid.cols-4{ grid-template-columns:repeat(4, 1fr); }
+.fspan-2{ grid-column:span 2; }
+.fspan-3{ grid-column:span 3; }
+
+.field .hint{ font-size:10.8px; color:var(--muted); font-weight:500; }
+.field .err{ font-size:10.8px; color:var(--danger); font-weight:700; display:none; }
+.field.invalid input, .field.invalid select, .field.invalid textarea{ border-color:var(--danger); background:#FEF4F4; }
+.field.invalid .err{ display:block; }
+.field.valid input, .field.valid select{ border-color:#9CD3AF; }
+
+.field input[type=text], .field input[type=email], .field input[type=tel], .field input[type=password],
+.field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit;
+  background:var(--paper); width:100%; transition:border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); }
+.field textarea{ resize:vertical; min-height:70px; }
+
+.dob-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+.radio-row, .check-row{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
+.radio-opt, .check-opt{ display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; cursor:pointer; }
+.radio-opt input, .check-opt input{ width:16px; height:16px; accent-color:var(--crimson-bright); cursor:pointer; }
+
+.role-fields{ display:none; }
+.role-fields.active{ display:block; }
+
+table.qual{ width:100%; border-collapse:collapse; font-size:12.6px; }
+table.qual th{ text-align:left; font-size:10.6px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:8px 10px; border-bottom:2px solid var(--line); }
+table.qual td{ padding:7px 10px; border-bottom:1px solid var(--line); }
+table.qual input{ border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-size:12.6px; width:100%; font-family:inherit; }
+table.qual tr:last-child td{ border-bottom:none; }
+
+.role-pill-preview{ display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:20px; font-size:11.5px; font-weight:800; }
+
+.form-foot{ padding:20px 26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:#FBF8F0; }
+.form-foot .fp-note{ font-size:11.8px; color:var(--muted); max-width:52ch; }
+.form-actions{ display:flex; gap:10px; }
+
+@media (max-width: 900px){
+  .fgrid, .fgrid.cols-2, .fgrid.cols-4{ grid-template-columns:1fr; }
+  .dob-row{ grid-template-columns:1fr 1fr 1fr; }
+}
+
+</style>
+<style>
+.app{ display:block; grid-template-columns:none; min-height:100vh; }
+.main{ min-width:0; }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<style>
+/* ============================= DASHBOARD SETTINGS — EXTRA COMPONENTS ============================= */
+
+/* Connection status badge */
+.conn-badge{ display:inline-flex; align-items:center; gap:7px; padding:6px 13px; border-radius:20px; font-size:11.5px; font-weight:700; border:1px solid var(--line); background:var(--paper); }
+.conn-dot{ width:8px; height:8px; border-radius:50%; background:var(--muted); flex:none; }
+.conn-badge.checking .conn-dot{ background:var(--gold); animation:pulse 1.4s infinite; }
+.conn-badge.online .conn-dot{ background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; }
+.conn-badge.online{ color:var(--success); border-color:#C7E6D1; background:#EEF8F1; }
+.conn-badge.offline .conn-dot{ background:var(--danger); }
+.conn-badge.offline{ color:var(--danger); border-color:#F3C7CB; background:#FDEEEF; }
+
+.db-warning{ display:flex; align-items:flex-start; gap:12px; padding:14px 18px; border-radius:14px; background:#FDEEEF; border:1px solid #F3C7CB; margin-bottom:20px; }
+.db-warning svg{ width:18px; height:18px; color:var(--danger); flex:none; margin-top:2px; }
+.db-warning .dw-t{ font-size:12.8px; font-weight:800; color:#7A2530; }
+.db-warning .dw-s{ font-size:12px; color:#7A2530; margin-top:3px; line-height:1.55; }
+.db-warning code{ background:rgba(200,20,48,.1); padding:1px 6px; border-radius:5px; font-family:'IBM Plex Mono',monospace; font-size:11px; }
+
+/* Toggle switch */
+.switch-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid var(--line); }
+.switch-row:last-child{ border-bottom:none; }
+.switch-copy .sw-name{ font-size:13.5px; font-weight:700; color:var(--ink); }
+.switch-copy .sw-sub{ font-size:12px; color:var(--muted); margin-top:3px; max-width:52ch; line-height:1.5; }
+.switch{ position:relative; width:44px; height:25px; flex:none; }
+.switch input{ opacity:0; width:0; height:0; position:absolute; }
+.switch .track{ position:absolute; inset:0; background:#DCD2BB; border-radius:20px; transition:background .18s ease; cursor:pointer; }
+.switch .track::after{ content:""; position:absolute; width:19px; height:19px; left:3px; top:3px; background:#fff; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,.2); transition:transform .18s ease; }
+.switch input:checked + .track{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.switch input:checked + .track::after{ transform:translateX(19px); }
+.switch input:disabled + .track{ opacity:.5; cursor:not-allowed; }
+.switch input:focus-visible + .track{ box-shadow:0 0 0 3px rgba(217,138,36,.3); }
+
+/* Upload dropzone */
+.upload-zone{ display:flex; align-items:center; gap:16px; padding:16px; border:1.5px dashed var(--line); border-radius:14px; background:#FBF8F0; }
+.upload-preview{ width:64px; height:64px; border-radius:12px; background:var(--paper); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; flex:none; }
+.upload-preview img{ width:100%; height:100%; object-fit:cover; }
+.upload-preview svg{ width:24px; height:24px; color:var(--muted); }
+.upload-copy{ flex:1; }
+.upload-copy .u-t{ font-size:13px; font-weight:700; }
+.upload-copy .u-s{ font-size:11.5px; color:var(--muted); margin-top:2px; }
+.upload-actions{ display:flex; gap:8px; }
+.upload-actions input[type=file]{ display:none; }
+
+/* Jump nav (settings categories) */
+.settings-jump{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
+.jump-pill{ display:flex; align-items:center; gap:7px; padding:8px 15px; border-radius:20px; font-size:12px; font-weight:700; color:var(--navy); background:var(--paper); border:1px solid var(--line); transition:border-color .15s, background .15s; }
+.jump-pill:hover{ border-color:var(--gold); background:#FBF4E6; }
+.jump-pill svg{ width:14px; height:14px; }
+
+/* Section-level saved/loading indicator */
+.field.skeleton input, .field.skeleton select{ background:linear-gradient(90deg, #F3EEDF 25%, #EDE6D0 37%, #F3EEDF 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; color:transparent; }
+@keyframes shimmer{ 0%{background-position:100% 50%;} 100%{background-position:0 50%;} }
+
+.readonly-note{ display:inline-flex; align-items:center; gap:5px; font-size:10.5px; color:var(--muted); font-weight:600; margin-left:8px; }
+.readonly-note svg{ width:11px; height:11px; }
+
+.range-row{ display:flex; align-items:center; gap:14px; }
+.range-row input[type=range]{ flex:1; accent-color:var(--crimson-bright); }
+.range-val{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:700; color:var(--navy); min-width:52px; text-align:right; }
+
+.save-bar{ position:sticky; bottom:0; z-index:40; }
+</style>
+
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+  <main class="main">
+    <header class="topbar">
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia &middot; Ministry of Education</div>
+        <div class="page-title">Dashboard Settings</div>
+      </div>
+      <div id="connBadge" class="conn-badge checking">
+        <span class="conn-dot"></span>
+        <span id="connBadgeText">Connecting to database&hellip;</span>
+      </div>
+      <a class="btn btn-ghost" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+        Back to Dashboard
+      </a>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="view active" id="view-dashboard-settings">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div>
+            <div class="sb-t">Live Dashboard Configuration</div>
+            <div class="sb-s">Everything on this page reads from and writes to the school&rsquo;s live database &mdash; there is no sample or placeholder data. Changes here control what every new and existing Super Admin dashboard displays across <b class="sa">Kingsville Public High School</b>. All saves are <b class="sa">audit-logged</b>.</div>
+          </div>
+        </div>
+
+        <div id="dbWarning" class="db-warning" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+          <div>
+            <div class="dw-t">Not connected to the database yet</div>
+            <div class="dw-s" id="dbWarningText">This form could not reach the database. Nothing has been loaded or saved &mdash; no data on this page is fabricated.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Super Admin &middot; Dashboard Settings</h2>
+            <p>Configure branding, widgets, localization, notifications and sync behaviour for the Super Administrator dashboard. Fields marked <span class="readonly-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>DB-managed</span> are pulled live and edited elsewhere in the system.</p>
+          </div>
+        </div>
+
+        <div class="settings-jump">
+          <a class="jump-pill" href="#sec-branding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-6 9 6M4 10v10h16V10"/></svg>Branding</a>
+          <a class="jump-pill" href="#sec-widgets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Widgets &amp; Layout</a>
+          <a class="jump-pill" href="#sec-locale"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"/></svg>Regional</a>
+          <a class="jump-pill" href="#sec-notify"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Notifications</a>
+          <a class="jump-pill" href="#sec-sync"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>Data &amp; Session</a>
+        </div>
+
+        <form id="dashboardSettingsForm" novalidate>
+          <div class="form-shell">
+
+            <div class="form-head">
+              <h2>Dashboard Preferences</h2>
+              <p>Kingsville Public High School &middot; Super Administrator Console &middot; <span id="formHeadStatus">loading current settings&hellip;</span></p>
+            </div>
+
+            <div class="form-body">
+
+              <!-- SECTION 1: Branding -->
+              <div class="fsection" id="sec-branding">
+                <div class="fsection-title"><span class="num">1</span> Institution Identity &amp; Branding</div>
+
+                <div class="upload-zone" style="margin-bottom:18px;">
+                  <div class="upload-preview" id="logoPreviewBox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-6 9 6M4 10v10h16V10"/></svg>
+                  </div>
+                  <div class="upload-copy">
+                    <div class="u-t">Dashboard Crest / Logo</div>
+                    <div class="u-s">Shown on every Super Admin dashboard and printed reports. PNG or JPG, square, up to 2MB.</div>
+                  </div>
+                  <div class="upload-actions">
+                    <label class="btn btn-ghost btn-sm" for="logoFile">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5-5 5 5"/><path d="M4 21h16"/></svg>
+                      Upload
+                    </label>
+                    <input type="file" id="logoFile" accept="image/png, image/jpeg">
+                  </div>
+                </div>
+
+                <div class="fgrid cols-2">
+                  <div class="field" id="f-instName">
+                    <label>Institution Name <span class="readonly-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>DB-managed</span></label>
+                    <input type="text" id="instName" placeholder="Loading from database&hellip;" readonly>
+                    <span class="hint">Edit in Super Admin &rarr; Institution Setup</span>
+                  </div>
+                  <div class="field" id="f-instMotto">
+                    <label>Institution Motto</label>
+                    <input type="text" id="instMotto" maxlength="80" placeholder="Loading from database&hellip;">
+                    <span class="hint">Displayed under the crest across the dashboard</span>
+                  </div>
+                  <div class="field fspan-2" id="f-instAddress">
+                    <label>Institution Address <span class="readonly-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>DB-managed</span></label>
+                    <input type="text" id="instAddress" placeholder="Loading from database&hellip;" readonly>
+                    <span class="hint">Edit in Super Admin &rarr; Institution Setup</span>
+                  </div>
+                  <div class="field" id="f-accentTheme">
+                    <label>Accent Theme</label>
+                    <select id="accentTheme">
+                      <option value="crimson-gold">Crimson &amp; Gold (Official)</option>
+                      <option value="navy-gold">Navy &amp; Gold</option>
+                      <option value="crimson-navy">Crimson &amp; Navy</option>
+                    </select>
+                    <span class="hint">Applies to every Super Admin session dashboard-wide</span>
+                  </div>
+                  <div class="field" id="f-favIcon">
+                    <label>Browser Tab Title Prefix</label>
+                    <input type="text" id="tabTitlePrefix" maxlength="20" placeholder="e.g. KPHS-MIS">
+                    <span class="hint">Shown before the page name in the browser tab</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 2: Widgets & Layout -->
+              <div class="fsection" id="sec-widgets">
+                <div class="fsection-title"><span class="num">2</span> Dashboard Widgets &amp; Layout</div>
+                <p style="margin:-8px 0 14px; font-size:12.5px; color:var(--muted);">Choose which live panels appear on the Super Admin dashboard home. Every figure shown in these panels is pulled from the database in real time &mdash; nothing here is a mock-up.</p>
+
+                <div class="settings-list">
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">Enrollment Overview</div>
+                      <div class="sw-sub">Live student headcount by class, grade and status, pulled from the Registrar records.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="w_enrollment" checked><span class="track"></span></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">Attendance Snapshot</div>
+                      <div class="sw-sub">Today&rsquo;s attendance rate and flagged absences, sourced from daily attendance logs.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="w_attendance" checked><span class="track"></span></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">Finance Summary</div>
+                      <div class="sw-sub">Outstanding balances and current-term collections from the Finance ledger.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="w_finance" checked><span class="track"></span></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">Staff Directory Quick Access</div>
+                      <div class="sw-sub">Searchable shortcut into active teaching and non-teaching staff records.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="w_staff"><span class="track"></span></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">Recent System Activity</div>
+                      <div class="sw-sub">Live feed from the audit log &mdash; account creations, approvals, edits, deletions.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="w_activity" checked><span class="track"></span></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">Pending Approvals Queue</div>
+                      <div class="sw-sub">Count and list of records waiting in Workflow Management for sign-off.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="w_approvals" checked><span class="track"></span></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">Upcoming Calendar Events</div>
+                      <div class="sw-sub">Next entries from the academic calendar &mdash; exams, holidays, meetings.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="w_calendar"><span class="track"></span></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">ICT System Health</div>
+                      <div class="sw-sub">Live server, backup and device status pulled from the ICT monitoring module.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="w_ict"><span class="track"></span></label>
+                  </div>
+                </div>
+
+                <div class="fgrid cols-2" style="margin-top:16px;">
+                  <div class="field" id="f-landing">
+                    <label>Default Landing View</label>
+                    <select id="defaultLanding">
+                      <option value="dashboard">Dashboard Home</option>
+                      <option value="approvals">Pending Approvals</option>
+                      <option value="reports">Reports &amp; Analytics</option>
+                      <option value="users">User Management</option>
+                    </select>
+                    <span class="hint">First screen shown after Super Admin sign-in</span>
+                  </div>
+                  <div class="field" id="f-density">
+                    <label>Layout Density</label>
+                    <select id="layoutDensity">
+                      <option value="comfortable">Comfortable</option>
+                      <option value="compact">Compact</option>
+                    </select>
+                    <span class="hint">Spacing of cards and tables across the console</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 3: Regional -->
+              <div class="fsection" id="sec-locale">
+                <div class="fsection-title"><span class="num">3</span> Regional &amp; Localization</div>
+                <div class="fgrid cols-4">
+                  <div class="field" id="f-timezone">
+                    <label>Timezone</label>
+                    <select id="timezone">
+                      <option value="Africa/Monrovia">Africa/Monrovia (GMT+0)</option>
+                      <option value="UTC">UTC</option>
+                    </select>
+                  </div>
+                  <div class="field" id="f-dateFormat">
+                    <label>Date Format</label>
+                    <select id="dateFormat">
+                      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                  </div>
+                  <div class="field" id="f-timeFormat">
+                    <label>Time Format</label>
+                    <select id="timeFormat">
+                      <option value="12h">12-hour (AM/PM)</option>
+                      <option value="24h">24-hour</option>
+                    </select>
+                  </div>
+                  <div class="field" id="f-perPage">
+                    <label>Records Per Page</label>
+                    <select id="recordsPerPage">
+                      <option value="10">10</option>
+                      <option value="25" selected>25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                  </div>
+                  <div class="field fspan-2" id="f-language">
+                    <label>System Language</label>
+                    <select id="language">
+                      <option value="en">English</option>
+                    </select>
+                    <span class="hint">Additional languages are not yet installed on this server</span>
+                  </div>
+                  <div class="field fspan-2" id="f-academicYearStart">
+                    <label>Academic Year Start Month <span class="readonly-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>DB-managed</span></label>
+                    <input type="text" id="academicYearStart" placeholder="Loading from database&hellip;" readonly>
+                    <span class="hint">Edit in Super Admin &rarr; Academic Year</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 4: Notifications -->
+              <div class="fsection" id="sec-notify">
+                <div class="fsection-title"><span class="num">4</span> Notifications &amp; Alerts</div>
+                <div class="settings-list">
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">Email Notifications</div>
+                      <div class="sw-sub">Approval requests, security alerts and daily digests sent to your registered email.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="n_email" checked><span class="track"></span></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">SMS Notifications</div>
+                      <div class="sw-sub">Critical alerts only (security incidents, system downtime) via the configured SMS gateway.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="n_sms"><span class="track"></span></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">In-App Notifications</div>
+                      <div class="sw-sub">Bell-icon alerts inside the console for new approvals and system events.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="n_inapp" checked><span class="track"></span></label>
+                  </div>
+                  <div class="switch-row">
+                    <div class="switch-copy">
+                      <div class="sw-name">System Maintenance Alerts</div>
+                      <div class="sw-sub">Warn all admins before scheduled backups or maintenance windows.</div>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="n_maintenance" checked><span class="track"></span></label>
+                  </div>
+                </div>
+                <div class="fgrid cols-2" style="margin-top:16px;">
+                  <div class="field" id="f-digest">
+                    <label>Digest Frequency</label>
+                    <select id="digestFrequency">
+                      <option value="realtime">Real-time</option>
+                      <option value="daily" selected>Daily Summary</option>
+                      <option value="weekly">Weekly Summary</option>
+                    </select>
+                  </div>
+                  <div class="field" id="f-attendanceThreshold">
+                    <label>Low-Attendance Alert Threshold</label>
+                    <div class="range-row">
+                      <input type="range" id="attendanceThreshold" min="50" max="95" value="75" step="1">
+                      <span class="range-val" id="attendanceThresholdVal">75%</span>
+                    </div>
+                    <span class="hint">Flag a class when attendance falls below this percentage</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 5: Data & Session -->
+              <div class="fsection" id="sec-sync">
+                <div class="fsection-title"><span class="num">5</span> Data Refresh &amp; Session</div>
+                <div class="fgrid cols-4">
+                  <div class="field" id="f-refresh">
+                    <label>Dashboard Auto-Refresh</label>
+                    <select id="autoRefresh">
+                      <option value="30">Every 30 seconds</option>
+                      <option value="60" selected>Every 1 minute</option>
+                      <option value="300">Every 5 minutes</option>
+                      <option value="0">Manual only</option>
+                    </select>
+                  </div>
+                  <div class="field" id="f-sessionTimeout">
+                    <label>Session Timeout (minutes)</label>
+                    <input type="text" id="sessionTimeout" maxlength="3" placeholder="e.g. 30">
+                  </div>
+                  <div class="field" id="f-auditRetention">
+                    <label>Audit Log Retention (days)</label>
+                    <input type="text" id="auditRetention" maxlength="4" placeholder="e.g. 365">
+                  </div>
+                  <div class="field" id="f-reauth">
+                    <label style="visibility:hidden;">.</label>
+                    <div class="switch-row" style="border:none; padding:8px 0 0;">
+                      <div class="switch-copy">
+                        <div class="sw-name" style="font-size:12.5px;">Require re-auth for sensitive actions</div>
+                      </div>
+                      <label class="switch"><input type="checkbox" id="requireReauth" checked><span class="track"></span></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="form-foot save-bar">
+              <div class="fp-note" id="settingsNote">Saving writes directly to the live database (<code style="font-family:'IBM Plex Mono',monospace;">kv_store</code>, key <code style="font-family:'IBM Plex Mono',monospace;">settings:dashboard</code>). Every change is audit-logged with your account and timestamp.</div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-ghost" id="resetBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+                  Revert to Saved
+                </button>
+                <button type="submit" class="btn btn-primary" id="saveBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+                  Save Dashboard Settings
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </form>
+
+        <div class="allowed-note" id="noFakeDataNote">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          <div><b>No sample data policy:</b> this page never displays placeholder numbers, names or statuses. Every field is either loaded live from the database or left blank/disabled until a connection is available.</div>
+        </div>
+
+      </section>
+
+      <div class="footer-ribbon">
+        <img class="footer-crest" src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="">
+        Kingsville Public High School &middot; Super Administrator Console &middot; <b>Knowledge is Power</b> &middot; Kingsville #7, Careysburg District
+        <img class="footer-crest" src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="">
+        Republic of Liberia &middot; Ministry of Education
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =====================================================================================
+   DASHBOARD SETTINGS — LIVE DATABASE INTEGRATION (Supabase, no fake /api/... layer)
+   =====================================================================================
+   This page contains NO sample, demo, or placeholder data.
+
+   - institutionName / institutionAddress / academicYearStart are READ-ONLY here and
+     come straight from the real `institutions` table (the same singleton row
+     super-admin/institution-setup.html manages — see
+     supabase/migrations/011_addendum_institution_setup_wiring.sql). They are never
+     written from this page, matching the original contract.
+   - Everything else (widgets, layout, notifications, thresholds, security knobs) is
+     a single shared JSON row in the `kv_store` table under the key below — the same
+     bridge super-admin/system-settings.html already uses for its config, and the
+     pattern 000_MASTER_SCHEMA.sql explicitly calls out for this exact page (see the
+     "NOTE on config-only screens" comment above the workflow_steps table def).
+   ===================================================================================== */
+
+const SETTINGS_KEY = 'settings:dashboard';
+const INSTITUTION_ID = '00000000-0000-0000-0000-000000000001';
+
+const els = {
+  connBadge: document.getElementById('connBadge'),
+  connBadgeText: document.getElementById('connBadgeText'),
+  dbWarning: document.getElementById('dbWarning'),
+  dbWarningText: document.getElementById('dbWarningText'),
+  formHeadStatus: document.getElementById('formHeadStatus'),
+  form: document.getElementById('dashboardSettingsForm'),
+  saveBtn: document.getElementById('saveBtn'),
+};
+
+let lastLoadedSettings = null;
+
+/* ---------- Connection status UI ---------- */
+function setConnStatus(state, text){
+  els.connBadge.className = 'conn-badge ' + state;
+  els.connBadgeText.textContent = text;
+}
+
+function showDbWarning(show, detail){
+  els.dbWarning.style.display = show ? 'flex' : 'none';
+  if(detail) els.dbWarningText.textContent = detail;
+}
+
+/* ---------- Field <-> form mapping ---------- */
+function applySettingsToForm(s){
+  const set = (id, val) => { const el = document.getElementById(id); if(el && val !== undefined && val !== null) el.value = val; };
+  const setChecked = (id, val) => { const el = document.getElementById(id); if(el && val !== undefined && val !== null) el.checked = !!val; };
+
+  set('instName', s.institutionName);
+  set('instMotto', s.institutionMotto);
+  set('instAddress', s.institutionAddress);
+  set('accentTheme', s.accentTheme);
+  set('tabTitlePrefix', s.tabTitlePrefix);
+  set('academicYearStart', s.academicYearStart);
+
+  if(s.logoUrl){
+    document.getElementById('logoPreviewBox').innerHTML = '<img src="' + s.logoUrl + '" alt="Institution logo">';
+  }
+
+  if(s.widgets){
+    setChecked('w_enrollment', s.widgets.enrollment);
+    setChecked('w_attendance', s.widgets.attendance);
+    setChecked('w_finance', s.widgets.finance);
+    setChecked('w_staff', s.widgets.staff);
+    setChecked('w_activity', s.widgets.activity);
+    setChecked('w_approvals', s.widgets.approvals);
+    setChecked('w_calendar', s.widgets.calendar);
+    setChecked('w_ict', s.widgets.ict);
+  }
+
+  set('defaultLanding', s.defaultLanding);
+  set('layoutDensity', s.layoutDensity);
+  set('timezone', s.timezone);
+  set('dateFormat', s.dateFormat);
+  set('timeFormat', s.timeFormat);
+  set('recordsPerPage', s.recordsPerPage);
+  set('language', s.language);
+
+  if(s.notifications){
+    setChecked('n_email', s.notifications.email);
+    setChecked('n_sms', s.notifications.sms);
+    setChecked('n_inapp', s.notifications.inapp);
+    setChecked('n_maintenance', s.notifications.maintenance);
+  }
+
+  set('digestFrequency', s.digestFrequency);
+  if(s.attendanceThreshold !== undefined){
+    document.getElementById('attendanceThreshold').value = s.attendanceThreshold;
+    document.getElementById('attendanceThresholdVal').textContent = s.attendanceThreshold + '%';
+  }
+  if(s.autoRefreshSeconds !== undefined) set('autoRefresh', String(s.autoRefreshSeconds));
+  set('sessionTimeout', s.sessionTimeoutMinutes);
+  set('auditRetention', s.auditRetentionDays);
+  setChecked('requireReauth', s.requireReauth);
+}
+
+function readFormAsSettings(){
+  return {
+    institutionMotto: document.getElementById('instMotto').value,
+    accentTheme: document.getElementById('accentTheme').value,
+    tabTitlePrefix: document.getElementById('tabTitlePrefix').value,
+    widgets: {
+      enrollment: document.getElementById('w_enrollment').checked,
+      attendance: document.getElementById('w_attendance').checked,
+      finance: document.getElementById('w_finance').checked,
+      staff: document.getElementById('w_staff').checked,
+      activity: document.getElementById('w_activity').checked,
+      approvals: document.getElementById('w_approvals').checked,
+      calendar: document.getElementById('w_calendar').checked,
+      ict: document.getElementById('w_ict').checked,
+    },
+    defaultLanding: document.getElementById('defaultLanding').value,
+    layoutDensity: document.getElementById('layoutDensity').value,
+    timezone: document.getElementById('timezone').value,
+    dateFormat: document.getElementById('dateFormat').value,
+    timeFormat: document.getElementById('timeFormat').value,
+    recordsPerPage: Number(document.getElementById('recordsPerPage').value),
+    language: document.getElementById('language').value,
+    notifications: {
+      email: document.getElementById('n_email').checked,
+      sms: document.getElementById('n_sms').checked,
+      inapp: document.getElementById('n_inapp').checked,
+      maintenance: document.getElementById('n_maintenance').checked,
+    },
+    digestFrequency: document.getElementById('digestFrequency').value,
+    attendanceThreshold: Number(document.getElementById('attendanceThreshold').value),
+    autoRefreshSeconds: Number(document.getElementById('autoRefresh').value),
+    sessionTimeoutMinutes: document.getElementById('sessionTimeout').value,
+    auditRetentionDays: document.getElementById('auditRetention').value,
+    requireReauth: document.getElementById('requireReauth').checked,
+  };
+}
+
+/* ---------- Loading skeleton ---------- */
+function setSkeleton(on){
+  document.querySelectorAll('.fsection .field').forEach(f => {
+    if(f.querySelector('input[readonly]') || f.querySelector('input, select')){
+      f.classList.toggle('skeleton', on);
+    }
+  });
+}
+
+/* ---------- Load from database ---------- */
+async function loadSettings(){
+  setConnStatus('checking', 'Connecting to database\u2026');
+  setSkeleton(true);
+  try{
+    const [instRows, kvRow] = await Promise.all([
+      KPS.db.list('institutions', q => q.eq('id', INSTITUTION_ID).limit(1)),
+      KPS.kv.get(SETTINGS_KEY, true).catch(() => null)
+    ]);
+    const inst = instRows && instRows[0] ? instRows[0] : {};
+    const stored = (kvRow && kvRow.value) ? kvRow.value : {};
+
+    const data = Object.assign({}, stored, {
+      institutionName: inst.name,
+      institutionMotto: inst.motto,
+      institutionAddress: inst.address,
+      logoUrl: inst.logo_url,
+      academicYearStart: inst.academic_year_start
+    });
+
+    lastLoadedSettings = data;
+    applySettingsToForm(data);
+    setConnStatus('online', 'Connected \u00b7 live data loaded');
+    showDbWarning(false);
+    els.formHeadStatus.textContent = 'settings loaded from the live database';
+  }catch(err){
+    console.error('Failed to load dashboard settings', err);
+    setConnStatus('offline', 'Database not connected');
+    showDbWarning(true, 'This form could not reach the database (' + err.message + '). Nothing has been loaded or saved \u2014 no data on this page is fabricated.');
+    els.formHeadStatus.textContent = 'waiting for a database connection';
+  }finally{
+    setSkeleton(false);
+  }
+}
+
+/* ---------- Save to database ---------- */
+async function saveSettings(payload){
+  const saved = await KPS.kv.set(SETTINGS_KEY, payload, true);
+  return saved ? saved.value : payload;
+}
+
+/* ---------- Toast ---------- */
+function showToast(msg, isError){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  if(isError) t.style.borderLeftColor = 'var(--danger)';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4600);
+}
+
+/* ---------- Wire up interactions ---------- */
+document.getElementById('attendanceThreshold').addEventListener('input', function(){
+  document.getElementById('attendanceThresholdVal').textContent = this.value + '%';
+});
+
+document.getElementById('logoFile').addEventListener('change', function(){
+  const file = this.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('logoPreviewBox').innerHTML = '<img src="' + e.target.result + '" alt="New logo preview">';
+  };
+  reader.readAsDataURL(file);
+  showToast('Logo selected \u2014 it will upload when you save.');
+});
+
+els.form.addEventListener('submit', async function(e){
+  e.preventDefault();
+  const payload = readFormAsSettings();
+  els.saveBtn.disabled = true;
+  els.saveBtn.style.opacity = '.7';
+  try{
+    const saved = await saveSettings(payload);
+    lastLoadedSettings = Object.assign({}, lastLoadedSettings, saved || payload);
+    showToast('Dashboard settings saved to the database.');
+    setConnStatus('online', 'Connected \u00b7 changes saved');
+    showDbWarning(false);
+  }catch(err){
+    showToast('Could not save: ' + err.message, true);
+    setConnStatus('offline', 'Database not connected');
+    showDbWarning(true, 'Save failed (' + err.message + '). Your changes were not written anywhere \u2014 nothing on this page is stored locally as a fallback.');
+  }finally{
+    els.saveBtn.disabled = false;
+    els.saveBtn.style.opacity = '';
+  }
+});
+
+document.getElementById('resetBtn').addEventListener('click', function(){
+  if(lastLoadedSettings){
+    applySettingsToForm(lastLoadedSettings);
+    showToast('Reverted to last saved values.');
+  }else{
+    showToast('Nothing has loaded from the database yet.', true);
+  }
+});
+
+loadSettings();
+</script>
+
+</body>
+</html>

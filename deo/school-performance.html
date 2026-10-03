@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>EDU.LR — School Performance Scorecards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches DEO Dashboard / Teacher Register / Principal / Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand-mark{ width:46px; height:46px; flex:none; border-radius:14px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); box-shadow:0 0 0 2px rgba(217,138,36,.18); }
+.brand-mark svg{ width:24px; height:24px; color:#2A1806; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.content{ padding:22px 32px 60px; }
+
+/* ============================= SCOPE BANNER ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+.btn[disabled]{ opacity:.4; cursor:not-allowed; pointer-events:none; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:11.8px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* feed / lists */
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:11.5px; }
+table.data th{ text-align:left; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:7px 10px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data th.sortable{ cursor:pointer; user-select:none; }
+table.data th.sortable:hover{ color:var(--ink); }
+table.data th.sorted{ color:var(--crimson); }
+.rank-chip{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:7px; background:var(--cream); border:1px solid var(--line); font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; color:var(--muted); }
+table.data td{ padding:7px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Restricted / allowed notes */
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+select.btn{ font-family:inherit; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7064' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>"); background-repeat:no-repeat; background-position:right 8px center; background-size:13px; padding-right:26px; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(3,1fr); }
+  .bento{ grid-template-columns:1fr; }
+}
+@media (max-width:640px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .toolbar, .toast-wrap, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+</style>
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+
+<div class="app">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M4 21V9.5L12 4l8 5.5V21"/><path d="M9 21v-6h6v6"/><path d="M8 9.5h.01M12 9.5h.01M16 9.5h.01M8 13h.01M16 13h.01"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="k1">Careysburg District</div>
+        <div class="k2">DEO Portal</div>
+      </div>
+    </div>
+
+    <div class="role-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></svg>
+      <span>DEO &middot; DISTRICT SUPERVISION &amp; OVERSIGHT</span>
+    </div>
+
+    <div class="nav-group-label">Overview</div>
+    <div class="nav">
+      <a class="nav-item" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Command Center
+      </a>
+    </div>
+
+    <div class="nav-group-label">District Supervision</div>
+    <div class="nav">
+      <a class="nav-item" href="schools.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+        All Schools
+      </a>
+      <a class="nav-item" href="school-profile.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        School Profiles
+      </a>
+      <a class="nav-item" href="school-visits.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Supervision Plan
+      </a>
+      <a class="nav-item" href="inspection.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Inspections
+      </a>
+      <a class="nav-item" href="inspection-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        Inspection Reports
+      </a>
+    </div>
+
+    <div class="nav-group-label">People Oversight</div>
+    <div class="nav">
+      <a class="nav-item" href="principals.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/></svg>
+        Principals &amp; Administrators
+      </a>
+      <a class="nav-item" href="teachers.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>
+        Teacher Register
+      </a>
+      <a class="nav-item" href="students.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+        Learner Register
+      </a>
+      <a class="nav-item" href="student-attendance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 14l2 2 4-4"/></svg>
+        Learner Attendance
+      </a>
+    </div>
+
+    <div class="nav-group-label">Academics</div>
+    <div class="nav">
+      <a class="nav-item" href="academic-monitoring.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V5a2 2 0 00-2-2H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M9 8h7M9 12h7"/></svg>
+        Teaching &amp; Learning
+      </a>
+      <a class="nav-item" href="curriculum.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6.5C10 4.8 6.8 4 4 4v13c2.8 0 6 .8 8 2.5 2-1.7 5.2-2.5 8-2.5V4c-2.8 0-6 .8-8 2.5z"/></svg>
+        Curriculum
+      </a>
+      <a class="nav-item" href="assessment-results.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        Assessment &amp; Examinations
+      </a>
+      <a class="nav-item active" href="school-performance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        School Performance
+      </a>
+    </div>
+
+    <div class="nav-group-label">Governance</div>
+    <div class="nav">
+      <a class="nav-item" href="lsmc.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+        LSMC
+      </a>
+      <a class="nav-item" href="policies-directives.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>District Compliance</a>
+      <a class="nav-item" href="complaints-incidents.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        Complaints &amp; Incidents
+      </a>
+    </div>
+
+    <div class="nav-group-label">Statistics &amp; Reports</div>
+    <div class="nav">
+      <a class="nav-item" href="statistics.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        District Statistics
+      </a>
+      <a class="nav-item" href="reports.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        Reports Center
+      </a>
+      <a class="nav-item" href="monthly-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Monthly Report
+      </a>
+      <a class="nav-item" href="quarterly-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Quarterly Report
+      </a>
+      <a class="nav-item" href="annual-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Annual Report
+      </a>
+      <a class="nav-item" href="special-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Special Report
+      </a>
+    </div>
+
+    <div class="nav-group-label">Risk &amp; Accountability</div>
+    <div class="nav">
+      <a class="nav-item" href="risk-register.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        Risk &amp; Safeguarding
+      </a>
+      <a class="nav-item" href="audit-log.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+        Audit &amp; Accountability
+      </a>
+    </div>
+
+    <div class="cannot-box">
+      <div class="title">✕ Restricted</div>
+      <ul style="margin:0; padding:0; list-style:none;">
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">Cannot edit a school's marks, attendance or profile here — scores are computed read-only from records approved elsewhere</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">Ratings shown are a UI-only scoring convention, not an officially certified formula</li>
+      </ul>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sys-health">
+        <div class="pulse-dot warn" id="healthDot"></div>
+        <div class="sys-health-text">
+          <b id="healthLabel">Not connected</b>
+          <span id="healthSub">Connect your database to load live records</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="page-title-wrap">
+        <div class="page-title">School Performance Scorecards</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search schools or principals…">
+      </div>
+      <button class="icon-btn" onclick="window.print()" title="Print this view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+      </button>
+      <button class="icon-btn" onclick="location.href='notifications.html'" title="Alerts &amp; notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
+      </button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">—</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting DEO account</div>
+        </div>
+      </div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <div class="scope-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+        <div>
+          <div class="sb-t">Scope of Access</div>
+          <div class="sb-s">This scorecard reads every school in <code>public.institutions</code>, joined against <code>profiles</code> (principals), published rows in <code>marks</code> (via <code>students</code>) for an Academic score, and <code>attendance_daily_summary</code> for an Attendance score. It is read-only: the DEO can review scores and flag schools for improvement here, but cannot edit a mark, an attendance record or a school's profile — those stay the Teacher/Principal's and <b class="sa">Super Administrator's</b> responsibility respectively.</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>School Performance Scorecards and Improvement Priorities</h2>
+          <p>Each school's Academic and Attendance scores, computed directly from already-published marks and submitted attendance, combined into an overall score used only to sort schools by improvement priority — not an officially certified rating.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div class="bento" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-head">
+            <h3>School Performance Scorecard</h3>
+            <span style="font-size:10.5px;color:var(--success);font-weight:800;letter-spacing:.3px;">● LIVE</span>
+          </div>
+          <div style="padding:0 20px 4px;">
+            <div class="toolbar" style="margin-bottom:10px;">
+              <div class="search-pill" style="width:280px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input id="schoolsFilter" type="text" placeholder="Filter by school or principal…">
+              </div>
+              <select id="schoolsStatusFilter" class="btn btn-ghost btn-sm" style="font-weight:600;">
+                <option value="">All ratings</option>
+                <option value="Excelling">Excelling (≥80)</option>
+                <option value="Satisfactory">Satisfactory (60–79)</option>
+                <option value="Needs Improvement">Needs improvement (&lt;60)</option>
+                <option value="Pending">Pending data</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" id="exportSchoolsBtn" type="button">Export CSV</button>
+              <span id="schoolsRangeLabel" style="font-size:11.5px; color:var(--muted); margin-left:auto;">—</span>
+            </div>
+          </div>
+          <div class="table-wrap" style="padding:0 14px 8px;">
+            <table class="data" id="schoolsTable">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th class="sortable" data-key="name">School</th>
+                  <th data-key="principalName" class="sortable">Principal</th>
+                  <th class="sortable" data-key="academic">Academic %</th>
+                  <th class="sortable" data-key="attendance">Attendance %</th>
+                  <th class="sortable sorted" data-key="overall">Overall Score</th>
+                  <th>Rating</th>
+                </tr>
+              </thead>
+              <tbody id="schoolsTableBody"></tbody>
+            </table>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:4px 20px 18px;">
+            <button class="btn btn-sm btn-ghost" id="schoolsPrevBtn">← Previous</button>
+            <span id="schoolsPageLabel" style="font-size:11.5px; color:var(--muted); min-width:70px; text-align:center;">Page 1</span>
+            <button class="btn btn-sm btn-ghost" id="schoolsNextBtn">Next →</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Improvement Priorities</h3></div>
+          <div class="card-body" id="followUpFeed"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head"><h3>What this page shows</h3></div>
+        <div class="card-body" style="font-size:12px; color:var(--muted); line-height:1.7;">
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Academic %</b> is the average of (score ÷ max score) across every <i>published</i> row in <code>marks</code> belonging to that school's students — the same calculation <code>statistics.html</code> already runs. A school with no published marks yet shows "—", not 0%.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Attendance %</b> is today's row in <code>attendance_daily_summary</code> for that school (present ÷ total marked). A school with no attendance submitted yet today shows "—", not 0%.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Overall Score</b> is a UI-only heuristic — 60% Academic % + 40% Attendance % when both are on file, falling back to whichever one is on file, and left blank if neither is. It is not an officially certified rating.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Rating</b> and <b style="color:var(--ink);">Rank</b> both come from Overall Score — Excelling ≥80, Satisfactory 60–79, Needs Improvement below 60, Pending with no data yet. Rank is each school's fixed position by Overall Score and does not change when you sort the table by a different column.</p>
+          <p style="margin:0;">A school "Type" / "Level" column and a per-school "Last Inspection" column are intentionally not shown: <code>inspection_reports</code> has no <code>institution_id</code> link anywhere in this schema yet, so a per-school inspection date cannot be shown honestly. See the handoff note before inventing one.</p>
+        </div>
+      </div>
+
+      <div class="allowed-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><b>DEO can:</b> view every school's live Academic %, Attendance % and Overall Score, sort and filter by rating, export the scorecard to CSV, and identify schools that need improvement follow-up — all read-only.</div>
+      </div>
+
+      <div class="footer-ribbon">
+        EDU.LR · District Education Officer's Console · <b>Careysburg District</b> · Montserrado County
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATA LAYER — DEO / School Performance Scorecards (premium build)
+   Wired directly to EDU.LR's live Supabase project. No demo/placeholder
+   numbers — every stat, feed and table row below is computed from:
+
+     institutions             -> every school in the district,
+                                  select('*'), .order('name'), .limit(1000)
+                                  — same query dashboard.html already runs.
+     profiles                 -> id, full_name, institution_id
+                                  .eq('role','principal').eq('is_active',true)
+                                  and .eq('role','teacher').eq('is_active',true)
+                                  — same columns dashboard.html/teachers.html
+                                  already rely on. profiles.institution_id is
+                                  a real column here (unlike students/
+                                  attendance_daily_summary below).
+     students                 -> id, section_id, sections(class_id,
+                                  classes(institution_id)),
+                                  .eq('status','active') — same active-learner
+                                  definition students.html already uses.
+                                  students has no institution_id column of
+                                  its own — it's resolved via
+                                  section_id -> sections.class_id ->
+                                  classes.institution_id (same FK chain
+                                  deo/students.html and student-attendance.html
+                                  use) and normalized onto each row below.
+     attendance_daily_summary -> present_count, absent_count, late_count,
+                                  excused_count, section_id, sections(class_id,
+                                  classes(institution_id)), .eq('date', today)
+                                  — same "today" attendance join
+                                  dashboard.html already uses. Also has no
+                                  institution_id of its own; resolved via the
+                                  same section->class chain.
+     marks                    -> student_id, score, max_score,
+                                  .eq('published', true) — same published-only
+                                  read deo/statistics.html and
+                                  deo/assessment-results.html already use.
+                                  Joined to a school via each mark's
+                                  student_id -> students.institution_id (marks
+                                  has no institution_id column of its own —
+                                  and neither, transitively, does the
+                                  students row it's joined to; both are
+                                  resolved through the same chain above).
+
+   Academic % per school is the mean of (score / max_score * 100) across
+   every published mark belonging to that school's students — identical to
+   the avgMark calculation deo/statistics.html already runs. Attendance % is
+   today's present ÷ total marked, same as the rest of the DEO console.
+
+   Overall Score is a UI-only heuristic — not an officially certified rating —
+   computed as 60% Academic % + 40% Attendance % when both are on file. If
+   only one of the two is on file, Overall Score falls back to that one
+   alone; if neither is on file yet, Overall Score is left blank and the
+   school is rated "Pending" rather than guessed. Rating bands (Excelling
+   ≥80, Satisfactory 60–79, Needs Improvement <60) match the thresholds
+   already shown in this page's own rating filter. Rank is each school's
+   1-based position when every school is sorted by Overall Score (lowest
+   first for ties/nulls) — it stays fixed regardless of which column the
+   table is currently sorted by.
+
+   Per-school aggregation is done client-side, grouping each table by
+   institution_id — the exact pattern deo/dashboard.html already
+   established. Nothing here is hardcoded to a single school and nothing is
+   demo/placeholder data: an empty state means the district genuinely has
+   no matching rows in Supabase yet.
+
+   Deliberately NOT shown: a per-school "Last Inspection" date/rating, and
+   a school "Type"/"Level" column. Neither has a verified live source in
+   this schema — inspection_reports has no institution_id column anywhere
+   else in the codebase, and no confirmed type/level column exists on
+   institutions beyond id/name/address. Inventing either would be fake
+   data. See HANDOFF-schools.html.md before adding them.
+   ========================================================================= */
+let institutions = [];   // real schools, augmented with learners/teachers/principalName/academic/attendance/overall/rank
+let profile = null;
+let sortKey = 'overall';
+let sortDir = 'desc';
+
+const stats = [
+  { label: 'Schools in District', ic: 'school', color: 'navy' },
+  { label: 'Excelling (\u226580)', ic: 'shield' },
+  { label: 'Satisfactory (60\u201379)', ic: 'staff', color: 'gold' },
+  { label: 'Needs Improvement (<60)', ic: 'alert' },
+  { label: 'District Academic Avg %', ic: 'percent', color: 'navy' },
+  { label: 'District Attendance Avg %', ic: 'users', color: 'gold' },
+];
+const icons = {
+  users: '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/>',
+  school: '<path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/>',
+  shield: '<path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/>',
+  staff: '<path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/>',
+  percent: '<circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/><path d="M18 6L6 18"/>',
+  alert: '<path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+};
+
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function showToast(msg, kind){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),250); }, 3600);
+}
+function initials(name){ return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''); }
+function emptyFeed(msg){
+  return `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg><h4>Nothing to show yet</h4><p>${msg}</p></div>`;
+}
+function renderStatGrid(){
+  document.getElementById('statGrid').innerHTML = stats.map(s=>`
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-ic ${s.color||''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${icons[s.ic]}</svg></div>
+        <span class="stat-trend flat">live</span>
+      </div>
+      <div class="stat-num mono">${s.value ?? '—'}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`).join('');
+}
+
+/* ---- District School Register: search + status filter + pagination ---- */
+const SCHOOLS_PAGE_SIZE = 10;
+let schoolsQuery = '';
+let schoolsStatusFilterVal = '';
+let schoolsPage = 0;
+
+function ratingLabel(s){
+  if (s.overall === null || s.overall === undefined) return 'Pending';
+  if (s.overall >= 80) return 'Excelling';
+  if (s.overall >= 60) return 'Satisfactory';
+  return 'Needs Improvement';
+}
+function ratingPill(s){
+  const label = ratingLabel(s);
+  const map = { Excelling: 'green', Satisfactory: 'gold', 'Needs Improvement': 'red', Pending: 'grey' };
+  return `<span class="pill ${map[label]}">${label}</span>`;
+}
+function pctCell(v){ return v !== null && v !== undefined ? `${v}%` : '—'; }
+function schoolRowHtml(s){
+  return `
+    <tr>
+      <td class="mono">${s.rank ?? '—'}</td>
+      <td><div class="avatar-name"><div class="av">${initials(s.name)}</div><div><div class="nm">${escapeHtml(s.name || 'Untitled School')}</div><div class="sb">${escapeHtml(s.address || 'Careysburg District')}</div></div></div></td>
+      <td>${escapeHtml(s.principalName || '—')}</td>
+      <td class="mono">${pctCell(s.academic)}</td>
+      <td class="mono">${pctCell(s.attendance)}</td>
+      <td class="mono">${pctCell(s.overall)}</td>
+      <td>${ratingPill(s)}</td>
+    </tr>`;
+}
+function filteredInstitutions(){
+  const q = schoolsQuery.trim().toLowerCase();
+  return institutions.filter(s => {
+    if (schoolsStatusFilterVal && ratingLabel(s) !== schoolsStatusFilterVal) return false;
+    if (!q) return true;
+    return (
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.principalName || '').toLowerCase().includes(q) ||
+      (s.address || '').toLowerCase().includes(q)
+    );
+  });
+}
+function sortValue(s, key){
+  if (key === 'principalName') return (s.principalName || '').toLowerCase();
+  if (key === 'name') return (s.name || '').toLowerCase();
+  return s[key]; // academic / attendance / overall — numeric or null
+}
+function compareSchools(a, b){
+  const av = sortValue(a, sortKey), bv = sortValue(b, sortKey);
+  const aNull = av === null || av === undefined || av === '';
+  const bNull = bv === null || bv === undefined || bv === '';
+  if (aNull && bNull) return 0;
+  if (aNull) return 1;   // rows with no data always sink to the bottom
+  if (bNull) return -1;
+  if (typeof av === 'string') return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+  return sortDir === 'asc' ? av - bv : bv - av;
+}
+function sortedInstitutions(list){
+  return list.slice().sort(compareSchools);
+}
+function applySortedHeaderClass(){
+  document.querySelectorAll('#schoolsTable th.sortable').forEach(th => {
+    th.classList.toggle('sorted', th.dataset.key === sortKey);
+  });
+}
+function renderSchoolsTable(){
+  const tbody = document.getElementById('schoolsTableBody');
+  const list = sortedInstitutions(filteredInstitutions());
+  const totalPages = Math.max(1, Math.ceil(list.length / SCHOOLS_PAGE_SIZE));
+  if (schoolsPage > totalPages - 1) schoolsPage = totalPages - 1;
+  if (schoolsPage < 0) schoolsPage = 0;
+
+  if (!institutions.length){
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);">No schools onboarded to EDU.LR yet.</td></tr>`;
+  } else if (!list.length){
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);">No schools match the current search/filter.</td></tr>`;
+  } else {
+    const start = schoolsPage * SCHOOLS_PAGE_SIZE;
+    tbody.innerHTML = list.slice(start, start + SCHOOLS_PAGE_SIZE).map(schoolRowHtml).join('');
+  }
+
+  const rangeLabel = document.getElementById('schoolsRangeLabel');
+  const pageLabel = document.getElementById('schoolsPageLabel');
+  const prevBtn = document.getElementById('schoolsPrevBtn');
+  const nextBtn = document.getElementById('schoolsNextBtn');
+  if (!list.length){
+    rangeLabel.textContent = `0 of ${institutions.length} schools`;
+  } else {
+    const start = schoolsPage * SCHOOLS_PAGE_SIZE;
+    const end = Math.min(list.length, start + SCHOOLS_PAGE_SIZE);
+    rangeLabel.textContent = `Showing ${start + 1}–${end} of ${list.length}${(schoolsQuery || schoolsStatusFilterVal) ? ' matching' : ''} schools`;
+  }
+  pageLabel.textContent = `Page ${schoolsPage + 1} of ${totalPages}`;
+  prevBtn.disabled = schoolsPage <= 0;
+  nextBtn.disabled = schoolsPage >= totalPages - 1;
+  applySortedHeaderClass();
+}
+
+function exportSchoolsCsv(){
+  const list = sortedInstitutions(filteredInstitutions());
+  const header = ['Rank', 'School', 'Address', 'Principal', 'Academic %', 'Attendance %', 'Overall Score', 'Rating'];
+  const rows = list.map(s => [
+    s.rank ?? '',
+    s.name || 'Untitled School',
+    s.address || '',
+    s.principalName || '',
+    s.academic ?? '',
+    s.attendance ?? '',
+    s.overall ?? '',
+    ratingLabel(s)
+  ]);
+  const csvEscape = v => `"${String(v).replace(/"/g, '""')}"`;
+  const csv = [header, ...rows].map(r => r.map(csvEscape).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'school-performance-scorecard.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`Exported ${list.length} school record${list.length === 1 ? '' : 's'}`);
+}
+
+function renderFollowUpFeed(){
+  const el = document.getElementById('followUpFeed');
+  const flagged = institutions
+    .filter(s => s.overall !== null && s.overall !== undefined && s.overall < 60)
+    .sort((a, b) => a.overall - b.overall)
+    .slice(0, 8);
+  if (!flagged.length){
+    el.innerHTML = emptyFeed('No school currently falls below the 60-point "Needs Improvement" threshold.');
+    return;
+  }
+  el.innerHTML = flagged.map(s => `
+    <div class="row-line">
+      <span class="rl-name">${escapeHtml(s.name || 'Untitled School')}</span>
+      <span class="rl-sub">${escapeHtml(s.address || 'Careysburg District')} · Overall ${s.overall} · Academic ${pctCell(s.academic)} · Attendance ${pctCell(s.attendance)}</span>
+      <span class="pill red">Needs Improvement</span>
+    </div>`).join('');
+}
+
+function renderConnectionStatus(){
+  const dot = document.getElementById('healthDot');
+  const label = document.getElementById('healthLabel');
+  const sub = document.getElementById('healthSub');
+  dot.classList.remove('warn');
+  label.textContent = 'Live data connected';
+  sub.textContent = (window.KPS && KPS.SUPABASE_URL) || '';
+}
+
+function renderProfileChip(){
+  const chipAvatar = document.getElementById('chipAvatar');
+  const chipName = document.getElementById('chipName');
+  const chipRole = document.getElementById('chipRole');
+  if (profile && profile.full_name){
+    chipAvatar.textContent = initials(profile.full_name);
+    chipName.textContent = profile.full_name;
+    chipRole.textContent = 'District Education Officer';
+  } else {
+    chipAvatar.textContent = '—';
+    chipName.textContent = 'Not signed in';
+    chipRole.textContent = 'Awaiting DEO account';
+  }
+}
+
+async function loadAllData(){
+  try {
+    const sbc = () => window.sb;
+    const today = new Date().toISOString().slice(0,10);
+
+    const [institutionsRes, principalRes, teacherRes, studentRes, attendRes, marksRes] = await Promise.all([
+      sbc().from('institutions').select('*').order('name', { ascending: true }).limit(1000),
+      sbc().from('profiles').select('id, full_name, institution_id', { count: 'exact' }).eq('role', 'principal').eq('is_active', true),
+      sbc().from('profiles').select('id, institution_id', { count: 'exact' }).eq('role', 'teacher').eq('is_active', true),
+      sbc().from('students').select('id, section_id, sections(class_id, classes(institution_id))', { count: 'exact', head: false }).eq('status', 'active'),
+      sbc().from('attendance_daily_summary').select('present_count, absent_count, late_count, excused_count, section_id, sections(class_id, classes(institution_id))').eq('date', today),
+      sbc().from('marks').select('student_id, score, max_score').eq('published', true).limit(20000),
+    ]);
+    [institutionsRes, principalRes, teacherRes, studentRes, attendRes, marksRes].forEach(r => { if (r && r.error) throw r.error; });
+
+    const realInstitutions = institutionsRes.data || [];
+    const principalRows = principalRes.data || [];
+    const teacherRows = teacherRes.data || [];
+    // students/attendance_daily_summary have no institution_id of their own —
+    // resolve it via section_id -> sections.class_id -> classes.institution_id
+    // (same FK chain as deo/students.html, student-attendance.html and
+    // assessment-results.html) and normalize onto each row as .institution_id
+    // so the rest of this function can keep using that field name.
+    function resolveInstId(row){
+      return row.sections && row.sections.classes ? row.sections.classes.institution_id : null;
+    }
+    const studentRows = (studentRes.data || []).map(s => ({ ...s, institution_id: resolveInstId(s) }));
+    const attendRows = (attendRes.data || []).map(a => ({ ...a, institution_id: resolveInstId(a) }));
+    const marksRows = marksRes.data || [];
+
+    // ---- marks: sum/count per institution, via student_id -> institution_id ----
+    const studentInstMap = {};
+    studentRows.forEach(s => { studentInstMap[s.id] = s.institution_id; });
+    const marksByInst = {};
+    marksRows.forEach(m => {
+      if (!m.max_score) return;
+      const instId = studentInstMap[m.student_id];
+      if (!instId) return;
+      const pct = (m.score / m.max_score) * 100;
+      const bucket = marksByInst[instId] || { sum: 0, count: 0 };
+      bucket.sum += pct; bucket.count++;
+      marksByInst[instId] = bucket;
+    });
+
+    institutions = realInstitutions.map(inst => {
+      const learners = studentRows.filter(s => s.institution_id === inst.id).length;
+      const teachers = teacherRows.filter(t => t.institution_id === inst.id).length;
+      const principalRow = principalRows.find(p => p.institution_id === inst.id);
+      const attToday = attendRows.filter(a => a.institution_id === inst.id);
+      let attendance = null;
+      if (attToday.length){
+        const totals = attToday.reduce((acc, r) => {
+          acc.present += r.present_count || 0;
+          acc.total += (r.present_count||0) + (r.absent_count||0) + (r.late_count||0) + (r.excused_count||0);
+          return acc;
+        }, { present: 0, total: 0 });
+        if (totals.total > 0) attendance = Math.round((totals.present / totals.total) * 1000) / 10;
+      }
+      const markBucket = marksByInst[inst.id];
+      const academic = markBucket && markBucket.count ? Math.round((markBucket.sum / markBucket.count) * 10) / 10 : null;
+
+      // Overall Score: 60% academic + 40% attendance when both are on file;
+      // falls back to whichever one is on file; null when neither is.
+      let overall = null;
+      if (academic !== null && attendance !== null) overall = Math.round((academic * 0.6 + attendance * 0.4) * 10) / 10;
+      else if (academic !== null) overall = academic;
+      else if (attendance !== null) overall = attendance;
+
+      return { ...inst, learners, teachers, principalName: principalRow ? principalRow.full_name : null, attendance, academic, overall };
+    });
+
+    // Fixed rank: position by Overall Score, best first, no-data schools last —
+    // stays put regardless of which column the table is currently sorted by.
+    institutions
+      .slice()
+      .sort((a, b) => {
+        const an = a.overall === null || a.overall === undefined;
+        const bn = b.overall === null || b.overall === undefined;
+        if (an && bn) return 0;
+        if (an) return 1;
+        if (bn) return -1;
+        return b.overall - a.overall;
+      })
+      .forEach((s, i) => { s.rank = (s.overall === null || s.overall === undefined) ? null : i + 1; });
+
+    // ---- District-wide stats ----
+    let districtAttendance = null;
+    if (attendRows.length){
+      const totals = attendRows.reduce((acc, r) => {
+        acc.present += r.present_count || 0;
+        acc.total += (r.present_count||0) + (r.absent_count||0) + (r.late_count||0) + (r.excused_count||0);
+        return acc;
+      }, { present: 0, total: 0 });
+      if (totals.total > 0) districtAttendance = Math.round((totals.present / totals.total) * 1000) / 10;
+    }
+    let districtAcademic = null;
+    const scoredSchools = institutions.filter(s => s.academic !== null && s.academic !== undefined);
+    if (scoredSchools.length){
+      districtAcademic = Math.round((scoredSchools.reduce((sum, s) => sum + s.academic, 0) / scoredSchools.length) * 10) / 10;
+    }
+    const excellingCount = institutions.filter(s => ratingLabel(s) === 'Excelling').length;
+    const satisfactoryCount = institutions.filter(s => ratingLabel(s) === 'Satisfactory').length;
+    const needsImprovementCount = institutions.filter(s => ratingLabel(s) === 'Needs Improvement').length;
+
+    stats.forEach(s => {
+      if (s.label === 'Schools in District') s.value = institutions.length || (institutionsRes.count ?? 0);
+      if (s.label === 'Excelling (\u226580)') s.value = excellingCount;
+      if (s.label === 'Satisfactory (60\u201379)') s.value = satisfactoryCount;
+      if (s.label === 'Needs Improvement (<60)') s.value = needsImprovementCount;
+      if (s.label === 'District Academic Avg %') s.value = districtAcademic !== null ? districtAcademic + '%' : '—';
+      if (s.label === 'District Attendance Avg %') s.value = districtAttendance !== null ? districtAttendance + '%' : '—';
+    });
+  } catch (err) {
+    console.error('[DEO School Performance] failed to load live data', err);
+    showToast('Could not load live data — check your Supabase connection', 'warn');
+  }
+  renderAll();
+}
+
+function renderAll(){
+  renderStatGrid();
+  renderSchoolsTable();
+  renderFollowUpFeed();
+  renderConnectionStatus();
+  renderProfileChip();
+}
+
+(async function init(){
+  const auth = await KPS.requireRole(['deo', 'super_admin']);
+  if (!auth.user) return; // requireRole already redirected to login
+  profile = auth.profile;
+  renderProfileChip();
+  await loadAllData();
+})();
+
+document.getElementById('globalSearch').addEventListener('keydown', e=>{
+  if (e.key === 'Enter' && e.target.value.trim()){
+    schoolsQuery = e.target.value;
+    schoolsPage = 0;
+    document.getElementById('schoolsFilter').value = e.target.value;
+    renderSchoolsTable();
+  }
+});
+const schoolsFilterInput = document.getElementById('schoolsFilter');
+schoolsFilterInput.addEventListener('input', e=>{
+  schoolsQuery = e.target.value;
+  schoolsPage = 0;
+  renderSchoolsTable();
+});
+document.getElementById('schoolsStatusFilter').addEventListener('change', e=>{
+  schoolsStatusFilterVal = e.target.value;
+  schoolsPage = 0;
+  renderSchoolsTable();
+});
+document.getElementById('schoolsPrevBtn').addEventListener('click', ()=>{ schoolsPage -= 1; renderSchoolsTable(); });
+document.getElementById('schoolsNextBtn').addEventListener('click', ()=>{ schoolsPage += 1; renderSchoolsTable(); });
+document.getElementById('exportSchoolsBtn').addEventListener('click', exportSchoolsCsv);
+document.querySelectorAll('#schoolsTable th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    if (sortKey === key){
+      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortKey = key;
+      sortDir = (key === 'name' || key === 'principalName') ? 'asc' : 'desc';
+    }
+    schoolsPage = 0;
+    renderSchoolsTable();
+  });
+});
+</script>
+</body>
+</html>

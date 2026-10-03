@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Student Improvement Plan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;justify-content:center;gap:12px;}
+  header.topbar .left img{height:28px;width:28px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .kps-logo{height:30px;width:30px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+
+  .ticker-bar{
+    background:#fff4d6;border-bottom:1px solid #ecd9a0;
+    display:flex;align-items:center;overflow:hidden;flex-shrink:0;
+    height:clamp(30px,4.2vh,36px);
+  }
+  .ticker-label{
+    flex-shrink:0;display:flex;align-items:center;gap:6px;
+    background:var(--crimson);color:#fff;font-size:11px;font-weight:800;
+    letter-spacing:.4px;text-transform:uppercase;height:100%;padding:0 14px;white-space:nowrap;
+  }
+  .ticker-label svg{width:13px;height:13px;flex-shrink:0;}
+  .ticker-viewport{flex:1;overflow:hidden;position:relative;height:100%;}
+  .ticker-track{
+    display:flex;align-items:center;gap:56px;position:absolute;white-space:nowrap;
+    height:100%;will-change:transform;animation:tickerScroll 30s linear infinite;
+  }
+  .ticker-viewport:hover .ticker-track{animation-play-state:paused;}
+  .ticker-track span{font-size:12.5px;color:var(--ink);font-weight:600;}
+  .ticker-track span.pinned::before{content:"🎯 ";}
+  @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  .ticker-bar.ticker-empty .ticker-track{animation:none;position:static;}
+  .ticker-bar.ticker-empty .ticker-track span{color:var(--muted);font-weight:400;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1060px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;max-height:100%;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,38px) clamp(20px,7vw,36px) clamp(16px,3vh,30px);text-align:left;}
+  .seal-stage{position:relative;width:clamp(70px,12vh,110px);height:clamp(70px,12vh,110px);margin:0 auto clamp(8px,2vh,14px);display:flex;align-items:center;justify-content:center;}
+  .card img.seal{position:relative;z-index:2;height:clamp(60px,10vh,92px);width:clamp(60px,10vh,92px);object-fit:contain;border-radius:50%;background:#fff;padding:4px;box-shadow:0 10px 22px rgba(11,23,48,.25), 0 0 0 4px #fff;}
+  .card h1{font-size:clamp(14.5px,3vh,16.5px);color:var(--navy);font-weight:700;line-height:1.45;margin-bottom:6px;letter-spacing:.2px;text-align:center;}
+  .card h1 .school-line{color:var(--crimson);font-size:clamp(13px,2.7vh,15px);}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:clamp(8px,2vh,14px) auto clamp(12px,3vh,22px);border-radius:2px;}
+
+  .section-tabs{display:flex;gap:6px;background:#f1f1ef;border-radius:8px;padding:4px;margin-bottom:clamp(16px,2.6vh,22px);}
+  .section-tabs button{flex:1;border:none;background:transparent;padding:10px 14px;border-radius:6px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .section-tabs button.active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(11,23,48,.15);}
+  .section-tabs button svg{width:15px;height:15px;}
+  .stat-section{display:none;}
+  .stat-section.active{display:block;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(9px,1.6vh,11px) 13px;border:1px solid var(--line);border-radius:4px;
+    font-size:14px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:90px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .compose-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+  @media (max-width:720px){.compose-grid, .compose-grid.cols-3{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(16px,2.6vh,22px);}
+  .panel h2{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+  .panel h3{font-size:12.5px;font-weight:700;color:var(--navy);margin:16px 0 10px;letter-spacing:.2px;}
+  p.table-hint{font-size:11.5px;color:var(--muted);margin:-4px 0 8px;}
+
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:clamp(14px,2.4vh,20px);}
+  select.scope-select{padding:7px 11px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:#fff;color:var(--ink);}
+  button.refresh-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+  button.refresh-btn:hover{background:#fafafa;}
+  button.refresh-btn svg{width:14px;height:14px;}
+  button.refresh-btn.spinning svg{animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:clamp(18px,3vh,26px);}
+  @media (max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;box-shadow:0 2px 6px rgba(11,23,48,.05);}
+  .kpi-label{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);}
+  .kpi-value{font-size:26px;font-weight:800;color:var(--navy);margin-top:4px;line-height:1.1;}
+  .kpi-value.danger{color:var(--danger);}
+  .kpi-value.ok{color:var(--ok);}
+
+  .table-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .table-filters{display:flex;flex-wrap:wrap;gap:8px;flex:1;}
+  .table-filters input{max-width:240px;}
+  .table-filters select{padding:9px 11px;border:1px solid var(--line);border-radius:4px;font-size:13px;background:#fff;color:var(--ink);}
+  button.export-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;padding:9px 13px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  button.export-btn:hover{background:#fafafa;}
+
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:10px;vertical-align:middle;}
+  .badge.pass{background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .badge.fail{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .badge.role{background:#eef1fb;color:var(--navy);border:1px solid #dbe1f5;}
+  .badge.pending{background:#fff4d6;color:#8a6d1a;border:1px solid #ecd9a0;}
+
+  .request-list{display:flex;flex-direction:column;gap:10px;}
+  .request-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;display:flex;flex-direction:column;gap:6px;position:relative;}
+  .request-card.active{border-left:4px solid var(--ok);}
+  .request-card.completed{border-left:4px solid var(--navy);}
+  .request-card.discontinued{border-left:4px solid var(--danger);}
+  .request-card.draft{border-left:4px solid var(--gold);}
+  .request-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .request-title{font-size:14.5px;font-weight:700;color:var(--navy);}
+  .request-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .request-fees{font-size:12.5px;color:var(--ink);}
+  .request-actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;}
+  button.btn-ghost{border:none;background:none;color:var(--navy);font-weight:600;font-size:12px;cursor:pointer;padding:3px 6px;}
+  button.btn-ghost:hover{text-decoration:underline;}
+  button.btn-ghost.danger{color:var(--danger);}
+  button.btn-ghost.accent{color:var(--crimson);}
+
+  button.btn-primary{padding:10px 20px;border:none;border-radius:4px;background:var(--crimson);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;transition:background .15s;}
+  button.btn-primary:hover{background:var(--crimson-dark);}
+  button.btn-secondary{padding:10px 20px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13.5px;cursor:pointer;}
+  button.btn-secondary:hover{background:#fafafa;}
+  button.btn-generate{padding:10px 20px;border:1px solid var(--navy);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+  button.btn-generate:hover{background:var(--navy);color:#fff;}
+  button.btn-generate svg{width:15px;height:15px;}
+  .compose-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap;}
+
+  .goals-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:8px;}
+  .goals-table th, .goals-table td{border:1px solid var(--line);padding:6px 7px;text-align:left;vertical-align:top;}
+  .goals-table th{background:var(--panel);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);}
+  .goals-table input[type="text"], .goals-table input[type="date"]{width:100%;padding:6px 6px;border:1px solid var(--line);border-radius:3px;font-size:12.5px;}
+  .goals-table select{width:100%;padding:6px 4px;border:1px solid var(--line);border-radius:3px;font-size:12.5px;background:#fff;}
+  .goals-table td.goal-remove{text-align:center;vertical-align:middle;}
+  .goals-table td.goal-remove button{border:none;background:none;color:var(--danger);cursor:pointer;font-weight:700;font-size:14px;}
+  button.add-row-btn{border:1px dashed var(--line);background:#fff;color:var(--navy);border-radius:4px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:14px;}
+  button.add-row-btn:hover{background:#fafafa;}
+
+  .checklist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .checklist label{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink);font-weight:400;text-transform:none;}
+  .checklist input{width:17px;height:17px;accent-color:var(--ok);}
+
+  .back-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:clamp(10px,2vh,16px);font-size:13px;}
+  .back-row a{color:var(--navy);text-decoration:none;font-weight:600;}
+  .back-row a:hover{text-decoration:underline;}
+  .back-row svg{width:14px;height:14px;flex-shrink:0;}
+
+  .msg{margin-top:clamp(8px,1.6vh,14px);font-size:12.5px;padding:9px 11px;border-radius:4px;display:none;text-align:left;}
+  .msg.err{display:block;background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .msg.ok{display:block;background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .empty-state{font-size:12.5px;color:var(--muted);text-align:center;padding:18px 4px;}
+  .updated-note{font-size:11px;color:var(--muted);text-align:right;margin-top:8px;}
+
+  footer.site-footer{background:var(--navy-deep);color:#c9d2e8;font-size:11px;text-align:center;padding:clamp(8px,1.4vh,12px) 10px;border-top:2px solid var(--gold);flex-shrink:0;}
+  footer.site-footer .footer-line-1{font-weight:600;letter-spacing:.2px;}
+  footer.site-footer .footer-line-2{margin-top:3px;font-size:10.5px;color:var(--gold);letter-spacing:.3px;}
+
+  /* ===== Edit modal ===== */
+  .edit-overlay{position:fixed;inset:0;background:rgba(11,23,48,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
+  .edit-overlay.open{display:flex;}
+  .edit-modal{width:100%;max-width:800px;max-height:90vh;overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 20px 50px rgba(11,23,48,.3);padding:22px;}
+  .edit-modal h3{font-size:15px;color:var(--navy);margin-bottom:14px;}
+
+  /* ===== Shared generated-document overlay ===== */
+  .doc-overlay{position:fixed;inset:0;background:rgba(11,23,48,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:16px;}
+  .doc-overlay.open{display:flex;}
+  .doc-modal{width:100%;max-width:820px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 24px 60px rgba(11,23,48,.35);}
+  .doc-paper{padding:clamp(20px,4vw,40px);font-family:Georgia,"Times New Roman",serif;color:#111;}
+  .doc-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:14px clamp(18px,4vw,34px);border-top:1px solid var(--line);background:var(--panel);border-radius:0 0 10px 10px;font-family:"Segoe UI",Arial,sans-serif;}
+  button.btn-share, button.btn-download, button.btn-print, button.btn-doc-delete{padding:10px 18px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-share:hover, button.btn-download:hover{background:#fafafa;}
+  button.btn-print{border:none;background:var(--navy);color:#fff;}
+  button.btn-print:hover{background:var(--navy-deep);}
+  button.btn-doc-delete{border:1px solid #f6c9c4;color:var(--danger);}
+  button.btn-doc-delete:hover{background:#fdecea;}
+
+  /* --- letterhead --- */
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:62px;width:62px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:22px;font-weight:800;color:var(--navy);letter-spacing:.3px;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-office-row{display:flex;justify-content:space-between;align-items:flex-end;font-size:12.5px;font-style:italic;margin-bottom:16px;}
+  .doc-office-row .doc-date{font-style:normal;}
+  .doc-office-row .doc-date b{border-bottom:1px dotted #333;padding-bottom:1px;}
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:10px;text-transform:uppercase;}
+
+  /* --- plan specific --- */
+  .plan-type-line{text-align:center;font-size:12px;font-style:italic;color:#444;margin-bottom:14px;}
+  .plan-status-flag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:4px 12px;border-radius:12px;}
+  .doc-student-row{display:flex;gap:10px;margin-bottom:6px;font-size:13.5px;}
+  .doc-student-row .lbl{font-weight:700;min-width:170px;}
+  .doc-student-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;}
+  .plan-grid-rows{display:grid;grid-template-columns:1fr 1fr;gap:2px 24px;margin:14px 0 18px;}
+  @media (max-width:600px){.plan-grid-rows{grid-template-columns:1fr;}}
+  .plan-section-title{font-weight:700;font-size:13.5px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.3px;color:#20242e;border-bottom:1px solid #ccc;padding-bottom:4px;}
+  .plan-body p{font-size:13.5px;line-height:1.7;margin-bottom:10px;text-align:justify;}
+  table.plan-goals-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0 18px;}
+  table.plan-goals-table th, table.plan-goals-table td{border:1px solid #333;padding:6px 8px;text-align:left;vertical-align:top;}
+  table.plan-goals-table th{background:#f1f1ef;font-style:italic;}
+  .goal-status{font-weight:700;}
+  .goal-status.met{color:var(--ok);}
+  .goal-status.not_met{color:var(--danger);}
+  .goal-status.in_progress{color:#8a6d1a;}
+  .goal-status.not_started{color:#7a7f8a;}
+  .plan-list{list-style:none;margin:0 0 16px 4px;padding:0;}
+  .plan-list li{font-size:13px;line-height:1.9;padding-left:20px;position:relative;}
+  .plan-list li::before{content:"\2756";position:absolute;left:0;top:1px;color:var(--crimson);font-size:11px;}
+  .service-provided{color:var(--ok);font-weight:700;}
+  .service-recommended{color:#8a6d1a;font-weight:700;}
+  .plan-signoff{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:30px 0 10px;}
+  @media (max-width:700px){.plan-signoff{grid-template-columns:1fr 1fr;}}
+  .plan-signoff div{font-size:11.5px;}
+  .plan-signoff .sig-script{font-family:"Brush Script MT",cursive;font-size:20px;margin-bottom:-6px;min-height:24px;}
+  .plan-signoff .sig-name{border-top:1px solid #333;padding-top:4px;font-weight:700;}
+  .plan-signoff .sig-title{color:#555;font-size:11px;}
+  .plan-note{font-size:11.5px;color:#333;margin-top:20px;line-height:1.6;}
+  .plan-ref{font-size:11.5px;margin-top:10px;font-weight:700;}
+
+  @media print{
+    body *{visibility:hidden;}
+    .doc-overlay.open, .doc-overlay.open *{visibility:visible;}
+    .doc-overlay.open{position:absolute;inset:auto;background:none;padding:0;display:block !important;}
+    .doc-overlay.open .doc-modal{position:absolute;top:0;left:0;max-width:100%;max-height:none;box-shadow:none;border-radius:0;overflow:visible;}
+    .doc-actions{display:none !important;}
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left" id="topbarCrestWrap">
+    <img class="kps-logo" src="../assets/images/img-63d9fc79f267bd59.png" alt="Kingsville Public School logo">
+    <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+  </div>
+  <img class="moe-mini" src="../assets/images/img-738ccabf41d2ffd8.png" alt="Ministry of Education seal">
+</header>
+
+<div class="ticker-bar" id="tickerBar">
+  <div class="ticker-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    Improvement Plans
+  </div>
+  <div class="ticker-viewport">
+    <div class="ticker-track" id="tickerTrack">
+      <span>Loading student improvement plan updates&hellip;</span>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+      <div class="seal-stage">
+        <img class="seal" src="../assets/images/img-63d9fc79f267bd59.png" alt="School seal">
+      </div>
+      <h1>Student Improvement Plan<br><span class="school-line">Kingsville Public High School</span></h1>
+      <div class="subtitle-rule"></div>
+
+      <div class="section-tabs" id="sectionTabs">
+        <button data-section="compose" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          New Plan
+        </button>
+        <button data-section="manage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M3 12h18M3 19h18"/></svg>
+          All Plans
+        </button>
+      </div>
+
+      <!-- ================= COMPOSE SECTION ================= -->
+      <section class="stat-section active" id="composeSection">
+        <div class="panel">
+          <h2>New Student Improvement Plan</h2>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newStudentName">Student Name</label>
+              <input id="newStudentName" type="text" placeholder="e.g. Fomba S. Varfee" autocomplete="off" maxlength="150">
+            </div>
+            <div class="field">
+              <label for="newStudentId">Student ID</label>
+              <input id="newStudentId" type="text" placeholder="e.g. KPHS-2026-014" autocomplete="off" maxlength="60">
+            </div>
+            <div class="field">
+              <label for="newGrade">Grade / Class</label>
+              <input id="newGrade" type="text" placeholder="e.g. Grade 10B" autocomplete="off" maxlength="60">
+            </div>
+          </div>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newAcademicYear">Academic Year</label>
+              <input id="newAcademicYear" type="text" placeholder="e.g. 2025/2026" autocomplete="off" maxlength="20">
+            </div>
+            <div class="field">
+              <label for="newPlanType">Plan Type</label>
+              <select id="newPlanType">
+                <option value="academic">Academic</option>
+                <option value="behavioral">Behavioral</option>
+                <option value="attendance">Attendance</option>
+                <option value="social_emotional">Social-Emotional</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="newStatus">Status</label>
+              <select id="newStatus">
+                <option value="draft">Draft</option>
+                <option value="active" selected>Active</option>
+                <option value="completed">Completed</option>
+                <option value="discontinued">Discontinued</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newStartDate">Start Date</label>
+              <input id="newStartDate" type="date">
+            </div>
+            <div class="field">
+              <label for="newReviewDate">Target Review Date</label>
+              <input id="newReviewDate" type="date">
+            </div>
+            <div class="field">
+              <label for="newReviewedBy">Prepared By (Teacher)</label>
+              <input id="newReviewedBy" type="text" placeholder="e.g. Mrs. Kollie" autocomplete="off" maxlength="100">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="newConcernNotes">Areas of Concern</label>
+            <textarea id="newConcernNotes" placeholder="Describe the academic, behavioral, attendance, or social-emotional concerns prompting this plan…" maxlength="1200"></textarea>
+          </div>
+
+          <h3>Goals &amp; Action Steps</h3>
+          <p class="table-hint">Add or remove goals to fit this student's plan.</p>
+          <table class="goals-table" id="goalsTable">
+            <thead>
+              <tr><th style="width:24%;">Goal</th><th style="width:34%;">Action Steps</th><th style="width:16%;">Target Date</th><th style="width:16%;">Status</th><th style="width:30px;"></th></tr>
+            </thead>
+            <tbody id="goalsTableBody"></tbody>
+          </table>
+          <button type="button" class="add-row-btn" id="addGoalRowBtn">+ Add Goal</button>
+
+          <h3>Support Services</h3>
+          <div class="checklist" id="supportChecklist"></div>
+
+          <div class="compose-grid">
+            <div class="field">
+              <label for="newDecisionNotes">Progress Notes / Comments</label>
+              <textarea id="newDecisionNotes" placeholder="Any remarks about progress toward this improvement plan…" maxlength="1000"></textarea>
+            </div>
+            <div class="field">
+              <label for="newPrincipalName">Reviewed By (Principal)</label>
+              <input id="newPrincipalName" type="text" placeholder="e.g. Principal Varfee" autocomplete="off" maxlength="100">
+            </div>
+          </div>
+
+          <div class="compose-actions">
+            <button class="btn-secondary" id="clearComposeBtn" type="button">Clear</button>
+            <button class="btn-generate" id="generatePlanBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/><path d="M9 11h6"/></svg>
+              Generate Improvement Plan
+            </button>
+            <button class="btn-primary" id="postRequestBtn" type="button">Save Plan</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MANAGE SECTION ================= -->
+      <section class="stat-section" id="manageSection">
+
+        <div class="toolbar">
+          <select class="scope-select" id="manageStatusFilter">
+            <option value="">All statuses</option>
+            <option value="draft">Draft</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="discontinued">Discontinued</option>
+          </select>
+          <button class="refresh-btn" id="manageRefreshBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Plans</div>
+            <div class="kpi-value" id="kpiTotal">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Active</div>
+            <div class="kpi-value ok" id="kpiActive">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Completed</div>
+            <div class="kpi-value" id="kpiCompleted">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Discontinued</div>
+            <div class="kpi-value danger" id="kpiDiscontinued">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Reviews Due</div>
+            <div class="kpi-value danger" id="kpiReviewsDue">—</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Student Improvement Plans</h2>
+          <div class="table-toolbar">
+            <div class="table-filters">
+              <input id="manageSearch" type="text" placeholder="Search by student name, ID, or grade…" autocomplete="off">
+            </div>
+            <button class="export-btn" id="manageExportBtn">Export CSV</button>
+          </div>
+          <div class="request-list" id="requestList">
+            <div class="empty-state">Loading…</div>
+          </div>
+          <div class="updated-note" id="manageUpdatedNote">&nbsp;</div>
+        </div>
+      </section>
+
+      <div class="back-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <a href="dashboard.html">Back to Principal Dashboard</a>
+      </div>
+
+      <div class="msg" id="msgBox"></div>
+
+    </div>
+  </div>
+</main>
+
+<!-- ================= EDIT MODAL ================= -->
+<div class="edit-overlay" id="editOverlay">
+  <div class="edit-modal">
+    <h3>Edit Student Improvement Plan</h3>
+
+    <div class="compose-grid cols-3">
+      <div class="field"><label for="editStudentName">Student Name</label><input id="editStudentName" type="text" maxlength="150"></div>
+      <div class="field"><label for="editStudentId">Student ID</label><input id="editStudentId" type="text" maxlength="60"></div>
+      <div class="field"><label for="editGrade">Grade / Class</label><input id="editGrade" type="text" maxlength="60"></div>
+    </div>
+    <div class="compose-grid cols-3">
+      <div class="field"><label for="editAcademicYear">Academic Year</label><input id="editAcademicYear" type="text" maxlength="20"></div>
+      <div class="field">
+        <label for="editPlanType">Plan Type</label>
+        <select id="editPlanType">
+          <option value="academic">Academic</option>
+          <option value="behavioral">Behavioral</option>
+          <option value="attendance">Attendance</option>
+          <option value="social_emotional">Social-Emotional</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="editStatus">Status</label>
+        <select id="editStatus">
+          <option value="draft">Draft</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="discontinued">Discontinued</option>
+        </select>
+      </div>
+    </div>
+    <div class="compose-grid cols-3">
+      <div class="field"><label for="editStartDate">Start Date</label><input id="editStartDate" type="date"></div>
+      <div class="field"><label for="editReviewDate">Target Review Date</label><input id="editReviewDate" type="date"></div>
+      <div class="field"><label for="editReviewedBy">Prepared By (Teacher)</label><input id="editReviewedBy" type="text" maxlength="100"></div>
+    </div>
+
+    <div class="field"><label for="editConcernNotes">Areas of Concern</label><textarea id="editConcernNotes" maxlength="1200"></textarea></div>
+
+    <h3>Goals &amp; Action Steps</h3>
+    <p class="table-hint">Add or remove goals to fit this student's plan.</p>
+    <table class="goals-table" id="editGoalsTable">
+      <thead>
+        <tr><th style="width:24%;">Goal</th><th style="width:34%;">Action Steps</th><th style="width:16%;">Target Date</th><th style="width:16%;">Status</th><th style="width:30px;"></th></tr>
+      </thead>
+      <tbody id="editGoalsTableBody"></tbody>
+    </table>
+    <button type="button" class="add-row-btn" id="editAddGoalRowBtn">+ Add Goal</button>
+
+    <h3>Support Services</h3>
+    <div class="checklist" id="editSupportChecklist"></div>
+
+    <div class="compose-grid">
+      <div class="field"><label for="editDecisionNotes">Progress Notes / Comments</label><textarea id="editDecisionNotes" maxlength="1000"></textarea></div>
+      <div class="field"><label for="editPrincipalName">Reviewed By (Principal)</label><input id="editPrincipalName" type="text" maxlength="100"></div>
+    </div>
+
+    <div class="compose-actions">
+      <button class="btn-secondary" id="editCancelBtn" type="button">Cancel</button>
+      <button class="btn-primary" id="editSaveBtn" type="button">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= IMPROVEMENT PLAN DOCUMENT MODAL ================= -->
+<div class="doc-overlay" id="planOverlay">
+  <div class="doc-modal">
+    <div class="doc-paper">
+      <div class="doc-letterhead">
+        <img id="pSchoolLogo" src="" alt="School logo">
+        <div class="doc-headtext">
+          <div class="school-name">Kingsville Public High School</div>
+          <div class="school-address">
+            Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia<br>
+            Office of the Principal
+          </div>
+        </div>
+        <img id="pMoeLogo" src="" alt="Ministry of Education seal">
+      </div>
+      <div class="doc-office-row">
+        <span>Office of the Principal</span>
+        <span class="doc-date">Date: <b id="pDate">—</b></span>
+      </div>
+
+      <div class="doc-banner">Student Improvement Plan</div>
+      <div class="plan-type-line"><span id="pPlanType">Academic</span> Improvement Plan</div>
+      <div style="text-align:center;margin-bottom:16px;"><span class="plan-status-flag" id="pStatusFlag">Active</span></div>
+
+      <div class="doc-student-row"><span class="lbl">STUDENT'S NAME:</span><span class="val" id="pStudentName">—</span></div>
+      <div class="doc-student-row"><span class="lbl">STUDENT ID:</span><span class="val" id="pStudentId">—</span></div>
+      <div class="doc-student-row"><span class="lbl">GRADE / CLASS:</span><span class="val" id="pGrade">—</span></div>
+      <div class="doc-student-row"><span class="lbl">ACADEMIC YEAR:</span><span class="val" id="pAcademicYear">—</span></div>
+
+      <div class="plan-grid-rows">
+        <div class="doc-student-row"><span class="lbl">START DATE:</span><span class="val" id="pStartDate">—</span></div>
+        <div class="doc-student-row"><span class="lbl">TARGET REVIEW DATE:</span><span class="val" id="pReviewDate">—</span></div>
+      </div>
+
+      <div class="plan-section-title">Areas of Concern</div>
+      <div class="plan-body"><p id="pConcernNotes">—</p></div>
+
+      <div class="plan-section-title">Goals &amp; Action Steps</div>
+      <table class="plan-goals-table" id="pGoalsTable">
+        <thead><tr><th>Goal</th><th>Action Steps</th><th>Target Date</th><th>Status</th></tr></thead>
+        <tbody id="pGoalsTableBody"></tbody>
+      </table>
+
+      <div class="plan-section-title">Support Services</div>
+      <ul class="plan-list" id="pSupportList"></ul>
+
+      <div class="plan-body" id="pNotesBlock" style="display:none;">
+        <p><b>Progress Notes:</b> <span id="pNotesText"></span></p>
+      </div>
+
+      <div class="plan-body">
+        <p>This plan has been developed collaboratively to support the student named above. All parties agree to work together toward the goals stated, and to review progress by the target review date noted above.</p>
+      </div>
+
+      <div class="plan-signoff">
+        <div>
+          <div class="sig-script">&nbsp;</div>
+          <div class="sig-name">&nbsp;</div>
+          <div class="sig-title">Student</div>
+        </div>
+        <div>
+          <div class="sig-script">&nbsp;</div>
+          <div class="sig-name">&nbsp;</div>
+          <div class="sig-title">Parent / Guardian</div>
+        </div>
+        <div>
+          <div class="sig-script">Signed</div>
+          <div class="sig-name" id="pPreparedByName">&nbsp;</div>
+          <div class="sig-title">Teacher / Advisor</div>
+        </div>
+        <div>
+          <div class="sig-script">&nbsp;</div>
+          <div class="sig-name" id="pPrincipalName">&nbsp;</div>
+          <div class="sig-title">Principal</div>
+        </div>
+      </div>
+
+      <div class="plan-note">
+        NOTE: A copy of this plan must be kept in the student's file and reviewed with the family by the target review date. This plan may be revised at any time in consultation with the student, parent/guardian, and school staff.
+      </div>
+      <div class="plan-ref">Plan Reference: <span id="pRef">—</span></div>
+    </div>
+
+    <div class="doc-actions">
+      <button class="btn-doc-delete" id="pDeleteBtn" type="button">Delete</button>
+      <button class="btn-share" id="pShareBtn" type="button">Share</button>
+      <button class="btn-download" id="pDownloadBtn" type="button">Download</button>
+      <button class="btn-print" id="pPrintBtn" type="button">Print</button>
+      <button class="btn-secondary" id="pCloseBtn" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-line-1">© <span id="year"></span> Kingsville Public High School</div>
+  <div class="footer-line-2">Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia</div>
+  <div class="footer-line-2">Developed by Mr. Fomba S. Varfee</div>
+</footer>
+
+<!-- KPS ERP Core -->
+
+<script>
+  // Reuse the logos already embedded inline in the header/seal images for the
+  // printable document, instead of duplicating the base64 data again.
+  const KPS_LOGO_SRC = document.querySelector(".kps-logo").src;
+  const MOE_LOGO_SRC = document.querySelector(".moe-mini").src;
+  document.getElementById("pSchoolLogo").src = KPS_LOGO_SRC;
+  document.getElementById("pMoeLogo").src = MOE_LOGO_SRC;
+  document.getElementById("year").textContent = new Date().getFullYear();
+  // sb comes from the shared client in js/supabase-config.js
+
+  const SCHOOL_NAME = "Kingsville Public High School";
+  const SCHOOL_ADDRESS = "Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia";
+
+  const SUPPORT_SERVICES = [
+    "Extra Tutoring / Academic Support",
+    "Counseling Referral",
+    "Peer Mentoring Program",
+    "Parent / Guardian Conference",
+    "Behavior Intervention Plan",
+    "After-School Program",
+    "Reading / Literacy Support",
+    "Attendance Monitoring"
+  ];
+
+  const PLAN_TYPE_LABEL = { academic: "Academic", behavioral: "Behavioral", attendance: "Attendance", social_emotional: "Social-Emotional" };
+  const STATUS_LABEL = { draft: "Draft", active: "Active", completed: "Completed", discontinued: "Discontinued" };
+  const STATUS_BADGE = { draft: "pending", active: "role", completed: "pass", discontinued: "fail" };
+  const GOAL_STATUS_LABEL = { not_started: "Not Started", in_progress: "In Progress", met: "Met", not_met: "Not Met" };
+
+  const msgBox = document.getElementById("msgBox");
+  function showMsg(text, type) { msgBox.textContent = text; msgBox.className = "msg " + type; }
+  function clearMsg() { msgBox.className = "msg"; msgBox.textContent = ""; }
+  function escapeHtml(str) {
+    return String(str ?? "").replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+  function fmtDate(iso) {
+    if (!iso) return "—";
+    return new Date(iso + "T00:00:00").toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+  }
+  function fmtDateShort(iso) {
+    if (!iso) return "—";
+    return new Date(iso + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  }
+  function downloadCsv(filename, headers, rows) {
+    const lines = [headers.join(",")];
+    for (const row of rows) lines.push(row.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","));
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+  function planRef(seqNo) { return "IP-" + String(seqNo ?? 0).padStart(6, "0"); }
+
+  // ================= Section tab switching =================
+  document.getElementById("sectionTabs").addEventListener("click", e => {
+    const btn = e.target.closest("button[data-section]");
+    if (!btn) return;
+    document.querySelectorAll("#sectionTabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".stat-section").forEach(s => s.classList.remove("active"));
+    document.getElementById(btn.dataset.section + "Section").classList.add("active");
+    if (btn.dataset.section === "manage") loadPlans();
+  });
+
+  // ================= Goals table rows =================
+  function goalRowHtml(g) {
+    g = g || {};
+    return `
+      <td><input type="text" class="g-goal" maxlength="200" value="${escapeHtml(g.goal || "")}"></td>
+      <td><input type="text" class="g-action" maxlength="300" value="${escapeHtml(g.action || "")}"></td>
+      <td><input type="date" class="g-date" value="${g.target_date || ""}"></td>
+      <td>
+        <select class="g-status">
+          <option value="not_started" ${(!g.status || g.status === "not_started") ? "selected" : ""}>Not Started</option>
+          <option value="in_progress" ${g.status === "in_progress" ? "selected" : ""}>In Progress</option>
+          <option value="met" ${g.status === "met" ? "selected" : ""}>Met</option>
+          <option value="not_met" ${g.status === "not_met" ? "selected" : ""}>Not Met</option>
+        </select>
+      </td>
+      <td class="goal-remove"><button type="button" class="g-remove">&times;</button></td>`;
+  }
+  function addGoalRow(tbody, g) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = goalRowHtml(g);
+    tr.querySelector(".g-remove").addEventListener("click", () => {
+      if (tbody.children.length > 1) tr.remove();
+    });
+    tbody.appendChild(tr);
+  }
+  function readGoalRows(tbody) {
+    return Array.from(tbody.querySelectorAll("tr")).map(tr => ({
+      goal: tr.querySelector(".g-goal").value.trim(),
+      action: tr.querySelector(".g-action").value.trim(),
+      target_date: tr.querySelector(".g-date").value || null,
+      status: tr.querySelector(".g-status").value
+    })).filter(g => g.goal || g.action);
+  }
+  function resetGoalRows(tbody) {
+    tbody.innerHTML = "";
+    addGoalRow(tbody, {});
+  }
+
+  const goalsTableBody = document.getElementById("goalsTableBody");
+  const editGoalsTableBody = document.getElementById("editGoalsTableBody");
+  resetGoalRows(goalsTableBody);
+  document.getElementById("addGoalRowBtn").addEventListener("click", () => addGoalRow(goalsTableBody, {}));
+  document.getElementById("editAddGoalRowBtn").addEventListener("click", () => addGoalRow(editGoalsTableBody, {}));
+
+  // ================= Support services checklist =================
+  function renderChecklist(container, selected) {
+    selected = selected || [];
+    container.innerHTML = SUPPORT_SERVICES.map(label => `
+      <label><input type="checkbox" class="svc-check" value="${escapeHtml(label)}" ${selected.includes(label) ? "checked" : ""}> ${escapeHtml(label)}</label>
+    `).join("");
+  }
+  function readChecklist(container) {
+    return Array.from(container.querySelectorAll(".svc-check:checked")).map(el => el.value);
+  }
+  renderChecklist(document.getElementById("supportChecklist"), []);
+  renderChecklist(document.getElementById("editSupportChecklist"), []);
+
+  // ================= Compose form =================
+  const newStudentName = document.getElementById("newStudentName");
+  const newStudentId = document.getElementById("newStudentId");
+  const newGrade = document.getElementById("newGrade");
+  const newAcademicYear = document.getElementById("newAcademicYear");
+  const newPlanType = document.getElementById("newPlanType");
+  const newStatus = document.getElementById("newStatus");
+  const newStartDate = document.getElementById("newStartDate");
+  const newReviewDate = document.getElementById("newReviewDate");
+  const newReviewedBy = document.getElementById("newReviewedBy");
+  const newConcernNotes = document.getElementById("newConcernNotes");
+  const newDecisionNotes = document.getElementById("newDecisionNotes");
+  const newPrincipalName = document.getElementById("newPrincipalName");
+
+  function clearCompose() {
+    newStudentName.value = ""; newStudentId.value = ""; newGrade.value = "";
+    newAcademicYear.value = ""; newPlanType.value = "academic"; newStatus.value = "active";
+    newStartDate.value = ""; newReviewDate.value = ""; newReviewedBy.value = "";
+    newConcernNotes.value = ""; newDecisionNotes.value = ""; newPrincipalName.value = "";
+    resetGoalRows(goalsTableBody);
+    renderChecklist(document.getElementById("supportChecklist"), []);
+    clearMsg();
+  }
+  document.getElementById("clearComposeBtn").addEventListener("click", clearCompose);
+
+  function composePayload() {
+    return {
+      student_name: newStudentName.value.trim(),
+      student_id: newStudentId.value.trim() || null,
+      grade: newGrade.value.trim() || null,
+      academic_year: newAcademicYear.value.trim() || null,
+      plan_type: newPlanType.value,
+      status: newStatus.value,
+      start_date: newStartDate.value || null,
+      review_date: newReviewDate.value || null,
+      prepared_by: newReviewedBy.value.trim() || null,
+      concern_notes: newConcernNotes.value.trim() || null,
+      goal_items: readGoalRows(goalsTableBody),
+      support_services: readChecklist(document.getElementById("supportChecklist")),
+      decision_notes: newDecisionNotes.value.trim() || null,
+      principal_name: newPrincipalName.value.trim() || null
+    };
+  }
+
+  async function savePlan(openDocAfter) {
+    const payload = composePayload();
+    if (!payload.student_name) { showMsg("Student name is required.", "err"); return null; }
+    const { data, error } = await sb.from("improvement_plans").insert(payload).select().single();
+    if (error) { showMsg("Couldn't save plan: " + error.message, "err"); return null; }
+    showMsg("Student improvement plan saved.", "ok");
+    clearCompose();
+    if (openDocAfter) openPlanDoc(data);
+    return data;
+  }
+
+  document.getElementById("postRequestBtn").addEventListener("click", () => savePlan(false));
+  document.getElementById("generatePlanBtn").addEventListener("click", () => savePlan(true));
+
+  // ================= Load / list / KPIs =================
+  let plans = [];
+
+  async function loadPlans() {
+    const list = document.getElementById("requestList");
+    list.innerHTML = `<div class="empty-state">Loading…</div>`;
+    const { data, error } = await sb.from("improvement_plans").select("*").order("created_at", { ascending: false });
+    if (error) { list.innerHTML = `<div class="empty-state">Couldn't load plans: ${escapeHtml(error.message)}</div>`; return; }
+    plans = data || [];
+    renderKpis();
+    renderList();
+    renderTicker();
+    document.getElementById("manageUpdatedNote").textContent = "Updated " + new Date().toLocaleTimeString();
+  }
+
+  function renderKpis() {
+    document.getElementById("kpiTotal").textContent = plans.length;
+    document.getElementById("kpiActive").textContent = plans.filter(p => p.status === "active").length;
+    document.getElementById("kpiCompleted").textContent = plans.filter(p => p.status === "completed").length;
+    document.getElementById("kpiDiscontinued").textContent = plans.filter(p => p.status === "discontinued").length;
+    const now = new Date(); const soon = new Date(now.getTime() + 14 * 86400000);
+    const due = plans.filter(p => p.status === "active" && p.review_date && new Date(p.review_date) <= soon).length;
+    document.getElementById("kpiReviewsDue").textContent = due;
+  }
+
+  function filteredPlans() {
+    const status = document.getElementById("manageStatusFilter").value;
+    const term = document.getElementById("manageSearch").value.trim().toLowerCase();
+    return plans.filter(p => {
+      if (status && p.status !== status) return false;
+      if (term) {
+        const hay = [p.student_name, p.student_id, p.grade].filter(Boolean).join(" ").toLowerCase();
+        if (!hay.includes(term)) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderList() {
+    const list = document.getElementById("requestList");
+    const rows = filteredPlans();
+    if (!rows.length) { list.innerHTML = `<div class="empty-state">No improvement plans found.</div>`; return; }
+    list.innerHTML = rows.map(p => `
+      <div class="request-card ${escapeHtml(p.status || "draft")}" data-id="${p.id}">
+        <div class="request-top">
+          <div>
+            <div class="request-title">${escapeHtml(p.student_name || "Unnamed Student")}</div>
+            <div class="request-meta">${escapeHtml(p.student_id || "—")} • ${escapeHtml(p.grade || "—")} • ${escapeHtml(PLAN_TYPE_LABEL[p.plan_type] || p.plan_type || "—")} • ${escapeHtml(p.academic_year || "—")}</div>
+          </div>
+          <div>
+            <span class="badge ${STATUS_BADGE[p.status] || "role"}">${escapeHtml(STATUS_LABEL[p.status] || p.status || "Draft")}</span>
+          </div>
+        </div>
+        <div class="request-meta">Review date: ${fmtDateShort(p.review_date)}</div>
+        <div class="request-actions">
+          <button class="btn-ghost view-btn" type="button">View / Print</button>
+          <button class="btn-ghost accent edit-btn" type="button">Edit</button>
+          <button class="btn-ghost danger del-btn" type="button">Delete</button>
+        </div>
+      </div>
+    `).join("");
+
+    list.querySelectorAll(".request-card").forEach(card => {
+      const id = card.dataset.id;
+      const rec = plans.find(p => p.id === id);
+      card.querySelector(".view-btn").addEventListener("click", () => openPlanDoc(rec));
+      card.querySelector(".edit-btn").addEventListener("click", () => openEdit(rec));
+      card.querySelector(".del-btn").addEventListener("click", async () => {
+        if (!confirm("Delete this student improvement plan? This cannot be undone.")) return;
+        const { error } = await sb.from("improvement_plans").delete().eq("id", id);
+        if (error) { showMsg("Couldn't delete plan: " + error.message, "err"); return; }
+        showMsg("Student improvement plan deleted.", "ok");
+        loadPlans();
+      });
+    });
+  }
+
+  function renderTicker() {
+    const bar = document.getElementById("tickerBar");
+    const track = document.getElementById("tickerTrack");
+    const now = new Date(); const soon = new Date(now.getTime() + 14 * 86400000);
+    const due = plans.filter(p => p.status === "active" && p.review_date && new Date(p.review_date) <= soon);
+    if (!due.length) {
+      bar.classList.add("ticker-empty");
+      track.innerHTML = `<span>No improvement plan reviews due in the next two weeks.</span>`;
+      return;
+    }
+    bar.classList.remove("ticker-empty");
+    const items = due.map(p => `<span class="pinned">${escapeHtml(p.student_name)} — review due ${fmtDateShort(p.review_date)}</span>`);
+    track.innerHTML = items.concat(items).join("");
+  }
+
+  document.getElementById("manageStatusFilter").addEventListener("change", renderList);
+  document.getElementById("manageSearch").addEventListener("input", renderList);
+  document.getElementById("manageRefreshBtn").addEventListener("click", async (e) => {
+    const btn = e.currentTarget; btn.classList.add("spinning");
+    await loadPlans();
+    btn.classList.remove("spinning");
+  });
+  document.getElementById("manageExportBtn").addEventListener("click", () => {
+    const rows = filteredPlans().map(p => [
+      p.student_name, p.student_id, p.grade, p.academic_year,
+      PLAN_TYPE_LABEL[p.plan_type] || p.plan_type, STATUS_LABEL[p.status] || p.status,
+      p.start_date, p.review_date, p.prepared_by, p.principal_name
+    ]);
+    downloadCsv("improvement-plans.csv",
+      ["Student Name","Student ID","Grade","Academic Year","Plan Type","Status","Start Date","Review Date","Prepared By","Principal"],
+      rows);
+  });
+
+  // ================= Edit modal =================
+  const editOverlay = document.getElementById("editOverlay");
+  let editingId = null;
+
+  function openEdit(rec) {
+    editingId = rec.id;
+    document.getElementById("editStudentName").value = rec.student_name || "";
+    document.getElementById("editStudentId").value = rec.student_id || "";
+    document.getElementById("editGrade").value = rec.grade || "";
+    document.getElementById("editAcademicYear").value = rec.academic_year || "";
+    document.getElementById("editPlanType").value = rec.plan_type || "academic";
+    document.getElementById("editStatus").value = rec.status || "active";
+    document.getElementById("editStartDate").value = rec.start_date || "";
+    document.getElementById("editReviewDate").value = rec.review_date || "";
+    document.getElementById("editReviewedBy").value = rec.prepared_by || "";
+    document.getElementById("editConcernNotes").value = rec.concern_notes || "";
+    document.getElementById("editDecisionNotes").value = rec.decision_notes || "";
+    document.getElementById("editPrincipalName").value = rec.principal_name || "";
+    editGoalsTableBody.innerHTML = "";
+    const goals = Array.isArray(rec.goal_items) && rec.goal_items.length ? rec.goal_items : [{}];
+    goals.forEach(g => addGoalRow(editGoalsTableBody, g));
+    renderChecklist(document.getElementById("editSupportChecklist"), rec.support_services || []);
+    editOverlay.classList.add("open");
+  }
+  document.getElementById("editCancelBtn").addEventListener("click", () => { editOverlay.classList.remove("open"); editingId = null; });
+
+  document.getElementById("editSaveBtn").addEventListener("click", async () => {
+    if (!editingId) return;
+    const payload = {
+      student_name: document.getElementById("editStudentName").value.trim(),
+      student_id: document.getElementById("editStudentId").value.trim() || null,
+      grade: document.getElementById("editGrade").value.trim() || null,
+      academic_year: document.getElementById("editAcademicYear").value.trim() || null,
+      plan_type: document.getElementById("editPlanType").value,
+      status: document.getElementById("editStatus").value,
+      start_date: document.getElementById("editStartDate").value || null,
+      review_date: document.getElementById("editReviewDate").value || null,
+      prepared_by: document.getElementById("editReviewedBy").value.trim() || null,
+      concern_notes: document.getElementById("editConcernNotes").value.trim() || null,
+      goal_items: readGoalRows(editGoalsTableBody),
+      support_services: readChecklist(document.getElementById("editSupportChecklist")),
+      decision_notes: document.getElementById("editDecisionNotes").value.trim() || null,
+      principal_name: document.getElementById("editPrincipalName").value.trim() || null
+    };
+    if (!payload.student_name) { showMsg("Student name is required.", "err"); return; }
+    const { error } = await sb.from("improvement_plans").update(payload).eq("id", editingId);
+    if (error) { showMsg("Couldn't update plan: " + error.message, "err"); return; }
+    showMsg("Student improvement plan updated.", "ok");
+    editOverlay.classList.remove("open");
+    editingId = null;
+    loadPlans();
+  });
+
+  // ================= Document (view / print / download / share / delete) =================
+  const planOverlay = document.getElementById("planOverlay");
+  let currentDocRequest = null;
+
+  function goalStatusClass(s) { return s || "not_started"; }
+
+  function openPlanDoc(rec) {
+    currentDocRequest = rec;
+    document.getElementById("pDate").textContent = new Date().toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+    document.getElementById("pPlanType").textContent = PLAN_TYPE_LABEL[rec.plan_type] || rec.plan_type || "Academic";
+    const flag = document.getElementById("pStatusFlag");
+    flag.textContent = STATUS_LABEL[rec.status] || rec.status || "Active";
+    flag.className = "plan-status-flag badge " + (STATUS_BADGE[rec.status] || "role");
+    document.getElementById("pStudentName").textContent = rec.student_name || "—";
+    document.getElementById("pStudentId").textContent = rec.student_id || "—";
+    document.getElementById("pGrade").textContent = rec.grade || "—";
+    document.getElementById("pAcademicYear").textContent = rec.academic_year || "—";
+    document.getElementById("pStartDate").textContent = fmtDate(rec.start_date);
+    document.getElementById("pReviewDate").textContent = fmtDate(rec.review_date);
+    document.getElementById("pConcernNotes").textContent = rec.concern_notes || "No specific concerns recorded.";
+
+    const goals = Array.isArray(rec.goal_items) ? rec.goal_items : [];
+    const tbody = document.getElementById("pGoalsTableBody");
+    tbody.innerHTML = goals.length ? goals.map(g => `
+      <tr>
+        <td>${escapeHtml(g.goal || "—")}</td>
+        <td>${escapeHtml(g.action || "—")}</td>
+        <td>${fmtDateShort(g.target_date)}</td>
+        <td class="goal-status ${goalStatusClass(g.status)}">${escapeHtml(GOAL_STATUS_LABEL[g.status] || "Not Started")}</td>
+      </tr>`).join("") : `<tr><td colspan="4">No goals recorded.</td></tr>`;
+
+    const svc = Array.isArray(rec.support_services) ? rec.support_services : [];
+    const svcList = document.getElementById("pSupportList");
+    svcList.innerHTML = svc.length ? svc.map(s => `<li>${escapeHtml(s)}</li>`).join("") : `<li>No support services selected.</li>`;
+
+    const notesBlock = document.getElementById("pNotesBlock");
+    if (rec.decision_notes) {
+      notesBlock.style.display = "block";
+      document.getElementById("pNotesText").textContent = rec.decision_notes;
+    } else {
+      notesBlock.style.display = "none";
+    }
+
+    document.getElementById("pPreparedByName").textContent = rec.prepared_by || "\u00a0";
+    document.getElementById("pPrincipalName").textContent = rec.principal_name || "\u00a0";
+    document.getElementById("pRef").textContent = planRef(rec.seq_no);
+
+    planOverlay.classList.add("open");
+  }
+
+  document.getElementById("pCloseBtn").addEventListener("click", () => { planOverlay.classList.remove("open"); currentDocRequest = null; });
+
+  function docFilenameBase() {
+    if (!currentDocRequest) return "improvement-plan";
+    const name = (currentDocRequest.student_name || "student").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    return "improvement-plan-" + name;
+  }
+
+  function docPlainText() {
+    if (!currentDocRequest) return "";
+    const r = currentDocRequest;
+    const goals = Array.isArray(r.goal_items) ? r.goal_items : [];
+    const svc = Array.isArray(r.support_services) ? r.support_services : [];
+    return [
+      SCHOOL_NAME, SCHOOL_ADDRESS, "",
+      "STUDENT IMPROVEMENT PLAN (" + (PLAN_TYPE_LABEL[r.plan_type] || r.plan_type) + ")",
+      "Status: " + (STATUS_LABEL[r.status] || r.status),
+      "Student: " + (r.student_name || "—") + " (" + (r.student_id || "—") + ")",
+      "Grade: " + (r.grade || "—") + "   Academic Year: " + (r.academic_year || "—"),
+      "Start Date: " + fmtDate(r.start_date) + "   Target Review Date: " + fmtDate(r.review_date), "",
+      "Areas of Concern:", r.concern_notes || "—", "",
+      "Goals & Action Steps:",
+      goals.map(g => "- " + (g.goal || "—") + " | " + (g.action || "—") + " | due " + fmtDateShort(g.target_date) + " | " + (GOAL_STATUS_LABEL[g.status] || "Not Started")).join("\n") || "—", "",
+      "Support Services:", svc.length ? svc.map(s => "- " + s).join("\n") : "—", "",
+      r.decision_notes ? ("Progress Notes: " + r.decision_notes) : "",
+      "Prepared By: " + (r.prepared_by || "—"),
+      "Reviewed By (Principal): " + (r.principal_name || "—"),
+      "Plan Reference: " + planRef(r.seq_no)
+    ].join("\n");
+  }
+
+  document.getElementById("pShareBtn").addEventListener("click", async () => {
+    const text = docPlainText();
+    if (navigator.share) {
+      try { await navigator.share({ title: "Student Improvement Plan", text }); return; } catch (e) { /* fall through to clipboard */ }
+    }
+    try { await navigator.clipboard.writeText(text); showMsg("Plan details copied to clipboard.", "ok"); }
+    catch (e) { showMsg("Couldn't share or copy this plan.", "err"); }
+  });
+
+  document.getElementById("pDownloadBtn").addEventListener("click", () => {
+    if (!currentDocRequest) return;
+    const r = currentDocRequest;
+    const goalsRows = (Array.isArray(r.goal_items) ? r.goal_items : []).map(g => `
+      <tr><td>${escapeHtml(g.goal||"—")}</td><td>${escapeHtml(g.action||"—")}</td><td>${fmtDateShort(g.target_date)}</td><td>${escapeHtml(GOAL_STATUS_LABEL[g.status]||"Not Started")}</td></tr>`).join("") || `<tr><td colspan="4">No goals recorded.</td></tr>`;
+    const svcItems = (Array.isArray(r.support_services) ? r.support_services : []).map(s => `<li>${escapeHtml(s)}</li>`).join("") || "<li>No support services selected.</li>";
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escapeHtml(docFilenameBase())}</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif;color:#111;max-width:820px;margin:30px auto;padding:0 20px;}
+  .letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .letterhead img{height:62px;width:62px;object-fit:contain;border-radius:50%;}
+  .headtext{flex:1;text-align:center;}
+  .school-name{font-size:22px;font-weight:800;}
+  .school-address{font-size:11.5px;color:#444;margin-top:3px;}
+  .banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:10px;text-transform:uppercase;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0 18px;}
+  th,td{border:1px solid #333;padding:6px 8px;text-align:left;}
+  th{background:#f1f1ef;}
+  .row{display:flex;gap:10px;margin-bottom:6px;font-size:13.5px;}
+  .row .lbl{font-weight:700;min-width:170px;}
+  ul{margin:0 0 16px 20px;}
+</style></head><body>
+  <div class="letterhead">
+    <img src="${KPS_LOGO_SRC}" alt="School logo">
+    <div class="headtext"><div class="school-name">${escapeHtml(SCHOOL_NAME)}</div><div class="school-address">${escapeHtml(SCHOOL_ADDRESS)}<br>Office of the Principal</div></div>
+    <img src="${MOE_LOGO_SRC}" alt="Ministry seal">
+  </div>
+  <div class="banner">Student Improvement Plan</div>
+  <p style="text-align:center;font-style:italic;">${escapeHtml(PLAN_TYPE_LABEL[r.plan_type]||r.plan_type)} Improvement Plan — ${escapeHtml(STATUS_LABEL[r.status]||r.status)}</p>
+  <div class="row"><span class="lbl">STUDENT'S NAME:</span><span>${escapeHtml(r.student_name||"—")}</span></div>
+  <div class="row"><span class="lbl">STUDENT ID:</span><span>${escapeHtml(r.student_id||"—")}</span></div>
+  <div class="row"><span class="lbl">GRADE / CLASS:</span><span>${escapeHtml(r.grade||"—")}</span></div>
+  <div class="row"><span class="lbl">ACADEMIC YEAR:</span><span>${escapeHtml(r.academic_year||"—")}</span></div>
+  <div class="row"><span class="lbl">START DATE:</span><span>${fmtDate(r.start_date)}</span></div>
+  <div class="row"><span class="lbl">TARGET REVIEW DATE:</span><span>${fmtDate(r.review_date)}</span></div>
+  <h3>Areas of Concern</h3><p>${escapeHtml(r.concern_notes||"—")}</p>
+  <h3>Goals &amp; Action Steps</h3>
+  <table><thead><tr><th>Goal</th><th>Action Steps</th><th>Target Date</th><th>Status</th></tr></thead><tbody>${goalsRows}</tbody></table>
+  <h3>Support Services</h3><ul>${svcItems}</ul>
+  ${r.decision_notes ? `<h3>Progress Notes</h3><p>${escapeHtml(r.decision_notes)}</p>` : ""}
+  <p>Prepared By: ${escapeHtml(r.prepared_by||"—")} &nbsp;&nbsp; Reviewed By (Principal): ${escapeHtml(r.principal_name||"—")}</p>
+  <p style="font-size:11.5px;font-weight:700;">Plan Reference: ${escapeHtml(planRef(r.seq_no))}</p>
+</body></html>`;
+    const blob = new Blob([html], { type: "text/html;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = docFilenameBase() + ".html";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("pPrintBtn").addEventListener("click", () => window.print());
+
+  document.getElementById("pDeleteBtn").addEventListener("click", async () => {
+    if (!currentDocRequest || !currentDocRequest.id) return;
+    if (!confirm("Delete this student improvement plan? This cannot be undone.")) return;
+    const { error } = await sb.from("improvement_plans").delete().eq("id", currentDocRequest.id);
+    if (error) { showMsg("Couldn't delete plan: " + error.message, "err"); return; }
+    showMsg("Student improvement plan deleted.", "ok");
+    planOverlay.classList.remove("open");
+    currentDocRequest = null;
+    loadPlans();
+  });
+
+  // ================= Initial load =================
+  loadPlans();
+</script>
+</body>
+</html>

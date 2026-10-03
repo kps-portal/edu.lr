@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>Kingsville Public High School — Registrar: Class / Grade Roster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand img{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; object-fit:cover; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER (ICT signature element) ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= PROFILE CARD (premium executive — matches Super Admin / ICT) ============================= */
+.profile-card{
+  position:relative; overflow:hidden; border-radius:22px; padding:26px 28px;
+  background:
+    radial-gradient(120% 160% at 100% 0%, rgba(217,138,36,.28), transparent 55%),
+    linear-gradient(155deg, var(--navy) 0%, #0A1226 100%);
+  box-shadow:var(--shadow); margin-bottom:22px; color:#fff;
+  display:grid; grid-template-columns:auto 1fr auto; gap:24px; align-items:center;
+  animation: pcCardEntrance .7s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes pcCardEntrance{
+  0%{ opacity:0; transform:translateY(14px) scale(.985); }
+  100%{ opacity:1; transform:translateY(0) scale(1); }
+}
+.profile-card::before{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:1;
+  background:linear-gradient(120deg, rgba(255,255,255,.07), transparent 40%);
+}
+/* animated gold shimmer border tracing the card edge */
+.profile-card::after{
+  content:""; position:absolute; inset:0; border-radius:22px; padding:1.5px;
+  background:conic-gradient(from 0deg, transparent 0%, var(--gold) 12%, transparent 26%, transparent 74%, var(--gold) 88%, transparent 100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  pointer-events:none; z-index:1; opacity:.85;
+  animation: pcBorderSpin 5s linear infinite;
+}
+@keyframes pcBorderSpin{ 100%{ transform:rotate(360deg); } }
+/* diagonal light sweep drifting across the card */
+.pc-sweep{
+  position:absolute; top:0; bottom:0; left:-40%; width:35%;
+  background:linear-gradient(75deg, transparent, rgba(255,255,255,.14), transparent);
+  transform:skewX(-18deg); pointer-events:none; z-index:1;
+  animation: pcSweep 4.5s ease-in-out infinite;
+}
+@keyframes pcSweep{ 0%{ left:-40%; } 45%,100%{ left:130%; } }
+
+/* ---------- KPS crest watermark, drifting + twinkling like stars in a night sky ---------- */
+.pc-watermark-field{ position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; border-radius:inherit; }
+.pc-watermark-main{
+  position:absolute; top:50%; left:64%; width:70px; height:70px; transform:translate(-50%,-50%);
+  background-image:url('../assets/images/img-kps-crest-watermark.png');
+  background-size:contain; background-repeat:no-repeat; background-position:center;
+  opacity:.32; animation: pcWatermarkBreathe 9s ease-in-out infinite;
+}
+@keyframes pcWatermarkBreathe{
+  0%,100%{ opacity:.24; transform:translate(-50%,-50%) scale(1); }
+  50%{ opacity:.42; transform:translate(-50%,-50%) scale(1.035); }
+}
+.pc-watermark-big{
+  position:absolute; top:8%; right:4%; width:150px; height:150px;
+  background-image:url('../assets/images/img-kps-crest-watermark.png');
+  background-size:contain; background-repeat:no-repeat; background-position:center;
+  opacity:.4; animation: pcWatermarkBigBreathe 10s ease-in-out infinite;
+}
+@keyframes pcWatermarkBigBreathe{
+  0%,100%{ opacity:.32; transform:scale(1) rotate(0deg); }
+  50%{ opacity:.5; transform:scale(1.045) rotate(1.5deg); }
+}
+.pc-wm-star.pc-wm-mid{ opacity:.3; }
+.pc-wm-star{
+  position:absolute;
+  background-image:url('../assets/images/img-kps-crest-watermark.png');
+  background-size:contain; background-repeat:no-repeat; background-position:center;
+  animation: pcStarTwinkle 3.6s ease-in-out infinite, pcStarDrift 22s linear infinite;
+  will-change:opacity, transform;
+}
+@keyframes pcStarTwinkle{ 0%,100%{ opacity:.22; } 50%{ opacity:.65; } }
+@keyframes pcStarDrift{ 0%{ transform:translateY(0); } 100%{ transform:translateY(-18px); } }
+
+/* ---------- avatar: pulsing halo + gold ring + rainbow hue sweep + orbiting lights ---------- */
+.pc-avatar-wrap{ position:relative; z-index:2; flex:none; width:88px; height:88px; margin:14px; }
+.pc-avatar-wrap::before{
+  content:""; position:absolute; inset:-10px; border-radius:50%; z-index:0;
+  background:radial-gradient(circle, rgba(217,138,36,.55), rgba(217,138,36,0) 70%);
+  filter:blur(6px); animation: pcHaloPulse 2.4s ease-in-out infinite;
+}
+@keyframes pcHaloPulse{
+  0%,100%{ opacity:.5; transform:scale(1); }
+  50%{ opacity:1; transform:scale(1.18); }
+}
+.pc-avatar, .pc-avatar-initials{
+  position:relative; z-index:2; display:block; width:88px; height:88px; border-radius:50%;
+  box-shadow:0 0 0 3px var(--gold), 0 12px 26px -8px rgba(0,0,0,.6);
+  animation: rainbowGlow 6s linear infinite;
+  filter: hue-rotate(0deg) saturate(1.6) brightness(1.03);
+}
+@keyframes rainbowGlow{
+  0%{ filter:hue-rotate(0deg) saturate(1.6) brightness(1.03); }
+  100%{ filter:hue-rotate(360deg) saturate(1.6) brightness(1.03); }
+}
+.pc-avatar{ object-fit:cover; }
+.pc-avatar-initials{
+  background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif;
+  font-size:1.6rem; font-weight:800;
+}
+.xmas-lights{ position:absolute; inset:-14px; z-index:3; pointer-events:none; animation: pcOrbitSpin 14s linear infinite; }
+@keyframes pcOrbitSpin{ 100%{ transform:rotate(360deg); } }
+.xmas-lights .bulb{
+  position:absolute; width:9px; height:9px; border-radius:50%;
+  top:50%; left:50%; margin:-4.5px 0 0 -4.5px; transform-origin:0 0;
+  animation: bulbTwinkle 1.2s infinite ease-in-out; box-shadow:0 0 7px 2.5px currentColor;
+}
+@keyframes bulbTwinkle{ 0%,100%{ opacity:1; } 50%{ opacity:.25; } }
+.pc-online{
+  position:absolute; bottom:2px; right:2px; z-index:4; width:16px; height:16px; border-radius:50%;
+  background:#38C87A; border:3px solid var(--navy); animation:pcOnlinePulse 2s infinite;
+}
+@keyframes pcOnlinePulse{
+  0%{ box-shadow:0 0 0 0 rgba(56,200,122,.55); }
+  70%{ box-shadow:0 0 0 9px rgba(56,200,122,0); }
+  100%{ box-shadow:0 0 0 0 rgba(56,200,122,0); }
+}
+
+/* ---------- middle column: name / role / meta ---------- */
+.pc-mid{ min-width:0; position:relative; z-index:2; }
+.pc-eyebrow{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-light); opacity:.9; margin-bottom:2px; }
+.pc-name{
+  font-family:'Fraunces',serif; font-size:24px; font-weight:700; margin-top:3px; color:#fff;
+}
+@supports (background-clip:text) or (-webkit-background-clip:text){
+  .pc-name{
+    background:linear-gradient(100deg, #fff 30%, var(--gold-light) 50%, #fff 70%);
+    background-size:220% 100%; -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation: pcNameShimmer 5s ease-in-out infinite;
+  }
+}
+@keyframes pcNameShimmer{ 0%{ background-position:200% 0; } 100%{ background-position:-20% 0; } }
+.pc-role-badge{
+  display:inline-flex; align-items:center; gap:6px; margin-top:8px; padding:4px 12px; border-radius:20px;
+  background:linear-gradient(135deg, rgba(217,138,36,.3), rgba(217,138,36,.1)); border:1px solid rgba(217,138,36,.4);
+  color:var(--gold-light); font-size:11px; font-weight:700; letter-spacing:.03em;
+}
+.pc-meta{ display:grid; grid-template-columns:repeat(2,minmax(160px,1fr)); gap:6px 26px; margin-top:14px; }
+.pc-meta-full{ grid-column:1 / -1; }
+.pc-meta-item{ font-size:12px; color:rgba(255,255,255,.6); display:flex; gap:6px; }
+.pc-meta-item b{ color:#fff; font-weight:600; }
+
+/* ---------- right column: secured pill + date stamps ---------- */
+.pc-right{ position:relative; z-index:2; display:flex; flex-direction:column; gap:10px; align-items:flex-end; text-align:right; flex:none; }
+.pc-secure{
+  display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:20px;
+  background:rgba(56,200,122,.15); border:1px solid rgba(56,200,122,.35); color:#9CE6BE;
+  font-size:11px; font-weight:700; animation: pcSecurePulse 2.6s ease-in-out infinite;
+}
+.pc-secure svg{ width:13px; height:13px; }
+@keyframes pcSecurePulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(56,200,122,.35); }
+  50%{ box-shadow:0 0 0 6px rgba(56,200,122,0); }
+}
+.pc-secure.inactive{ background:rgba(200,20,48,.16); color:#ff8095; border-color:rgba(200,20,48,.4); animation:none; }
+.pc-stamp{ font-size:11px; color:rgba(255,255,255,.55); }
+.pc-stamp b{ color:var(--gold-light); display:block; font-size:13px; font-family:'Fraunces',serif; }
+
+@media (max-width:880px){
+  .profile-card{ grid-template-columns:1fr; text-align:center; }
+  .pc-avatar-wrap{ margin:14px auto; }
+  .pc-meta{ text-align:left; }
+  .pc-right{ align-items:center; text-align:center; }
+}
+@media (max-width:700px){
+  .profile-card{ padding:24px 20px; }
+  .pc-meta{ grid-template-columns:1fr; }
+}
+@media (prefers-reduced-motion: reduce){
+  .profile-card, .profile-card::after, .pc-sweep, .pc-avatar-wrap::before,
+  .pc-avatar, .pc-avatar-initials, .xmas-lights, .xmas-lights .bulb,
+  .pc-online, .pc-name, .pc-secure, .pc-watermark-main, .pc-wm-star, .pc-watermark-big{
+    animation:none !important;
+  }
+}
+
+/* ============================= SCROLLING INFO TICKER (matches Super Admin / ICT) ============================= */
+.info-ticker{
+  position:relative; overflow:hidden; border-radius:14px; margin-bottom:22px;
+  background:linear-gradient(90deg, var(--navy) 0%, #0A1226 100%);
+  border:1px solid rgba(217,138,36,.3); box-shadow:var(--shadow-sm); padding:11px 0;
+}
+.info-ticker::before, .info-ticker::after{
+  content:""; position:absolute; top:0; bottom:0; width:40px; z-index:2; pointer-events:none;
+}
+.info-ticker::before{ left:0; background:linear-gradient(90deg, var(--navy), transparent); }
+.info-ticker::after{ right:0; background:linear-gradient(270deg, #0A1226, transparent); }
+.info-ticker-track{
+  display:flex; align-items:center; gap:0; white-space:nowrap; width:max-content;
+  animation: tickerScroll 32s linear infinite;
+}
+.info-ticker-track:hover{ animation-play-state:paused; }
+@keyframes tickerScroll{ 0%{ transform:translateX(0); } 100%{ transform:translateX(-50%); } }
+.info-ticker-item{
+  display:inline-flex; align-items:center; gap:8px; padding:0 22px;
+  font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#fff; letter-spacing:.02em;
+}
+.info-ticker-item b{ color:var(--gold-light); font-weight:700; }
+.info-ticker-dot{ width:5px; height:5px; border-radius:50%; background:var(--gold); flex:none; box-shadow:0 0 6px 1px var(--gold); }
+@media (prefers-reduced-motion: reduce){ .info-ticker-track{ animation:none; } }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.enroll-table-wrap{border:1px solid var(--line);border-radius:8px;overflow:auto;background:#fff;}
+table.enroll-table{width:100%;border-collapse:collapse;font-size:11px;}
+table.enroll-table th{background:var(--navy);color:#fff;text-align:left;padding:6px 10px;font-size:9.5px;text-transform:uppercase;letter-spacing:.3px;font-weight:800;white-space:nowrap;}
+table.enroll-table td{padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:middle;}
+table.enroll-table tr:last-child td{border-bottom:none;}
+table.enroll-table tr:hover td{background:var(--panel);}
+table.enroll-table td.grade{font-weight:700;color:var(--ink);}
+table.enroll-table td.num{font-family:'SF Mono',ui-monospace,monospace;text-align:right;}
+table.enroll-table tr.total-row td{font-weight:800;background:var(--panel);border-top:2px solid var(--line);}
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* chart bars */
+.chart-bars{ display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:10px; }
+.chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.chart-bar{ width:100%; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--gold-light), var(--gold-deep)); position:relative; transition:filter .15s; }
+.chart-bar:hover{ filter:brightness(1.08); }
+.chart-bar.alt{ background:linear-gradient(180deg, #9FB6E0, var(--navy-3)); }
+.chart-lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+.chart-legend{ display:flex; gap:16px; margin-top:6px; font-size:11.5px; color:var(--muted); }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.chip-dot{ width:8px; height:8px; border-radius:2px; }
+
+/* feed / lists */
+.feed-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px dashed var(--line); }
+.feed-item:last-child{ border-bottom:none; }
+.feed-dot{ width:32px; height:32px; border-radius:9px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex:none; }
+.feed-dot svg{ width:15px; height:15px; color:var(--crimson); }
+.feed-dot.gold svg{ color:var(--gold-deep); }
+.feed-dot.navy svg{ color:var(--navy-3); }
+.feed-text{ font-size:13px; font-weight:600; }
+.feed-sub{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.feed-time{ margin-left:auto; font-size:11px; color:var(--muted); white-space:nowrap; }
+
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+.progress-track{ height:6px; border-radius:20px; background:var(--line); overflow:hidden; flex:1; }
+.progress-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); }
+.progress-fill.ok{ background:linear-gradient(90deg, #8FD8AC, var(--success)); }
+.progress-fill.warn{ background:linear-gradient(90deg, var(--gold-light), var(--warn)); }
+.progress-fill.bad{ background:linear-gradient(90deg, #F0A7AE, var(--danger)); }
+
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.health-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; padding:7px 0; }
+.health-row .hb{ flex:1; height:7px; background:var(--line); border-radius:20px; overflow:hidden; }
+.health-row .hb i{ display:block; height:100%; border-radius:20px; }
+.health-row .hv{ width:74px; text-align:right; font-weight:700; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+button.pill:hover{ filter:brightness(0.96); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* Module placeholder cards */
+.module-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.module-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.module-ic{ width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.module-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.module-card h4{ margin:0; font-size:14.5px; }
+.module-card p{ margin:0; font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* Device status card (network) */
+.device-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
+.device-top{ display:flex; align-items:center; justify-content:space-between; }
+.device-ic{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.device-ic svg{ width:19px; height:19px; }
+.device-name{ font-weight:700; font-size:13.5px; margin-top:2px; }
+.device-meta{ font-size:11.5px; color:var(--muted); }
+
+/* Restricted note */
+.restricted-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#FBE6E6; border:1px solid #F3C7CB; margin-top:14px; }
+.restricted-note svg{ width:16px; height:16px; color:var(--danger); flex:none; margin-top:1px; }
+.restricted-note div{ font-size:12px; color:#7A2530; line-height:1.55; }
+.restricted-note b{ color:var(--danger); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+
+/* Fee Collections widget */
+.fee-summary{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.fee-box{ text-align:center; padding:10px 8px; border-radius:12px; background:var(--cream); border:1px solid var(--line); }
+.fee-box .fb-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; margin-bottom:6px; }
+.fee-box .fb-amt{ font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:700; color:var(--ink); }
+.fee-box .fb-amt small{ display:block; font-size:11px; color:var(--muted); font-weight:600; margin-top:2px; }
+.fee-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+@media (max-width:640px){ .fee-summary{ grid-template-columns:1fr; } }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field input[type=text], .field input[type=password], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.settings-list .row-line{ align-items:flex-start; }
+.settings-list .rl-name{ font-size:13.5px; }
+.settings-list .rl-sub{ margin-top:2px; max-width:52ch; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .bento{ grid-template-columns:1fr; }
+  .grid-3,.grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .tbl-actions, .toolbar, .tabs, .toast-wrap, .modal-backdrop, .footer-ribbon, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .view{ display:none !important; }
+  .view.active{ display:block !important; }
+  .card, .stat-card, .module-card, .device-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid,.grid-3,.grid-2,.grid-4{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+
+/* ============================= CLASS / GRADE ROSTER (new page) ============================= */
+.roster-toolbar{ display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+.roster-field{ display:flex; flex-direction:column; gap:6px; min-width:280px; flex:1; }
+.roster-field label{ font-size:11.5px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+.roster-field select{
+  appearance:none; -webkit-appearance:none;
+  padding:12px 40px 12px 14px; border-radius:10px; border:1px solid var(--line);
+  background:var(--paper) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%237A7064" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right 12px center / 16px;
+  font-family:'Inter',sans-serif; font-size:13.5px; color:var(--ink); font-weight:600;
+  max-height:320px; overflow-y:auto; cursor:pointer;
+}
+.roster-field select:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.18); }
+.roster-refresh-btn{
+  display:inline-flex; align-items:center; gap:7px; padding:12px 16px; border-radius:10px;
+  border:1px solid var(--line); background:var(--paper); color:var(--navy); font-weight:700; font-size:13px; flex-shrink:0;
+}
+.roster-refresh-btn:hover{ border-color:var(--gold); }
+.roster-refresh-btn svg{ width:15px; height:15px; }
+
+.roster-summary{ font-size:12.5px; color:var(--muted); font-weight:600; margin-bottom:14px; min-height:16px; }
+
+.roster-export-bar{ display:none; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+.roster-export-bar button{
+  display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:9px;
+  border:1px solid var(--line); background:var(--paper); color:var(--navy); font-weight:700; font-size:12.8px;
+}
+.roster-export-bar button svg{ width:15px; height:15px; }
+.roster-export-bar button:hover{ border-color:var(--gold); transform:translateY(-1px); }
+.roster-export-bar .re-pdf{ border:none; background:linear-gradient(135deg,var(--crimson-bright),var(--crimson-deep)); color:#fff; }
+.roster-export-bar .re-excel{ border:none; background:linear-gradient(135deg,#2E7D4F,#1E5936); color:#fff; }
+.roster-export-bar .re-word{ border:none; background:linear-gradient(135deg,#2555A8,#123262); color:#fff; }
+.roster-export-bar .re-print{ border:none; background:linear-gradient(135deg,var(--gold),var(--gold-deep)); color:#fff; }
+
+.roster-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:var(--paper); }
+table.roster-table{ width:100%; border-collapse:collapse; font-size:12.6px; min-width:820px; }
+table.roster-table thead th{
+  background:var(--navy); color:#fff; text-align:left; padding:12px 14px; font-size:11px;
+  text-transform:uppercase; letter-spacing:.05em; position:sticky; top:0;
+}
+table.roster-table tbody td{ padding:10px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+table.roster-table tbody tr:nth-child(even){ background:var(--cream); }
+table.roster-table tbody tr:hover{ background:var(--gold-light); }
+.roster-num-col{ text-align:center; width:34px; color:var(--muted); font-weight:700; }
+
+.roster-empty-state{
+  display:none; text-align:center; padding:48px 20px; color:var(--muted);
+  border:1px dashed var(--line); border-radius:14px; background:var(--paper); font-size:13.5px;
+}
+
+/* -------- Print / export preview overlay -------- */
+.roster-doc-overlay{ position:fixed; inset:0; background:rgba(13,23,48,.6); display:none; align-items:flex-start; justify-content:center; z-index:200; padding:28px 16px; overflow-y:auto; }
+.roster-doc-overlay.open{ display:flex; }
+.roster-doc-modal{ width:100%; max-width:900px; background:#fff; border-radius:12px; box-shadow:0 24px 60px rgba(13,23,48,.4); margin-bottom:28px; }
+.roster-doc-paper{ padding:clamp(20px,4vw,42px); font-family:'Inter',sans-serif; color:#1E1712; }
+.roster-doc-actions{ display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; padding:14px clamp(18px,4vw,34px); border-top:1px solid var(--line); background:var(--cream); border-radius:0 0 12px 12px; }
+.roster-doc-actions button{ padding:10px 18px; border-radius:8px; font-weight:700; font-size:13px; border:1px solid var(--line); background:#fff; color:var(--navy); }
+.roster-doc-actions .roster-btn-print{ border:none; background:linear-gradient(135deg,var(--crimson-bright),var(--crimson-deep)); color:#fff; }
+.roster-doc-letterhead{ display:flex; align-items:center; gap:16px; border-bottom:3px double var(--navy); padding-bottom:14px; margin-bottom:16px; }
+.roster-doc-letterhead img{ height:58px; width:58px; object-fit:cover; border-radius:50%; background:#fff; box-shadow:0 0 0 2px var(--gold); flex-shrink:0; }
+.roster-doc-headtext{ flex:1; text-align:center; }
+.roster-doc-school{ font-family:'Fraunces',serif; font-size:21px; font-weight:800; color:var(--navy); }
+.roster-doc-address{ font-size:11.5px; color:var(--muted); margin-top:3px; }
+.roster-doc-title{ margin-top:8px; font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--crimson); }
+.roster-print-meta{ display:flex; flex-wrap:wrap; gap:8px 28px; font-size:12.5px; margin-bottom:16px; }
+.roster-print-meta div{ display:flex; gap:6px; }
+.roster-print-meta b{ color:var(--navy); }
+table.roster-print-table{ width:100%; border-collapse:collapse; font-size:11.6px; }
+table.roster-print-table th, table.roster-print-table td{ border:1px solid #999; padding:6px 8px; text-align:left; vertical-align:top; }
+table.roster-print-table th{ background:var(--navy); color:#fff; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; }
+table.roster-print-table tr:nth-child(even) td{ background:#FBF4E6; }
+.roster-print-foot{ display:flex; justify-content:space-between; gap:24px; margin-top:34px; font-size:12px; }
+.roster-print-foot .roster-sig-line{ border-top:1px solid #333; padding-top:5px; margin-top:32px; width:220px; }
+.roster-print-generated{ margin-top:10px; font-size:10.5px; color:var(--muted); text-align:right; }
+
+.roster-toast-wrap{ position:fixed; bottom:20px; right:20px; z-index:400; display:flex; flex-direction:column; gap:8px; }
+.roster-toast{ background:var(--navy); color:#fff; padding:11px 18px; border-radius:9px; font-size:12.6px; font-weight:600; box-shadow:0 12px 30px rgba(13,23,48,.35); transition:opacity .25s, transform .25s; max-width:320px; }
+.roster-toast.err{ background:var(--danger); }
+
+@media print{
+  body *{ visibility:hidden; }
+  .roster-doc-overlay.open, .roster-doc-overlay.open *{ visibility:visible; }
+  .roster-doc-overlay.open{ position:absolute; inset:auto; background:none; padding:0; display:block !important; overflow:visible; }
+  .roster-doc-overlay.open .roster-doc-modal{ position:absolute; top:0; left:0; max-width:100%; box-shadow:none; border-radius:0; margin:0; }
+  .roster-doc-actions{ display:none !important; }
+}
+@media (max-width:880px){
+  .roster-field{ min-width:100%; }
+}
+
+</style>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="Kingsville Public High School crest">
+      <div class="brand-text">
+        <div class="k1">Kingsville Public High School</div>
+        <div class="k2">Registrar</div>
+      </div>
+    </div>
+
+    <div class="role-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+      <span>REGISTRAR ACCESS · ADMISSIONS &amp; RECORDS</span>
+    </div>
+
+    <div class="nav-group-label">Overview</div>
+    <div class="nav">
+      <a class="nav-item" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+    </div>
+
+    <div class="nav-group-label">Class Roster</div>
+    <div class="nav">
+      <a class="nav-item active" href="roster.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>
+        Class / Grade Roster
+      </a>
+    </div>
+
+    <div class="nav-group-label">Admissions</div>
+    <div class="nav">
+      <a class="nav-item" href="admissions.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V5a2 2 0 00-2-2H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M9 8h7M9 12h7"/></svg>
+        Applications Queue
+        <span class="badge-count gold" id="navPendingCount">—</span>
+      </a>
+      <a class="nav-item" href="application.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+        Admission Application
+      </a>
+      <a class="nav-item" href="registration.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/></svg>
+        Student Registration
+      </a>
+      <a class="nav-item" href="parents.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><path d="M2 20c0-3.5 2.7-6 6-6s6 2.5 6 6M11 20c0-3.5 2.7-6 6-6s6 2.5 5 6"/></svg>
+        Parent Information
+      </a>
+      <a class="nav-item" href="guardians.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6z"/></svg>
+        Guardian Information
+      </a>
+      <a class="nav-item" href="medical.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.5-9.5-9C.7 8.4 2.6 4 7 4c2.2 0 3.7 1.3 5 3 1.3-1.7 2.8-3 5-3 4.4 0 6.3 4.4 4.5 8-2.5 4.5-9.5 9-9.5 9z"/></svg>
+        Medical Information
+      </a>
+      <a class="nav-item" href="previous-school.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10l9-5 9 5-9 5-9-5z"/><path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/></svg>
+        Previous School Information
+      </a>
+      <a class="nav-item" href="scholarships.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.2-5.4 3.2 1.3-6-4.6-4.1 6.1-.6z"/></svg>
+        Scholarship Recommendation
+      </a>
+      <a class="nav-item" href="approval.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        Admission Approval
+      </a>
+      <a class="nav-item" href="rejection.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+        Admission Rejection
+      </a>
+    </div>
+
+    <div class="nav-group-label">Student Records</div>
+    <div class="nav">
+      <a class="nav-item" href="student-profile.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+        Student Profile
+        <span class="badge-count" id="navStudentsCount">—</span>
+      </a>
+      <a class="nav-item" href="transfer.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l2-7 4 14 2-9 2 4h4"/></svg>
+        Student Transfer
+      </a>
+      <a class="nav-item" href="withdrawal.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+        Student Withdrawal
+      </a>
+      <a class="nav-item" href="clearance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.4"/><path d="M12 3v6.6M20.2 8l-5.7 3.3"/></svg>
+        Graduation Clearance
+      </a>
+      <a class="nav-item" href="alumni.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
+        Alumni Registration
+      </a>
+    </div>
+
+    <div class="nav-group-label">Documents</div>
+    <div class="nav">
+      <a class="nav-item" href="id-card.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M5 16c0-1.7 1.3-2.5 3-2.5s3 .8 3 2.5M14 9h5M14 13h5"/></svg>
+        Student ID Card
+      </a>
+      <a class="nav-item" href="admission-letter.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        Admission Letter
+      </a>
+      <a class="nav-item" href="acceptance-letter.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 14l2 2 4-4"/></svg>
+        Acceptance Letter
+      </a>
+      <a class="nav-item" href="graduation-letter.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
+        Graduation Letter
+      </a>
+    </div>
+
+    <div class="nav-group-label">Records</div>
+    <div class="nav">
+      <a class="nav-item" href="receipts.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
+        Fee Receipts
+      </a>
+      <a class="nav-item" href="scholarships.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.6 5.9L21 8.6l-4.5 4.2 1.2 6.2L12 16l-5.7 3 1.2-6.2L3 8.6l6.4-.7z"/></svg>
+        Scholarships &amp; Fee Tiers
+      </a>
+      <a class="nav-item" href="reports.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19h16M7 19v-6M12 19V6M17 19v-9"/></svg>
+        Reports
+      </a>
+    </div>
+
+    <div class="cannot-box">
+      <div class="title">🚫 Registrar cannot</div>
+      <ul style="margin:0; padding:0; list-style:none;">
+        <li style="font-size:11.5px; color:rgba(255,255,255,.55); padding:2px 0;">✕ Change Grades</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.55); padding:2px 0;">✕ Publish Results</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.55); padding:2px 0;">✕ Edit School Settings</li>
+      </ul>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sys-health">
+        <div class="pulse-dot warn" id="healthDot"></div>
+        <div class="sys-health-text">
+          <b id="healthLabel">Not connected</b>
+          <span id="healthSub">Connect your database to load live records</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia &middot; Ministry of Education</div>
+        <div class="page-title">Class / Grade Roster</div>
+      </div>
+      <div style="flex:1;"></div>
+      <span class="pill green" style="border:none;" title="Connected to Kingsville Public High School's Supabase project">Live &middot; Supabase</span>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Signed in">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Registrar account</div>
+        </div>
+      </div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <section class="view active" id="view-roster">
+
+        <div class="section-head">
+          <div>
+            <h2>Class / Grade Roster</h2>
+            <p>Select any class below to pull its full, live roster &mdash; every registered student's name, ID, sex, contact, emergency contact and email &mdash; then download it as PDF, Excel or Word, or print it directly. Everything loads straight from the school's live database.</p>
+          </div>
+        </div>
+
+        <div class="roster-toolbar">
+          <div class="roster-field">
+            <label for="rosterClassSelect">Class / Section</label>
+            <select id="rosterClassSelect"><option value="">Loading classes&hellip;</option></select>
+          </div>
+          <button type="button" class="roster-refresh-btn" id="rosterRefreshBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.5 9a9 9 0 0114.5-3.5L23 10M1 14l5 5a9 9 0 0014.5-3.5"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="roster-summary" id="rosterSummary"></div>
+
+        <div class="roster-export-bar" id="rosterExportBar">
+          <button type="button" class="re-pdf" id="rosterPdfBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg>
+            Download PDF
+          </button>
+          <button type="button" class="re-excel" id="rosterExcelBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            Download Excel
+          </button>
+          <button type="button" class="re-word" id="rosterWordBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg>
+            Download Word
+          </button>
+          <button type="button" class="re-print" id="rosterPrintBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+            Print Roster
+          </button>
+        </div>
+
+        <div class="roster-table-wrap">
+          <table class="roster-table">
+            <thead><tr><th>#</th><th>Full Name</th><th>Student ID</th><th>Sex</th><th>Contact</th><th>Emergency Contact</th><th>Email</th></tr></thead>
+            <tbody id="rosterTbody"><tr><td colspan="7" style="text-align:center;padding:26px;font-style:italic;color:var(--muted);">Select a class above to load its roster.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="roster-empty-state" id="rosterEmpty">Select a class above to load its roster.</div>
+
+      </section>
+
+      <div class="footer-ribbon">
+        <img class="footer-crest" src="../assets/images/img-32d08477299d907c.jpg" alt="">
+        Kingsville Public High School &middot; Registrar Console &middot; <b>Knowledge is Power</b> &middot; Kingsville #7, Careysburg District
+        <img class="footer-crest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+        Republic of Liberia &middot; Ministry of Education
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Roster print / export preview -->
+<div class="roster-doc-overlay" id="rosterPrintOverlay">
+  <div class="roster-doc-modal">
+    <div class="roster-doc-paper" id="rosterPrintPaper"><!-- filled by JS just before printing --></div>
+    <div class="roster-doc-actions">
+      <button type="button" id="rosterPrintCloseBtn">Close</button>
+      <button type="button" class="roster-btn-print" id="rosterPrintNowBtn">Print Now</button>
+    </div>
+  </div>
+</div>
+
+<div class="roster-toast-wrap" id="rosterToastWrap"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="../js/roster-engine.js"></script>
+<script src="../js/ca-sheet.js"></script>
+<script src="../js/master-grade-sheet.js"></script>
+<script>
+  KPS.Roster.start({ role: 'registrar', roleLabel: 'Registrar' });
+</script>
+
+</body>
+</html>

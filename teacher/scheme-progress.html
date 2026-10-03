@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>Kingsville Public School — Scheme of Work Progress</title>
+<style>
+  :root{
+    --red:#a3181c;
+    --red-bright:#d31f24;
+    --gold:#d4af37;
+    --gold-light:#f4e5a3;
+    --ink:#1a1a1a;
+    --line:#000;
+    --paper:#ffffff;
+    --grey-band:#e9e9e9;
+    --lock-green:#1f7a3d;
+    --lock-red:#a3181c;
+    --glow:rgba(163,24,28,.45);
+    --glow-gold:rgba(212,175,55,.65);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(163,24,28,.06), transparent 60%),
+      #f2f2f0;
+    margin:0;
+    padding:24px 12px 60px;
+  }
+  .sheet{
+    position:relative;
+    max-width:920px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:26px 34px 38px;
+    border:1px solid transparent;
+    border-radius:6px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    isolation:isolate;
+  }
+  /* Premium animated gold/crimson glowing frame */
+  .sheet::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:8px;
+    padding:2px;
+    background:conic-gradient(from var(--frame-angle,0deg),
+      var(--gold), var(--red-bright), var(--gold-light), var(--red), var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    z-index:-1;
+    animation: frame-spin 7s linear infinite;
+    filter:drop-shadow(0 0 6px var(--glow-gold));
+  }
+  @property --frame-angle{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:0deg;
+  }
+  @keyframes frame-spin{
+    to{ --frame-angle:360deg; }
+  }
+  .letterhead{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:3px double #333;
+    padding-bottom:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  /* subtle shimmer sweep across the letterhead */
+  .letterhead::after{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:40%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.35), transparent);
+    animation: sweep 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{ left:-60%; }
+    45%{ left:120%; }
+    100%{ left:120%; }
+  }
+  .letterhead img{
+    height:64px;
+    width:64px;
+    object-fit:contain;
+    flex-shrink:0;
+    border-radius:50%;
+    background:#fff;
+    padding:3px;
+    box-shadow:
+      0 0 0 2px var(--gold),
+      0 0 10px 2px var(--glow-gold);
+    animation: crest-glow 2.6s ease-in-out infinite;
+  }
+  @keyframes crest-glow{
+    0%, 100%{
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 8px 1px var(--glow-gold);
+    }
+    50%{
+      box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 0 18px 6px var(--glow-gold);
+    }
+  }
+  .letterhead .headtext{
+    flex:1;
+    text-align:center;
+  }
+  .school-name{
+    font-weight:800;
+    font-size:26px;
+    letter-spacing:.5px;
+    margin:0 0 4px;
+    background:linear-gradient(100deg,
+      var(--red) 0%, var(--gold) 22%, var(--red-bright) 45%,
+      var(--gold-light) 60%, var(--red) 82%, var(--gold) 100%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 14px rgba(163,24,28,.18);
+    animation: text-shine 5s linear infinite;
+  }
+  @keyframes text-shine{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:250% 50%; }
+  }
+  .sub{ font-weight:700; font-size:13px; margin:0; color:#333; }
+  .motto{ font-style:italic; font-size:12.5px; color:#555; margin-top:2px; }
+
+  .master-title{
+    color:var(--red);
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:1px;
+    margin:8px 0 6px;
+    text-align:center;
+    text-shadow:0 0 10px rgba(163,24,28,.15);
+  }
+  .band{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(180deg,var(--grey-band),#f4f4f2);
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    color:var(--red);
+    padding:7px 0;
+    margin:4px 0 16px;
+    letter-spacing:2px;
+    border-radius:3px;
+    box-shadow:inset 0 0 0 1px rgba(212,175,55,.35), 0 0 10px rgba(163,24,28,.08);
+  }
+  .band::before{
+    content:"";
+    position:absolute;
+    top:0; left:-40%;
+    width:25%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.55), transparent);
+    animation: sweep 4.5s ease-in-out infinite;
+    animation-delay:1s;
+    pointer-events:none;
+  }
+  .year-input{
+    font-family:inherit;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:2px;
+    color:var(--red);
+    background:transparent;
+    border:none;
+    border-bottom:1px dashed rgba(163,24,28,.5);
+    text-align:center;
+    width:110px;
+    padding:0 2px;
+  }
+  .year-input::placeholder{
+    color:rgba(163,24,28,.45);
+  }
+  .year-input:focus{
+    outline:none;
+    border-bottom:1px solid var(--red);
+    text-shadow:0 0 8px rgba(212,175,55,.5);
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 22px;
+    font-size:14px;
+    margin-bottom:18px;
+    align-items:baseline;
+  }
+  .meta-row label{ font-weight:700; white-space:nowrap; }
+  .meta-row input{
+    border:none;
+    border-bottom:1px solid #333;
+    font-family:inherit;
+    font-style:italic;
+    font-size:14px;
+    padding:2px 4px;
+    background:transparent;
+    min-width:140px;
+  }
+  .meta-row input:disabled{ color:#333; opacity:1; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  th,td{
+    border:1px solid var(--line);
+    padding:5px 6px;
+    text-align:center;
+  }
+  th{ background:#f6f6f6; font-size:12px; }
+  td.name{ text-align:left; }
+  tr:nth-child(even) td{ background:#fbfbfb; }
+
+  input.name-input{
+    width:100%;
+    border:1px solid #bbb;
+    font-family:inherit;
+    padding:3px 4px;
+    border-radius:3px;
+    text-align:left;
+  }
+  select.sex-input{
+    width:100%;
+    border:1px solid #bbb;
+    font-family:inherit;
+    padding:3px 2px;
+    border-radius:3px;
+    text-align:center;
+  }
+  input.att-input{
+    width:56px;
+    border:1px solid #bbb;
+    text-align:center;
+    font-family:inherit;
+    padding:3px 2px;
+    border-radius:3px;
+  }
+  input:disabled, select:disabled{
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--ink);
+    font-weight:600;
+  }
+  input:focus, select:focus{ outline:2px solid var(--red); }
+
+  .empty-row td{
+    color:#999;
+    font-style:italic;
+    padding:14px 6px;
+  }
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .status-pill{
+    font-size:13px;
+    font-weight:700;
+    padding:5px 12px;
+    border-radius:20px;
+    color:#fff;
+  }
+  .status-pill.locked{ background:var(--lock-red); }
+  .status-pill.unlocked{ background:var(--lock-green); }
+
+  button{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    padding:7px 14px;
+    border-radius:5px;
+    border:1px solid var(--red);
+    background:#fff;
+    color:var(--red);
+    cursor:pointer;
+    transition:box-shadow .25s ease, transform .15s ease, background .2s ease, color .2s ease;
+  }
+  button:hover{
+    background:var(--red);
+    color:#fff;
+    box-shadow:0 0 12px 2px var(--glow);
+    transform:translateY(-1px);
+  }
+  button:active{ transform:translateY(0); }
+  button.subtle{
+    border-color:#999; color:#444; font-weight:600;
+  }
+  button.subtle:hover{ background:#444; color:#fff; }
+  button:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .row-actions{ display:flex; gap:6px; justify-content:center; }
+  .row-actions button{ padding:3px 6px; font-size:11px; }
+
+  /* ---- Attendance-specific additions ---- */
+  button.add-week-btn{
+    border-color:var(--gold);
+    color:#8a6d1a;
+    font-weight:700;
+  }
+  button.add-week-btn:hover{
+    background:var(--gold);
+    color:#fff;
+  }
+
+  .foot-actions{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:16px; flex-wrap:wrap; gap:10px;
+  }
+  .max-field{ font-size:13px; display:flex; align-items:center; gap:6px; }
+  .max-field input{ width:50px; text-align:center; border:1px solid #bbb; border-radius:3px; padding:3px; }
+  .save-note{ font-size:12px; color:#666; min-height:16px; }
+
+  /* Premium action buttons (Save / Download / Print / Submit) */
+  button.premium{
+    position:relative;
+    color:#fff;
+    border:none;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--gold) 100%);
+    background-size:220% 100%;
+    background-position:0% 50%;
+    box-shadow:0 0 8px 1px var(--glow-gold);
+    padding:8px 16px;
+  }
+  button.premium:hover{
+    background-position:100% 50%;
+    box-shadow:0 0 14px 3px var(--glow-gold);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+  button.premium.submit{
+    background:linear-gradient(100deg, var(--lock-green) 0%, #2fae5c 45%, var(--gold) 100%);
+    background-size:220% 100%;
+  }
+  .action-row{
+    display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
+  }
+
+  /* This is the Exam / Master sheet — unlike the single-purpose sheets
+     (CA, Assignment, Practical, Quiz) no grade column is locked here;
+     the teacher can enter or correct any score before finalising. */
+  input.grade-locked, input.grade-locked:disabled{
+    background:#f0f0ee;
+    color:#999;
+    border:1px solid #ddd;
+    text-align:center;
+    cursor:not-allowed;
+  }
+  input.grade-input{
+    background:#fffdf4;
+    border:1px solid var(--gold);
+    text-align:center;
+    font-weight:700;
+    color:var(--red);
+  }
+  input.grade-input:focus{ outline:2px solid var(--red); }
+  td.total-cell{
+    font-weight:800;
+    color:var(--red);
+    text-align:center;
+    background:#fbf6e6;
+  }
+
+  .submitted-banner{
+    display:none;
+    text-align:center;
+    font-weight:800;
+    letter-spacing:1px;
+    color:#fff;
+    background:var(--lock-green);
+    border-radius:4px;
+    padding:6px 0;
+    margin-bottom:12px;
+  }
+  .submitted .submitted-banner{ display:block; }
+  .submitted input, .submitted select, .submitted button#addRowBtn, .submitted button[data-remove]{
+    pointer-events:none;
+    opacity:.6;
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .sheet{ box-shadow:none; border:1px solid #999; }
+    .sheet::before{ display:none; }
+    .toolbar, .action-row, .row-actions, #addRowBtn, .save-note{ display:none !important; }
+    .table-scroll{ overflow:visible; border:none; }
+    th.name-head, td.name{ position:static; }
+  }
+
+  @media (max-width:640px){
+    .school-name{ font-size:20px; }
+    .sheet{ padding:16px; }
+    .letterhead img{ height:44px; width:44px; }
+  }
+
+  /* ---- Scheme of Work Progress additions ---- */
+  select.band-sel{
+    font-family:inherit;
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:.5px;
+    color:var(--red);
+    background:transparent;
+    border:none;
+    border-bottom:1px dashed rgba(163,24,28,.5);
+    text-align:center;
+    padding:0 4px;
+    appearance:none;
+    -webkit-appearance:none;
+    cursor:pointer;
+  }
+  select.band-sel:focus{ outline:none; border-bottom:1px solid var(--red); }
+  .band-field{ display:inline-flex; align-items:center; gap:4px; margin:0 10px; }
+  .band-field label{ font-size:11px; letter-spacing:1px; color:#8a6d1a; }
+
+  .progress-card{
+    border:1px solid #e2c98a;
+    border-radius:10px;
+    padding:16px 18px;
+    margin:6px 0 20px;
+    background:linear-gradient(135deg,#fffdf7,#fbf6e6);
+    box-shadow:inset 0 0 0 1px rgba(212,175,55,.25);
+  }
+  .progress-top{ display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .progress-pct{
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:32px; font-weight:800; color:var(--red); line-height:1;
+  }
+  .progress-pct sup{ font-size:13px; }
+  .progress-stats{ display:flex; gap:10px; flex-wrap:wrap; flex:1; }
+  .stat-chip{
+    display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700;
+    padding:5px 12px; border-radius:20px; white-space:nowrap;
+  }
+  .stat-chip.completed{ background:#e6f7ea; color:var(--lock-green); border:1px solid #b9e6c9; }
+  .stat-chip.inprogress{ background:#fdf3d8; color:#a3781c; border:1px solid #f0dca0; }
+  .stat-chip.notstarted{ background:#f1f1ef; color:#666; border:1px solid #dcdfe4; }
+  .segbar{
+    height:14px; border-radius:10px; background:#eee; overflow:hidden;
+    display:flex; margin-top:12px; border:1px solid #ddd;
+  }
+  .segbar .seg{ height:100%; transition:width .4s ease; }
+  .seg.completed{ background:linear-gradient(90deg,var(--lock-green),#2fa860); }
+  .seg.inprogress{ background:linear-gradient(90deg,var(--gold),var(--gold-light)); }
+
+  table.weeks-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.weeks-table th, table.weeks-table td{ border:1px solid var(--line); padding:6px 7px; text-align:left; vertical-align:top; }
+  table.weeks-table th{ background:#f6f6f6; font-size:12px; color:var(--red); }
+  table.weeks-table td.wk-num{ width:34px; text-align:center; font-weight:800; color:var(--red); background:#fbf6e6; }
+  table.weeks-table tr:nth-child(even) td{ background:#fbfbfb; }
+  table.weeks-table input[type=text]{
+    width:100%; border:1px solid #bbb; font-family:inherit; padding:4px 5px; border-radius:3px;
+  }
+  table.weeks-table input[type=date]{
+    font-size:11.5px; border:1px solid #bbb; border-radius:3px; padding:3px 4px; width:126px; font-family:inherit;
+  }
+  select.status-sel{
+    font-size:12px; border:1px solid #bbb; border-radius:3px; padding:4px 6px; width:132px; font-family:inherit;
+  }
+  select.status-sel.completed{ background:#e6f7ea; color:var(--lock-green); border-color:#b9e6c9; font-weight:700; }
+  select.status-sel.inprogress{ background:#fdf3d8; color:#a3781c; border-color:#f0dca0; font-weight:700; }
+  select.status-sel.notstarted{ background:#fbfbfb; color:#666; border-color:#ddd; }
+  .rm-week-btn{ background:none; border:none; color:var(--red); cursor:pointer; font-size:14px; }
+  .weeks-actions{ display:flex; justify-content:center; gap:10px; margin:16px 0 4px; }
+
+  .stat-line{ display:flex; flex-wrap:wrap; gap:8px 22px; font-size:13px; margin-bottom:6px; align-items:baseline; }
+  .stat-line label{ font-weight:700; white-space:nowrap; color:#555;}
+  .stat-line .stat-val{ font-weight:700; color:var(--red); }
+
+  @media print{
+    .weeks-actions, #addWeekBtn, .band-field select{ display:none !important; }
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<a href="dashboard.html" class="kps-back-btn" title="Back to Teacher Dashboard" style="position:fixed;top:14px;right:14px;z-index:9999;display:flex;align-items:center;gap:6px;background:#a3181c;color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 14px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.25);font-family:Arial,Helvetica,sans-serif;">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  Back to Dashboard
+</a>
+<style>@media print{ .kps-back-btn{ display:none !important; } }</style>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="sheet" id="sheet">
+
+  <div class="submitted-banner" id="submittedBanner" style="display:none;"></div>
+
+  <div class="letterhead">
+    <img src="../assets/images/img-1005aedff1a0c5ea.png" alt="Kingsville Public High School crest">
+    <div class="headtext">
+      <p class="school-name">Kingsville Public School</p>
+      <p class="sub">Kingsville Township, Kingsville #7, Careysburg District &middot; Montserrado County, Liberia</p>
+      <p class="motto">Motto: "Knowledge Is Power"</p>
+    </div>
+    <img src="../assets/images/img-a7df6c3d8d6e390b.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+
+  <p class="master-title" id="pageTitle" contenteditable="true">SCHEME OF WORK — PROGRESS TRACKER</p>
+  <div class="band">
+    <span class="band-field"><label>SUBJECT</label>
+      <select id="subjectSel" class="band-sel">
+        <option>Integrated Science</option><option>Biology</option><option>Chemistry</option><option>Physics</option>
+        <option>Mathematics</option><option>English Language</option><option>Social Studies</option>
+        <option>Civics</option><option>Agriculture</option><option>Reading</option><option>ICT</option>
+        <option value="__add__">+ Add Subject…</option>
+      </select>
+    </span>
+    <span class="band-field"><label>CLASS</label>
+      <select id="classSel" class="band-sel">
+        <option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option>
+        <option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option>
+        <option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+      </select>
+    </span>
+    <span class="band-field"><label>TERM</label>
+      <select id="termSel" class="band-sel">
+        <option>Term 1</option><option>Term 2</option><option>Term 3</option>
+      </select>
+    </span>
+  </div>
+
+  <div class="meta-row">
+    <span><label>Weeks:</label> <span class="year-input" id="metaWeeks" style="border:none;">0</span></span>
+    <span><label>Last Saved:</label> <span class="year-input" id="metaSaved" style="border:none;">Not saved yet</span></span>
+  </div>
+
+  <div class="toolbar">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button id="addWeekBtn" class="subtle add-week-btn">+ Add week</button>
+      <button id="add4WeekBtn" class="subtle add-week-btn">+ Add 4 weeks</button>
+      <button id="markAllDoneBtn" class="subtle">✓ Mark all done</button>
+    </div>
+    <div class="action-row">
+      <button class="premium" id="saveBtn">💾 Save Progress</button>
+      <button class="premium" id="printBtn">🖨 Print</button>
+    </div>
+  </div>
+
+  <div class="progress-card">
+    <div class="progress-top">
+      <div class="progress-pct"><span id="pctValue">0</span><sup>%</sup></div>
+      <div class="progress-stats">
+        <span class="stat-chip completed">✅ Completed: <span id="countCompleted">0</span></span>
+        <span class="stat-chip inprogress">🟡 In Progress: <span id="countInProgress">0</span></span>
+        <span class="stat-chip notstarted">⚪ Not Started: <span id="countNotStarted">0</span></span>
+      </div>
+    </div>
+    <div class="segbar" id="segBar">
+      <div class="seg completed" id="segCompleted" style="width:0%;"></div>
+      <div class="seg inprogress" id="segInProgress" style="width:0%;"></div>
+    </div>
+  </div>
+
+  <table class="weeks-table" id="weeksTable">
+    <thead>
+      <tr>
+        <th style="width:34px;">Wk</th>
+        <th>Topic / Learning Objective</th>
+        <th style="width:140px;">Status</th>
+        <th style="width:130px;">Date Completed</th>
+        <th>Notes</th>
+        <th style="width:24px;"></th>
+      </tr>
+    </thead>
+    <tbody id="weeksTbody"></tbody>
+  </table>
+
+  <div class="weeks-actions">
+    <button class="subtle" id="addWeekBtn2">+ Add Another Week</button>
+    <button class="subtle" id="removeLastBtn">− Remove Last Week</button>
+  </div>
+
+  <div class="foot-actions">
+    <div class="max-field" style="visibility:hidden;"></div>
+    <div class="save-note" id="msgBar"></div>
+  </div>
+
+</div>
+<script>
+(function(){
+  const msgBar = document.getElementById('msgBar');
+  function showMsg(t){ msgBar.textContent = t; setTimeout(()=>{ if(msgBar.textContent===t) msgBar.textContent=''; }, 2400); }
+  function esc(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  /* ---------- Let teacher add custom subjects ---------- */
+  const subjectSel = document.getElementById('subjectSel');
+  let lastSubjectValue = subjectSel.value;
+  let customSubjects = [];
+
+  function insertSubjectOption(name, select){
+    const addOpt = subjectSel.querySelector('option[value="__add__"]');
+    const opt = document.createElement('option');
+    opt.textContent = name;
+    subjectSel.insertBefore(opt, addOpt);
+    if (select) subjectSel.value = name;
+  }
+  async function saveCustomSubjects(){
+    try{ if (window.storage && window.storage.set) await window.storage.set('custom-subjects', JSON.stringify(customSubjects), false); }catch(e){}
+  }
+  async function loadCustomSubjects(){
+    try{
+      if (window.storage && window.storage.get){
+        const r = await window.storage.get('custom-subjects');
+        if (r && r.value){ const parsed = JSON.parse(r.value); if (Array.isArray(parsed)) customSubjects = parsed; }
+      }
+    }catch(e){}
+    customSubjects.forEach(name => insertSubjectOption(name, false));
+  }
+  function addCustomSubject(){
+    const name = (prompt('New subject name:') || '').trim();
+    if (!name){ subjectSel.value = lastSubjectValue; return; }
+    const exists = Array.from(subjectSel.options).some(o => o.value.toLowerCase() === name.toLowerCase() && o.value !== '__add__');
+    if (exists){ subjectSel.value = name; lastSubjectValue = name; showMsg(name + ' is already in the subject list.'); loadScheme(); return; }
+    customSubjects.push(name);
+    insertSubjectOption(name, true);
+    saveCustomSubjects();
+    lastSubjectValue = name;
+    showMsg('Added "' + name + '" to Subjects.');
+    loadScheme();
+  }
+  subjectSel.addEventListener('change', function(){
+    if (this.value === '__add__'){ addCustomSubject(); return; }
+    lastSubjectValue = this.value;
+    loadScheme();
+  });
+
+  document.getElementById('classSel').addEventListener('change', loadScheme);
+  document.getElementById('termSel').addEventListener('change', loadScheme);
+
+  /* ---------- Weeks data ---------- */
+  const weeksTbody = document.getElementById('weeksTbody');
+  let weeks = [];
+
+  function blankWeek(){ return { topic:'', status:'notstarted', dateCompleted:'', notes:'' }; }
+  function defaultWeeks(n){ const arr=[]; for(let i=0;i<n;i++) arr.push(blankWeek()); return arr; }
+
+  function renderWeeks(){
+    weeksTbody.innerHTML = '';
+    weeks.forEach((wk, i)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="wk-num">' + (i+1) + '</td>' +
+        '<td><input type="text" class="topic-input" data-i="'+i+'" placeholder="Enter topic / objective…" value="'+esc(wk.topic)+'"></td>' +
+        '<td><select class="status-sel '+wk.status+'" data-i="'+i+'">' +
+          '<option value="notstarted"'+(wk.status==='notstarted'?' selected':'')+'>⚪ Not Started</option>' +
+          '<option value="inprogress"'+(wk.status==='inprogress'?' selected':'')+'>🟡 In Progress</option>' +
+          '<option value="completed"'+(wk.status==='completed'?' selected':'')+'>✅ Completed</option>' +
+        '</select></td>' +
+        '<td><input type="date" class="date-input" data-i="'+i+'" value="'+esc(wk.dateCompleted)+'"></td>' +
+        '<td><input type="text" class="notes-input" data-i="'+i+'" placeholder="Notes…" value="'+esc(wk.notes)+'"></td>' +
+        '<td><button class="rm-week-btn" data-i="'+i+'" title="Remove week">✕</button></td>';
+      weeksTbody.appendChild(tr);
+    });
+    wireWeekEvents();
+    updateProgress();
+  }
+
+  function wireWeekEvents(){
+    weeksTbody.querySelectorAll('.topic-input').forEach(inp=>{
+      inp.addEventListener('input', ()=>{ weeks[+inp.dataset.i].topic = inp.value; });
+      inp.addEventListener('change', ()=> saveScheme(true));
+    });
+    weeksTbody.querySelectorAll('.notes-input').forEach(inp=>{
+      inp.addEventListener('input', ()=>{ weeks[+inp.dataset.i].notes = inp.value; });
+      inp.addEventListener('change', ()=> saveScheme(true));
+    });
+    weeksTbody.querySelectorAll('.date-input').forEach(inp=>{
+      inp.addEventListener('change', ()=>{ weeks[+inp.dataset.i].dateCompleted = inp.value; saveScheme(true); });
+    });
+    weeksTbody.querySelectorAll('.status-sel').forEach(sel=>{
+      sel.addEventListener('change', ()=>{
+        const i = +sel.dataset.i;
+        weeks[i].status = sel.value;
+        sel.className = 'status-sel ' + sel.value;
+        if (sel.value === 'completed' && !weeks[i].dateCompleted){
+          const today = new Date().toISOString().slice(0,10);
+          weeks[i].dateCompleted = today;
+          const dateInput = weeksTbody.querySelector('.date-input[data-i="'+i+'"]');
+          if (dateInput) dateInput.value = today;
+        }
+        updateProgress();
+        saveScheme(true);
+      });
+    });
+    weeksTbody.querySelectorAll('.rm-week-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        weeks.splice(+btn.dataset.i, 1);
+        renderWeeks();
+        saveScheme(true);
+      });
+    });
+  }
+
+  function updateProgress(){
+    const total = weeks.length;
+    const completed = weeks.filter(w=>w.status==='completed').length;
+    const inprogress = weeks.filter(w=>w.status==='inprogress').length;
+    const notstarted = total - completed - inprogress;
+    const pct = total ? Math.round((completed/total)*100) : 0;
+    document.getElementById('pctValue').textContent = pct;
+    document.getElementById('countCompleted').textContent = completed;
+    document.getElementById('countInProgress').textContent = inprogress;
+    document.getElementById('countNotStarted').textContent = notstarted;
+    document.getElementById('segCompleted').style.width = (total? (completed/total*100):0) + '%';
+    document.getElementById('segInProgress').style.width = (total? (inprogress/total*100):0) + '%';
+    document.getElementById('metaWeeks').textContent = total;
+  }
+
+  document.getElementById('addWeekBtn').addEventListener('click', ()=>{ weeks.push(blankWeek()); renderWeeks(); saveScheme(true); });
+  document.getElementById('addWeekBtn2').addEventListener('click', ()=>{ weeks.push(blankWeek()); renderWeeks(); saveScheme(true); });
+  document.getElementById('add4WeekBtn').addEventListener('click', ()=>{ for(let i=0;i<4;i++) weeks.push(blankWeek()); renderWeeks(); saveScheme(true); });
+  document.getElementById('removeLastBtn').addEventListener('click', ()=>{ if (weeks.length){ weeks.pop(); renderWeeks(); saveScheme(true); } });
+  document.getElementById('markAllDoneBtn').addEventListener('click', ()=>{
+    if (!confirm('Mark all weeks for this scheme as Completed?')) return;
+    const today = new Date().toISOString().slice(0,10);
+    weeks.forEach(w=>{ w.status='completed'; if(!w.dateCompleted) w.dateCompleted = today; });
+    renderWeeks();
+    saveScheme(true);
+    showMsg('All weeks marked as completed.');
+  });
+
+  /* ---------- Meta / storage ---------- */
+  function schemeKey(){
+    const subj = document.getElementById('subjectSel').value;
+    const cls = document.getElementById('classSel').value;
+    const term = document.getElementById('termSel').value;
+    return 'scheme-progress:' + encodeURIComponent(cls + '|' + subj + '|' + term);
+  }
+
+  async function saveScheme(silent){
+    const payload = { weeks, savedAt: Date.now() };
+    try{
+      if (window.storage && window.storage.set) await window.storage.set(schemeKey(), JSON.stringify(payload), false);
+      document.getElementById('metaSaved').textContent = new Date(payload.savedAt).toLocaleString();
+      if (!silent) showMsg('Progress saved for ' + document.getElementById('subjectSel').value + ' • ' + document.getElementById('classSel').value + ' • ' + document.getElementById('termSel').value + '.');
+    }catch(e){ if(!silent) showMsg('Could not save right now.'); }
+  }
+  document.getElementById('saveBtn').addEventListener('click', ()=> saveScheme(false));
+
+  async function loadScheme(){
+    let payload = null;
+    try{
+      if (window.storage && window.storage.get){
+        const r = await window.storage.get(schemeKey());
+        if (r && r.value) payload = JSON.parse(r.value);
+      }
+    }catch(e){}
+    if (payload && Array.isArray(payload.weeks) && payload.weeks.length){
+      weeks = payload.weeks;
+      document.getElementById('metaSaved').textContent = payload.savedAt ? new Date(payload.savedAt).toLocaleString() : 'Not saved yet';
+    } else {
+      weeks = defaultWeeks(12);
+      document.getElementById('metaSaved').textContent = 'Not saved yet';
+    }
+    renderWeeks();
+  }
+
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  /* ---------- Init ---------- */
+  (async function init(){
+    await loadCustomSubjects();
+    await loadScheme();
+  })();
+})();
+</script>
+</body>
+</html>

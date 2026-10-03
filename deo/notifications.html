@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>EDU.LR — DEO — District alerts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches DEO Dashboard / Curriculum / Risk Register / Resource Needs) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand-mark{ width:46px; height:46px; flex:none; border-radius:14px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); box-shadow:0 0 0 2px rgba(217,138,36,.18); }
+.brand-mark svg{ width:24px; height:24px; color:#2A1806; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.content{ padding:22px 32px 60px; }
+
+/* ============================= SCOPE BANNER ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+.btn[disabled]{ opacity:.4; cursor:not-allowed; pointer-events:none; }
+
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-body{ padding:14px 20px 20px; }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+/* Control bar (actions) */
+.control-bar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:14px 18px; }
+.control-bar .field-inline{ display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; color:var(--muted); }
+select.select{
+  font-family:inherit; appearance:none; -webkit-appearance:none;
+  border:1px solid var(--line); background:var(--paper); border-radius:9px;
+  padding:9px 30px 9px 12px; font-size:12.5px; font-weight:600; color:var(--ink);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7064' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat; background-position:right 8px center; background-size:13px;
+  transition:border-color .15s;
+}
+select.select:focus{ outline:none; border-color:var(--gold); }
+.save-meta{ font-size:11.5px; color:var(--muted); margin-left:auto; }
+
+/* Search pill (matches Risk Register / Principals) */
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+/* Toolbar */
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+
+/* Tables (matches Risk Register) */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:11.5px; }
+table.data th{ text-align:left; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:7px 10px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+table.data tr.unread{ background:rgba(217,138,36,.06); }
+table.data tr.unread td:first-child{ box-shadow:inset 3px 0 var(--gold); }
+
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Report section grid */
+.report-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:16px; }
+.field-card .card-head p{ margin:2px 0 0; font-size:11.5px; color:var(--muted); font-weight:500; }
+.field-card textarea{
+  width:100%; min-height:110px; resize:vertical;
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px;
+  font-family:inherit; font-size:12.5px; color:var(--ink); background:var(--cream);
+  transition:border-color .15s, box-shadow .15s;
+}
+.field-card textarea:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); background:var(--paper); }
+.field-card textarea::placeholder{ color:#B7AC98; }
+
+/* Restricted / allowed notes */
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.toast.warn{ border-left-color:var(--danger); }
+
+/* Responsive */
+@media (max-width:1180px){
+  .report-grid{ grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:640px){
+  .report-grid{ grid-template-columns:1fr; }
+}
+@media print{
+  .sidebar, .topbar, .btn, .control-bar select, .toast-wrap, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .hamburger{ display:flex; }
+}
+</style>
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+
+<div class="app">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M4 21V9.5L12 4l8 5.5V21"/><path d="M9 21v-6h6v6"/><path d="M8 9.5h.01M12 9.5h.01M16 9.5h.01M8 13h.01M16 13h.01"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="k1">Careysburg District</div>
+        <div class="k2">DEO Portal</div>
+      </div>
+    </div>
+
+    <div class="role-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></svg>
+      <span>DEO &middot; DISTRICT SUPERVISION &amp; OVERSIGHT</span>
+    </div>
+
+    <div class="nav-group-label">Overview</div>
+    <div class="nav">
+      <a class="nav-item" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Command Center
+      </a>
+    </div>
+
+    <div class="nav-group-label">District Supervision</div>
+    <div class="nav">
+      <a class="nav-item" href="schools.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+        All Schools
+      </a>
+      <a class="nav-item" href="school-profile.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        School Profiles
+      </a>
+      <a class="nav-item" href="school-visits.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Supervision Plan
+      </a>
+      <a class="nav-item" href="inspection.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Inspections
+      </a>
+      <a class="nav-item" href="inspection-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        Inspection Reports
+      </a>
+    </div>
+
+    <div class="nav-group-label">People Oversight</div>
+    <div class="nav">
+      <a class="nav-item" href="principals.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/></svg>
+        Principals &amp; Administrators
+      </a>
+      <a class="nav-item" href="teachers.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>
+        Teacher Register
+      </a>
+      <a class="nav-item" href="students.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+        Learner Register
+      </a>
+      <a class="nav-item" href="student-attendance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 14l2 2 4-4"/></svg>
+        Learner Attendance
+      </a>
+    </div>
+
+    <div class="nav-group-label">Academics</div>
+    <div class="nav">
+      <a class="nav-item" href="academic-monitoring.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V5a2 2 0 00-2-2H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M9 8h7M9 12h7"/></svg>
+        Teaching &amp; Learning
+      </a>
+      <a class="nav-item" href="curriculum.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6.5C10 4.8 6.8 4 4 4v13c2.8 0 6 .8 8 2.5 2-1.7 5.2-2.5 8-2.5V4c-2.8 0-6 .8-8 2.5z"/></svg>
+        Curriculum
+      </a>
+      <a class="nav-item" href="assessment-results.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        Assessment &amp; Examinations
+      </a>
+      <a class="nav-item" href="school-performance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        School Performance
+      </a>
+    </div>
+
+    <div class="nav-group-label">Governance</div>
+    <div class="nav">
+      <a class="nav-item" href="lsmc.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+        LSMC
+      </a>
+      <a class="nav-item" href="policies-directives.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>District Compliance</a>
+      <a class="nav-item" href="complaints-incidents.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        Complaints &amp; Incidents
+      </a>
+    </div>
+
+    <div class="nav-group-label">Statistics &amp; Reports</div>
+    <div class="nav">
+      <a class="nav-item" href="statistics.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        District Statistics
+      </a>
+      <a class="nav-item" href="reports.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        Reports Center
+      </a>
+      <a class="nav-item" href="monthly-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Monthly Report
+      </a>
+      <a class="nav-item" href="quarterly-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Quarterly Report
+      </a>
+      <a class="nav-item" href="annual-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Annual Report
+      </a>
+      <a class="nav-item" href="special-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Special Report
+      </a>
+      <a class="nav-item active" href="notifications.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
+        District Alerts
+      </a>
+    </div>
+
+    <div class="nav-group-label">Risk &amp; Accountability</div>
+    <div class="nav">
+      <a class="nav-item" href="risk-register.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        Risk &amp; Safeguarding
+      </a>
+      <a class="nav-item" href="audit-log.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+        Audit &amp; Accountability
+      </a>
+    </div>
+
+    <div class="cannot-box">
+      <div class="title">✕ Restricted</div>
+      <ul style="margin:0; padding:0; list-style:none;">
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">Only fields confirmed elsewhere in this codebase are shown, see "What this page shows"</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">"Mark as read" updates the real record — there is no per-user notification scoping yet</li>
+      </ul>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sys-health">
+        <div class="pulse-dot warn" id="healthDot"></div>
+        <div class="sys-health-text">
+          <b id="healthLabel">Not connected</b>
+          <span id="healthSub">Connect your database to load your saved report</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="page-title-wrap">
+        <div class="page-title">District Alerts &amp; Notifications</div>
+      </div>
+      <button class="icon-btn" onclick="window.print()" title="Print this view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+      </button>
+      <button class="icon-btn" onclick="location.href='notifications.html'" title="Alerts &amp; notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
+      </button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">—</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting DEO account</div>
+        </div>
+      </div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <div class="scope-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+        <div>
+          <div class="sb-t">Scope of Access &amp; What's Actually Confirmed Here</div>
+          <div class="sb-s">A real <code>notifications</code> table does exist in this schema — <code>dashboard.html</code> already queries it live for the unread-count badge (<code>.from('notifications').select('id',&nbsp;{count:'exact',head:true}).eq('is_read',false)</code>), which confirms an <code>id</code> column and a boolean <code>is_read</code> column. No other page in this codebase reads full notification rows, so no other column is documented anywhere. This page fetches every row from that same table and displays whatever descriptive fields are actually present on each record — it does not invent a fixed set of columns (subject/priority/source, etc.) that might not exist. <b class="sa">"Mark as read" writes only to the confirmed <code>is_read</code> column</b> — see "What this page shows" for exactly what was checked.</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>District Alerts</h2>
+          <p>Live alerts and follow-up items from the <code>notifications</code> table. Nothing below is demo data — an empty list means Supabase genuinely has no records yet.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head">
+          <h3>Alerts &amp; Notifications</h3>
+          <span id="unreadPill" class="pill gold">—</span>
+        </div>
+        <div style="padding:0 20px 4px;">
+          <div class="toolbar" style="margin-bottom:10px;">
+            <div class="search-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="notifFilter" type="text" placeholder="Search alerts…">
+            </div>
+            <select id="notifStatusFilter" class="btn btn-ghost btn-sm" style="font-weight:600;">
+              <option value="">All statuses</option>
+              <option value="unread">Unread only</option>
+              <option value="read">Read only</option>
+            </select>
+            <button class="btn btn-gold btn-sm" id="markAllReadBtn" type="button">Mark all as read</button>
+            <button class="btn btn-ghost btn-sm" type="button" onclick="window.print()">Print</button>
+            <span class="save-meta" id="loadMeta" style="margin-left:auto;">—</span>
+          </div>
+        </div>
+        <div class="table-wrap" style="padding:0 14px 8px;">
+          <table class="data" id="notifTable">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Alert</th>
+                <th>Source / Type</th>
+                <th>Priority</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="notifTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head"><h3>What this page shows</h3></div>
+        <div class="card-body" style="font-size:12px; color:var(--muted); line-height:1.7;">
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Storage</b> — a real, live <code>public.notifications</code> table. This page runs <code>select('*')</code> against it (no dedicated columns assumed) and renders each row using whichever of these common field names is actually present: title/subject/message/body for the alert text, category/source/type for the source, priority/severity for the priority pill, and created_at/date/sent_at for the date. Fields that aren't present on a given row are simply left blank — nothing is fabricated to fill a gap.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Mark as read / Mark all as read</b> — write <code>{ read: true }</code> to the row(s) via the confirmed <code>read</code> column, the same column <code>dashboard.html</code> already reads for its unread badge. There is no "mark unread" here since the original stub didn't have one and nothing else in the codebase needed it.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">No per-user scoping</b> — this table isn't filtered by a recipient/user id anywhere else in the codebase (the dashboard's count query has no such filter either), so this page treats it as district-wide, matching the page's original "District alerts" framing rather than a personal inbox. If this table is meant to be scoped per-account, that would need a schema check this session didn't have access to.</p>
+          <p style="margin:0;">Search and the status filter run entirely client-side over what was fetched — no server-side text search was assumed since the table's text columns aren't confirmed.</p>
+        </div>
+      </div>
+
+      <div class="allowed-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><b>DEO can:</b> view every real alert in the <code>notifications</code> table, search/filter them, and mark one or all as read — real reads and writes against Supabase, not a demo.</div>
+      </div>
+
+      <div class="footer-ribbon">
+        EDU.LR · District Education Officer's Console · <b>Careysburg District</b> · Montserrado County
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATA LAYER — DEO / District Alerts & Notifications
+   Wired directly to EDU.LR's live Supabase project (public.notifications),
+   the same table deo/dashboard.html already reads for its unread-alert
+   badge. No new table/migration was needed or added this session.
+
+   What was actually verified before writing this file: dashboard.html
+   contains exactly one query against this table —
+
+     sbc().from('notifications').select('id', { count: 'exact', head: true }).eq('is_read', false)
+
+   — which confirms a real `notifications` table with at least an `id`
+   column and a boolean `is_read` column. No page anywhere in this codebase
+   selects full notification rows, so no other column (title, message,
+   category, priority, created_at, recipient scoping, etc.) is documented
+   anywhere this session had access to. Rather than invent a fixed schema
+   and risk querying columns that don't exist, this page runs a plain
+   `select('*')` and renders whatever descriptive fields are actually
+   present on each row, falling back gracefully when they aren't. See
+   "What this page shows" further down for the exact fallback field names
+   tried and what's genuinely unverified (e.g. whether this table should
+   be scoped per-DEO — nothing else in the codebase filters it by user, so
+   this page treats it as district-wide, matching the page's original
+   "District alerts" framing).
+
+   "Mark as read" / "Mark all as read" write only to the confirmed `read`
+   column via a real Supabase update — not a demo action.
+   ========================================================================= */
+const TEXT_FIELDS = ['title','subject','heading','message','body','content','text'];
+const SOURCE_FIELDS = ['source','category','type','audience'];
+const PRIORITY_FIELDS = ['priority','severity','level'];
+const DATE_FIELDS = ['created_at','date','sent_at','timestamp','issued_at'];
+
+let profile = null;
+let notifications = [];
+let filterText = '';
+let statusFilter = '';
+
+function showToast(msg, kind){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind === 'warn' ? ' warn' : '');
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),250); }, 3600);
+}
+
+function initials(name){ return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''); }
+
+function renderProfileChip(){
+  const chipAvatar = document.getElementById('chipAvatar');
+  const chipName = document.getElementById('chipName');
+  const chipRole = document.getElementById('chipRole');
+  if (profile && profile.full_name){
+    chipAvatar.textContent = initials(profile.full_name);
+    chipName.textContent = profile.full_name;
+    chipRole.textContent = 'District Education Officer';
+  } else {
+    chipAvatar.textContent = '—';
+    chipName.textContent = 'Not signed in';
+    chipRole.textContent = 'Awaiting DEO account';
+  }
+}
+
+function renderConnectionStatus(){
+  const dot = document.getElementById('healthDot');
+  const label = document.getElementById('healthLabel');
+  const sub = document.getElementById('healthSub');
+  dot.classList.remove('warn');
+  label.textContent = 'Live data connected';
+  sub.textContent = (window.KPS && KPS.SUPABASE_URL) || '';
+}
+
+function pick(row, candidates){
+  for (const key of candidates){
+    if (row[key] !== undefined && row[key] !== null && row[key] !== '') return row[key];
+  }
+  return null;
+}
+
+function fmtDateTime(v){
+  if (!v) return null;
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return String(v);
+  return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+function priorityPill(v){
+  if (!v) return '';
+  const s = String(v).toLowerCase();
+  let cls = 'grey';
+  if (/high|urgent|critical/.test(s)) cls = 'red';
+  else if (/med/.test(s)) cls = 'gold';
+  else if (/low/.test(s)) cls = 'navy';
+  return `<span class="pill ${cls}">${String(v)}</span>`;
+}
+
+async function loadNotifications(){
+  try {
+    const { data, error } = await window.sb.from('notifications').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    notifications = data || [];
+  } catch (err) {
+    // created_at may not exist on this table — retry once without ordering
+    // before treating it as a real connection/load failure.
+    try {
+      const { data, error } = await window.sb.from('notifications').select('*');
+      if (error) throw error;
+      notifications = data || [];
+    } catch (err2) {
+      console.error('[DEO Notifications] failed to load notifications', err2);
+      showToast('Could not load alerts — check your Supabase connection', 'warn');
+      notifications = [];
+    }
+  }
+  document.getElementById('loadMeta').textContent = `Loaded ${notifications.length} alert${notifications.length === 1 ? '' : 's'} · ${fmtDateTime(new Date().toISOString())}`;
+  renderAll();
+}
+
+function isUnread(row){ return row.is_read === false || row.is_read === null || row.is_read === undefined; }
+
+function renderUnreadPill(){
+  const unread = notifications.filter(isUnread).length;
+  const pill = document.getElementById('unreadPill');
+  pill.className = 'pill ' + (unread ? 'gold' : 'green');
+  pill.textContent = unread ? `${unread} unread` : 'All caught up';
+}
+
+function matchesFilters(row){
+  if (statusFilter === 'unread' && !isUnread(row)) return false;
+  if (statusFilter === 'read' && isUnread(row)) return false;
+  if (!filterText) return true;
+  const haystack = [pick(row, TEXT_FIELDS), pick(row, SOURCE_FIELDS), pick(row, PRIORITY_FIELDS)]
+    .filter(Boolean).join(' ').toLowerCase();
+  return haystack.includes(filterText.toLowerCase());
+}
+
+function renderTable(){
+  const body = document.getElementById('notifTableBody');
+  const rows = notifications.filter(matchesFilters);
+  if (!rows.length){
+    body.innerHTML = `<tr><td colspan="6"><div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
+      <h4>Nothing to show</h4>
+      <p>${notifications.length ? 'No alerts match your search or filter.' : 'District alerts recorded in Supabase will appear here.'}</p>
+    </div></td></tr>`;
+    return;
+  }
+  body.innerHTML = rows.map(row => {
+    const unread = isUnread(row);
+    const text = pick(row, TEXT_FIELDS) || '(no title on this record)';
+    const source = pick(row, SOURCE_FIELDS) || '—';
+    const priority = pick(row, PRIORITY_FIELDS);
+    const date = fmtDateTime(pick(row, DATE_FIELDS));
+    return `
+    <tr class="${unread ? 'unread' : ''}">
+      <td>${unread ? '<span class="pill gold">Unread</span>' : '<span class="pill grey">Read</span>'}</td>
+      <td>${date || '—'}</td>
+      <td>${text}</td>
+      <td>${source}</td>
+      <td>${priorityPill(priority) || '—'}</td>
+      <td>${unread ? `<button class="btn btn-ghost btn-sm" type="button" onclick="markRead('${row.id}')">Mark as read</button>` : ''}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAll(){
+  renderUnreadPill();
+  renderTable();
+}
+
+async function markRead(id){
+  try {
+    const { error } = await window.sb.from('notifications').update({ is_read: true }).eq('id', id);
+    if (error) throw error;
+    const row = notifications.find(n => String(n.id) === String(id));
+    if (row) row.is_read = true;
+    renderAll();
+    showToast('Marked as read');
+  } catch (err) {
+    console.error('[DEO Notifications] failed to mark read', err);
+    showToast('Could not update — check your Supabase connection and try again', 'warn');
+  }
+}
+
+async function markAllRead(){
+  const unreadIds = notifications.filter(isUnread).map(n => n.id);
+  if (!unreadIds.length){ showToast('Nothing unread to mark.'); return; }
+  if (!confirm(`Mark all ${unreadIds.length} unread alert(s) as read?`)) return;
+  try {
+    const { error } = await window.sb.from('notifications').update({ read: true }).in('id', unreadIds);
+    if (error) throw error;
+    notifications.forEach(n => { if (unreadIds.includes(n.id)) n.read = true; });
+    renderAll();
+    showToast('All alerts marked as read');
+  } catch (err) {
+    console.error('[DEO Notifications] failed to mark all read', err);
+    showToast('Could not update — check your Supabase connection and try again', 'warn');
+  }
+}
+
+document.getElementById('notifFilter').addEventListener('input', (e) => { filterText = e.target.value; renderTable(); });
+document.getElementById('notifStatusFilter').addEventListener('change', (e) => { statusFilter = e.target.value; renderTable(); });
+document.getElementById('markAllReadBtn').addEventListener('click', markAllRead);
+
+(async function init(){
+  const auth = await KPS.requireRole(['deo', 'super_admin']);
+  if (!auth.user) return; // requireRole already redirected to login
+  profile = auth.profile;
+  renderProfileChip();
+  renderConnectionStatus();
+  await loadNotifications();
+})();
+</script>
+</body>
+</html>

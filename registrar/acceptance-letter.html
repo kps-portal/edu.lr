@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Acceptance Letter (Registrar)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --gold-soft:#fbe4b3;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;gap:12px;}
+  header.topbar .kps-logo{height:30px;width:30px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .left .page-label{font-weight:400;font-size:11.5px;opacity:.75;letter-spacing:.4px;margin-left:2px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .live-pill{
+    display:flex;align-items:center;gap:6px;background:rgba(30,132,73,.18);
+    border:1px solid rgba(90,220,150,.4);color:#bdf5d3;border-radius:20px;
+    padding:4px 10px;font-size:10.5px;font-weight:700;letter-spacing:.4px;
+  }
+  header.topbar .live-pill .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:pulseDot 1.8s infinite;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55);}70%{box-shadow:0 0 0 7px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1240px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,32px) clamp(20px,4vw,32px) clamp(16px,3vh,28px);text-align:left;}
+
+  .page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:clamp(10px,2vh,16px);flex-wrap:wrap;}
+  .page-head .id{display:flex;align-items:center;gap:16px;}
+  .seal-stage{position:relative;width:56px;height:56px;flex-shrink:0;}
+  .seal-stage img.seal{height:56px;width:56px;object-fit:contain;border-radius:50%;background:#fff;padding:3px;box-shadow:0 6px 16px rgba(11,23,48,.2), 0 0 0 3px #fff, 0 0 0 4px var(--line);}
+  .page-head h1{font-size:clamp(16px,3vh,19px);color:var(--navy);font-weight:800;line-height:1.35;letter-spacing:.2px;}
+  .page-head h1 .school-line{display:block;color:var(--crimson);font-size:clamp(12.5px,2.4vh,13.5px);font-weight:700;margin-top:2px;}
+  .db-status{font-size:11px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px;}
+  .db-status .n{color:var(--navy);font-weight:800;}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:0 0 clamp(14px,2.6vh,20px);border-radius:2px;}
+
+  .layout{display:grid;grid-template-columns:360px 1fr;gap:22px;align-items:start;}
+  @media (max-width:960px){.layout{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(14px,2.4vh,18px);}
+  .panel h2{font-size:11.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+  .panel h2 .count-badge{background:var(--panel);color:var(--navy);border-radius:20px;padding:2px 9px;font-size:10.5px;font-weight:800;letter-spacing:0;text-transform:none;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(8px,1.5vh,10px) 12px;border:1px solid var(--line);border-radius:4px;
+    font-size:13.5px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:70px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:720px){.compose-grid{grid-template-columns:1fr;}}
+
+  /* ---------- Records DB panel ---------- */
+  .db-search{position:relative;margin-bottom:12px;}
+  .db-search input{padding-left:30px;}
+  .db-search svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--muted);}
+
+  .student-form{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:14px;}
+  .student-form .grid3{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+  .student-form input, .student-form select{
+    width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:4px;font-size:12.5px;background:#fff;font-family:inherit;
+  }
+  .student-form .full{grid-column:1 / -1;}
+  .student-form .form-actions{display:flex;gap:8px;margin-top:2px;}
+  .student-form .form-actions button{flex:1;}
+
+  .student-list{max-height:300px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;}
+  .student-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);font-size:12px;}
+  .student-row:last-child{border-bottom:none;}
+  .student-row:hover{background:var(--panel);}
+  .student-row .who{flex:1;min-width:0;}
+  .student-row .who .nm{font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .student-row .who .sub{color:var(--muted);font-size:10.5px;}
+  .student-row .score-chip{font-weight:800;font-size:11px;color:var(--navy);width:34px;text-align:right;flex-shrink:0;}
+  .student-row .mini-btn{border:none;background:none;cursor:pointer;color:var(--muted);font-size:13px;padding:2px 4px;flex-shrink:0;}
+  .student-row .mini-btn:hover{color:var(--crimson);}
+  .empty-hint{padding:16px 10px;text-align:center;color:var(--muted);font-size:12px;font-style:italic;}
+
+  .badge{display:inline-block;padding:1.5px 7px;border-radius:20px;font-size:9.5px;font-weight:800;letter-spacing:.2px;text-transform:uppercase;flex-shrink:0;}
+  .badge.active{background:#e8f5ec;color:var(--ok);}
+  .badge.promoted{background:#eaf1ff;color:#1d4ed8;}
+  .badge.repeated{background:#fff3e0;color:#b5650a;}
+  .badge.suspended{background:#fdecea;color:var(--danger);}
+  .badge.withdrawn{background:#f1f1f1;color:var(--muted);}
+
+  .db-tools{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .db-tools button{flex:1;min-width:120px;}
+  .import-box{display:none;margin-top:10px;}
+  .import-box.show{display:block;}
+  .import-box textarea{width:100%;min-height:80px;font-size:11px;font-family:"Consolas",monospace;padding:8px;border:1px solid var(--line);border-radius:4px;}
+  .import-box .import-actions{display:flex;gap:8px;margin-top:6px;}
+  .import-box .import-actions button{flex:1;}
+
+  button.action-btn{
+    border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;
+    padding:9px 13px;font-size:12.5px;font-weight:700;cursor:pointer;transition:transform .12s ease, background .12s ease;
+  }
+  button.action-btn:hover{background:#fafafa;}
+  button.action-btn:active{transform:scale(.97);}
+  button.action-btn.gold{background:var(--gold);border-color:var(--gold);color:#3a2600;}
+  button.action-btn.gold:hover{filter:brightness(0.96);}
+  button.action-btn.crimson{background:var(--crimson);border-color:var(--crimson);color:#fff;}
+  button.action-btn.crimson:hover{background:var(--crimson-dark);}
+  button.action-btn.navy{background:var(--navy);border-color:var(--navy);color:#fff;}
+  button.action-btn.navy:hover{background:var(--navy-deep);}
+  button.action-btn.danger-outline{color:var(--danger);border-color:#f1c3bc;}
+  button.action-btn.small{padding:6px 10px;font-size:11.5px;}
+  .row-actions{display:flex;gap:8px;margin-top:4px;}
+  .row-actions button{flex:1;}
+
+  .topbar-actions{display:flex;gap:8px;}
+  .topbar-actions button{
+    border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;
+    border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .topbar-actions button.gold{background:var(--gold);border-color:var(--gold);color:#3a2600;}
+  .topbar-actions button:hover{background:rgba(255,255,255,.18);}
+  .topbar-actions button.gold:hover{filter:brightness(0.96);}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--navy-deep);color:#fff;border:1px solid var(--gold);
+    border-radius:8px;padding:11px 20px;font-size:13px;font-weight:600;
+    box-shadow:0 10px 30px rgba(11,23,48,.35);opacity:0;pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;z-index:999;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{border-color:var(--crimson);}
+
+  /* ---------- Printable preview ---------- */
+  .preview-wrap{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:clamp(14px,2.4vh,22px);}
+  .preview-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .preview-toolbar span{font-size:11.5px;color:var(--muted);}
+  .preview-toolbar .filter-inline{display:flex;align-items:center;gap:6px;}
+  .preview-toolbar select{border:1px solid var(--line);background:#fff;border-radius:5px;padding:5px 8px;font-size:11.5px;color:var(--navy);font-weight:700;}
+  .preview-toolbar button{border:1px solid var(--line);background:#fff;border-radius:5px;padding:5px 10px;font-size:12px;font-weight:700;color:var(--navy);cursor:pointer;}
+
+  .doc-paper{
+    max-width:900px;margin:0 auto;background:#fff;padding:clamp(20px,4vw,36px);
+    border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);
+    font-family:Georgia,"Times New Roman",serif;color:#111;position:relative;
+  }
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:58px;width:58px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:21px;font-weight:800;color:#122148;letter-spacing:.2px;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-office-row{display:flex;justify-content:space-between;font-size:12px;font-style:italic;margin-bottom:14px;color:#333;}
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:14px;text-transform:uppercase;position:relative;overflow:hidden;}
+  .doc-banner::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--crimson),var(--gold));}
+
+  .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 26px;font-size:12.5px;margin-bottom:18px;}
+  .meta-row{display:flex;gap:8px;}
+  .meta-row .lbl{font-weight:700;min-width:118px;flex-shrink:0;color:#20242e;}
+  .meta-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;min-height:16px;}
+
+  .doc-section-title{font-weight:700;font-size:13px;margin:22px 0 12px;text-transform:uppercase;letter-spacing:.3px;color:#20242e;border-bottom:1px solid #ccc;padding-bottom:5px;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;}
+  .doc-section-title .tag{font-size:9.5px;font-weight:800;color:var(--ok);background:#e8f5ec;padding:2px 8px;border-radius:20px;text-transform:none;letter-spacing:0;}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:6px;font-family:Arial,sans-serif;}
+  @media (max-width:720px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi-card{
+    border:1px solid var(--line);border-radius:10px;padding:13px 14px;background:linear-gradient(160deg,#fbfbfa 0%,#f3f3f1 100%);
+    position:relative;overflow:hidden;
+  }
+  .kpi-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--navy);}
+  .kpi-card.ok::before{background:var(--ok);}
+  .kpi-card.danger::before{background:var(--danger);}
+  .kpi-card .kpi-top{display:flex;align-items:center;justify-content:space-between;}
+  .kpi-card svg{width:16px;height:16px;stroke:var(--muted);flex-shrink:0;opacity:.8;}
+  .kpi-card.ok svg{stroke:var(--ok);}
+  .kpi-card.danger svg{stroke:var(--danger);}
+  .kpi-label{font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);}
+  .kpi-value{font-size:23px;font-weight:800;color:var(--navy);margin-top:5px;line-height:1.1;}
+  .kpi-value.ok{color:var(--ok);}
+  .kpi-value.danger{color:var(--danger);}
+  .kpi-sub{font-size:10px;color:var(--muted);margin-top:2px;font-weight:600;}
+  .kpi-empty{font-size:12.5px;color:var(--muted);font-style:italic;font-family:Arial,sans-serif;padding:6px 0;}
+
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-family:Arial,sans-serif;}
+  .bar-label{width:150px;flex-shrink:0;font-size:11.5px;color:var(--ink);font-weight:600;}
+  .bar-track{flex:1;height:13px;background:#eee;border-radius:7px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:7px;background:linear-gradient(90deg,var(--crimson),var(--gold));transition:width .5s ease;}
+  .bar-pct{width:70px;flex-shrink:0;text-align:right;font-size:11px;font-weight:800;color:var(--navy);}
+  .bar-empty{font-size:12.5px;color:var(--muted);font-style:italic;font-family:Arial,sans-serif;padding:6px 0;}
+
+  .split-two{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;font-family:Arial,sans-serif;}
+  @media (max-width:640px){.split-two{grid-template-columns:1fr;}}
+  .donut-wrap{display:flex;align-items:center;gap:18px;}
+  .donut{width:118px;height:118px;border-radius:50%;flex-shrink:0;position:relative;}
+  .donut .hole{position:absolute;inset:16px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:inset 0 0 0 1px var(--line);}
+  .donut .hole b{font-size:18px;color:var(--navy);}
+  .donut .hole span{font-size:8.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+  .legend{display:flex;flex-direction:column;gap:7px;}
+  .legend .li{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink);}
+  .legend .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .legend .li b{margin-left:auto;color:var(--navy);}
+
+  .doc-notes{font-size:12.5px;line-height:1.7;margin-top:14px;text-align:justify;font-family:Arial,sans-serif;}
+  .memo-signoff{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin:30px 0 8px;}
+  .memo-signoff div{font-size:12.5px;font-family:Arial,sans-serif;}
+  .memo-signoff .sig-line{border-top:1px solid #333;padding-top:4px;font-weight:700;min-height:20px;}
+  .memo-signoff .sig-title{color:#555;font-size:11px;}
+  .memo-ref{font-size:11px;margin-top:14px;font-weight:700;color:#555;text-align:center;font-family:Arial,sans-serif;}
+  .memo-ref .gen-note{display:block;font-weight:400;color:#888;font-size:10px;margin-top:3px;}
+
+  @media print{
+    header.topbar,.card > .accent,.card .page-head,.card .subtitle-rule,.layout > div:first-child,.preview-toolbar,.no-print{display:none !important;}
+    body{background:#fff;}
+    main{padding:0;display:block;}
+    .card{box-shadow:none;border:none;max-width:none;}
+    .card .body{padding:0;}
+    .layout{display:block;}
+    .preview-wrap{background:#fff;border:none;padding:0;}
+    .doc-paper{box-shadow:none;max-width:none;}
+  }
+
+  /* ---------- Acceptance letter additions ---------- */
+  .badge.accepted{background:#e8f5ec;color:var(--ok);}
+  .badge.pending{background:#fff3e0;color:#b5650a;}
+  .badge.declined{background:#fdecea;color:var(--danger);}
+
+  .doc-to-block{margin-bottom:16px;font-family:Arial,sans-serif;}
+  .doc-to-block .to-label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+  .doc-to-block .to-name{font-size:16px;font-weight:800;color:var(--navy);}
+  .doc-to-block .to-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+
+  .letter-para{font-size:13px;line-height:1.85;margin-bottom:14px;text-align:justify;font-family:Georgia,"Times New Roman",serif;color:#20242e;}
+  .letter-para b{color:var(--navy);}
+  .letter-closing{font-size:13px;font-family:Georgia,"Times New Roman",serif;margin-top:6px;margin-bottom:26px;}
+
+  .status-strip{display:inline-flex;align-items:center;gap:6px;font-family:Arial,sans-serif;margin-bottom:2px;}
+
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left">
+    <img class="kps-logo" id="topbarKpsLogo" alt="Kingsville Public School logo">
+    <div>
+      <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+      <span class="page-label">Registrar Dashboard · Acceptance Letter</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="live-pill no-print"><span class="dot"></span>AUTO-SYNCED</div>
+    <div class="topbar-actions no-print">
+      <button id="generateBtn">Generate</button>
+      <button id="printBtn">Print</button>
+      <button id="saveBtn">Save</button>
+      <button id="shareBtn">Share</button>
+      <button id="downloadBtn" class="gold">Download</button>
+    </div>
+    <img class="moe-mini" id="topbarMoeLogo" alt="Ministry of Education seal">
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+
+      <div class="page-head">
+        <div class="id">
+          <div class="seal-stage"><img class="seal" id="cardSeal" alt="School seal"></div>
+          <h1>Acceptance Letter<span class="school-line">Kingsville Public High School — Office of the Registrar</span></h1>
+        </div>
+        <div class="db-status no-print">Applicants in database: <span class="n" id="dbCountBadge">0</span> · Last updated <span id="dbUpdatedAt">—</span></div>
+      </div>
+      <div class="subtitle-rule"></div>
+
+      <div class="layout">
+
+        <!-- CONFIG COLUMN -->
+        <div class="no-print">
+
+          <div class="panel">
+            <h2>Letter Setup</h2>
+
+            <div class="field">
+              <label for="studentSelect">Generate letter for</label>
+              <select id="studentSelect">
+                <option value="">— Select an applicant —</option>
+              </select>
+            </div>
+
+            <div class="compose-grid">
+              <div class="field">
+                <label for="academicYear">Academic year</label>
+                <input id="academicYear" type="text" placeholder="e.g. 2025/2026">
+              </div>
+              <div class="field">
+                <label for="admissionDate">Admission date</label>
+                <input id="admissionDate" type="date">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="preparedBy">Prepared by (Registrar)</label>
+              <input id="preparedBy" type="text" placeholder="Registrar name">
+            </div>
+
+            <div class="field" style="margin-bottom:0;">
+              <label for="notes">Notes</label>
+              <textarea id="notes" placeholder="Any remarks to include below the statistics"></textarea>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>Live Admissions Database <span class="count-badge" id="panelCountBadge">0 records</span></h2>
+            <p style="font-size:11px;color:var(--muted);margin:-6px 0 12px;">
+              Pulled directly from Supabase (<code>public.admissions</code>) — the same table
+              <a href="admissions.html" style="color:var(--navy);font-weight:700;">Admissions Application</a> saves to.
+              New applicants are added there; here you can review, set the decision status, and print the letter.
+            </p>
+
+            <div class="db-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="searchBox" type="text" placeholder="Search by name…">
+            </div>
+
+            <div class="student-list" id="studentList"></div>
+
+            <div class="db-tools">
+              <button class="action-btn small" id="refreshDbBtn">↻ Refresh from database</button>
+              <a class="action-btn small navy" href="admissions.html" style="text-decoration:none;text-align:center;">+ New application</a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PREVIEW COLUMN -->
+        <div class="preview-wrap">
+          <div class="preview-toolbar no-print">
+            <span>The letter fills in from the selected applicant; statistics below are computed automatically from the database.</span>
+            <div class="filter-inline">
+              <button id="clearAllBtn">Reset letter fields</button>
+            </div>
+          </div>
+
+          <div class="doc-paper" id="paper">
+            <div class="doc-letterhead">
+              <img id="rSchoolLogo" alt="School logo">
+              <div class="doc-headtext">
+                <div class="school-name">KINGSVILLE PUBLIC HIGH SCHOOL</div>
+                <div class="school-address">Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia</div>
+              </div>
+              <img id="rMoeLogo" alt="Ministry of Education seal">
+            </div>
+
+            <div class="doc-office-row">
+              <span>Office of the Registrar</span>
+              <span id="mGenerated2">Date generated: —</span>
+            </div>
+
+            <div class="doc-banner" id="pvTitle">CERTIFICATE OF ACCEPTANCE</div>
+
+            <div class="doc-to-block">
+              <div class="to-label">To the parent / guardian of</div>
+              <div class="to-name" id="pvToName">—</div>
+              <div class="to-sub" id="pvToSub">—</div>
+            </div>
+
+            <div class="meta-grid">
+              <div class="meta-row"><span class="lbl">Academic year:</span><span class="val" id="mYear">—</span></div>
+              <div class="meta-row"><span class="lbl">Admission date:</span><span class="val" id="mAdmDate">—</span></div>
+              <div class="meta-row"><span class="lbl">Admitted grade:</span><span class="val" id="mGrade">—</span></div>
+              <div class="meta-row"><span class="lbl">Status:</span><span class="val" id="mStatus">—</span></div>
+              <div class="meta-row"><span class="lbl">Previous school:</span><span class="val" id="mPrevSchool">—</span></div>
+              <div class="meta-row"><span class="lbl">Previous school grade:</span><span class="val" id="mPrevGrade">—</span></div>
+              <div class="meta-row"><span class="lbl">Guardian phone:</span><span class="val" id="mGuardianPhone">—</span></div>
+              <div class="meta-row"><span class="lbl">Prepared by:</span><span class="val" id="mPrepared">—</span></div>
+              <div class="meta-row"><span class="lbl">Reg. reference:</span><span class="val" id="mRefInline">—</span></div>
+            </div>
+
+            <div class="doc-section-title">Letter of Acceptance</div>
+            <div id="letterBody"></div>
+
+            <div class="doc-section-title">Admissions Statistics <span class="tag">auto-calculated</span></div>
+            <div class="kpi-grid" id="kpiGrid"></div>
+            <div class="kpi-empty" id="kpiEmpty" style="display:none;">No applicant records in the database yet — add or import records on the left.</div>
+
+            <div class="doc-section-title">Admissions by Grade Level</div>
+            <div id="barGrid"></div>
+            <div class="bar-empty" id="barEmpty" style="display:none;">No records to break down yet.</div>
+
+            <div class="doc-section-title">Admission Status &amp; Previous-Grade Distribution</div>
+            <div class="split-two" id="donutSection">
+              <div class="donut-wrap">
+                <div class="donut" id="perfDonut"><div class="hole"><b id="donutCenter">0%</b><span>Accepted</span></div></div>
+                <div class="legend" id="perfLegend"></div>
+              </div>
+              <div class="legend" id="statusLegend"></div>
+            </div>
+
+            <p class="doc-notes" id="pvNotes" style="display:none;"></p>
+
+            <div class="memo-signoff">
+              <div><div class="sig-line" id="sigPrepared">&nbsp;</div>Prepared by</div>
+              <div><div class="sig-line">&nbsp;</div>Registrar, Kingsville Public High School</div>
+            </div>
+
+            <div class="memo-ref" id="mRef">Reference: ACC-000001<span class="gen-note">Figures reflect the live admissions database at time of generation.</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast no-print" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+  const SCHOOL_NAME = "Kingsville Public High School";
+  const SCHOOL_ADDRESS = "Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia";
+  const TABLE = "admissions"; // public.admissions — same table registrar/admissions.html writes to
+
+  // DB status -> UI label / CSS badge class. Table stores 'pending' | 'approved' | 'rejected'.
+  const STATUS_LABEL = { approved: "Accepted", pending: "Pending", rejected: "Declined" };
+  const STATUS_BADGE  = { approved: "accepted", pending: "pending", rejected: "declined" };
+
+  const KPS_LOGO_SRC = "../assets/images/img-63d9fc79f267bd59.png";
+  const MOE_LOGO_SRC = "../assets/images/img-738ccabf41d2ffd8.png";
+  document.getElementById("topbarKpsLogo").src = KPS_LOGO_SRC;
+  document.getElementById("topbarMoeLogo").src = MOE_LOGO_SRC;
+  document.getElementById("cardSeal").src = KPS_LOGO_SRC;
+  document.getElementById("rSchoolLogo").src = KPS_LOGO_SRC;
+  document.getElementById("rMoeLogo").src = MOE_LOGO_SRC;
+
+  const el = id => document.getElementById(id);
+
+  const ICONS = {
+    people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>',
+    chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>',
+    calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+    trend: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>',
+    alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>',
+    userx: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M18 8l5 5M23 8l-5 5"/></svg>'
+  };
+
+  const GRADES = ["Grade 7","Grade 8","Grade 9","Grade 10","Grade 11","Grade 12"];
+  const PREV_GRADES = ["Grade 6","Grade 7","Grade 8","Grade 9","Grade 10","Grade 11","Grade 12"];
+  const GRADE_COLORS = ["linear-gradient(90deg,#c8102e,#f2a71b)","linear-gradient(90deg,#122148,#3a5ea8)","linear-gradient(90deg,#1e8449,#6fcf97)","linear-gradient(90deg,#8f0b20,#c8102e)","linear-gradient(90deg,#6d28d9,#c4b5fd)","linear-gradient(90deg,#0e7490,#67e8f9)"];
+
+  let db = { students: [], updatedAt: null };
+  let dbLoading = false;
+
+  // Normalise a public.admissions row into the flat shape the rest of this
+  // page's rendering/stat functions already expect.
+  function mapRow(r){
+    return {
+      id: r.id,
+      name: r.applicant_name || 'Unnamed',
+      prevSchool: r.previous_school_name || '—',
+      prevGrade: r.previous_school_last_grade || '—',
+      grade: r.grade_applying_for || '—',
+      gender: r.gender || '—',
+      status: (r.status || 'pending').toLowerCase(),
+      score: Number(r.previous_school_score) || 0,
+      guardian: r.guardian_name || '—',
+      guardianPhone: r.guardian_phone || '—',
+      referenceCode: r.reference_code || '—'
+    };
+  }
+
+  async function loadDb(showT){
+    dbLoading = true;
+    try{
+      const { data, error } = await window.sb
+        .from(TABLE)
+        .select('id, applicant_name, previous_school_name, previous_school_last_grade, grade_applying_for, gender, status, previous_school_score, guardian_name, guardian_phone, reference_code, updated_at, created_at')
+        .order('created_at', { ascending: false });
+      if(error) throw error;
+      db.students = (data || []).map(mapRow);
+      db.updatedAt = new Date().toISOString();
+      if(showT) showToast('Loaded ' + db.students.length + ' record(s) from the live database.');
+    }catch(err){
+      console.error('[KPS] Could not load admissions from Supabase', err);
+      showToast('Could not load the admissions database: ' + (err.message || 'unknown error'), true);
+    }finally{
+      dbLoading = false;
+    }
+  }
+
+  async function updateStatus(id, status, showT){
+    try{
+      const { error } = await window.sb
+        .from(TABLE)
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      if(error) throw error;
+      const rec = db.students.find(s=>s.id===id);
+      if(rec) rec.status = status;
+      if(showT) showToast('Status updated to ' + STATUS_LABEL[status] + '.');
+      refreshAll();
+    }catch(err){
+      console.error('[KPS] Could not update status', err);
+      showToast('Could not update status: ' + (err.message || 'unknown error'), true);
+    }
+  }
+
+  function escapeAttr(v){ return (v===undefined||v===null) ? '' : String(v).replace(/"/g,'&quot;'); }
+  function escapeHtml(v){ return (v===undefined||v===null) ? '' : String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function fmtDate(d){
+    if(!d) return '—';
+    const [y,m,day] = d.split('-');
+    if(!y) return '—';
+    return `${day}/${m}/${y}`;
+  }
+
+  function nextRef(){
+    const n = Math.floor(100000 + Math.random()*899999);
+    return "ACC-" + n;
+  }
+
+  let toastTimer = null;
+  function showToast(msg, isErr){
+    const t = el('toast');
+    t.textContent = msg;
+    t.classList.toggle('err', !!isErr);
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  function statusClass(s){
+    return STATUS_BADGE[(s||'').toLowerCase()] || 'pending';
+  }
+  function statusLabel(s){
+    return STATUS_LABEL[(s||'').toLowerCase()] || 'Pending';
+  }
+
+  // ---------------- Student list rendering ----------------
+  function renderStudentList(){
+    const box = el('studentList');
+    const q = (el('searchBox').value || '').toLowerCase().trim();
+    const rows = db.students
+      .filter(s => !q || s.name.toLowerCase().includes(q))
+      .sort((a,b)=> a.name.localeCompare(b.name));
+    box.innerHTML = '';
+    if(dbLoading){
+      box.innerHTML = '<div class="empty-hint">Loading applicants from the database…</div>';
+    } else if(!rows.length){
+      box.innerHTML = '<div class="empty-hint">No matching applicants. New applications are created from the Admissions Application form.</div>';
+    } else {
+      rows.forEach(s=>{
+        const row = document.createElement('div');
+        row.className = 'student-row';
+        row.innerHTML = `
+          <div class="who">
+            <div class="nm">${escapeHtml(s.name)}</div>
+            <div class="sub">${escapeHtml(s.grade)} · from ${escapeHtml(s.prevGrade)} · <span class="badge ${statusClass(s.status)}">${escapeHtml(statusLabel(s.status))}</span></div>
+          </div>
+          <div class="score-chip">${s.score}%</div>
+          <select class="mini-status" data-status-for="${escapeAttr(s.id)}" title="Change decision status" style="font-size:10px;padding:3px 4px;border:1px solid var(--line);border-radius:5px;">
+            <option value="pending" ${s.status==='pending'?'selected':''}>Pending</option>
+            <option value="approved" ${s.status==='approved'?'selected':''}>Approved</option>
+            <option value="rejected" ${s.status==='rejected'?'selected':''}>Rejected</option>
+          </select>`;
+        box.appendChild(row);
+      });
+    }
+    box.querySelectorAll('[data-status-for]').forEach(sel=>{
+      sel.addEventListener('change', ()=> updateStatus(sel.getAttribute('data-status-for'), sel.value, true));
+    });
+  }
+
+  el('searchBox').addEventListener('input', renderStudentList);
+  el('refreshDbBtn').addEventListener('click', async ()=>{
+    await loadDb(true);
+    refreshAll();
+  });
+
+  // ---------------- Student select (letter target) ----------------
+  function refreshStudentSelect(){
+    const sel = el('studentSelect');
+    const current = sel.value;
+    const rows = db.students.slice().sort((a,b)=> a.name.localeCompare(b.name));
+    sel.innerHTML = '<option value="">— Select an applicant —</option>' +
+      rows.map(s=>`<option value="${escapeAttr(s.id)}">${escapeHtml(s.name)} (${escapeHtml(s.grade)})</option>`).join('');
+    if(rows.some(s=>s.id===current)) sel.value = current;
+    else if(rows.length) sel.value = rows[0].id;
+  }
+  el('studentSelect').addEventListener('change', refreshAll);
+
+  // ---------------- Stats computation ----------------
+  function computeStats(list){
+    const total = list.length;
+    const accepted = list.filter(s=>s.status==='approved').length;
+    const pending = list.filter(s=>s.status==='pending').length;
+    const declined = list.filter(s=>s.status==='rejected').length;
+    const acceptanceRate = total ? Math.round(accepted/total*100) : 0;
+    const avgPrevScore = total ? Math.round(list.reduce((a,s)=>a+s.score,0)/total) : 0;
+    const honor = list.filter(s=>s.score>=85).length;
+    const atRisk = list.filter(s=>s.score<50).length;
+
+    function mode(field, options){
+      if(!total) return '—';
+      const counts = {};
+      list.forEach(s=>{ counts[s[field]] = (counts[s[field]]||0)+1; });
+      let best = null, bestN = -1;
+      options.forEach(o=>{
+        const n = counts[o]||0;
+        if(n>bestN){ bestN = n; best = o; }
+      });
+      return bestN>0 ? best : '—';
+    }
+    const commonPrevGrade = mode('prevGrade', PREV_GRADES);
+
+    return { total, accepted, pending, declined, acceptanceRate, avgPrevScore, honor, atRisk, commonPrevGrade };
+  }
+
+  function kpiCard(label, value, tag, iconKey, sub){
+    return `<div class="kpi-card${tag?(' '+tag):''}">
+      <div class="kpi-top"><div class="kpi-label">${escapeHtml(label)}</div>${ICONS[iconKey]||''}</div>
+      <div class="kpi-value${tag?(' '+tag):''}">${escapeHtml(value)}</div>
+      ${sub?`<div class="kpi-sub">${escapeHtml(sub)}</div>`:''}
+    </div>`;
+  }
+
+  function renderKPIs(stats, total){
+    const grid = el('kpiGrid');
+    if(!total){
+      grid.style.display = 'none';
+      el('kpiEmpty').style.display = 'block';
+      return;
+    }
+    grid.style.display = 'grid';
+    el('kpiEmpty').style.display = 'none';
+    grid.innerHTML =
+      kpiCard('Total Applications', stats.total, '', 'people', stats.accepted+' accepted · '+stats.pending+' pending') +
+      kpiCard('Acceptance Rate', stats.acceptanceRate+'%', stats.acceptanceRate>=70?'ok':(stats.acceptanceRate<40?'danger':''), 'check', stats.accepted+' of '+stats.total+' admitted') +
+      kpiCard('Average Previous Score', stats.avgPrevScore+'%', '', 'chart', 'From previous school records') +
+      kpiCard('Pending Applications', stats.pending, '', 'calendar', 'Awaiting a decision') +
+      kpiCard('Declined', stats.declined, stats.declined>0?'danger':'ok', 'userx', 'Not admitted') +
+      kpiCard('Honor-Level Admits', stats.honor, 'ok', 'star', 'Previous score 85% or higher') +
+      kpiCard('At-Risk Admits', stats.atRisk, stats.atRisk>0?'danger':'ok', 'alert', 'Previous score below 50%') +
+      kpiCard('Most Common Previous Grade', stats.commonPrevGrade, '', 'trend', 'Across all applicants');
+  }
+
+  function renderGradeBars(list){
+    const grid = el('barGrid');
+    const total = list.length;
+    grid.innerHTML = '';
+    if(!total){
+      grid.style.display='none'; el('barEmpty').style.display='block'; return;
+    }
+    grid.style.display='block'; el('barEmpty').style.display='none';
+    GRADES.forEach((g,i)=>{
+      const count = list.filter(s=>s.grade===g).length;
+      const pct = total ? Math.round(count/total*100) : 0;
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+      row.innerHTML = `<div class="bar-label">${g}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${GRADE_COLORS[i % GRADE_COLORS.length]}"></div></div><div class="bar-pct">${count} · ${pct}%</div>`;
+      grid.appendChild(row);
+    });
+  }
+
+  function renderDonut(list){
+    const total = list.length;
+    const bands = [
+      {label:'Accepted', key:'approved', color:'#1e8449'},
+      {label:'Pending', key:'pending', color:'#f2a71b'},
+      {label:'Declined', key:'rejected', color:'#c0392b'}
+    ];
+    const counts = bands.map(b=> list.filter(s=>s.status===b.key).length);
+    const acceptedPct = total ? Math.round(list.filter(s=>s.status==='approved').length/total*100) : 0;
+    el('donutCenter').textContent = acceptedPct + '%';
+
+    let acc = 0;
+    const stops = [];
+    bands.forEach((b,i)=>{
+      const pct = total ? (counts[i]/total*100) : 0;
+      const start = acc; acc += pct;
+      stops.push(`${b.color} ${start}% ${acc}%`);
+    });
+    const donut = el('perfDonut');
+    donut.style.background = total ? `conic-gradient(${stops.join(',')})` : '#eee';
+
+    const legend = el('perfLegend');
+    legend.innerHTML = bands.map((b,i)=>
+      `<div class="li"><span class="dot" style="background:${b.color}"></span>${b.label}<b>${counts[i]}</b></div>`
+    ).join('');
+
+    const slegend = el('statusLegend');
+    slegend.innerHTML = '<div class="li" style="font-weight:800;color:var(--navy);margin-bottom:2px;">Previous grade breakdown</div>' + PREV_GRADES.map(g=>{
+      const c = list.filter(s=>s.prevGrade===g).length;
+      return `<div class="li"><span class="dot" style="background:var(--navy)"></span>${g}<b>${c}</b></div>`;
+    }).join('');
+  }
+
+  // ---------------- Letter body ----------------
+  function letterParagraphs(s){
+    if(!s){
+      return '<p class="letter-para">Select an applicant on the left to generate their acceptance letter. Once selected, this section fills in automatically from the admissions database.</p>';
+    }
+    const year = el('academicYear').value || 'the upcoming';
+    const admDate = fmtDate(el('admissionDate').value);
+    if(s.status !== 'approved'){
+      return `<p class="letter-para">This applicant's current status in the database is <b>${escapeHtml(statusLabel(s.status))}</b>. A Certificate of Acceptance is generated only once an applicant's status is set to <b>Accepted</b> using the status control on the left.</p>`;
+    }
+    return `
+      <p class="letter-para">We are pleased to inform you that, following a review of the application and the records supplied on ${s.name}'s behalf, <b>${escapeHtml(s.name)}</b> has been formally accepted for enrollment in <b>${escapeHtml(s.grade)}</b> at Kingsville Public High School for the ${escapeHtml(year)} academic year.</p>
+      <p class="letter-para">This decision takes into account ${escapeHtml(s.name)}'s prior academic record at <b>${escapeHtml(s.prevSchool)}</b>, where the pupil completed <b>${escapeHtml(s.prevGrade)}</b>${s.score ? (' with a recorded average of <b>'+s.score+'%</b>') : ''}.</p>
+      <p class="letter-para">We kindly ask that registration be completed on or before <b>${admDate}</b>, the effective admission date, and that the original copies of the previous school's records be presented to the Registrar's Office for verification at that time.</p>
+      <p class="letter-para">As a student of Kingsville Public High School, ${escapeHtml(s.name)} is required to attend and complete all subjects offered under the school's standard curriculum for <b>${escapeHtml(s.grade)}</b>, and to observe the school's rules of conduct, attendance, and academic standards throughout enrollment.</p>
+      <p class="letter-closing">We look forward to welcoming ${escapeHtml(s.name)} into the Kingsville Public High School community.</p>`;
+  }
+
+  function currentReportData(stats, list, s){
+    return {
+      schoolName: SCHOOL_NAME,
+      schoolAddress: SCHOOL_ADDRESS,
+      academicYear: el('academicYear').value,
+      admissionDate: el('admissionDate').value,
+      preparedBy: el('preparedBy').value,
+      notes: el('notes').value,
+      applicant: s || null,
+      stats,
+      recordCount: list.length,
+      reference: el('mRef').textContent.split('\n')[0].replace('Reference: ',''),
+      generatedAt: new Date().toISOString()
+    };
+  }
+
+  function docPlainText(stats, list, s){
+    const lines = [
+      SCHOOL_NAME.toUpperCase(), SCHOOL_ADDRESS, "",
+      "OFFICE OF THE REGISTRAR", "",
+      "CERTIFICATE OF ACCEPTANCE", "",
+      "TO THE PARENT / GUARDIAN OF: " + (s ? s.name : '—'), "",
+      "ACADEMIC YEAR: " + (el('academicYear').value || '—'),
+      "ADMISSION DATE: " + fmtDate(el('admissionDate').value),
+      "ADMITTED GRADE: " + (s ? s.grade : '—'),
+      "STATUS: " + (s ? s.status : '—'),
+      "PREVIOUS SCHOOL: " + (s ? s.prevSchool : '—'),
+      "PREVIOUS SCHOOL GRADE: " + (s ? s.prevGrade : '—'),
+      "PREPARED BY: " + (el('preparedBy').value || '—'), "",
+      "ADMISSIONS STATISTICS (auto-calculated from " + list.length + " records):",
+      "  Total Applications: " + stats.total,
+      "  Acceptance Rate: " + stats.acceptanceRate + "%",
+      "  Average Previous Score: " + stats.avgPrevScore + "%",
+      "  Pending Applications: " + stats.pending,
+      "  Declined: " + stats.declined,
+      "  Honor-Level Admits: " + stats.honor,
+      "  At-Risk Admits: " + stats.atRisk,
+      "  Most Common Previous Grade: " + stats.commonPrevGrade,
+      ""
+    ];
+    if (el('notes').value.trim()) lines.push("NOTES: " + el('notes').value.trim(), "");
+    lines.push(el('mRef').textContent.split('\n')[0]);
+    return lines.join("\n");
+  }
+
+  function filenameBase(){
+    const sel = el('studentSelect');
+    const opt = sel.options[sel.selectedIndex];
+    const name = (opt && opt.value ? opt.textContent : 'acceptance-letter').trim().replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+    return "kps-acceptance-" + name;
+  }
+
+  function refreshAll(){
+    renderStudentList();
+    refreshStudentSelect();
+    const list = db.students.slice();
+    const stats = computeStats(list);
+    const s = db.students.find(x=>x.id===el('studentSelect').value) || null;
+
+    const from = fmtDate(el('admissionDate').value);
+    el('mGenerated2').textContent = 'Date generated: ' + new Date().toLocaleDateString();
+    el('mYear').textContent = el('academicYear').value || '—';
+    el('mAdmDate').textContent = from;
+    el('mPrepared').textContent = el('preparedBy').value || '—';
+    el('sigPrepared').innerHTML = el('preparedBy').value ? escapeHtml(el('preparedBy').value) : '&nbsp;';
+    el('mRefInline').textContent = el('mRef').textContent.split('\n')[0].replace('Reference: ','');
+
+    if(s){
+      el('pvToName').textContent = s.guardian !== '—' ? s.guardian : s.name;
+      el('pvToSub').textContent = 'Regarding applicant: ' + s.name;
+      el('mGrade').textContent = s.grade;
+      el('mStatus').textContent = s.status;
+      el('mPrevSchool').textContent = s.prevSchool;
+      el('mPrevGrade').textContent = s.prevGrade;
+      el('mGuardianPhone').textContent = s.guardianPhone || '—';
+    } else {
+      el('pvToName').textContent = '—';
+      el('pvToSub').textContent = 'No applicant selected';
+      el('mGrade').textContent = '—';
+      el('mStatus').textContent = '—';
+      el('mPrevSchool').textContent = '—';
+      el('mPrevGrade').textContent = '—';
+      el('mGuardianPhone').textContent = '—';
+    }
+
+    el('letterBody').innerHTML = letterParagraphs(s);
+
+    const notes = el('notes').value.trim();
+    el('pvNotes').style.display = notes ? 'block' : 'none';
+    el('pvNotes').textContent = notes ? ('Notes: ' + notes) : '';
+
+    renderKPIs(stats, list.length);
+    renderGradeBars(list);
+    renderDonut(list);
+
+    el('dbCountBadge').textContent = String(list.length);
+    el('dbUpdatedAt').textContent = db.updatedAt ? new Date(db.updatedAt).toLocaleTimeString() : '—';
+    el('panelCountBadge').textContent = list.length + (list.length===1 ? ' record' : ' records');
+  }
+
+  ['academicYear','admissionDate','preparedBy','notes'].forEach(id=>{
+    el(id).addEventListener('input', refreshAll);
+    el(id).addEventListener('change', refreshAll);
+  });
+
+  el('clearAllBtn').addEventListener('click', () => {
+    document.querySelectorAll('#academicYear,#admissionDate,#preparedBy,#notes').forEach(i => i.value = '');
+    refreshAll();
+    showToast('Letter fields reset. Database was not touched.');
+  });
+
+  el('generateBtn').addEventListener('click', () => {
+    el('mRef').innerHTML = 'Reference: ' + nextRef() + '<span class="gen-note">Figures reflect the live admissions database at time of generation.</span>';
+    refreshAll();
+    el('paper').scrollIntoView({behavior:'smooth', block:'start'});
+    showToast('Letter and statistics refreshed from the database.');
+  });
+
+  el('saveBtn').addEventListener('click', () => {
+    try{
+      const list = db.students.slice();
+      const stats = computeStats(list);
+      const s = db.students.find(x=>x.id===el('studentSelect').value) || null;
+      const data = currentReportData(stats, list, s);
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filenameBase() + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      showToast('Letter saved.');
+    }catch(err){
+      showToast('Could not save the letter.', true);
+    }
+  });
+
+  el('shareBtn').addEventListener('click', async () => {
+    const list = db.students.slice();
+    const stats = computeStats(list);
+    const s = db.students.find(x=>x.id===el('studentSelect').value) || null;
+    const text = docPlainText(stats, list, s);
+    const title = 'Certificate of Acceptance';
+    if (navigator.share){
+      try{ await navigator.share({ title: title + ' — ' + SCHOOL_NAME, text }); showToast('Shared.'); }
+      catch(err){ /* cancelled */ }
+      return;
+    }
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast('Sharing isn\'t available here, so the letter was copied to your clipboard.');
+    }catch(err){
+      window.open('mailto:?subject=' + encodeURIComponent(title + ' — ' + SCHOOL_NAME) + '&body=' + encodeURIComponent(text), '_blank');
+    }
+  });
+
+  el('printBtn').addEventListener('click', () => window.print());
+
+  el('downloadBtn').addEventListener('click', () => {
+    const btn = el('downloadBtn');
+    const original = btn.textContent;
+    btn.textContent = 'Preparing…';
+    btn.disabled = true;
+    html2canvas(el('paper'), {scale:2, backgroundColor:'#ffffff'}).then(canvas => {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p','pt','a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgW = pageWidth;
+      const imgH = canvas.height * (imgW / canvas.width);
+      let heightLeft = imgH;
+      let position = 0;
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', 0, position, imgW, imgH);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0){
+        position = heightLeft - imgH;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgW, imgH);
+        heightLeft -= pageHeight;
+      }
+      const fname = filenameBase();
+      pdf.save(fname + '.pdf');
+      btn.textContent = original;
+      btn.disabled = false;
+      showToast('PDF downloaded.');
+    }).catch(() => {
+      showToast('Could not generate the PDF. Please try Print instead.', true);
+      btn.textContent = original;
+      btn.disabled = false;
+    });
+  });
+
+  // ---------------- Init ----------------
+  (async function init(){
+    if(!window.sb){
+      showToast('Supabase client not initialised — check js/supabase-config.js.', true);
+      return;
+    }
+    // Matches every other wired registrar page (dashboard.html, admissions.html,
+    // application.html, approval.html, etc.) — this page was missing the guard,
+    // so it loaded live admissions data without checking who was signed in.
+    const auth = await KPS.requireRole(['registrar', 'super_admin']);
+    if (!auth.user) return; // requireRole already redirected to login
+    el('mRef').innerHTML = 'Reference: ' + nextRef() + '<span class="gen-note">Figures reflect the live admissions database at time of generation.</span>';
+    refreshAll();
+    await loadDb();
+    refreshAll();
+  })();
+})();
+</script>
+
+</body>
+</html>

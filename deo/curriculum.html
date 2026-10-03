@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>EDU.LR — DEO — Monitor curriculum implementation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches DEO Dashboard / Teacher Register / Principal / Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand-mark{ width:46px; height:46px; flex:none; border-radius:14px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); box-shadow:0 0 0 2px rgba(217,138,36,.18); }
+.brand-mark svg{ width:24px; height:24px; color:#2A1806; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.content{ padding:22px 32px 60px; }
+
+/* ============================= SCOPE BANNER ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+.btn[disabled]{ opacity:.4; cursor:not-allowed; pointer-events:none; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:11.8px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* feed / lists */
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:11.5px; }
+table.data th{ text-align:left; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:7px 10px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data th.sortable{ cursor:pointer; user-select:none; }
+table.data th.sortable:hover{ color:var(--ink); }
+table.data th.sorted{ color:var(--crimson); }
+.rank-chip{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:7px; background:var(--cream); border:1px solid var(--line); font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; color:var(--muted); }
+table.data td{ padding:7px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Restricted / allowed notes */
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+select.btn{ font-family:inherit; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7064' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>"); background-repeat:no-repeat; background-position:right 8px center; background-size:13px; padding-right:26px; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(3,1fr); }
+  .bento{ grid-template-columns:1fr; }
+}
+@media (max-width:640px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .toolbar, .toast-wrap, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+</style>
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+
+<div class="app">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M4 21V9.5L12 4l8 5.5V21"/><path d="M9 21v-6h6v6"/><path d="M8 9.5h.01M12 9.5h.01M16 9.5h.01M8 13h.01M16 13h.01"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="k1">Careysburg District</div>
+        <div class="k2">DEO Portal</div>
+      </div>
+    </div>
+
+    <div class="role-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></svg>
+      <span>DEO &middot; DISTRICT SUPERVISION &amp; OVERSIGHT</span>
+    </div>
+
+    <div class="nav-group-label">Overview</div>
+    <div class="nav">
+      <a class="nav-item" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Command Center
+      </a>
+    </div>
+
+    <div class="nav-group-label">District Supervision</div>
+    <div class="nav">
+      <a class="nav-item" href="schools.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+        All Schools
+      </a>
+      <a class="nav-item" href="school-profile.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        School Profiles
+      </a>
+      <a class="nav-item" href="school-visits.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Supervision Plan
+      </a>
+      <a class="nav-item" href="inspection.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Inspections
+      </a>
+      <a class="nav-item" href="inspection-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        Inspection Reports
+      </a>
+    </div>
+
+    <div class="nav-group-label">People Oversight</div>
+    <div class="nav">
+      <a class="nav-item" href="principals.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/></svg>
+        Principals &amp; Administrators
+      </a>
+      <a class="nav-item" href="teachers.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>
+        Teacher Register
+      </a>
+      <a class="nav-item" href="students.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+        Learner Register
+      </a>
+      <a class="nav-item" href="student-attendance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 14l2 2 4-4"/></svg>
+        Learner Attendance
+      </a>
+    </div>
+
+    <div class="nav-group-label">Academics</div>
+    <div class="nav">
+      <a class="nav-item" href="academic-monitoring.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V5a2 2 0 00-2-2H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M9 8h7M9 12h7"/></svg>
+        Teaching &amp; Learning
+      </a>
+      <a class="nav-item active" href="curriculum.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6.5C10 4.8 6.8 4 4 4v13c2.8 0 6 .8 8 2.5 2-1.7 5.2-2.5 8-2.5V4c-2.8 0-6 .8-8 2.5z"/></svg>
+        Curriculum
+      </a>
+      <a class="nav-item" href="assessment-results.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        Assessment &amp; Examinations
+      </a>
+      <a class="nav-item" href="school-performance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        School Performance
+      </a>
+    </div>
+
+    <div class="nav-group-label">Governance</div>
+    <div class="nav">
+      <a class="nav-item" href="lsmc.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+        LSMC
+      </a>
+      <a class="nav-item" href="policies-directives.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>District Compliance</a>
+      <a class="nav-item" href="complaints-incidents.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        Complaints &amp; Incidents
+      </a>
+    </div>
+
+    <div class="nav-group-label">Statistics &amp; Reports</div>
+    <div class="nav">
+      <a class="nav-item" href="statistics.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        District Statistics
+      </a>
+      <a class="nav-item" href="reports.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        Reports Center
+      </a>
+      <a class="nav-item" href="monthly-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Monthly Report
+      </a>
+      <a class="nav-item" href="quarterly-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Quarterly Report
+      </a>
+      <a class="nav-item" href="annual-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Annual Report
+      </a>
+      <a class="nav-item" href="special-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Special Report
+      </a>
+    </div>
+
+    <div class="nav-group-label">Risk &amp; Accountability</div>
+    <div class="nav">
+      <a class="nav-item" href="risk-register.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        Risk &amp; Safeguarding
+      </a>
+      <a class="nav-item" href="audit-log.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+        Audit &amp; Accountability
+      </a>
+    </div>
+
+    <div class="cannot-box">
+      <div class="title">✕ Restricted</div>
+      <ul style="margin:0; padding:0; list-style:none;">
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">Read-only — subject-teacher assignments are made by the Super Admin / Principal, not from this screen</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">Shows subject-staffing coverage, not classroom-level syllabus/lesson-coverage progress — see "What this page shows"</li>
+      </ul>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sys-health">
+        <div class="pulse-dot warn" id="healthDot"></div>
+        <div class="sys-health-text">
+          <b id="healthLabel">Not connected</b>
+          <span id="healthSub">Connect your database to load live records</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="page-title-wrap">
+        <div class="page-title">Monitor Curriculum Implementation</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search school, subject, grade…">
+      </div>
+      <button class="icon-btn" onclick="window.print()" title="Print this view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+      </button>
+      <button class="icon-btn" onclick="location.href='notifications.html'" title="Alerts &amp; notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
+      </button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">—</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting DEO account</div>
+        </div>
+      </div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <div class="scope-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+        <div>
+          <div class="sb-t">Scope of Access &amp; What "Implementation" Means Here</div>
+          <div class="sb-s">This page reads live rows from <code>subjects</code> and <code>classes</code> (the national curriculum's master subject and grade-level catalog, set up by the Super Admin), <code>class_subject_teachers</code> (which subject is actually assigned to a teacher for a class, for the current academic year — the same table <code>super-admin/subjects.html</code> and <code>super-admin/classes.html</code> write to), and <code>profiles</code>/<code>institutions</code> (to attribute each assignment to a school via the teacher's <code>institution_id</code>). It measures <b>subject-staffing coverage</b> — which subjects on the national list actually have a teacher assigned per school — not day-to-day syllabus or lesson-pacing progress, since no scheme-of-work or lesson-coverage table exists in this schema yet. Read-only: assignments are made from the Super Admin / Principal consoles, not here.</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>District Curriculum Implementation</h2>
+          <p>Every figure below is computed from live subject-teacher assignment records already on file for the current academic year. Nothing here is invented or demo data.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div class="bento" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-head">
+            <h3>Curriculum Staffing by School</h3>
+            <span style="font-size:10.5px;color:var(--success);font-weight:800;letter-spacing:.3px;">● LIVE</span>
+          </div>
+          <div style="padding:0 20px 4px;">
+            <div class="toolbar" style="margin-bottom:10px;">
+              <div class="search-pill" style="width:280px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input id="schoolFilter" type="text" placeholder="Filter by school name…">
+              </div>
+              <button class="btn btn-ghost btn-sm" id="exportSchoolBtn" type="button">Export CSV</button>
+              <span id="schoolRangeLabel" style="font-size:11.5px; color:var(--muted); margin-left:auto;">—</span>
+            </div>
+          </div>
+          <div class="table-wrap" style="padding:0 14px 8px;">
+            <table class="data" id="schoolTable">
+              <thead>
+                <tr>
+                  <th class="sortable sorted" data-key="name">School</th>
+                  <th class="sortable" data-key="gradesStaffed">Grade Levels Staffed</th>
+                  <th class="sortable" data-key="subjectsStaffed">Subjects Staffed</th>
+                  <th class="sortable" data-key="assignments">Teacher Assignments</th>
+                  <th class="sortable" data-key="gap">Subjects Not Yet Staffed</th>
+                  <th class="sortable" data-key="coverage">Staffing Coverage</th>
+                </tr>
+              </thead>
+              <tbody id="schoolTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Grade Levels With No Subject Staffed</h3></div>
+          <div class="card-body" id="unstaffedGradesFeed"></div>
+        </div>
+      </div>
+
+      <div class="section two" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+        <div class="card">
+          <div class="card-head"><h3>Subjects With the Weakest District Staffing</h3></div>
+          <div class="card-body" id="weakSubjectsFeed"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Academic Year in View</h3></div>
+          <div class="card-body" style="font-size:12px; color:var(--muted); line-height:1.6;" id="yearContext">Loading…</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head"><h3>What this page shows</h3></div>
+        <div class="card-body" style="font-size:12px; color:var(--muted); line-height:1.7;">
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Subjects Staffed</b> (per school) = the number of distinct subjects from the national <code>subjects</code> catalog that have at least one <code>class_subject_teachers</code> assignment this academic year, where the assigned teacher's <code>profiles.institution_id</code> matches that school.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Grade Levels Staffed</b> = distinct <code>classes</code> (grade levels) with at least one staffed subject assignment at that school.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Subjects Not Yet Staffed</b> = the national subject count minus Subjects Staffed at that school — subjects with no teacher assigned there yet, this year.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Staffing Coverage</b> = Subjects Staffed ÷ total subjects in the national catalog. This is a staffing/assignment measure, <b>not</b> a claim about how much of each syllabus has actually been taught — this schema has no scheme-of-work, lesson-pacing or topic-coverage table to measure that directly.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Grade Levels With No Subject Staffed</b> lists <code>classes</code> rows that have zero <code>class_subject_teachers</code> assignments district-wide this year — a signal that an entire grade band may have no formally assigned teacher for any subject.</p>
+          <p style="margin:0;">Classes, subjects and <code>class_subject_teachers</code> assignments are national/master data set up by the Super Admin and are not tagged with an <code>institution_id</code> directly; school attribution here is derived by joining each assignment's <code>teacher_id</code> to that teacher's <code>profiles.institution_id</code>, the same join <code>deo/teachers.html</code> already relies on. Assignments made through a section instead of a class-wide slot, or teachers with no <code>institution_id</code> on file, are grouped under a synthetic "Unassigned" row rather than silently dropped.</p>
+        </div>
+      </div>
+
+      <div class="allowed-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><b>DEO can:</b> view live subject-staffing coverage for every school in the district against the national curriculum catalog, see which grade levels or subjects are unstaffed, filter and export the school table — all read-only.</div>
+      </div>
+
+      <div class="footer-ribbon">
+        EDU.LR · District Education Officer's Console · <b>Careysburg District</b> · Montserrado County
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATA LAYER — DEO / Monitor Curriculum Implementation (premium build)
+   Wired directly to EDU.LR's live Supabase project. No demo/placeholder
+   numbers — every stat and table row below is computed from:
+
+     subjects                -> id, name — the national subject catalog,
+                                 the same table super-admin/subjects.html
+                                 manages. select('id, name'), .order('name').
+     classes                 -> id, name, level — the national grade-level
+                                 catalog, same table super-admin/classes.html
+                                 and teacher/attendance.html already read.
+     academic_years          -> id, name, .eq('is_current', true).maybeSingle()
+                                 — same "current year" lookup already used in
+                                 super-admin/classes.html, sections.html and
+                                 subjects.html. If no year is marked current,
+                                 the assignment query is skipped entirely and
+                                 every school shows zero rather than a guess.
+     class_subject_teachers  -> id, class_id, subject_id, teacher_id,
+                                 .eq('academic_year_id', currentYear.id)
+                                 — the real link between a subject, a grade
+                                 level and the teacher assigned to deliver it,
+                                 exactly as super-admin/subjects.html and
+                                 super-admin/classes.html already read it.
+     profiles                -> id, institution_id, .eq('role','teacher')
+                                 — used to attribute each assignment's
+                                 teacher_id back to a school, the same join
+                                 deo/teachers.html already relies on for its
+                                 "current-term subject load" column.
+     institutions             -> every school in the district, select('*'),
+                                 .order('name') — same query dashboard.html
+                                 and schools.html already run.
+
+   Per-school aggregation (grade levels staffed, subjects staffed, gap,
+   coverage %) is done client-side, grouping class_subject_teachers rows by
+   the assigned teacher's institution_id — the same client-side aggregation
+   pattern already used on dashboard.html, schools.html and teachers.html.
+   Assignments whose teacher has no institution_id on file (or whose
+   teacher_id doesn't resolve to a profile) are grouped under a synthetic
+   "Unassigned" row rather than silently dropped, matching the convention
+   teachers.html already uses.
+
+   Deliberately NOT shown: a per-subject "% of syllabus taught" or lesson-
+   pacing figure. There is no scheme-of-work, lesson-plan-coverage or
+   topic-checklist table anywhere in this schema (confirmed by grepping
+   every .from('...') call in the codebase), so "Staffing Coverage" here
+   measures whether a subject has a teacher assigned at all — a real,
+   verifiable proxy for curriculum-delivery capacity — not classroom-level
+   progress through the syllabus. See the "What this page shows" card.
+   ========================================================================= */
+let schoolRows = [];        // [{ id, name, gradesStaffed, subjectsStaffed, assignments, gap, coverage }]
+let unstaffedClasses = [];  // classes with zero assignments district-wide
+let weakSubjects = [];      // subjects sorted by fewest distinct schools staffing them
+let totalSubjects = 0;
+let totalClasses = 0;
+let currentYearName = '';
+let hasCurrentYear = false;
+let profile = null;
+let sortKey = 'name';
+let sortDir = 'asc';
+
+const UNASSIGNED_ID = '__unassigned__';
+
+const stats = [
+  { label: 'Subjects in National Curriculum', ic: 'school', color: 'navy' },
+  { label: 'Grade Levels Defined', ic: 'staff', color: 'gold' },
+  { label: 'Teacher Assignments (District, This Year)', ic: 'users' },
+  { label: 'Schools With Zero Subjects Staffed', ic: 'alert' },
+  { label: 'Grade Levels With No Subject Staffed', ic: 'percent', color: 'gold' },
+  { label: 'District Avg. Staffing Coverage', ic: 'shield', color: 'navy' },
+];
+const icons = {
+  users: '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/>',
+  school: '<path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/>',
+  shield: '<path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/>',
+  staff: '<path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/>',
+  percent: '<circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/><path d="M18 6L6 18"/>',
+  alert: '<path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+};
+
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function showToast(msg, kind){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),250); }, 3600);
+}
+function initials(name){ return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''); }
+function emptyFeed(msg){
+  return `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg><h4>Nothing to show yet</h4><p>${msg}</p></div>`;
+}
+function renderStatGrid(){
+  document.getElementById('statGrid').innerHTML = stats.map(s=>`
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-ic ${s.color||''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${icons[s.ic]}</svg></div>
+        <span class="stat-trend flat">live</span>
+      </div>
+      <div class="stat-num mono">${s.value ?? '—'}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`).join('');
+}
+
+/* ---- Curriculum Staffing by School: search + sort ---- */
+let schoolQuery = '';
+
+function coveragePill(pct){
+  if (pct === null) return '<span class="pill grey">—</span>';
+  if (pct >= 80) return `<span class="pill green">${pct}%</span>`;
+  if (pct >= 50) return `<span class="pill gold">${pct}%</span>`;
+  return `<span class="pill red">${pct}%</span>`;
+}
+function schoolRowHtml(r){
+  return `
+    <tr>
+      <td><div class="avatar-name"><div class="av">${initials(r.name)}</div><div><div class="nm">${escapeHtml(r.name)}</div></div></div></td>
+      <td class="mono">${r.gradesStaffed} / ${totalClasses}</td>
+      <td class="mono">${r.subjectsStaffed} / ${totalSubjects}</td>
+      <td class="mono">${r.assignments}</td>
+      <td class="mono">${r.gap}</td>
+      <td>${coveragePill(r.coverage)}</td>
+    </tr>`;
+}
+function filteredSchools(){
+  const q = schoolQuery.trim().toLowerCase();
+  if (!q) return schoolRows;
+  return schoolRows.filter(r => (r.name || '').toLowerCase().includes(q));
+}
+function sortValue(r, key){
+  if (key === 'name') return (r.name || '').toLowerCase();
+  return r[key] ?? -1;
+}
+function compareSchools(a, b){
+  const av = sortValue(a, sortKey), bv = sortValue(b, sortKey);
+  if (typeof av === 'string') return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+  return sortDir === 'asc' ? av - bv : bv - av;
+}
+function sortedSchools(list){ return list.slice().sort(compareSchools); }
+function applySortedHeaderClass(){
+  document.querySelectorAll('#schoolTable th.sortable').forEach(th => {
+    th.classList.toggle('sorted', th.dataset.key === sortKey);
+  });
+}
+function renderSchoolTable(){
+  const tbody = document.getElementById('schoolTableBody');
+  const list = sortedSchools(filteredSchools());
+
+  if (!schoolRows.length){
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);">No schools on file in <code>institutions</code> yet.</td></tr>`;
+  } else if (!list.length){
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);">No school matches the current search.</td></tr>`;
+  } else {
+    tbody.innerHTML = list.map(schoolRowHtml).join('');
+  }
+
+  const rangeLabel = document.getElementById('schoolRangeLabel');
+  rangeLabel.textContent = `Showing ${list.length} of ${schoolRows.length} schools${schoolQuery ? ' matching' : ''}`;
+  applySortedHeaderClass();
+}
+
+function exportSchoolCsv(){
+  const list = sortedSchools(filteredSchools());
+  const header = ['School', 'Grade Levels Staffed', `of ${totalClasses}`, 'Subjects Staffed', `of ${totalSubjects}`, 'Teacher Assignments', 'Subjects Not Yet Staffed', 'Staffing Coverage %'];
+  const rows = list.map(r => [r.name || '', r.gradesStaffed, '', r.subjectsStaffed, '', r.assignments, r.gap, r.coverage ?? '']);
+  const csvEscape = v => `"${String(v).replace(/"/g, '""')}"`;
+  const csv = [header, ...rows].map(r => r.map(csvEscape).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'district-curriculum-staffing.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`Exported ${list.length} school${list.length === 1 ? '' : 's'}`);
+}
+
+function renderUnstaffedGradesFeed(){
+  const el = document.getElementById('unstaffedGradesFeed');
+  if (!unstaffedClasses.length){
+    el.innerHTML = emptyFeed(hasCurrentYear
+      ? 'Every grade level has at least one staffed subject assignment this year.'
+      : 'No current academic year is marked in academic_years, so this cannot be computed yet.');
+    return;
+  }
+  el.innerHTML = unstaffedClasses.map(c => `
+    <div class="row-line">
+      <span class="rl-name">${escapeHtml(c.name)}</span>
+      <span class="rl-sub">${c.level != null ? 'Level ' + escapeHtml(c.level) : 'No level on file'} · no subject-teacher assignment this year</span>
+      <span class="pill red">Unstaffed</span>
+    </div>`).join('');
+}
+
+function renderWeakSubjectsFeed(){
+  const el = document.getElementById('weakSubjectsFeed');
+  if (!weakSubjects.length){
+    el.innerHTML = emptyFeed('No subject-staffing data is available yet.');
+    return;
+  }
+  const worst = weakSubjects.slice(0, 8);
+  el.innerHTML = worst.map(s => `
+    <div class="row-line">
+      <span class="rl-name">${escapeHtml(s.name)}</span>
+      <span class="rl-sub">Staffed at ${s.schoolCount} of ${schoolRows.length} school${schoolRows.length === 1 ? '' : 's'}</span>
+      <span class="pill ${s.schoolCount === 0 ? 'red' : (s.schoolCount < schoolRows.length / 2 ? 'gold' : 'green')}">${s.schoolCount === 0 ? 'None' : s.schoolCount}</span>
+    </div>`).join('');
+}
+
+function renderYearContext(){
+  const el = document.getElementById('yearContext');
+  if (hasCurrentYear){
+    el.innerHTML = `Figures on this page reflect subject-teacher assignments (<code>class_subject_teachers</code>) recorded for the current academic year, <b style="color:var(--ink);">${escapeHtml(currentYearName)}</b>, as marked by the Super Admin in <code>academic_years</code>.`;
+  } else {
+    el.innerHTML = `No academic year in <code>academic_years</code> is currently marked <code>is_current = true</code>. Every figure on this page shows as zero rather than guessing which year's assignments to count — ask the Super Admin to mark the current year before relying on this page.`;
+  }
+}
+
+function renderConnectionStatus(){
+  const dot = document.getElementById('healthDot');
+  const label = document.getElementById('healthLabel');
+  const sub = document.getElementById('healthSub');
+  dot.classList.remove('warn');
+  label.textContent = 'Live data connected';
+  sub.textContent = (window.KPS && KPS.SUPABASE_URL) || '';
+}
+
+function renderProfileChip(){
+  const chipAvatar = document.getElementById('chipAvatar');
+  const chipName = document.getElementById('chipName');
+  const chipRole = document.getElementById('chipRole');
+  if (profile && profile.full_name){
+    chipAvatar.textContent = initials(profile.full_name);
+    chipName.textContent = profile.full_name;
+    chipRole.textContent = 'District Education Officer';
+  } else {
+    chipAvatar.textContent = '—';
+    chipName.textContent = 'Not signed in';
+    chipRole.textContent = 'Awaiting DEO account';
+  }
+}
+
+async function loadAllData(){
+  try {
+    const sbc = () => window.sb;
+
+    const [subjectsRes, classesRes, institutionsRes, yearRes, teacherProfilesRes] = await Promise.all([
+      sbc().from('subjects').select('id, name').order('name').limit(1000),
+      sbc().from('classes').select('id, name, level').order('level', { ascending: true, nullsFirst: false }).order('name').limit(1000),
+      sbc().from('institutions').select('id, name').order('name').limit(1000),
+      sbc().from('academic_years').select('id, name').eq('is_current', true).maybeSingle(),
+      sbc().from('profiles').select('id, institution_id').eq('role', 'teacher').limit(5000),
+    ]);
+    [subjectsRes, classesRes, institutionsRes, teacherProfilesRes].forEach(r => { if (r && r.error) throw r.error; });
+    if (yearRes && yearRes.error) throw yearRes.error;
+
+    const subjects = subjectsRes.data || [];
+    const classes = classesRes.data || [];
+    const institutions = institutionsRes.data || [];
+    const currentYear = yearRes.data || null;
+    const teacherProfiles = teacherProfilesRes.data || [];
+
+    totalSubjects = subjects.length;
+    totalClasses = classes.length;
+    hasCurrentYear = !!currentYear;
+    currentYearName = currentYear ? currentYear.name : '';
+
+    const teacherInst = {};
+    teacherProfiles.forEach(p => { teacherInst[p.id] = p.institution_id || null; });
+
+    let assignmentRows = [];
+    if (currentYear){
+      const cstRes = await sbc().from('class_subject_teachers')
+        .select('id, class_id, subject_id, teacher_id')
+        .eq('academic_year_id', currentYear.id)
+        .limit(10000);
+      if (cstRes.error) throw cstRes.error;
+      assignmentRows = cstRes.data || [];
+    }
+
+    // ---- Build the school list (real institutions + a synthetic Unassigned bucket) ----
+    const schoolMap = {};
+    institutions.forEach(inst => {
+      schoolMap[inst.id] = { id: inst.id, name: inst.name, subjectSet: new Set(), classSet: new Set(), assignments: 0 };
+    });
+
+    let anyUnassigned = false;
+
+    // ---- Aggregate assignments per school, per subject (district-wide), per class ----
+    const classStaffed = new Set();
+    const subjectSchoolCount = {}; // subject_id -> Set(school ids that staff it)
+    subjects.forEach(s => { subjectSchoolCount[s.id] = new Set(); });
+
+    assignmentRows.forEach(a => {
+      const instId = a.teacher_id ? teacherInst[a.teacher_id] : null;
+      const bucketId = (instId && schoolMap[instId]) ? instId : UNASSIGNED_ID;
+      if (bucketId === UNASSIGNED_ID && !schoolMap[UNASSIGNED_ID]){
+        schoolMap[UNASSIGNED_ID] = { id: UNASSIGNED_ID, name: 'Unassigned (no school on teacher record)', subjectSet: new Set(), classSet: new Set(), assignments: 0 };
+      }
+      if (bucketId === UNASSIGNED_ID) anyUnassigned = true;
+
+      const bucket = schoolMap[bucketId];
+      bucket.assignments++;
+      if (a.subject_id) bucket.subjectSet.add(a.subject_id);
+      if (a.class_id) bucket.classSet.add(a.class_id);
+      if (a.class_id) classStaffed.add(a.class_id);
+      if (a.subject_id && subjectSchoolCount[a.subject_id] && instId && schoolMap[instId]){
+        subjectSchoolCount[a.subject_id].add(instId);
+      }
+    });
+
+    schoolRows = Object.values(schoolMap)
+      .filter(b => b.id !== UNASSIGNED_ID || anyUnassigned)
+      .map(b => {
+        const subjectsStaffed = b.subjectSet.size;
+        const gap = Math.max(0, totalSubjects - subjectsStaffed);
+        const coverage = totalSubjects ? Math.round((subjectsStaffed / totalSubjects) * 100) : null;
+        return {
+          id: b.id, name: b.name,
+          gradesStaffed: b.classSet.size,
+          subjectsStaffed, assignments: b.assignments, gap, coverage,
+        };
+      });
+
+    unstaffedClasses = classes.filter(c => !classStaffed.has(c.id));
+
+    weakSubjects = subjects
+      .map(s => ({ id: s.id, name: s.name, schoolCount: (subjectSchoolCount[s.id] || new Set()).size }))
+      .sort((a, b) => a.schoolCount - b.schoolCount || a.name.localeCompare(b.name));
+
+    const realSchools = schoolRows.filter(r => r.id !== UNASSIGNED_ID);
+    const zeroStaffedSchools = realSchools.filter(r => r.subjectsStaffed === 0).length;
+    const avgCoverage = realSchools.length
+      ? Math.round(realSchools.reduce((sum, r) => sum + (r.coverage || 0), 0) / realSchools.length)
+      : null;
+
+    stats.forEach(s => {
+      if (s.label === 'Subjects in National Curriculum') s.value = totalSubjects;
+      if (s.label === 'Grade Levels Defined') s.value = totalClasses;
+      if (s.label === 'Teacher Assignments (District, This Year)') s.value = assignmentRows.length;
+      if (s.label === 'Schools With Zero Subjects Staffed') s.value = zeroStaffedSchools;
+      if (s.label === 'Grade Levels With No Subject Staffed') s.value = unstaffedClasses.length;
+      if (s.label === 'District Avg. Staffing Coverage') s.value = avgCoverage === null ? '—' : `${avgCoverage}%`;
+    });
+  } catch (err) {
+    console.error('[DEO Curriculum] failed to load live data', err);
+    showToast('Could not load live data — check your Supabase connection', 'warn');
+  }
+  renderAll();
+}
+
+function renderAll(){
+  renderStatGrid();
+  renderSchoolTable();
+  renderUnstaffedGradesFeed();
+  renderWeakSubjectsFeed();
+  renderYearContext();
+  renderConnectionStatus();
+  renderProfileChip();
+}
+
+(async function init(){
+  const auth = await KPS.requireRole(['deo', 'super_admin']);
+  if (!auth.user) return; // requireRole already redirected to login
+  profile = auth.profile;
+  renderProfileChip();
+  await loadAllData();
+})();
+
+document.getElementById('globalSearch').addEventListener('keydown', e=>{
+  if (e.key === 'Enter' && e.target.value.trim()){
+    schoolQuery = e.target.value;
+    document.getElementById('schoolFilter').value = e.target.value;
+    renderSchoolTable();
+  }
+});
+document.getElementById('schoolFilter').addEventListener('input', e=>{
+  schoolQuery = e.target.value;
+  renderSchoolTable();
+});
+document.getElementById('exportSchoolBtn').addEventListener('click', exportSchoolCsv);
+document.querySelectorAll('#schoolTable th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    if (sortKey === key){
+      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortKey = key;
+      sortDir = key === 'name' ? 'asc' : 'desc';
+    }
+    renderSchoolTable();
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Report Card Approval</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --info:#1a5fb4;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;justify-content:center;gap:12px;}
+  header.topbar .left img{height:28px;width:28px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .kps-logo{height:30px;width:30px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+
+  .ticker-bar{
+    background:#fff4d6;border-bottom:1px solid #ecd9a0;
+    display:flex;align-items:center;overflow:hidden;flex-shrink:0;
+    height:clamp(30px,4.2vh,36px);
+  }
+  .ticker-label{
+    flex-shrink:0;display:flex;align-items:center;gap:6px;
+    background:var(--crimson);color:#fff;font-size:11px;font-weight:800;
+    letter-spacing:.4px;text-transform:uppercase;height:100%;padding:0 14px;white-space:nowrap;
+  }
+  .ticker-label svg{width:13px;height:13px;flex-shrink:0;}
+  .ticker-viewport{flex:1;overflow:hidden;position:relative;height:100%;}
+  .ticker-track{
+    display:flex;align-items:center;gap:56px;position:absolute;white-space:nowrap;
+    height:100%;will-change:transform;animation:tickerScroll 30s linear infinite;
+  }
+  .ticker-viewport:hover .ticker-track{animation-play-state:paused;}
+  .ticker-track span{font-size:12.5px;color:var(--ink);font-weight:600;}
+  .ticker-track span.pinned::before{content:"🎓 ";}
+  @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  .ticker-bar.ticker-empty .ticker-track{animation:none;position:static;}
+  .ticker-bar.ticker-empty .ticker-track span{color:var(--muted);font-weight:400;}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1140px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;max-height:100%;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,38px) clamp(20px,7vw,36px) clamp(16px,3vh,30px);text-align:left;}
+  .seal-stage{position:relative;width:clamp(70px,12vh,110px);height:clamp(70px,12vh,110px);margin:0 auto clamp(8px,2vh,14px);display:flex;align-items:center;justify-content:center;}
+  .card img.seal{position:relative;z-index:2;height:clamp(60px,10vh,92px);width:clamp(60px,10vh,92px);object-fit:contain;border-radius:50%;background:#fff;padding:4px;box-shadow:0 10px 22px rgba(11,23,48,.25), 0 0 0 4px #fff;}
+  .card h1{font-size:clamp(14.5px,3vh,16.5px);color:var(--navy);font-weight:700;line-height:1.45;margin-bottom:6px;letter-spacing:.2px;text-align:center;}
+  .card h1 .school-line{color:var(--crimson);font-size:clamp(13px,2.7vh,15px);}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:clamp(8px,2vh,14px) auto clamp(12px,3vh,22px);border-radius:2px;}
+
+  .section-tabs{display:flex;gap:6px;background:#f1f1ef;border-radius:8px;padding:4px;margin-bottom:clamp(16px,2.6vh,22px);flex-wrap:wrap;}
+  .section-tabs button{flex:1;min-width:120px;border:none;background:transparent;padding:10px 14px;border-radius:6px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .section-tabs button.active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(11,23,48,.15);}
+  .section-tabs button svg{width:15px;height:15px;}
+  .stat-section{display:none;}
+  .stat-section.active{display:block;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(9px,1.6vh,11px) 13px;border:1px solid var(--line);border-radius:4px;
+    font-size:14px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:90px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .compose-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+  .compose-grid.cols-4{grid-template-columns:1fr 1fr 1fr 1fr;}
+  @media (max-width:820px){.compose-grid, .compose-grid.cols-3, .compose-grid.cols-4{grid-template-columns:1fr 1fr;}}
+  @media (max-width:560px){.compose-grid, .compose-grid.cols-3, .compose-grid.cols-4{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(16px,2.6vh,22px);}
+  .panel h2{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+  .panel h3{font-size:12.5px;font-weight:700;color:var(--navy);margin:16px 0 10px;letter-spacing:.2px;}
+  p.table-hint{font-size:11.5px;color:var(--muted);margin:-4px 0 8px;}
+
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:clamp(14px,2.4vh,20px);}
+  select.scope-select{padding:7px 11px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:#fff;color:var(--ink);}
+  button.refresh-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+  button.refresh-btn:hover{background:#fafafa;}
+  button.refresh-btn svg{width:14px;height:14px;}
+  button.refresh-btn.spinning svg{animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:clamp(18px,3vh,26px);}
+  @media (max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;box-shadow:0 2px 6px rgba(11,23,48,.05);}
+  .kpi-label{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);}
+  .kpi-value{font-size:26px;font-weight:800;color:var(--navy);margin-top:4px;line-height:1.1;}
+  .kpi-value.danger{color:var(--danger);}
+  .kpi-value.ok{color:var(--ok);}
+  .kpi-value.info{color:var(--info);}
+
+  .table-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .table-filters{display:flex;flex-wrap:wrap;gap:8px;flex:1;}
+  .table-filters input{max-width:240px;}
+  .table-filters select{padding:9px 11px;border:1px solid var(--line);border-radius:4px;font-size:13px;background:#fff;color:var(--ink);}
+  button.export-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;padding:9px 13px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  button.export-btn:hover{background:#fafafa;}
+
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:2px 7px;border-radius:10px;vertical-align:middle;}
+  .badge.pass{background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .badge.fail{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .badge.role{background:#eef1fb;color:var(--navy);border:1px solid #dbe1f5;}
+  .badge.pending{background:#fff4d6;color:#8a6d1a;border:1px solid #ecd9a0;}
+  .badge.ready{background:#e8f1fc;color:var(--info);border:1px solid #c6ddf5;}
+
+  .approval-chip-row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px;}
+  .approval-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 9px;border-radius:12px;border:1px solid var(--line);color:var(--muted);background:#fbfbfa;}
+  .approval-chip.done{color:var(--ok);border-color:#b9e6c9;background:#eafaf1;}
+  .approval-chip.done::before{content:"✓";font-weight:800;}
+  .approval-chip:not(.done)::before{content:"○";font-weight:800;color:var(--muted);}
+
+  .request-list{display:flex;flex-direction:column;gap:10px;}
+  .request-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;display:flex;flex-direction:column;gap:6px;position:relative;}
+  .request-card.approved{border-left:4px solid var(--ok);}
+  .request-card.rejected{border-left:4px solid var(--danger);}
+  .request-card.pending{border-left:4px solid var(--gold);}
+  .request-card.ready{border-left:4px solid var(--info);}
+  .request-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .request-title{font-size:14.5px;font-weight:700;color:var(--navy);}
+  .request-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .request-fees{font-size:12.5px;color:var(--ink);}
+  .request-actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;}
+  button.btn-ghost{border:none;background:none;color:var(--navy);font-weight:600;font-size:12px;cursor:pointer;padding:3px 6px;}
+  button.btn-ghost:hover{text-decoration:underline;}
+  button.btn-ghost.danger{color:var(--danger);}
+  button.btn-ghost.accent{color:var(--crimson);}
+  button.btn-ghost:disabled{color:var(--muted);cursor:not-allowed;text-decoration:none;opacity:.6;}
+
+  button.btn-primary{padding:10px 20px;border:none;border-radius:4px;background:var(--crimson);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;transition:background .15s;}
+  button.btn-primary:hover{background:var(--crimson-dark);}
+  button.btn-primary:disabled{background:#c9ccd6;cursor:not-allowed;}
+  button.btn-secondary{padding:10px 20px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13.5px;cursor:pointer;}
+  button.btn-secondary:hover{background:#fafafa;}
+  button.btn-reject{padding:10px 20px;border:1px solid #f6c9c4;border-radius:4px;background:#fff;color:var(--danger);font-weight:700;font-size:13.5px;cursor:pointer;}
+  button.btn-reject:hover{background:#fdecea;}
+  button.btn-reject:disabled{border-color:var(--line);color:var(--muted);cursor:not-allowed;}
+  button.btn-generate{padding:10px 20px;border:1px solid var(--navy);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+  button.btn-generate:hover{background:var(--navy);color:#fff;}
+  button.btn-generate svg{width:15px;height:15px;}
+  .compose-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap;}
+
+  .checklist{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .checklist label{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink);font-weight:400;text-transform:none;}
+  .checklist input{width:17px;height:17px;accent-color:var(--ok);}
+
+  .approval-row{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
+  .approval-row-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+  .approval-row-head label{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:700;color:var(--navy);}
+  .approval-row-head input[type=checkbox]{width:18px;height:18px;accent-color:var(--ok);}
+  .approval-row-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media (max-width:560px){.approval-row-fields{grid-template-columns:1fr;}}
+
+  .decision-summary{border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:14px;background:var(--panel);}
+  .decision-summary .approval-chip-row{margin-top:4px;}
+  .decision-locked-note{font-size:12.5px;color:#8a6d1a;background:#fff4d6;border:1px solid #ecd9a0;border-radius:6px;padding:9px 12px;margin-bottom:12px;}
+
+  .back-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:clamp(10px,2vh,16px);font-size:13px;}
+  .back-row a{color:var(--navy);text-decoration:none;font-weight:600;}
+  .back-row a:hover{text-decoration:underline;}
+  .back-row svg{width:14px;height:14px;flex-shrink:0;}
+
+  .msg{margin-top:clamp(8px,1.6vh,14px);font-size:12.5px;padding:9px 11px;border-radius:4px;display:none;text-align:left;}
+  .msg.err{display:block;background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .msg.ok{display:block;background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .empty-state{font-size:12.5px;color:var(--muted);text-align:center;padding:18px 4px;}
+  .updated-note{font-size:11px;color:var(--muted);text-align:right;margin-top:8px;}
+
+  footer.site-footer{background:var(--navy-deep);color:#c9d2e8;font-size:11px;text-align:center;padding:clamp(8px,1.4vh,12px) 10px;border-top:2px solid var(--gold);flex-shrink:0;}
+  footer.site-footer .footer-line-1{font-weight:600;letter-spacing:.2px;}
+  footer.site-footer .footer-line-2{margin-top:3px;font-size:10.5px;color:var(--gold);letter-spacing:.3px;}
+
+  /* ===== Edit / Approval / Decision modals ===== */
+  .edit-overlay{position:fixed;inset:0;background:rgba(11,23,48,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
+  .edit-overlay.open{display:flex;}
+  .edit-modal{width:100%;max-width:820px;max-height:90vh;overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 20px 50px rgba(11,23,48,.3);padding:22px;}
+  .edit-modal h3{font-size:15px;color:var(--navy);margin-bottom:14px;}
+  .edit-modal p.modal-sub{font-size:12px;color:var(--muted);margin:-8px 0 16px;}
+
+  /* ===== Shared generated-document overlay ===== */
+  .doc-overlay{position:fixed;inset:0;background:rgba(11,23,48,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:16px;}
+  .doc-overlay.open{display:flex;}
+  .doc-modal{width:100%;max-width:820px;max-height:92vh;overflow-y:auto;background:#fff;border-radius:10px;box-shadow:0 24px 60px rgba(11,23,48,.35);}
+  .doc-paper{padding:clamp(20px,4vw,40px);font-family:Georgia,"Times New Roman",serif;color:#111;}
+  .doc-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:14px clamp(18px,4vw,34px);border-top:1px solid var(--line);background:var(--panel);border-radius:0 0 10px 10px;font-family:"Segoe UI",Arial,sans-serif;}
+  button.btn-share, button.btn-download, button.btn-print, button.btn-doc-delete{padding:10px 18px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-share:hover, button.btn-download:hover{background:#fafafa;}
+  button.btn-print{border:none;background:var(--navy);color:#fff;}
+  button.btn-print:hover{background:var(--navy-deep);}
+  button.btn-doc-delete{border:1px solid #f6c9c4;color:var(--danger);}
+  button.btn-doc-delete:hover{background:#fdecea;}
+
+  /* --- letterhead --- */
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:62px;width:62px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:22px;font-weight:800;color:var(--navy);letter-spacing:.3px;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-office-row{display:flex;justify-content:space-between;align-items:flex-end;font-size:12.5px;font-style:italic;margin-bottom:16px;}
+  .doc-office-row .doc-date{font-style:normal;}
+  .doc-office-row .doc-date b{border-bottom:1px dotted #333;padding-bottom:1px;}
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:10px;text-transform:uppercase;}
+
+  /* --- report card notification specific --- */
+  .rc-status-flag{display:inline-block;margin:4px 0 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:4px 12px;border-radius:12px;background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .rc-info-grid{margin:14px 0 18px;}
+  .rc-info-row{display:flex;gap:10px;margin-bottom:8px;font-size:13.5px;}
+  .rc-info-row .lbl{font-weight:700;min-width:150px;flex-shrink:0;}
+  .rc-info-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;}
+  .rc-section-title{font-weight:700;font-size:13.5px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.3px;color:#20242e;border-bottom:1px solid #ccc;padding-bottom:4px;}
+  .rc-body-text{font-size:13.5px;line-height:1.85;margin-bottom:10px;text-align:justify;white-space:pre-wrap;}
+  .rc-approval-list{font-size:12.5px;line-height:2;margin:8px 0 4px;}
+  .rc-approval-list .lbl{font-weight:700;display:inline-block;min-width:190px;}
+  .rc-signoff{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin:30px 0 10px;}
+  @media (max-width:600px){.rc-signoff{grid-template-columns:1fr;}}
+  .rc-signoff div{font-size:12.5px;}
+  .rc-signoff .sig-script{font-family:"Brush Script MT",cursive;font-size:20px;margin-bottom:-6px;min-height:24px;}
+  .rc-signoff .sig-name{border-top:1px solid #333;padding-top:4px;font-weight:700;}
+  .rc-signoff .sig-title{color:#555;font-size:11px;}
+  .rc-note{font-size:11.5px;color:#333;margin-top:20px;line-height:1.6;}
+  .rc-ref{font-size:11.5px;margin-top:10px;font-weight:700;}
+
+  @media print{
+    body *{visibility:hidden;}
+    .doc-overlay.open, .doc-overlay.open *{visibility:visible;}
+    .doc-overlay.open{position:absolute;inset:auto;background:none;padding:0;display:block !important;}
+    .doc-overlay.open .doc-modal{position:absolute;top:0;left:0;max-width:100%;max-height:none;box-shadow:none;border-radius:0;overflow:visible;}
+    .doc-actions{display:none !important;}
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left" id="topbarCrestWrap">
+    <img class="kps-logo" id="topbarKpsLogo" alt="Kingsville Public School logo">
+    <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+  </div>
+  <img class="moe-mini" id="topbarMoeLogo" alt="Ministry of Education seal">
+</header>
+
+<div class="ticker-bar" id="tickerBar">
+  <div class="ticker-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5Z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg>
+    Report Card Approvals
+  </div>
+  <div class="ticker-viewport">
+    <div class="ticker-track" id="tickerTrack">
+      <span>Loading report card cases&hellip;</span>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+      <div class="seal-stage">
+        <img class="seal" id="cardSeal" alt="School seal">
+      </div>
+      <h1>Report Card Approval<br><span class="school-line">Kingsville Public High School — Office of the Principal</span></h1>
+      <div class="subtitle-rule"></div>
+
+      <div class="section-tabs" id="sectionTabs">
+        <button data-section="compose" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          Register Student
+        </button>
+        <button data-section="manage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M3 12h18M3 19h18"/></svg>
+          Report Card Cases
+        </button>
+      </div>
+
+      <!-- ================= COMPOSE SECTION ================= -->
+      <section class="stat-section active" id="composeSection">
+        <div class="panel">
+          <h2>Register Student for Report Card Approval</h2>
+          <p class="table-hint">Adding a student here opens a report card case. The Registrar, the Class/Subject Teacher, and the Super Admin must each submit their approval before the Principal can approve — and before the student is notified that their report card is released.</p>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newStudentName">Student Full Name</label>
+              <input id="newStudentName" type="text" placeholder="e.g. Josephine T. Kollie" autocomplete="off" maxlength="150">
+            </div>
+            <div class="field">
+              <label for="newStudentId">Student ID / LRN</label>
+              <input id="newStudentId" type="text" placeholder="e.g. KPS-2023-0142" autocomplete="off" maxlength="60">
+            </div>
+            <div class="field">
+              <label for="newAcademicYear">Academic Year</label>
+              <input id="newAcademicYear" type="text" placeholder="e.g. 2025/2026" autocomplete="off" maxlength="20">
+            </div>
+          </div>
+
+          <div class="compose-grid cols-3">
+            <div class="field">
+              <label for="newCurrentClass">Class / Grade</label>
+              <input id="newCurrentClass" type="text" placeholder="e.g. Grade 9-A" autocomplete="off" maxlength="60">
+            </div>
+            <div class="field">
+              <label for="newGradingPeriod">Grading Period / Term</label>
+              <input id="newGradingPeriod" type="text" placeholder="e.g. First Term, Third Grading Period" autocomplete="off" maxlength="60">
+            </div>
+            <div class="field">
+              <label for="newGuardianContact">Parent / Guardian Contact (optional)</label>
+              <input id="newGuardianContact" type="text" placeholder="e.g. 0777-123-456" autocomplete="off" maxlength="100">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="newRemarks">Registration Notes (optional)</label>
+            <textarea id="newRemarks" placeholder="Any notes for this report card case…" maxlength="1000"></textarea>
+          </div>
+
+          <div class="compose-actions">
+            <button class="btn-secondary" id="clearComposeBtn" type="button">Clear</button>
+            <button class="btn-primary" id="postRequestBtn" type="button">Open Report Card Case</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MANAGE SECTION ================= -->
+      <section class="stat-section" id="manageSection">
+
+        <div class="toolbar">
+          <select class="scope-select" id="manageStatusFilter">
+            <option value="">All statuses</option>
+            <option value="pending">Awaiting Approvals</option>
+            <option value="ready">Ready for Principal</option>
+            <option value="approved">Approved &amp; Notified</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <button class="refresh-btn" id="manageRefreshBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Cases</div>
+            <div class="kpi-value" id="kpiTotal">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Awaiting Approvals</div>
+            <div class="kpi-value danger" id="kpiPending">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Ready for Principal</div>
+            <div class="kpi-value info" id="kpiReady">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Approved &amp; Notified</div>
+            <div class="kpi-value ok" id="kpiApproved">—</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Report Card Cases</h2>
+          <div class="table-toolbar">
+            <div class="table-filters">
+              <input id="manageSearch" type="text" placeholder="Search by student name, ID, or class…" autocomplete="off">
+            </div>
+            <button class="export-btn" id="manageExportBtn">Export CSV</button>
+          </div>
+          <div class="request-list" id="requestList">
+            <div class="empty-state">Loading…</div>
+          </div>
+          <div class="updated-note" id="manageUpdatedNote">&nbsp;</div>
+        </div>
+      </section>
+
+      <div class="back-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <a href="dashboard.html">Back to Principal Dashboard</a>
+      </div>
+
+      <div class="msg" id="msgBox"></div>
+
+    </div>
+  </div>
+</main>
+
+<!-- ================= EDIT MODAL (student/case details) ================= -->
+<div class="edit-overlay" id="editOverlay">
+  <div class="edit-modal">
+    <h3>Edit Report Card Case</h3>
+
+    <div class="compose-grid cols-3">
+      <div class="field"><label for="editStudentName">Student Full Name</label><input id="editStudentName" type="text" maxlength="150"></div>
+      <div class="field"><label for="editStudentId">Student ID / LRN</label><input id="editStudentId" type="text" maxlength="60"></div>
+      <div class="field"><label for="editAcademicYear">Academic Year</label><input id="editAcademicYear" type="text" maxlength="20"></div>
+    </div>
+
+    <div class="compose-grid cols-3">
+      <div class="field"><label for="editCurrentClass">Class / Grade</label><input id="editCurrentClass" type="text" maxlength="60"></div>
+      <div class="field"><label for="editGradingPeriod">Grading Period / Term</label><input id="editGradingPeriod" type="text" maxlength="60"></div>
+      <div class="field"><label for="editGuardianContact">Parent / Guardian Contact</label><input id="editGuardianContact" type="text" maxlength="100"></div>
+    </div>
+
+    <div class="field">
+      <label for="editRemarks">Registration Notes</label>
+      <textarea id="editRemarks" maxlength="1000"></textarea>
+    </div>
+
+    <div class="compose-actions">
+      <button class="btn-secondary" id="editCancelBtn" type="button">Cancel</button>
+      <button class="btn-primary" id="editSaveBtn" type="button">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= APPROVAL CHECKLIST MODAL ================= -->
+<div class="edit-overlay" id="approvalOverlay">
+  <div class="edit-modal">
+    <h3>Approval Checklist</h3>
+    <p class="modal-sub" id="approvalModalStudent">—</p>
+
+    <div class="approval-row">
+      <div class="approval-row-head">
+        <label><input type="checkbox" id="apRegistrarApproved"> Registrar has approved this report card</label>
+      </div>
+      <div class="approval-row-fields">
+        <div class="field" style="margin-bottom:0;"><label for="apRegistrarName">Registrar Name</label><input id="apRegistrarName" type="text" maxlength="100"></div>
+        <div class="field" style="margin-bottom:0;"><label for="apRegistrarDate">Date Approved</label><input id="apRegistrarDate" type="date"></div>
+      </div>
+    </div>
+
+    <div class="approval-row">
+      <div class="approval-row-head">
+        <label><input type="checkbox" id="apTeacherApproved"> Class / Subject Teacher has approved</label>
+      </div>
+      <div class="approval-row-fields">
+        <div class="field" style="margin-bottom:0;"><label for="apTeacherName">Teacher Name</label><input id="apTeacherName" type="text" maxlength="100"></div>
+        <div class="field" style="margin-bottom:0;"><label for="apTeacherDate">Date Approved</label><input id="apTeacherDate" type="date"></div>
+      </div>
+    </div>
+
+    <div class="approval-row">
+      <div class="approval-row-head">
+        <label><input type="checkbox" id="apSuperAdminApproved"> Super Admin has approved</label>
+      </div>
+      <div class="approval-row-fields">
+        <div class="field" style="margin-bottom:0;"><label for="apSuperAdminName">Super Admin Name</label><input id="apSuperAdminName" type="text" maxlength="100"></div>
+        <div class="field" style="margin-bottom:0;"><label for="apSuperAdminDate">Date Approved</label><input id="apSuperAdminDate" type="date"></div>
+      </div>
+    </div>
+
+    <div class="compose-actions">
+      <button class="btn-secondary" id="approvalCancelBtn" type="button">Cancel</button>
+      <button class="btn-primary" id="approvalSaveBtn" type="button">Save Approval Checklist</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PRINCIPAL DECISION MODAL ================= -->
+<div class="edit-overlay" id="decisionOverlay">
+  <div class="edit-modal">
+    <h3>Principal's Decision</h3>
+    <p class="modal-sub" id="decisionModalStudent">—</p>
+
+    <div class="decision-summary">
+      <strong>Approvals on file:</strong>
+      <div class="approval-chip-row" id="decisionApprovalChips"></div>
+    </div>
+
+    <div class="decision-locked-note" id="decisionLockedNote" style="display:none;">
+      This case is still awaiting one or more approvals. The Principal cannot approve or reject until the Registrar, the Class/Subject Teacher, and the Super Admin have all submitted their approval.
+    </div>
+
+    <div class="compose-grid cols-3">
+      <div class="field"><label for="decPrincipalName">Principal Name</label><input id="decPrincipalName" type="text" maxlength="100" placeholder="e.g. Principal Varfee"></div>
+      <div class="field"><label for="decPrincipalTitle">Title / Office</label><input id="decPrincipalTitle" type="text" maxlength="150" placeholder="Principal, Kingsville Public High School"></div>
+      <div class="field"><label for="decPrincipalDate">Decision Date</label><input id="decPrincipalDate" type="date"></div>
+    </div>
+
+    <div class="field">
+      <label for="decRemarks">Remarks (optional)</label>
+      <textarea id="decRemarks" maxlength="1000" placeholder="Any remarks about this decision…"></textarea>
+    </div>
+
+    <div class="compose-actions">
+      <button class="btn-secondary" id="decisionCancelBtn" type="button">Cancel</button>
+      <button class="btn-reject" id="decisionRejectBtn" type="button">Reject Report Card</button>
+      <button class="btn-primary" id="decisionApproveBtn" type="button">Approve &amp; Notify Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= REPORT CARD NOTIFICATION DOCUMENT MODAL ================= -->
+<div class="doc-overlay" id="reportOverlay">
+  <div class="doc-modal">
+    <div class="doc-paper">
+      <div class="doc-letterhead">
+        <img id="rSchoolLogo" src="" alt="School logo">
+        <div class="doc-headtext">
+          <div class="school-name">Kingsville Public High School</div>
+          <div class="school-address">
+            Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia<br>
+            Office of the Principal
+          </div>
+        </div>
+        <img id="rMoeLogo" src="" alt="Ministry of Education seal">
+      </div>
+      <div class="doc-office-row">
+        <span>Office of the Principal</span>
+        <span class="doc-date">Date: <b id="rDate">—</b></span>
+      </div>
+
+      <div class="doc-banner">Official Notification of Report Card Approval</div>
+      <div style="text-align:center;"><span class="rc-status-flag" id="rStatusFlag">Approved</span></div>
+
+      <div class="rc-info-grid">
+        <div class="rc-info-row"><span class="lbl">STUDENT:</span><span class="val" id="rStudentName">—</span></div>
+        <div class="rc-info-row"><span class="lbl">STUDENT ID / LRN:</span><span class="val" id="rStudentId">—</span></div>
+        <div class="rc-info-row"><span class="lbl">ACADEMIC YEAR:</span><span class="val" id="rAcademicYear">—</span></div>
+        <div class="rc-info-row"><span class="lbl">CLASS / GRADE:</span><span class="val" id="rFromClass">—</span></div>
+        <div class="rc-info-row"><span class="lbl">GRADING PERIOD:</span><span class="val" id="rToClass">—</span></div>
+      </div>
+
+      <div class="rc-section-title">Notification</div>
+      <div class="rc-body-text" id="rBodyText">—</div>
+
+      <div class="rc-section-title">Approvals on Record</div>
+      <div class="rc-approval-list" id="rApprovalList">—</div>
+
+      <div class="rc-signoff">
+        <div>
+          <div class="sig-script">Signed</div>
+          <div class="sig-name" id="rIssuedByName">&nbsp;</div>
+          <div class="sig-title" id="rIssuedByTitle">Principal, Kingsville Public High School</div>
+        </div>
+        <div>
+          <div class="sig-script">&nbsp;</div>
+          <div class="sig-name">DISTRIBUTION:</div>
+          <div class="sig-title" id="rDistribution">Student File, Registrar's Office &amp; Parent/Guardian</div>
+        </div>
+      </div>
+
+      <div class="rc-note">
+        NOTE: This notification confirms that the Registrar, the Class/Subject Teacher, the Super Admin, and the Principal have each reviewed and approved this student's report card. Please retain this document for the student's academic records.
+      </div>
+      <div class="rc-ref">Notification Reference: <span id="rRef">—</span></div>
+    </div>
+
+    <div class="doc-actions">
+      <button class="btn-doc-delete" id="rDeleteBtn" type="button">Delete Case</button>
+      <button class="btn-share" id="rShareBtn" type="button">Share</button>
+      <button class="btn-download" id="rDownloadBtn" type="button">Download</button>
+      <button class="btn-print" id="rPrintBtn" type="button">Print</button>
+      <button class="btn-secondary" id="rCloseBtn" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-line-1">© <span id="year"></span> Kingsville Public High School</div>
+  <div class="footer-line-2">Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia</div>
+  <div class="footer-line-2">Developed by Mr. Fomba S. Varfee</div>
+</footer>
+
+<script>
+const KPS_LOGO_SRC = "../assets/images/img-63d9fc79f267bd59.png";
+const MOE_LOGO_SRC = "../assets/images/img-738ccabf41d2ffd8.png";
+
+  document.getElementById("topbarKpsLogo").src = KPS_LOGO_SRC;
+  document.getElementById("topbarMoeLogo").src = MOE_LOGO_SRC;
+  document.getElementById("cardSeal").src = KPS_LOGO_SRC;
+  // sb comes from the shared client in js/supabase-config.js
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const SCHOOL_NAME = "Kingsville Public High School";
+  const SCHOOL_ADDRESS = "Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia";
+
+  /* =========================================================================
+     REPORT CARD APPROVAL
+     Assumes a dedicated table `report_card_approval_requests` (NOT the
+     shared `public.approval_requests` table used by
+     super-admin/workflow.html — that one has a different, simpler shape:
+     kind/reference_id/student_id/summary/status/submitted_by/reviewed_by/
+     reviewed_at):
+     id, student_name, student_id_no, current_class, grading_period,
+     academic_year, guardian_contact, remarks,
+     registrar_approved, registrar_name, registrar_date,
+     teacher_approved, teacher_name, teacher_date,
+     super_admin_approved, super_admin_name, super_admin_date,
+     principal_decision ('approved' | 'rejected' | null),
+     principal_name, principal_title, principal_date, principal_remarks,
+     student_notified, notified_at, created_at
+  ========================================================================= */
+
+  const STATUS_LABEL = { pending: "Awaiting Approvals", ready: "Ready for Principal", approved: "Approved & Notified", rejected: "Rejected" };
+  const STATUS_BADGE = { pending: "pending", ready: "ready", approved: "pass", rejected: "fail" };
+
+  const msgBox = document.getElementById("msgBox");
+  function showMsg(text, type) { msgBox.textContent = text; msgBox.className = "msg " + type; }
+  function clearMsg() { msgBox.className = "msg"; msgBox.textContent = ""; }
+  function escapeHtml(str) {
+    return String(str ?? "").replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+  function fmtDate(iso) {
+    if (!iso) return "—";
+    return new Date(iso).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+  }
+  function todayIso() { return new Date().toISOString().slice(0, 10); }
+  function downloadCsv(filename, headers, rows) {
+    const lines = [headers.join(",")];
+    for (const row of rows) {
+      lines.push(row.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","));
+    }
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function caseStatus(r) {
+    if (r.principal_decision === "rejected") return "rejected";
+    if (r.principal_decision === "approved") return "approved";
+    if (r.registrar_approved && r.teacher_approved && r.super_admin_approved) return "ready";
+    return "pending";
+  }
+
+  // ================= Section tab switching =================
+  document.getElementById("sectionTabs").addEventListener("click", e => {
+    const btn = e.target.closest("button[data-section]");
+    if (!btn) return;
+    document.querySelectorAll("#sectionTabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".stat-section").forEach(s => s.classList.remove("active"));
+    document.getElementById(btn.dataset.section + "Section").classList.add("active");
+    if (btn.dataset.section === "manage") loadCases();
+  });
+
+  let cases = [];
+
+  // ---------- Compose section fields ----------
+  const newStudentName = document.getElementById("newStudentName");
+  const newStudentId = document.getElementById("newStudentId");
+  const newAcademicYear = document.getElementById("newAcademicYear");
+  const newCurrentClass = document.getElementById("newCurrentClass");
+  const newGradingPeriod = document.getElementById("newGradingPeriod");
+  const newGuardianContact = document.getElementById("newGuardianContact");
+  const newRemarks = document.getElementById("newRemarks");
+  const postBtn = document.getElementById("postRequestBtn");
+  const clearBtn = document.getElementById("clearComposeBtn");
+
+  function clearCompose() {
+    newStudentName.value = ""; newStudentId.value = ""; newAcademicYear.value = "";
+    newCurrentClass.value = ""; newGradingPeriod.value = ""; newGuardianContact.value = "";
+    newRemarks.value = "";
+  }
+  clearBtn.addEventListener("click", clearCompose);
+
+  function composeCasePayload() {
+    return {
+      student_name: newStudentName.value.trim(),
+      student_id_no: newStudentId.value.trim(),
+      academic_year: newAcademicYear.value.trim(),
+      current_class: newCurrentClass.value.trim(),
+      grading_period: newGradingPeriod.value.trim(),
+      guardian_contact: newGuardianContact.value.trim(),
+      remarks: newRemarks.value.trim(),
+      registrar_approved: false, registrar_name: "", registrar_date: null,
+      teacher_approved: false, teacher_name: "", teacher_date: null,
+      super_admin_approved: false, super_admin_name: "", super_admin_date: null,
+      principal_decision: null, principal_name: "", principal_title: "", principal_date: null, principal_remarks: "",
+      student_notified: false, notified_at: null
+    };
+  }
+
+  postBtn.addEventListener("click", async () => {
+    clearMsg();
+    const payload = composeCasePayload();
+    if (!payload.student_name) { showMsg("Please enter the student's full name.", "err"); return; }
+    if (!payload.current_class) { showMsg("Please enter the student's current class/grade.", "err"); return; }
+    if (!payload.grading_period) { showMsg("Please enter the class/grade the grading period or term.", "err"); return; }
+
+    postBtn.disabled = true;
+    const { error } = await sb.from("report_card_approval_requests").insert(payload);
+    postBtn.disabled = false;
+
+    if (error) { showMsg("Couldn't open report card case: " + error.message, "err"); return; }
+    showMsg("Report card case opened. It will remain pending until the Registrar, the Class/Subject Teacher, and the Super Admin have each submitted their approval.", "ok");
+    clearCompose();
+    loadCases();
+  });
+
+  // ---------- Manage / list ----------
+  const manageStatusFilter = document.getElementById("manageStatusFilter");
+  const manageSearch = document.getElementById("manageSearch");
+  const manageRefreshBtn = document.getElementById("manageRefreshBtn");
+  const manageUpdatedNote = document.getElementById("manageUpdatedNote");
+  const requestList = document.getElementById("requestList");
+
+  async function loadCases() {
+    clearMsg();
+    manageRefreshBtn.classList.add("spinning");
+
+    const { data, error } = await sb
+      .from("report_card_approval_requests")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(500);
+
+    manageRefreshBtn.classList.remove("spinning");
+
+    if (error) {
+      showMsg("Couldn't load report card cases: " + error.message, "err");
+      cases = [];
+    } else {
+      cases = data || [];
+    }
+
+    renderKpis();
+    renderList();
+    renderTicker();
+    manageUpdatedNote.textContent = "Last updated " + new Date().toLocaleTimeString();
+  }
+
+  function renderTicker() {
+    const tickerBar = document.getElementById("tickerBar");
+    const tickerTrack = document.getElementById("tickerTrack");
+    const ready = cases.filter(r => caseStatus(r) === "ready");
+
+    if (!ready.length) {
+      tickerBar.classList.add("ticker-empty");
+      tickerTrack.innerHTML = "<span>No report card cases are currently waiting on the Principal's decision.</span>";
+      return;
+    }
+
+    tickerBar.classList.remove("ticker-empty");
+    const items = ready.map(r => {
+      const parts = [r.student_name, r.current_class && r.grading_period ? (r.current_class + " → " + r.grading_period) : null, "Ready for Principal's approval"].filter(Boolean);
+      return `<span class="pinned">${escapeHtml(parts.join(" — "))}</span>`;
+    });
+    tickerTrack.innerHTML = items.join("") + items.join("");
+    const seconds = Math.max(20, Math.min(120, ready.length * 8 + 12));
+    tickerTrack.style.animationDuration = seconds + "s";
+  }
+
+  function renderKpis() {
+    document.getElementById("kpiTotal").textContent = cases.length || "—";
+    document.getElementById("kpiPending").textContent = cases.filter(r => caseStatus(r) === "pending").length || "—";
+    document.getElementById("kpiReady").textContent = cases.filter(r => caseStatus(r) === "ready").length || "—";
+    document.getElementById("kpiApproved").textContent = cases.filter(r => caseStatus(r) === "approved").length || "—";
+  }
+
+  function filteredCases() {
+    const term = manageSearch.value.trim().toLowerCase();
+    const status = manageStatusFilter.value;
+    return cases.filter(r => {
+      if (status && caseStatus(r) !== status) return false;
+      if (term && !`${r.student_name} ${r.student_id_no} ${r.current_class} ${r.grading_period}`.toLowerCase().includes(term)) return false;
+      return true;
+    });
+  }
+
+  function approvalChipsHtml(r) {
+    const items = [
+      ["Registrar", r.registrar_approved],
+      ["Teacher", r.teacher_approved],
+      ["Super Admin", r.super_admin_approved],
+      ["Principal", r.principal_decision === "approved" ? true : (r.principal_decision === "rejected" ? "rejected" : false)]
+    ];
+    return items.map(([label, done]) => {
+      if (done === "rejected") return `<span class="approval-chip" style="color:var(--danger);border-color:#f6c9c4;background:#fdecea;">✕ ${label}</span>`;
+      return `<span class="approval-chip ${done ? "done" : ""}">${label}</span>`;
+    }).join("");
+  }
+
+  function renderList() {
+    const rows = filteredCases();
+    if (!rows.length) {
+      requestList.innerHTML = '<div class="empty-state">No report card cases match.</div>';
+      return;
+    }
+    requestList.innerHTML = rows.map(r => {
+      const status = caseStatus(r);
+      const canPrincipalAct = status === "ready";
+      const notified = r.student_notified;
+      return `
+      <div class="request-card ${status}" data-id="${r.id}">
+        <div class="request-top">
+          <div>
+            <div class="request-title">${escapeHtml(r.student_name)}${r.student_id_no ? " (" + escapeHtml(r.student_id_no) + ")" : ""}</div>
+            <div class="request-meta">
+              <span class="badge ${STATUS_BADGE[status]}">${STATUS_LABEL[status]}</span>
+              · ${escapeHtml(r.current_class || "—")} → ${escapeHtml(r.grading_period || "—")}
+              ${r.academic_year ? " · AY " + escapeHtml(r.academic_year) : ""}
+            </div>
+          </div>
+        </div>
+        <div class="request-fees">
+          <div class="approval-chip-row">${approvalChipsHtml(r)}</div>
+          ${notified ? `<span style="color:var(--ok);font-weight:700;">✓ Student &amp; guardian notified of report card</span>` : `<span style="color:var(--muted);">Student not yet notified</span>`}
+        </div>
+        <div class="request-actions">
+          <button class="btn-ghost" data-action="approvals" data-id="${r.id}">Update Approval Checklist</button>
+          <button class="btn-ghost accent" data-action="decision" data-id="${r.id}" ${canPrincipalAct ? "" : "disabled"}>Principal Decision</button>
+          ${notified ? `<button class="btn-ghost" data-action="report" data-id="${r.id}">View Notification</button>` : ""}
+          <button class="btn-ghost" data-action="edit" data-id="${r.id}">Edit</button>
+          <button class="btn-ghost danger" data-action="delete" data-id="${r.id}">Delete</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  manageSearch.addEventListener("input", renderList);
+  manageStatusFilter.addEventListener("change", renderList);
+  manageRefreshBtn.addEventListener("click", loadCases);
+
+  document.getElementById("manageExportBtn").addEventListener("click", () => {
+    const rows = filteredCases();
+    if (!rows.length) { showMsg("Nothing to export.", "err"); return; }
+    downloadCsv(
+      `kingsville-report-card-cases-${new Date().toISOString().slice(0, 10)}.csv`,
+      ["Student Name", "Student ID", "Academic Year", "Class / Grade", "Grading Period", "Status", "Registrar Approved", "Teacher Approved", "Super Admin Approved", "Principal Decision", "Student Notified"],
+      rows.map(r => [r.student_name, r.student_id_no, r.academic_year, r.current_class, r.grading_period, STATUS_LABEL[caseStatus(r)], r.registrar_approved ? "Yes" : "No", r.teacher_approved ? "Yes" : "No", r.super_admin_approved ? "Yes" : "No", r.principal_decision || "Pending", r.student_notified ? "Yes" : "No"])
+    );
+  });
+
+  // ---------- Edit modal (student/case details) ----------
+  const editOverlay = document.getElementById("editOverlay");
+  const editStudentName = document.getElementById("editStudentName");
+  const editStudentId = document.getElementById("editStudentId");
+  const editAcademicYear = document.getElementById("editAcademicYear");
+  const editCurrentClass = document.getElementById("editCurrentClass");
+  const editGradingPeriod = document.getElementById("editGradingPeriod");
+  const editGuardianContact = document.getElementById("editGuardianContact");
+  const editRemarks = document.getElementById("editRemarks");
+  let editingId = null;
+
+  function openEdit(r) {
+    editingId = r.id;
+    editStudentName.value = r.student_name || "";
+    editStudentId.value = r.student_id_no || "";
+    editAcademicYear.value = r.academic_year || "";
+    editCurrentClass.value = r.current_class || "";
+    editGradingPeriod.value = r.grading_period || "";
+    editGuardianContact.value = r.guardian_contact || "";
+    editRemarks.value = r.remarks || "";
+    editOverlay.classList.add("open");
+  }
+
+  document.getElementById("editCancelBtn").addEventListener("click", () => editOverlay.classList.remove("open"));
+  editOverlay.addEventListener("click", e => { if (e.target === editOverlay) editOverlay.classList.remove("open"); });
+
+  document.getElementById("editSaveBtn").addEventListener("click", async () => {
+    if (!editingId) return;
+    const payload = {
+      student_name: editStudentName.value.trim(),
+      student_id_no: editStudentId.value.trim(),
+      academic_year: editAcademicYear.value.trim(),
+      current_class: editCurrentClass.value.trim(),
+      grading_period: editGradingPeriod.value.trim(),
+      guardian_contact: editGuardianContact.value.trim(),
+      remarks: editRemarks.value.trim()
+    };
+    if (!payload.student_name) { showMsg("Please enter the student's full name.", "err"); return; }
+
+    const { error } = await sb.from("report_card_approval_requests").update(payload).eq("id", editingId);
+    if (error) { showMsg("Couldn't update report card case: " + error.message, "err"); return; }
+    showMsg("Report Card case updated.", "ok");
+    editOverlay.classList.remove("open");
+    loadCases();
+  });
+
+  // ---------- Approval checklist modal ----------
+  const approvalOverlay = document.getElementById("approvalOverlay");
+  let approvalCaseId = null;
+
+  const apRegistrarApproved = document.getElementById("apRegistrarApproved");
+  const apRegistrarName = document.getElementById("apRegistrarName");
+  const apRegistrarDate = document.getElementById("apRegistrarDate");
+  const apTeacherApproved = document.getElementById("apTeacherApproved");
+  const apTeacherName = document.getElementById("apTeacherName");
+  const apTeacherDate = document.getElementById("apTeacherDate");
+  const apSuperAdminApproved = document.getElementById("apSuperAdminApproved");
+  const apSuperAdminName = document.getElementById("apSuperAdminName");
+  const apSuperAdminDate = document.getElementById("apSuperAdminDate");
+
+  function openApprovalModal(r) {
+    approvalCaseId = r.id;
+    document.getElementById("approvalModalStudent").textContent = r.student_name + (r.student_id_no ? " (" + r.student_id_no + ")" : "") + " — " + (r.current_class || "—") + " → " + (r.grading_period || "—");
+
+    apRegistrarApproved.checked = !!r.registrar_approved;
+    apRegistrarName.value = r.registrar_name || "";
+    apRegistrarDate.value = r.registrar_date || "";
+
+    apTeacherApproved.checked = !!r.teacher_approved;
+    apTeacherName.value = r.teacher_name || "";
+    apTeacherDate.value = r.teacher_date || "";
+
+    apSuperAdminApproved.checked = !!r.super_admin_approved;
+    apSuperAdminName.value = r.super_admin_name || "";
+    apSuperAdminDate.value = r.super_admin_date || "";
+
+    approvalOverlay.classList.add("open");
+  }
+
+  document.getElementById("approvalCancelBtn").addEventListener("click", () => approvalOverlay.classList.remove("open"));
+  approvalOverlay.addEventListener("click", e => { if (e.target === approvalOverlay) approvalOverlay.classList.remove("open"); });
+
+  [apRegistrarApproved, apTeacherApproved, apSuperAdminApproved].forEach(cb => {
+    cb.addEventListener("change", () => {
+      const map = {
+        apRegistrarApproved: [apRegistrarDate, apRegistrarName],
+        apTeacherApproved: [apTeacherDate, apTeacherName],
+        apSuperAdminApproved: [apSuperAdminDate, apSuperAdminName]
+      };
+      const [dateField] = map[cb.id];
+      if (cb.checked && !dateField.value) dateField.value = todayIso();
+    });
+  });
+
+  document.getElementById("approvalSaveBtn").addEventListener("click", async () => {
+    if (!approvalCaseId) return;
+
+    if (apRegistrarApproved.checked && !apRegistrarName.value.trim()) { showMsg("Please enter the Registrar's name before marking their approval.", "err"); return; }
+    if (apTeacherApproved.checked && !apTeacherName.value.trim()) { showMsg("Please enter the Teacher's name before marking their approval.", "err"); return; }
+    if (apSuperAdminApproved.checked && !apSuperAdminName.value.trim()) { showMsg("Please enter the Super Admin's name before marking their approval.", "err"); return; }
+
+    const payload = {
+      registrar_approved: apRegistrarApproved.checked,
+      registrar_name: apRegistrarName.value.trim(),
+      registrar_date: apRegistrarApproved.checked ? (apRegistrarDate.value || todayIso()) : null,
+      teacher_approved: apTeacherApproved.checked,
+      teacher_name: apTeacherName.value.trim(),
+      teacher_date: apTeacherApproved.checked ? (apTeacherDate.value || todayIso()) : null,
+      super_admin_approved: apSuperAdminApproved.checked,
+      super_admin_name: apSuperAdminName.value.trim(),
+      super_admin_date: apSuperAdminApproved.checked ? (apSuperAdminDate.value || todayIso()) : null
+    };
+
+    const { error } = await sb.from("report_card_approval_requests").update(payload).eq("id", approvalCaseId);
+    if (error) { showMsg("Couldn't save approval checklist: " + error.message, "err"); return; }
+
+    const allDone = payload.registrar_approved && payload.teacher_approved && payload.super_admin_approved;
+    showMsg(allDone
+      ? "All required approvals are now on file. This case is ready for the Principal's decision."
+      : "Approval checklist saved. The case remains pending until every office has approved.", "ok");
+    approvalOverlay.classList.remove("open");
+    loadCases();
+  });
+
+  // ---------- Principal decision modal ----------
+  const decisionOverlay = document.getElementById("decisionOverlay");
+  const decisionLockedNote = document.getElementById("decisionLockedNote");
+  const decisionApproveBtn = document.getElementById("decisionApproveBtn");
+  const decisionRejectBtn = document.getElementById("decisionRejectBtn");
+  const decPrincipalName = document.getElementById("decPrincipalName");
+  const decPrincipalTitle = document.getElementById("decPrincipalTitle");
+  const decPrincipalDate = document.getElementById("decPrincipalDate");
+  const decRemarks = document.getElementById("decRemarks");
+  let decisionCaseId = null;
+
+  function openDecisionModal(r) {
+    const status = caseStatus(r);
+    decisionCaseId = r.id;
+    document.getElementById("decisionModalStudent").textContent = r.student_name + (r.student_id_no ? " (" + r.student_id_no + ")" : "") + " — " + (r.current_class || "—") + " → " + (r.grading_period || "—");
+    document.getElementById("decisionApprovalChips").innerHTML = approvalChipsHtml(r);
+
+    const ready = status === "ready";
+    decisionLockedNote.style.display = ready ? "none" : "";
+    decisionApproveBtn.disabled = !ready;
+    decisionRejectBtn.disabled = !ready;
+
+    decPrincipalName.value = r.principal_name || "";
+    decPrincipalTitle.value = r.principal_title || "Principal, Kingsville Public High School";
+    decPrincipalDate.value = r.principal_date || todayIso();
+    decRemarks.value = r.principal_remarks || "";
+
+    decisionOverlay.classList.add("open");
+  }
+
+  document.getElementById("decisionCancelBtn").addEventListener("click", () => decisionOverlay.classList.remove("open"));
+  decisionOverlay.addEventListener("click", e => { if (e.target === decisionOverlay) decisionOverlay.classList.remove("open"); });
+
+  async function submitPrincipalDecision(decision) {
+    if (!decisionCaseId) return;
+    const r = cases.find(x => String(x.id) === String(decisionCaseId));
+    if (!r) return;
+    if (caseStatus(r) !== "ready") { showMsg("This case is not yet ready for a Principal decision.", "err"); return; }
+    if (!decPrincipalName.value.trim()) { showMsg("Please enter the Principal's name.", "err"); return; }
+
+    const payload = {
+      principal_decision: decision,
+      principal_name: decPrincipalName.value.trim(),
+      principal_title: decPrincipalTitle.value.trim(),
+      principal_date: decPrincipalDate.value || todayIso(),
+      principal_remarks: decRemarks.value.trim(),
+      student_notified: decision === "approved",
+      notified_at: decision === "approved" ? new Date().toISOString() : null
+    };
+
+    const { error } = await sb.from("report_card_approval_requests").update(payload).eq("id", decisionCaseId);
+    if (error) { showMsg("Couldn't record the Principal's decision: " + error.message, "err"); return; }
+
+    decisionOverlay.classList.remove("open");
+    await loadCases();
+
+    const updated = cases.find(x => String(x.id) === String(decisionCaseId));
+    if (decision === "approved") {
+      showMsg("Report Card approved. The student and guardian have been notified.", "ok");
+      if (updated) openReportCardDoc(updated);
+    } else {
+      showMsg("Report Card rejected. The student will not be notified of report card.", "ok");
+    }
+  }
+
+  decisionApproveBtn.addEventListener("click", () => submitPrincipalDecision("approved"));
+  decisionRejectBtn.addEventListener("click", () => submitPrincipalDecision("rejected"));
+
+  // ---------- List action delegation ----------
+  requestList.addEventListener("click", async e => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const r = cases.find(x => String(x.id) === String(id));
+    if (!r) return;
+    const action = btn.dataset.action;
+
+    if (action === "edit") { openEdit(r); return; }
+    if (action === "approvals") { openApprovalModal(r); return; }
+    if (action === "decision") {
+      if (btn.disabled) return;
+      openDecisionModal(r);
+      return;
+    }
+    if (action === "report") { openReportCardDoc(r); return; }
+
+    if (action === "delete") {
+      if (!confirm("Delete this report card case? This cannot be undone.")) return;
+      const { error } = await sb.from("report_card_approval_requests").delete().eq("id", id);
+      if (error) { showMsg("Couldn't delete report card case: " + error.message, "err"); return; }
+      showMsg("Report Card case deleted.", "ok");
+      loadCases();
+    }
+  });
+
+  // ---------- Report Card notification document generation ----------
+  const reportOverlay = document.getElementById("reportOverlay");
+  let currentReportCardCase = null;
+  let refCounter = 1;
+
+  function nextRef(prefix) {
+    const n = String(refCounter++).padStart(4, "0");
+    return `${prefix}-${new Date().getFullYear()}-${n}`;
+  }
+
+  function approvalListText(r) {
+    const rows = [
+      ["Registrar", r.registrar_name, r.registrar_date],
+      ["Class / Subject Teacher", r.teacher_name, r.teacher_date],
+      ["Super Admin", r.super_admin_name, r.super_admin_date],
+      ["Principal", r.principal_name, r.principal_date]
+    ];
+    return rows.map(([label, name, date]) =>
+      `<div><span class="lbl">${escapeHtml(label)}:</span> ${escapeHtml(name || "—")}${date ? " — " + fmtDate(date) : ""}</div>`
+    ).join("");
+  }
+
+  function openReportCardDoc(r) {
+    currentReportCardCase = r;
+    document.getElementById("rSchoolLogo").src = KPS_LOGO_SRC;
+    document.getElementById("rMoeLogo").src = MOE_LOGO_SRC;
+    document.getElementById("rDate").textContent = fmtDate(r.principal_date || r.notified_at || new Date().toISOString());
+
+    document.getElementById("rStudentName").textContent = r.student_name || "—";
+    document.getElementById("rStudentId").textContent = r.student_id_no || "—";
+    document.getElementById("rAcademicYear").textContent = r.academic_year || "—";
+    document.getElementById("rFromClass").textContent = r.current_class || "—";
+    document.getElementById("rToClass").textContent = r.grading_period || "—";
+
+    document.getElementById("rBodyText").textContent =
+      `This is to formally notify ${r.student_name || "the student"} and their parent/guardian that, following review and approval by the Registrar, the Class/Subject Teacher, the Super Admin, and the Principal, the report card for ${r.student_name || "the student"} — ${r.current_class || "the current class"}, ${r.grading_period || "the current grading period"} — for the ${r.academic_year || "current"} academic year has been APPROVED and is now released.` +
+      (r.principal_remarks ? `\n\nPrincipal's Remarks: ${r.principal_remarks}` : "");
+
+    document.getElementById("rApprovalList").innerHTML = approvalListText(r);
+
+    document.getElementById("rIssuedByName").textContent = r.principal_name || "\u00A0";
+    document.getElementById("rIssuedByTitle").textContent = r.principal_title || "Principal, Kingsville Public High School";
+    document.getElementById("rDistribution").textContent = "Student File, Registrar's Office & Parent/Guardian";
+    document.getElementById("rRef").textContent = nextRef("RC");
+
+    document.getElementById("rDeleteBtn").style.display = currentReportCardCase && currentReportCardCase.id ? "" : "none";
+    reportOverlay.classList.add("open");
+  }
+
+  function closeReportCardDoc() { reportOverlay.classList.remove("open"); currentReportCardCase = null; }
+  document.getElementById("rCloseBtn").addEventListener("click", closeReportCardDoc);
+  reportOverlay.addEventListener("click", e => { if (e.target === reportOverlay) closeReportCardDoc(); });
+
+  // ---------- share / download / print / delete ----------
+  function docPlainText() {
+    return [
+      SCHOOL_NAME.toUpperCase(), SCHOOL_ADDRESS, "OFFICIAL NOTIFICATION OF REPORT CARD", "",
+      "STUDENT: " + document.getElementById("rStudentName").textContent,
+      "STUDENT ID / LRN: " + document.getElementById("rStudentId").textContent,
+      "ACADEMIC YEAR: " + document.getElementById("rAcademicYear").textContent,
+      "CLASS / GRADE: " + document.getElementById("rFromClass").textContent,
+      "GRADING PERIOD: " + document.getElementById("rToClass").textContent, "",
+      document.getElementById("rBodyText").textContent, "",
+      "Notification Reference: " + document.getElementById("rRef").textContent
+    ].join("\n");
+  }
+
+  function docFilenameBase() {
+    const name = document.getElementById("rStudentName").textContent || "student";
+    const safe = name.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+    return "report-card-notification-" + safe;
+  }
+
+  document.getElementById("rShareBtn").addEventListener("click", async () => {
+    const text = docPlainText();
+    const title = "Report Card Notification — " + document.getElementById("rStudentName").textContent;
+    if (navigator.share) {
+      try { await navigator.share({ title, text }); } catch (err) { /* cancelled */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      showMsg("Sharing isn't available on this device, so the notification was copied to your clipboard instead.", "ok");
+    } catch (err) {
+      window.open("mailto:?subject=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(text), "_blank");
+    }
+  });
+
+  document.getElementById("rDownloadBtn").addEventListener("click", () => {
+    const paper = reportOverlay.querySelector(".doc-paper").outerHTML;
+    const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>${escapeHtml(docFilenameBase())}</title>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;padding:24px;background:#f2f2f0;font-family:Georgia,"Times New Roman",serif;color:#111;}
+  .doc-paper{max-width:820px;margin:0 auto;background:#fff;padding:32px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);}
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:62px;width:62px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:22px;font-weight:800;color:#122148;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-office-row{display:flex;justify-content:space-between;font-size:12.5px;font-style:italic;margin-bottom:16px;}
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:10px;text-transform:uppercase;}
+  .rc-status-flag{display:inline-block;margin:4px 0 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:4px 12px;border-radius:12px;background:#eafaf1;color:#1e8449;border:1px solid #b9e6c9;}
+  .rc-info-grid{margin:14px 0 18px;}
+  .rc-info-row{display:flex;gap:10px;margin-bottom:8px;font-size:13.5px;}
+  .rc-info-row .lbl{font-weight:700;min-width:150px;flex-shrink:0;}
+  .rc-info-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;}
+  .rc-section-title{font-weight:700;font-size:13.5px;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.3px;color:#20242e;border-bottom:1px solid #ccc;padding-bottom:4px;}
+  .rc-body-text{font-size:13.5px;line-height:1.85;margin-bottom:10px;text-align:justify;white-space:pre-wrap;}
+  .rc-approval-list{font-size:12.5px;line-height:2;margin:8px 0 4px;}
+  .rc-approval-list .lbl{font-weight:700;display:inline-block;min-width:190px;}
+  .rc-signoff{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin:30px 0 10px;}
+  .rc-signoff div{font-size:12.5px;}
+  .rc-signoff .sig-script{font-family:"Brush Script MT",cursive;font-size:20px;margin-bottom:-6px;min-height:24px;}
+  .rc-signoff .sig-name{border-top:1px solid #333;padding-top:4px;font-weight:700;}
+  .rc-signoff .sig-title{color:#555;font-size:11px;}
+  .rc-note{font-size:11.5px;color:#333;margin-top:20px;line-height:1.6;}
+  .rc-ref{font-size:11.5px;margin-top:10px;font-weight:700;}
+</style></head><body>${paper}</body></html>`;
+    const blob = new Blob([html], { type: "text/html;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = docFilenameBase() + ".html";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("rPrintBtn").addEventListener("click", () => window.print());
+
+  document.getElementById("rDeleteBtn").addEventListener("click", async () => {
+    if (!currentReportCardCase || !currentReportCardCase.id) return;
+    if (!confirm("Delete this report card case? This cannot be undone.")) return;
+    const { error } = await sb.from("report_card_approval_requests").delete().eq("id", currentReportCardCase.id);
+    if (error) { showMsg("Couldn't delete report card case: " + error.message, "err"); return; }
+    showMsg("Report Card case deleted.", "ok");
+    reportOverlay.classList.remove("open");
+    currentReportCardCase = null;
+    loadCases();
+  });
+
+  // ================= Initial load =================
+  loadCases();
+</script>
+
+<!-- KPS ERP Core -->
+
+</body>
+</html>

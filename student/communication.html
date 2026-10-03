@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Communication</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);
+    flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;justify-content:center;gap:12px;}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .kps-logo{height:30px;width:30px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+
+  .ticker-bar{
+    background:#fff4d6;border-bottom:1px solid #ecd9a0;
+    display:flex;align-items:center;overflow:hidden;flex-shrink:0;
+    height:clamp(30px,4.2vh,36px);
+  }
+  .ticker-label{
+    flex-shrink:0;display:flex;align-items:center;gap:6px;
+    background:var(--crimson);color:#fff;font-size:11px;font-weight:800;
+    letter-spacing:.4px;text-transform:uppercase;height:100%;
+    padding:0 14px;white-space:nowrap;
+  }
+  .ticker-label svg{width:13px;height:13px;flex-shrink:0;}
+  .ticker-viewport{flex:1;overflow:hidden;position:relative;height:100%;}
+  .ticker-track{
+    display:flex;align-items:center;gap:56px;position:absolute;white-space:nowrap;
+    height:100%;will-change:transform;
+    animation:tickerScroll 30s linear infinite;
+  }
+  .ticker-viewport:hover .ticker-track{animation-play-state:paused;}
+  .ticker-track span{font-size:12.5px;color:var(--ink);font-weight:600;}
+  .ticker-track span.pinned::before{content:"📌 ";}
+  @keyframes tickerScroll{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+  .ticker-bar.ticker-empty .ticker-track{animation:none;position:static;}
+  .ticker-bar.ticker-empty .ticker-track span{color:var(--muted);font-weight:400;}
+
+  main{
+    flex:1;display:flex;align-items:flex-start;justify-content:center;
+    padding:clamp(10px,3vh,30px) 16px;
+    min-height:0;
+    overflow-y:auto;
+  }
+  .card{
+    width:100%;max-width:960px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);
+    overflow:hidden;
+    max-height:100%;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,38px) clamp(20px,7vw,36px) clamp(16px,3vh,30px);text-align:left;}
+  .card .body .seal-stage{margin-left:auto;margin-right:auto;}
+  .card .body h1, .card .body .subtitle-rule{text-align:center;margin-left:auto;margin-right:auto;}
+
+  .seal-stage{position:relative;width:clamp(72px,13vh,110px);height:clamp(72px,13vh,110px);margin:0 auto clamp(8px,2vh,16px);display:flex;align-items:center;justify-content:center;}
+  .seal-glow{
+    position:absolute;inset:-18px;border-radius:50%;
+    background:radial-gradient(circle, rgba(242,167,27,.45) 0%, rgba(200,16,46,.18) 45%, transparent 72%);
+    filter:blur(7px);
+    animation:sealPulseGlow 3.4s ease-in-out infinite;
+  }
+  .seal-ring{
+    position:absolute;inset:-8px;border-radius:50%;
+    background:conic-gradient(from 0deg, var(--gold), #fff3d6, var(--crimson), var(--gold), var(--crimson), #fff3d6, var(--gold));
+    -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+    mask:radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+    animation:sealRotateRing 7s linear infinite;
+  }
+  .card img.seal{
+    position:relative;z-index:2;height:clamp(56px,10vh,86px);width:clamp(56px,10vh,86px);object-fit:contain;border-radius:50%;
+    background:#fff;padding:4px;
+    box-shadow:0 12px 26px rgba(11,23,48,.28), 0 0 0 4px #fff;
+    display:flex;align-items:center;justify-content:center;color:var(--crimson);
+    animation:sealEntrance .9s cubic-bezier(.2,.8,.2,1);
+  }
+  .seal-shine{
+    position:absolute;z-index:3;inset:4px;border-radius:50%;overflow:hidden;pointer-events:none;
+  }
+  .seal-shine::after{
+    content:"";position:absolute;top:-60%;left:-60%;width:40%;height:220%;
+    background:linear-gradient(75deg, transparent 40%, rgba(255,255,255,.85) 50%, transparent 60%);
+    animation:sealShineSweep 3.6s ease-in-out infinite;
+    animation-delay:1s;
+  }
+  @keyframes sealPulseGlow{0%,100%{opacity:.55;transform:scale(1);}50%{opacity:1;transform:scale(1.1);}}
+  @keyframes sealRotateRing{to{transform:rotate(360deg);}}
+  @keyframes sealEntrance{from{opacity:0;transform:scale(.6) rotate(-10deg);}to{opacity:1;transform:scale(1) rotate(0);}}
+  @keyframes sealShineSweep{0%{left:-60%;}30%{left:130%;}100%{left:130%;}}
+
+  .card h1{
+    font-size:clamp(14.5px,3vh,16.5px);color:var(--navy);font-weight:700;line-height:1.45;margin-bottom:6px;letter-spacing:.2px;
+  }
+  .card h1 .school-line{color:var(--crimson);font-size:clamp(13px,2.7vh,15px);}
+  .card .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:clamp(8px,2vh,14px) auto clamp(12px,3vh,22px);border-radius:2px;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field input{
+    width:100%;padding:clamp(9px,1.6vh,11px) 13px;border:1px solid var(--line);border-radius:4px;
+    font-size:16px;background:#fff;color:var(--ink);
+  }
+  .field select{
+    width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:4px;font-size:13.5px;background:#fff;color:var(--ink);
+  }
+  .field input:focus, .field select:focus{outline:none;border-color:var(--crimson);}
+
+  .msg{margin-top:clamp(8px,1.6vh,14px);font-size:12.5px;padding:9px 11px;border-radius:4px;display:none;text-align:left;}
+  .msg.err{display:block;background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .msg.ok{display:block;background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+
+  footer.site-footer{
+    background:var(--navy-deep);
+    color:#c9d2e8;font-size:11px;text-align:center;padding:clamp(8px,1.4vh,12px) 10px;
+    border-top:2px solid var(--gold);
+    flex-shrink:0;
+  }
+  footer.site-footer .footer-line-1{font-weight:600;letter-spacing:.2px;}
+  footer.site-footer .footer-line-2{margin-top:3px;font-size:10.5px;color:var(--gold);letter-spacing:.3px;}
+
+  .back-row{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    margin-top:clamp(10px,2vh,16px);font-size:13px;
+  }
+  .back-row a{color:var(--navy);text-decoration:none;font-weight:600;}
+  .back-row a:hover{text-decoration:underline;}
+  .back-row svg{width:14px;height:14px;flex-shrink:0;}
+
+  /* ===== Section tabs (shared pattern) ===== */
+  .section-tabs{display:flex;gap:6px;background:#f1f1ef;border-radius:8px;padding:4px;margin-bottom:clamp(16px,2.6vh,22px);}
+  .section-tabs button{
+    flex:1;border:none;background:transparent;padding:10px 14px;border-radius:6px;font-size:13px;font-weight:700;
+    color:var(--muted);cursor:pointer;transition:background .15s,color .15s;display:flex;align-items:center;justify-content:center;gap:7px;
+  }
+  .section-tabs button.active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(11,23,48,.15);}
+  .section-tabs button svg{width:15px;height:15px;}
+  .section-tabs button .unread-dot{
+    background:var(--crimson);color:#fff;font-size:10px;font-weight:800;border-radius:10px;
+    padding:1px 6px;min-width:16px;text-align:center;line-height:1.4;
+  }
+
+  .stat-section{display:none;}
+  .stat-section.active{display:block;}
+
+  .toolbar{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;
+    margin-bottom:clamp(14px,2.4vh,20px);
+  }
+  button.refresh-btn{
+    border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;
+    padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;
+  }
+  button.refresh-btn:hover{background:#fafafa;}
+  button.refresh-btn svg{width:14px;height:14px;}
+  button.refresh-btn.spinning svg{animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  select.scope-select{
+    padding:7px 11px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:#fff;color:var(--ink);
+  }
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:clamp(18px,3vh,26px);}
+  @media (max-width:720px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi-card{
+    border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;
+    box-shadow:0 2px 6px rgba(11,23,48,.05);
+  }
+  .kpi-label{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);}
+  .kpi-value{font-size:28px;font-weight:800;color:var(--navy);margin-top:4px;line-height:1.1;}
+  .kpi-value.danger{color:var(--danger);}
+  .kpi-value.ok{color:var(--ok);}
+  .kpi-sub{font-size:11.5px;color:var(--muted);margin-top:3px;}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(16px,2.6vh,22px);}
+  .panel h2{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+
+  .table-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .table-filters{display:flex;flex-wrap:wrap;gap:8px;flex:1;}
+  .table-filters input{max-width:220px;}
+  .table-filters select{
+    padding:9px 11px;border:1px solid var(--line);border-radius:4px;font-size:13px;background:#fff;color:var(--ink);
+  }
+  button.export-btn{
+    border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;
+    padding:9px 13px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;
+  }
+  button.export-btn:hover{background:#fafafa;}
+  button.btn-ghost{
+    border:none;background:none;color:var(--navy);font-weight:600;font-size:12px;cursor:pointer;padding:3px 6px;
+  }
+  button.btn-ghost:hover{text-decoration:underline;}
+  button.btn-ghost.danger{color:var(--danger);}
+
+  .badge{
+    display:inline-block;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;
+    padding:2px 7px;border-radius:10px;vertical-align:middle;
+  }
+  .badge.pass{background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+  .badge.fail{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .badge.role{background:#eef1fb;color:var(--navy);border:1px solid #dbe1f5;}
+  .badge.priority-urgent{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .badge.priority-normal{background:#f1f1ef;color:var(--muted);border:1px solid var(--line);}
+
+  .empty-state{font-size:12.5px;color:var(--muted);text-align:center;padding:18px 4px;}
+  .updated-note{font-size:11px;color:var(--muted);text-align:right;margin-top:8px;}
+
+  /* ===== Message list ===== */
+  .msg-list{display:flex;flex-direction:column;gap:10px;}
+  .msg-card{
+    border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff;
+    display:flex;flex-direction:column;gap:6px;position:relative;
+  }
+  .msg-card.unread{border-left:4px solid var(--crimson);background:#fffaf9;}
+  .msg-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .msg-title{font-size:14.5px;font-weight:700;color:var(--navy);}
+  .msg-title .from-tag{color:var(--crimson);font-weight:800;margin-right:6px;}
+  .msg-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+  .msg-body{font-size:13px;color:var(--ink);line-height:1.55;white-space:pre-wrap;}
+  .msg-body.clamped{
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .msg-actions{display:flex;gap:12px;margin-top:4px;}
+  .unread-flag{
+    display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--crimson);
+    text-transform:uppercase;letter-spacing:.3px;
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+  <div class="left" id="topbarCrestWrap">
+    <img class="kps-logo" src="../assets/images/img-3017f844b16322ef.png" alt="Kingsville Public School logo">
+    <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+  </div>
+  <img class="moe-mini" src="../assets/images/img-7b17a89db4cb307a.png" alt="Ministry of Education seal">
+</header>
+
+<div class="ticker-bar" id="tickerBar">
+  <div class="ticker-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Communication
+  </div>
+  <div class="ticker-viewport">
+    <div class="ticker-track" id="tickerTrack">
+      <span>Loading messages&hellip;</span>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+      <div class="seal-stage">
+        <div class="seal-glow"></div>
+        <div class="seal-ring"></div>
+        <img class="seal" src="../assets/images/img-3017f844b16322ef.png" alt="Kingsville Public High School seal">
+        <div class="seal-shine"></div>
+      </div>
+      <h1>Communication<br><span class="school-line">Kingsville Public High School</span></h1>
+      <div class="subtitle-rule"></div>
+
+      <div class="section-tabs" id="sectionTabs">
+        <button data-section="inbox" class="active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          Inbox
+          <span class="unread-dot" id="inboxUnreadDot" style="display:none;">0</span>
+        </button>
+        <button data-section="manage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M3 12h18M3 19h18"/></svg>
+          All Messages
+        </button>
+      </div>
+
+      <!-- ================= INBOX SECTION ================= -->
+      <section class="stat-section active" id="inboxSection">
+
+        <div class="toolbar">
+          <select class="scope-select" id="inboxFilter">
+            <option value="unread">Unread only</option>
+            <option value="all">All messages</option>
+          </select>
+          <button class="refresh-btn" id="inboxRefreshBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Received</div>
+            <div class="kpi-value" id="kpiTotal">—</div>
+            <div class="kpi-sub">&nbsp;</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Unread</div>
+            <div class="kpi-value danger" id="kpiUnread">—</div>
+            <div class="kpi-sub">&nbsp;</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Urgent</div>
+            <div class="kpi-value danger" id="kpiUrgent">—</div>
+            <div class="kpi-sub">&nbsp;</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Today</div>
+            <div class="kpi-value ok" id="kpiToday">—</div>
+            <div class="kpi-sub">&nbsp;</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Messages from the Principal</h2>
+          <div class="msg-list" id="inboxList">
+            <div class="empty-state">Loading…</div>
+          </div>
+          <div class="updated-note" id="inboxUpdatedNote">&nbsp;</div>
+        </div>
+      </section>
+
+      <!-- ================= MANAGE / ALL MESSAGES SECTION ================= -->
+      <section class="stat-section" id="manageSection">
+        <div class="panel">
+          <h2>All Received Messages</h2>
+          <div class="table-toolbar">
+            <div class="table-filters">
+              <input id="manageSearch" type="text" placeholder="Search by subject or message…" autocomplete="off">
+              <select id="managePriorityFilter">
+                <option value="">All priorities</option>
+                <option value="urgent">Urgent</option>
+                <option value="normal">Normal</option>
+              </select>
+            </div>
+            <button class="export-btn" id="manageExportBtn">Export CSV</button>
+          </div>
+          <div class="msg-list" id="manageList">
+            <div class="empty-state">Loading…</div>
+          </div>
+          <div class="updated-note" id="manageUpdatedNote">&nbsp;</div>
+        </div>
+      </section>
+
+      <div class="back-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <a href="dashboard.html">Back to Dashboard</a>
+      </div>
+
+      <div class="msg" id="msgBox"></div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-line-1">© <span id="year"></span> Kingsville Public High School</div>
+  <div class="footer-line-2">Developed by Mr. Fomba S. Varfee</div>
+</footer>
+
+</body>
+</html>

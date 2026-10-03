@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>EDU.LR — Special Reports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --crimson-deep:#6E0F1E; --crimson:#A81530; --crimson-bright:#E01B2E;
+  --gold:#D98A24; --gold-deep:#A8631A; --gold-light:#F3CD8E;
+  --navy:#0D1730; --navy-2:#182548; --navy-3:#22315C;
+  --cream:#FBF4E6; --paper:#FFFEFB; --ink:#1E1712; --muted:#7A7064; --line:#EBE0CA;
+  --success:#2E7D4F; --warn:#B9750D; --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{ margin:0; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+.sidebar{ position:sticky; top:0; height:100vh; overflow-y:auto;
+  background: radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%), linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18); padding:26px 16px 30px; display:flex; flex-direction:column; }
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand-mark{ width:46px; height:46px; flex:none; border-radius:14px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); box-shadow:0 0 0 2px rgba(217,138,36,.18); }
+.brand-mark svg{ width:24px; height:24px; color:#2A1806; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{ display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500; position:relative; border-left:3px solid transparent; transition:background .15s ease, color .15s ease, border-color .15s ease; }
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{ background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05)); color:#fff; border-left-color:var(--gold); }
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:16px; padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+.search-pill{ display:flex; align-items:center; gap:9px; background:var(--paper); border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px; transition:border-color .15s, box-shadow .15s; }
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+.icon-btn{ width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--paper); border:1px solid var(--line); position:relative; flex:none; transition:border-color .15s, transform .1s; }
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.content{ padding:22px 32px 60px; }
+
+.scope-banner{ display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px; background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08)); border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px; }
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-danger-ghost{ background:var(--paper); border-color:#F3C6C6; color:#B42318; }
+.btn-danger-ghost:hover{ background:#FBE6E6; }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+.btn[disabled]{ opacity:.4; cursor:not-allowed; pointer-events:none; }
+
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px; position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s; }
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; flex-wrap:wrap; gap:10px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head p{ margin:2px 0 0; font-size:12px; color:var(--muted); }
+.card-body{ padding:14px 20px 20px; }
+
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:11.8px; }
+table.data th{ text-align:left; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:9px 10px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:40ch; margin:0 auto; }
+
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+.toast.warn{ border-left-color:var(--crimson-bright); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+select.btn{ font-family:inherit; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7064' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>"); background-repeat:no-repeat; background-position:right 8px center; background-size:13px; padding-right:26px; }
+
+.field-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px 16px; }
+.field-grid.two{ grid-template-columns:repeat(2,1fr); }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field.span2{ grid-column:span 2; }
+.field.span3{ grid-column:1 / -1; }
+.field label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+.field .hint{ font-size:11px; color:var(--muted); font-weight:400; text-transform:none; letter-spacing:0; margin:-2px 0 2px; }
+.field input, .field select, .field textarea{ font-family:inherit; font-size:13.5px; color:var(--ink); background:var(--cream); border:1px solid var(--line); border-radius:10px; padding:10px 12px; width:100%; transition:border-color .15s, box-shadow .15s, background .15s; }
+.field select{ appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7064' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>"); background-repeat:no-repeat; background-position:right 12px center; background-size:13px; padding-right:32px; }
+.field textarea{ resize:vertical; min-height:110px; line-height:1.5; }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold); background:var(--paper); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+
+.section-card{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:16px 18px; }
+.section-card b{ font-size:13.5px; font-weight:700; }
+.section-card .hint{ font-size:11.5px; color:var(--muted); margin:3px 0 8px; line-height:1.4; }
+.section-card textarea{ font-family:inherit; font-size:13.3px; color:var(--ink); background:var(--cream); border:1px solid var(--line); border-radius:10px; padding:10px 12px; width:100%; min-height:110px; resize:vertical; line-height:1.5; }
+.section-card textarea:focus{ outline:none; border-color:var(--gold); background:var(--paper); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.sections-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+
+.visit-banner{ display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px; background:linear-gradient(90deg, rgba(217,138,36,.14), rgba(217,138,36,.03)); border:1px solid rgba(217,138,36,.35); border-left:4px solid var(--gold-deep); margin-bottom:18px; }
+.visit-banner svg{ width:18px; height:18px; color:var(--gold-deep); flex:none; margin-top:2px; }
+.visit-banner .vb-t{ font-size:12.6px; font-weight:700; color:var(--gold-deep); }
+.visit-banner .vb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+
+.priority-pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.priority-pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+.p-low{ background:#EFEAE0; color:var(--muted); }
+.p-medium{ background:#FBEED2; color:var(--gold-deep); }
+.p-high{ background:#FBE0E0; color:var(--crimson); }
+.p-critical{ background:var(--crimson-bright); color:#fff; }
+
+.actions-bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+.save-meta{ font-size:12px; color:var(--muted); margin-top:8px; }
+
+@media (max-width:1180px){ .stat-grid{ grid-template-columns:repeat(2,1fr); } .sections-grid{ grid-template-columns:1fr 1fr; } .field-grid{ grid-template-columns:1fr 1fr; } }
+@media (max-width:720px){ .sections-grid{ grid-template-columns:1fr; } .field-grid{ grid-template-columns:1fr; } .field.span2, .field.span3{ grid-column:1; } }
+@media print{
+  .sidebar, .topbar, .btn, .toolbar, .toast-wrap, .hamburger, .actions-bar{ display:none !important; }
+  .app{ display:block; } .content{ padding:0; }
+  .card, .section-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+  #listView{ display:none !important; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+</style>
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M4 21V9.5L12 4l8 5.5V21"/><path d="M9 21v-6h6v6"/><path d="M8 9.5h.01M12 9.5h.01M16 9.5h.01M8 13h.01M16 13h.01"/></svg></div>
+      <div class="brand-text"><div class="k1">Careysburg District</div><div class="k2">DEO Portal</div></div>
+    </div>
+    <div class="role-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></svg><span>DEO &middot; DISTRICT SUPERVISION &amp; OVERSIGHT</span></div>
+
+    <div class="nav-group-label">Overview</div>
+    <div class="nav">
+      <a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Command Center</a>
+    </div>
+
+    <div class="nav-group-label">District Supervision</div>
+    <div class="nav">
+      <a class="nav-item" href="schools.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>All Schools</a>
+      <a class="nav-item" href="school-profile.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>School Profiles</a>
+      <a class="nav-item" href="school-visits.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Supervision Plan</a>
+      <a class="nav-item" href="inspection.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Inspections</a>
+      <a class="nav-item" href="inspection-report.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>Inspection Reports</a>
+    </div>
+
+    <div class="nav-group-label">People Oversight</div>
+    <div class="nav">
+      <a class="nav-item" href="principals.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/></svg>Principals &amp; Administrators</a>
+      <a class="nav-item" href="teachers.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>Teacher Register</a>
+      <a class="nav-item" href="students.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>Learner Register</a>
+      <a class="nav-item" href="student-attendance.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 14l2 2 4-4"/></svg>Learner Attendance</a>
+    </div>
+
+    <div class="nav-group-label">Academics</div>
+    <div class="nav">
+      <a class="nav-item" href="academic-monitoring.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V5a2 2 0 00-2-2H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M9 8h7M9 12h7"/></svg>Teaching &amp; Learning</a>
+      <a class="nav-item" href="curriculum.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6.5C10 4.8 6.8 4 4 4v13c2.8 0 6 .8 8 2.5 2-1.7 5.2-2.5 8-2.5V4c-2.8 0-6 .8-8 2.5z"/></svg>Curriculum</a>
+      <a class="nav-item" href="assessment-results.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Assessment &amp; Examinations</a>
+      <a class="nav-item" href="school-performance.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>School Performance</a>
+    </div>
+
+    <div class="nav-group-label">Governance</div>
+    <div class="nav">
+      <a class="nav-item" href="lsmc.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>LSMC</a>
+      <a class="nav-item" href="policies-directives.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>District Compliance</a>
+      <a class="nav-item" href="complaints-incidents.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Complaints &amp; Incidents</a>
+    </div>
+
+    <div class="nav-group-label">Statistics &amp; Reports</div>
+    <div class="nav">
+      <a class="nav-item" href="statistics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>District Statistics</a>
+      <a class="nav-item" href="reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Reports Center</a>
+      <a class="nav-item" href="monthly-report.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Monthly Report</a>
+      <a class="nav-item" href="quarterly-report.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Quarterly Report</a>
+      <a class="nav-item" href="annual-report.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Annual Report</a>
+      <a class="nav-item active" href="special-report.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Special Report</a>
+    </div>
+
+    <div class="nav-group-label">Risk &amp; Accountability</div>
+    <div class="nav">
+      <a class="nav-item" href="risk-register.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>Risk &amp; Safeguarding</a>
+      <a class="nav-item" href="audit-log.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>Audit &amp; Accountability</a>
+    </div>
+
+    <div class="cannot-box">
+      <div class="title">✕ Restricted</div>
+      <ul style="margin:0; padding:0; list-style:none;">
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">Special Reports are the DEO's own account — not shared with other districts</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">"Finalize Report" is the only action that flags a report as finalized</li>
+      </ul>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sys-health">
+        <div class="pulse-dot warn" id="healthDot"></div>
+        <div class="sys-health-text"><b id="healthLabel">Not connected</b><span id="healthSub">Connect your database to load live records</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <div class="page-title-wrap">
+        <div class="page-title">Special Reports</div>
+      </div>
+      <div class="search-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="globalSearch" type="text" placeholder="Search your reports…"></div>
+      <button class="icon-btn" onclick="window.print()" title="Print this view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg></button>
+      <button class="icon-btn" onclick="location.href='notifications.html'" title="Alerts &amp; notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg></button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup" id="userChip"><div class="av-init" id="chipAvatar">—</div><div><div class="pn" id="chipName">Not signed in</div><div class="pr" id="chipRole">Awaiting DEO account</div></div></div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></button>
+    </header>
+
+    <div class="content">
+      <div class="scope-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+        <div>
+          <div class="sb-t">Scope of Access</div>
+          <div class="sb-s">Special Reports are ad hoc — investigations, incidents, or anything outside the regular monthly / quarterly / annual cycle. Unlike the Annual Report, you can keep as many as you need. Each report is saved to your own account the moment you save a draft, and only becomes official once you press <b>Finalize Report</b>.</div>
+        </div>
+      </div>
+
+      <!-- ============================= LIST VIEW ============================= -->
+      <div id="listView">
+        <div class="section-head">
+          <div>
+            <h2>Special Reports</h2>
+            <p>Create, save and finalize ad hoc reports for district needs — investigations, incidents, or any update outside the regular reporting cycle.</p>
+          </div>
+          <button class="btn btn-primary" id="newReportBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            New Special Report
+          </button>
+        </div>
+
+        <div class="stat-grid" id="statGrid"></div>
+
+        <div class="card">
+          <div class="card-head">
+            <div><h3>Your special reports</h3><p>Most recently created first.</p></div>
+          </div>
+          <div class="card-body">
+            <div class="toolbar">
+              <div class="search-pill" style="width:260px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="listFilter" type="text" placeholder="Filter your special reports…"></div>
+              <select class="btn btn-ghost" id="statusFilter">
+                <option value="">All statuses</option><option value="draft">Drafts</option><option value="submitted">Submitted</option>
+              </select>
+              <button class="btn btn-ghost" id="exportListBtn" style="margin-left:auto;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M6 9l6 6 6-6"/><path d="M4 21h16"/></svg>Export list (CSV)</button>
+            </div>
+            <div class="table-wrap">
+              <table class="data" id="reportsTable">
+                <thead><tr><th>Subject</th><th>Type</th><th>Priority</th><th>Status</th><th>Created</th><th>Last Saved</th><th>Submitted</th><th>Actions</th></tr></thead>
+                <tbody id="reportsTableBody"></tbody>
+              </table>
+            </div>
+            <div class="empty-state" id="reportsEmpty" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+              <h4>No special reports yet</h4>
+              <p>Click "New Special Report" to start one, or generate one straight from a school visit on the Supervision Plan page.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================= EDITOR VIEW ============================= -->
+      <div id="editorView" style="display:none;">
+        <div class="actions-bar">
+          <button class="btn btn-ghost" id="backBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back to list</button>
+          <button class="btn btn-primary" id="saveDraftBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Save draft</button>
+          <button class="btn btn-gold" id="submitBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Finalize Report</button>
+          <button class="btn btn-ghost" data-print onclick="window.print()">Print</button>
+          <button class="btn btn-danger-ghost" id="deleteBtn" style="display:none;">Delete</button>
+          <span id="statusPill"></span>
+        </div>
+        <div class="save-meta" id="saveMeta"></div>
+
+        <div id="visitBannerWrap"></div>
+
+        <div class="card" style="margin:16px 0;">
+          <div class="card-body">
+            <div class="field-grid">
+              <div class="field span3">
+                <label>Subject / report title</label>
+                <div class="hint">Short title so this report is identifiable in your list — e.g. "Flooding at Central Elementary, June 2026".</div>
+                <input type="text" id="subjectInput" placeholder="Subject / report title">
+              </div>
+              <div class="field">
+                <label>Report type</label>
+                <select id="reportTypeInput">
+                  <option>Investigation</option><option>Incident</option><option>Update</option><option>Follow-up</option><option>Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Priority</label>
+                <select id="priorityInput">
+                  <option>Low</option><option selected>Medium</option><option>High</option><option>Critical</option>
+                </select>
+              </div>
+              <div class="field"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sections-grid" id="sectionsGrid">
+          <div class="section-card">
+            <b>Reason for report / district request</b>
+            <div class="hint">Why this report exists — what triggered it.</div>
+            <textarea data-key="reason" placeholder="Reason for report / district request"></textarea>
+          </div>
+          <div class="section-card">
+            <b>Facts and evidence collected</b>
+            <div class="hint">Enter verified district evidence and supporting figures.</div>
+            <textarea data-key="facts" placeholder="Facts and evidence collected"></textarea>
+          </div>
+          <div class="section-card">
+            <b>Schools and persons affected</b>
+            <div class="hint">Name the schools, staff or learners involved.</div>
+            <textarea data-key="affected" placeholder="Schools and persons affected"></textarea>
+          </div>
+          <div class="section-card">
+            <b>Findings and verification</b>
+            <div class="hint">What was confirmed on the ground.</div>
+            <textarea data-key="findings" placeholder="Findings and verification"></textarea>
+          </div>
+          <div class="section-card">
+            <b>Immediate actions taken</b>
+            <div class="hint">What you or the school already did in response.</div>
+            <textarea data-key="actionsTaken" placeholder="Immediate actions taken"></textarea>
+          </div>
+          <div class="section-card">
+            <b>Recommendations and required decision</b>
+            <div class="hint">What you are asking the district office to decide or approve.</div>
+            <textarea data-key="recommendations" placeholder="Recommendations and required decision"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-ribbon">EDU.LR District Education Management System • <b>DEO workspace</b> • </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATA LAYER — DEO / Special Reports (premium rebuild)
+   Wired to EDU.LR's live Supabase project via the existing KPS.kv bridge
+   (public.kv_store) — same bridge annual-report.html and (previously)
+   this page already used for real persistence. No new table/migration.
+
+   Special reports are "as required" (reports.html's own description),
+   not one-per-period like the Annual Report, so this page keeps ONE
+   kv_store row PER report, each with its own generated id:
+
+     key:   deo_special_report:<id>
+     value: JSON.stringify({
+              subject, sections: { reason, facts, affected, findings,
+                                    actionsTaken, recommendations },
+              status: 'draft' | 'submitted',
+              reportType: 'Investigation'|'Incident'|'Update'|'Follow-up'|'Other',
+              priority:   'Low'|'Medium'|'High'|'Critical',
+              relatedVisit: { id, schoolName, visitDate, visitType, focus } | null,
+              createdAt, savedAt, submittedAt
+            })
+     shared: false — each report belongs to the signed-in DEO's own account.
+
+   reportType / priority / relatedVisit are new fields added in this
+   session; older rows saved before they existed simply render with the
+   defaults below, so nothing breaks.
+
+   VISIT LINKING (new this session)
+   ---------------------------------
+   deo/school-visits.html can send a DEO here two ways via the query
+   string:
+     ?open=<reportId>     — jump straight into an existing report
+     ?fromVisit=<visitId> — pre-fill a NEW report from that visit's kv row
+                            (deo_school_visit:<visitId>) and remember it in
+                            `pendingRelatedVisit` until the first save.
+   On that first successful save, this page writes the new report's id
+   back onto the source visit's `specialReportId` field so
+   school-visits.html can show "View Special Report" from then on. If a
+   report is later deleted, the visit's link is not automatically cleared
+   (no reverse index) — generating again from that visit just makes a new
+   report, same as before this feature existed.
+
+   "Finalize Report" only flips status/submittedAt on this same row — it
+   does not create a Supabase `notifications` row or route to any external
+   account, matching annual-report.html's existing reasoning (no external delivery role
+   role in js/supabase-api.js's ROLE_FOLDER_MAP yet).
+   ========================================================================= */
+const KEY_PREFIX = 'deo_special_report:';
+const VISIT_KEY_PREFIX = 'deo_school_visit:';
+const SECTION_KEYS = ['reason', 'facts', 'affected', 'findings', 'actionsTaken', 'recommendations'];
+
+let profile = null;
+let reports = [];
+let currentId = null;
+let pendingRelatedVisit = null; // set when opened via ?fromVisit=, cleared once saved
+
+function showToast(msg, kind){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind === 'warn' ? ' warn' : '');
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>${escapeHtml(msg)}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),250); }, 3600);
+}
+function escapeHtml(str){
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+function fmtDateTime(v){
+  if (!v) return null;
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+function fmtDate(v){
+  if (!v) return null;
+  const d = new Date(v + 'T00:00:00');
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+function newId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function initials(name){ return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''); }
+
+function renderUserChip(){
+  const chipAvatar = document.getElementById('chipAvatar');
+  const chipName = document.getElementById('chipName');
+  const chipRole = document.getElementById('chipRole');
+  if (profile && profile.full_name){
+    chipAvatar.textContent = initials(profile.full_name);
+    chipName.textContent = profile.full_name;
+    chipRole.textContent = 'District Education Officer';
+  } else {
+    chipAvatar.textContent = '—'; chipName.textContent = 'Not signed in'; chipRole.textContent = 'Awaiting DEO account';
+  }
+}
+function renderConnectionStatus(){
+  const dot = document.getElementById('healthDot');
+  const label = document.getElementById('healthLabel');
+  const sub = document.getElementById('healthSub');
+  dot.classList.remove('warn');
+  label.textContent = 'Live data connected';
+  sub.textContent = (window.KPS && KPS.SUPABASE_URL) || '';
+}
+
+/* ============================= LIST VIEW ============================= */
+function showListView(){
+  document.getElementById('editorView').style.display = 'none';
+  document.getElementById('listView').style.display = '';
+  renderStats();
+  renderReportsTable();
+}
+function showEditorView(){
+  document.getElementById('listView').style.display = 'none';
+  document.getElementById('editorView').style.display = '';
+}
+
+function statusBadge(status){
+  return status === 'submitted' ? '<span class="pill green">Submitted</span>' : '<span class="pill gold">Draft</span>';
+}
+function priorityPill(priority){
+  const p = priority || 'Medium';
+  const cls = p === 'Critical' ? 'p-critical' : p === 'High' ? 'p-high' : p === 'Low' ? 'p-low' : 'p-medium';
+  return `<span class="priority-pill ${cls}">${escapeHtml(p)}</span>`;
+}
+function typeChip(type){
+  return `<span class="pill navy">${escapeHtml(type || 'Other')}</span>`;
+}
+
+function renderStats(){
+  const total = reports.length;
+  const drafts = reports.filter(r => r.status !== 'submitted').length;
+  const submitted = reports.filter(r => r.status === 'submitted').length;
+  const linked = reports.filter(r => r.relatedVisit).length;
+  const stats = [
+    { label: 'Total Special Reports', value: total, ic: 'doc', color: 'navy' },
+    { label: 'Drafts', value: drafts, ic: 'edit', color: 'gold' },
+    { label: 'Finalized', value: submitted, ic: 'check' },
+    { label: 'Linked to a Visit', value: linked, ic: 'flag' },
+  ];
+  const icons = {
+    doc: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+    edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>',
+    check: '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>',
+    flag: '<path d="M4 22V4M4 4h13l-2.5 4L17 12H4"/>',
+  };
+  document.getElementById('statGrid').innerHTML = stats.map(s => `
+    <div class="stat-card">
+      <div class="stat-top"><div class="stat-ic ${s.color||''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${icons[s.ic]}</svg></div><span class="stat-trend flat">live</span></div>
+      <div class="stat-num mono">${s.value}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`).join('');
+}
+
+function renderReportsTable(){
+  const filterText = (document.getElementById('listFilter').value || '').toLowerCase().trim();
+  const statusFilter = document.getElementById('statusFilter').value;
+  let rows = reports.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  if (statusFilter === 'draft') rows = rows.filter(r => r.status !== 'submitted');
+  else if (statusFilter === 'submitted') rows = rows.filter(r => r.status === 'submitted');
+  if (filterText) rows = rows.filter(r => [r.subject, r.reportType, r.priority].some(f => (f||'').toLowerCase().includes(filterText)));
+
+  const tbody = document.getElementById('reportsTableBody');
+  const empty = document.getElementById('reportsEmpty');
+  if (!rows.length){ tbody.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td><b>${escapeHtml(r.subject || 'Untitled special report')}</b>${r.relatedVisit ? `<div style="font-size:11px;color:var(--muted);margin-top:2px;">↳ from visit to ${escapeHtml(r.relatedVisit.schoolName||'')}</div>` : ''}</td>
+      <td>${typeChip(r.reportType)}</td>
+      <td>${priorityPill(r.priority)}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td class="mono">${escapeHtml(fmtDateTime(r.createdAt) || '—')}</td>
+      <td class="mono">${escapeHtml(fmtDateTime(r.savedAt) || '—')}</td>
+      <td class="mono">${escapeHtml(fmtDateTime(r.submittedAt) || '—')}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" data-open="${escapeHtml(r.id)}">Open</button>
+        <button class="btn btn-danger-ghost btn-sm" data-delete="${escapeHtml(r.id)}">Delete</button>
+      </td>
+    </tr>`).join('');
+
+  tbody.querySelectorAll('[data-open]').forEach(btn => btn.addEventListener('click', () => openReport(btn.dataset.open)));
+  tbody.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', () => deleteReport(btn.dataset.delete)));
+}
+
+async function loadReportsList(){
+  try {
+    const listRes = await KPS.kv.list(KEY_PREFIX, false);
+    const keys = (listRes && listRes.keys) || [];
+    const rows = await Promise.all(keys.map(async key => {
+      try {
+        const res = await KPS.kv.get(key, false);
+        const parsed = JSON.parse(res.value);
+        return {
+          id: key,
+          subject: parsed.subject || '',
+          sections: parsed.sections || {},
+          status: parsed.status || 'draft',
+          reportType: parsed.reportType || 'Other',
+          priority: parsed.priority || 'Medium',
+          relatedVisit: parsed.relatedVisit || null,
+          createdAt: parsed.createdAt || null,
+          savedAt: parsed.savedAt || null,
+          submittedAt: parsed.submittedAt || null
+        };
+      } catch (err) {
+        console.error('[DEO Special Reports] failed to read', key, err);
+        return null;
+      }
+    }));
+    reports = rows.filter(Boolean);
+  } catch (err) {
+    console.error('[DEO Special Reports] failed to load report list', err);
+    showToast('Could not load your saved special reports — check your Supabase connection', 'warn');
+    reports = [];
+  }
+}
+
+/* ============================= EDITOR VIEW ============================= */
+function visitBannerHtml(rv){
+  if (!rv) return '';
+  return `
+    <div class="visit-banner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+      <div>
+        <div class="vb-t">Generated from a school visit</div>
+        <div class="vb-s"><b>${escapeHtml(rv.schoolName || 'Unknown school')}</b> · ${escapeHtml(rv.visitType || 'Visit')} · ${escapeHtml(fmtDate(rv.visitDate) || rv.visitDate || '')}${rv.focus ? ' · Focus: ' + escapeHtml(rv.focus) : ''} — <a href="school-visits.html" style="color:var(--gold-deep);font-weight:700;">view the visit log</a></div>
+      </div>
+    </div>`;
+}
+function fillEditor(state){
+  document.getElementById('subjectInput').value = state.subject || '';
+  document.getElementById('reportTypeInput').value = state.reportType || 'Other';
+  document.getElementById('priorityInput').value = state.priority || 'Medium';
+  document.querySelectorAll('#sectionsGrid textarea[data-key]').forEach(ta => {
+    ta.value = (state.sections && state.sections[ta.dataset.key]) || '';
+  });
+  document.getElementById('visitBannerWrap').innerHTML = visitBannerHtml(state.relatedVisit);
+  renderEditorStatus(state);
+}
+function collectEditorState(){
+  const sections = {};
+  document.querySelectorAll('#sectionsGrid textarea[data-key]').forEach(ta => { sections[ta.dataset.key] = ta.value; });
+  return {
+    subject: document.getElementById('subjectInput').value.trim(),
+    reportType: document.getElementById('reportTypeInput').value,
+    priority: document.getElementById('priorityInput').value,
+    sections
+  };
+}
+function renderEditorStatus(state){
+  const pill = document.getElementById('statusPill');
+  pill.innerHTML = state.status === 'submitted'
+    ? `<span class="pill green">Submitted ${escapeHtml(fmtDateTime(state.submittedAt) || '')}</span>`
+    : `<span class="pill gold">Draft — not yet submitted</span>`;
+  const meta = document.getElementById('saveMeta');
+  meta.textContent = state.savedAt ? `Last saved ${fmtDateTime(state.savedAt)}` : 'Not saved yet.';
+  document.getElementById('deleteBtn').style.display = currentId ? '' : 'none';
+}
+
+function openReport(id){
+  currentId = id || null;
+  pendingRelatedVisit = null;
+  if (!id){
+    fillEditor({ subject: '', sections: {}, status: 'draft', reportType: 'Other', priority: 'Medium', relatedVisit: null, savedAt: null, submittedAt: null });
+    showEditorView();
+    return;
+  }
+  const found = reports.find(r => r.id === id);
+  if (!found){ showToast('Could not find that report.', 'warn'); return; }
+  fillEditor(found);
+  showEditorView();
+}
+
+async function openReportFromVisit(visitId){
+  // If a report is already linked to this visit, just open it.
+  const already = reports.find(r => r.relatedVisit && r.relatedVisit.id === visitId);
+  if (already){ openReport(already.id); return; }
+
+  try {
+    const res = await KPS.kv.get(VISIT_KEY_PREFIX + visitId, false);
+    const visit = JSON.parse(res.value);
+    const relatedVisit = {
+      id: visitId,
+      schoolName: visit.schoolName || '',
+      visitDate: visit.visitDate || '',
+      visitType: visit.visitType || '',
+      focus: visit.focus || ''
+    };
+    currentId = null;
+    pendingRelatedVisit = relatedVisit;
+    const prefill = {
+      subject: `${relatedVisit.visitType || 'Special visit'} — ${relatedVisit.schoolName || 'School'}${relatedVisit.visitDate ? ' — ' + (fmtDate(relatedVisit.visitDate) || relatedVisit.visitDate) : ''}`,
+      reportType: relatedVisit.visitType === 'Special visit' ? 'Investigation' : 'Update',
+      priority: relatedVisit.visitType === 'Special visit' ? 'High' : 'Medium',
+      relatedVisit,
+      sections: {
+        reason: `Generated from a ${relatedVisit.visitType || 'supervision'} visit to ${relatedVisit.schoolName || 'the school'} on ${fmtDate(relatedVisit.visitDate) || relatedVisit.visitDate || ''}.${relatedVisit.focus ? ' Focus of the visit: ' + relatedVisit.focus + '.' : ''}`,
+        facts: visit.findings || '',
+        affected: relatedVisit.schoolName || '',
+        findings: '',
+        actionsTaken: '',
+        recommendations: ''
+      },
+      status: 'draft', savedAt: null, submittedAt: null
+    };
+    fillEditor(prefill);
+    showEditorView();
+    showToast('New report pre-filled from your visit — review and save.', 'good');
+  } catch (err) {
+    console.error('[DEO Special Reports] could not load visit for prefill', err);
+    showToast('Could not load that visit — starting a blank report instead.', 'warn');
+    openReport(null);
+  }
+}
+
+async function persist(nextStatus){
+  const { subject, reportType, priority, sections } = collectEditorState();
+  if (!subject){ showToast('Give this report a subject / title before saving.', 'warn'); return; }
+  const now = new Date().toISOString();
+  const existing = currentId ? reports.find(r => r.id === currentId) : null;
+  const id = currentId || newId();
+  const relatedVisit = (existing && existing.relatedVisit) || pendingRelatedVisit || null;
+  const state = {
+    subject, reportType, priority, sections,
+    status: nextStatus,
+    relatedVisit,
+    createdAt: (existing && existing.createdAt) || now,
+    savedAt: now,
+    submittedAt: nextStatus === 'submitted' ? now : (existing ? existing.submittedAt : null)
+  };
+  try {
+    await KPS.kv.set(id, JSON.stringify(state), false);
+    const wasNew = !currentId;
+    currentId = id;
+    renderEditorStatus(state);
+    showToast(nextStatus === 'submitted' ? 'Special report finalized.' : 'Draft saved.', 'good');
+    await loadReportsList();
+
+    // First save of a report generated from a visit: link back to the visit.
+    if (wasNew && pendingRelatedVisit){
+      linkVisitToReport(pendingRelatedVisit.id, id).catch(err => console.warn('[DEO Special Reports] visit link-back skipped', err));
+      pendingRelatedVisit = null;
+    }
+  } catch (err) {
+    console.error('[DEO Special Reports] failed to save report', err);
+    showToast('Could not save — check your Supabase connection and try again', 'warn');
+  }
+}
+
+async function linkVisitToReport(visitId, reportId){
+  const res = await KPS.kv.get(VISIT_KEY_PREFIX + visitId, false);
+  const visit = JSON.parse(res.value);
+  visit.specialReportId = reportId;
+  visit.updatedAt = new Date().toISOString();
+  await KPS.kv.set(VISIT_KEY_PREFIX + visitId, JSON.stringify(visit), false);
+}
+
+async function deleteReport(id){
+  if (!confirm('Delete this special report? This cannot be undone.')) return;
+  try {
+    await KPS.kv.delete(id, false);
+    showToast('Special report deleted.', 'good');
+    if (currentId === id){ currentId = null; await loadReportsList(); showListView(); }
+    else { await loadReportsList(); renderStats(); renderReportsTable(); }
+  } catch (err) {
+    console.error('[DEO Special Reports] failed to delete report', err);
+    showToast('Could not delete — check your Supabase connection and try again', 'warn');
+  }
+}
+
+function exportListCsv(){
+  if (!reports.length){ showToast('Nothing to export yet.', 'warn'); return; }
+  const header = ['Subject','Type','Priority','Status','Created','Last Saved','Submitted','Linked Visit School'];
+  const rows = reports.map(r => [r.subject||'', r.reportType||'', r.priority||'', r.status||'', r.createdAt||'', r.savedAt||'', r.submittedAt||'', r.relatedVisit ? r.relatedVisit.schoolName||'' : '']);
+  const csv = [header, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'special-reports.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* ============================= EVENTS ============================= */
+document.getElementById('newReportBtn').addEventListener('click', () => openReport(null));
+document.getElementById('backBtn').addEventListener('click', () => { currentId = null; pendingRelatedVisit = null; showListView(); history.replaceState(null, '', location.pathname); });
+document.getElementById('saveDraftBtn').addEventListener('click', () => persist('draft'));
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const subject = document.getElementById('subjectInput').value.trim() || 'this special report';
+  if (!confirm(`Finalize "${subject}"? You can still edit and re-submit afterward.`)) return;
+  persist('submitted');
+});
+document.getElementById('deleteBtn').addEventListener('click', () => { if (currentId) deleteReport(currentId); });
+document.getElementById('listFilter').addEventListener('input', renderReportsTable);
+document.getElementById('statusFilter').addEventListener('change', renderReportsTable);
+document.getElementById('exportListBtn').addEventListener('click', exportListCsv);
+
+(async function init(){
+  const auth = await KPS.requireRole(['deo', 'super_admin']);
+  if (!auth.user) return;
+  profile = auth.profile;
+  renderUserChip();
+  renderConnectionStatus();
+  await loadReportsList();
+
+  const params = new URLSearchParams(location.search);
+  const openParam = params.get('open');
+  const fromVisitParam = params.get('fromVisit');
+  if (openParam && reports.find(r => r.id === openParam)){
+    openReport(openParam);
+  } else if (fromVisitParam){
+    await openReportFromVisit(fromVisitParam);
+  } else {
+    showListView();
+  }
+})();
+</script>
+</body>
+</html>

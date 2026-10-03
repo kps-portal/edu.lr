@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>EDU.LR — Complaints &amp; Incidents Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches DEO Dashboard / Teacher Register / Principal / Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand-mark{ width:46px; height:46px; flex:none; border-radius:14px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--gold), var(--gold-deep)); box-shadow:0 0 0 2px rgba(217,138,36,.18); }
+.brand-mark svg{ width:24px; height:24px; color:#2A1806; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.content{ padding:22px 32px 60px; }
+
+/* ============================= SCOPE BANNER ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+.btn[disabled]{ opacity:.4; cursor:not-allowed; pointer-events:none; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:26px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:11.8px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* feed / lists */
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:11.5px; }
+table.data th{ text-align:left; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; padding:7px 10px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data th.sortable{ cursor:pointer; user-select:none; }
+table.data th.sortable:hover{ color:var(--ink); }
+table.data th.sorted{ color:var(--crimson); }
+.rank-chip{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:7px; background:var(--cream); border:1px solid var(--line); font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; color:var(--muted); }
+table.data td{ padding:7px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Restricted / allowed notes */
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+select.btn{ font-family:inherit; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7064' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>"); background-repeat:no-repeat; background-position:right 8px center; background-size:13px; padding-right:26px; }
+
+/* ---- Compose / register form ---- */
+.field-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.field{ display:flex; flex-direction:column; gap:6px; position:relative; }
+.field label{ font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+.field input, .field select, .field textarea{
+  font-family:inherit; font-size:13.3px; padding:9px 12px; border-radius:9px; border:1px solid var(--line);
+  background:var(--paper); color:var(--ink); width:100%;
+}
+.field textarea{ resize:vertical; min-height:70px; }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.field-span2{ grid-column:span 2; }
+.field-span3{ grid-column:span 3; }
+.type-toggle{ display:flex; gap:8px; }
+.type-toggle button{ flex:1; padding:9px 12px; border-radius:9px; border:1px solid var(--line); background:var(--paper); font-size:12.6px; font-weight:700; color:var(--muted); transition:all .15s; }
+.type-toggle button.active{ border-color:var(--crimson); color:#fff; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); box-shadow:0 8px 18px -10px rgba(200,20,40,.5); }
+.student-suggest{ position:absolute; top:100%; left:0; right:0; z-index:40; background:var(--paper); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow); max-height:220px; overflow-y:auto; display:none; margin-top:4px; }
+.student-suggest.open{ display:block; }
+.student-suggest .ss-item{ padding:9px 12px; font-size:13px; cursor:pointer; display:flex; justify-content:space-between; gap:10px; }
+.student-suggest .ss-item:hover, .student-suggest .ss-item.active{ background:var(--cream); }
+.student-suggest .ss-name{ font-weight:700; color:var(--navy); }
+.student-suggest .ss-meta{ color:var(--muted); font-size:11.5px; white-space:nowrap; }
+.student-suggest .ss-empty{ padding:9px 12px; font-size:12.5px; color:var(--muted); }
+.ss-linked{ font-size:11px; color:var(--success); font-weight:700; margin-top:2px; }
+select.field-select{ appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7064' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>"); background-repeat:no-repeat; background-position:right 10px center; background-size:13px; padding-right:28px; }
+.row-status-select{ font-family:inherit; font-size:11px; font-weight:700; padding:5px 8px; border-radius:8px; border:1px solid var(--line); background:var(--paper); }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(3,1fr); }
+  .bento{ grid-template-columns:1fr; }
+}
+@media (max-width:640px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .toolbar, .toast-wrap, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+</style>
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+
+<div class="app">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M4 21V9.5L12 4l8 5.5V21"/><path d="M9 21v-6h6v6"/><path d="M8 9.5h.01M12 9.5h.01M16 9.5h.01M8 13h.01M16 13h.01"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="k1">Careysburg District</div>
+        <div class="k2">DEO Portal</div>
+      </div>
+    </div>
+
+    <div class="role-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></svg>
+      <span>DEO &middot; DISTRICT SUPERVISION &amp; OVERSIGHT</span>
+    </div>
+
+    <div class="nav-group-label">Overview</div>
+    <div class="nav">
+      <a class="nav-item" href="dashboard.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Command Center
+      </a>
+    </div>
+
+    <div class="nav-group-label">District Supervision</div>
+    <div class="nav">
+      <a class="nav-item" href="schools.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+        All Schools
+      </a>
+      <a class="nav-item" href="school-profile.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        School Profiles
+      </a>
+      <a class="nav-item" href="school-visits.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Supervision Plan
+      </a>
+      <a class="nav-item" href="inspection.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Inspections
+      </a>
+      <a class="nav-item" href="inspection-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+        Inspection Reports
+      </a>
+    </div>
+
+    <div class="nav-group-label">People Oversight</div>
+    <div class="nav">
+      <a class="nav-item" href="principals.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/></svg>
+        Principals &amp; Administrators
+      </a>
+      <a class="nav-item" href="teachers.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>
+        Teacher Register
+      </a>
+      <a class="nav-item" href="students.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+        Learner Register
+      </a>
+      <a class="nav-item" href="student-attendance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 14l2 2 4-4"/></svg>
+        Learner Attendance
+      </a>
+    </div>
+
+    <div class="nav-group-label">Academics</div>
+    <div class="nav">
+      <a class="nav-item" href="academic-monitoring.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V5a2 2 0 00-2-2H6.5A2.5 2.5 0 004 5.5v14z"/><path d="M9 8h7M9 12h7"/></svg>
+        Teaching &amp; Learning
+      </a>
+      <a class="nav-item" href="curriculum.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6.5C10 4.8 6.8 4 4 4v13c2.8 0 6 .8 8 2.5 2-1.7 5.2-2.5 8-2.5V4c-2.8 0-6 .8-8 2.5z"/></svg>
+        Curriculum
+      </a>
+      <a class="nav-item" href="assessment-results.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        Assessment &amp; Examinations
+      </a>
+      <a class="nav-item" href="school-performance.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        School Performance
+      </a>
+    </div>
+
+    <div class="nav-group-label">Governance</div>
+    <div class="nav">
+      <a class="nav-item" href="lsmc.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/></svg>
+        LSMC
+      </a>
+      <a class="nav-item" href="policies-directives.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>District Compliance</a>
+      <a class="nav-item active" href="complaints-incidents.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        Complaints &amp; Incidents
+      </a>
+    </div>
+
+    <div class="nav-group-label">Statistics &amp; Reports</div>
+    <div class="nav">
+      <a class="nav-item" href="statistics.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        District Statistics
+      </a>
+      <a class="nav-item" href="reports.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        Reports Center
+      </a>
+      <a class="nav-item" href="monthly-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Monthly Report
+      </a>
+      <a class="nav-item" href="quarterly-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Quarterly Report
+      </a>
+      <a class="nav-item" href="annual-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Annual Report
+      </a>
+      <a class="nav-item" href="special-report.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Special Report
+      </a>
+    </div>
+
+    <div class="nav-group-label">Risk &amp; Accountability</div>
+    <div class="nav">
+      <a class="nav-item" href="risk-register.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        Risk &amp; Safeguarding
+      </a>
+      <a class="nav-item" href="audit-log.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+        Audit &amp; Accountability
+      </a>
+    </div>
+
+    <div class="cannot-box">
+      <div class="title">✕ Restricted</div>
+      <ul style="margin:0; padding:0; list-style:none;">
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">Cannot delete a complaint or incident once filed — only its status/response can be updated</li>
+        <li style="font-size:11.5px; color:rgba(255,255,255,.6); padding:2px 0;">A record must be linked to a real enrolled student — free-text names without a match cannot be saved</li>
+      </ul>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="sys-health">
+        <div class="pulse-dot warn" id="healthDot"></div>
+        <div class="sys-health-text">
+          <b id="healthLabel">Not connected</b>
+          <span id="healthSub">Connect your database to load live records</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="page-title-wrap">
+        <div class="page-title">Complaints &amp; Incidents Register</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search reference, student, category…">
+      </div>
+      <button class="icon-btn" onclick="window.print()" title="Print this view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>
+      </button>
+      <button class="icon-btn" onclick="location.href='notifications.html'" title="Alerts &amp; notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>
+      </button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">—</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting DEO account</div>
+        </div>
+      </div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <div class="scope-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+        <div>
+          <div class="sb-t">Scope of Access &amp; Duty of Care</div>
+          <div class="sb-s">This register reads and writes live rows in <code>complaints</code> (parent/community complaints) and <code>discipline_records</code> (serious incidents) — the two tables set aside for this workflow but not yet written to anywhere else in the codebase. Every complaint or incident must be linked to a real enrolled student from the <code>students</code> table. Record facts accurately, preserve evidence separately, limit access to authorized officers, and escalate urgent safeguarding matters through the district’s approved safeguarding protocol.</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>Complaints &amp; Incidents Register</h2>
+          <p>Record, track and refer school complaints and serious incidents district-wide. Every row below is a live record in Supabase — nothing here is invented or demo data.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head"><h3>Register a Complaint or Serious Incident</h3></div>
+        <div class="card-body">
+          <div class="field" style="margin-bottom:14px;">
+            <label>Record type</label>
+            <div class="type-toggle">
+              <button type="button" id="typeComplaintBtn" class="active">Complaint</button>
+              <button type="button" id="typeIncidentBtn">Serious Incident</button>
+            </div>
+          </div>
+          <div class="field-grid">
+            <div class="field field-span2" style="position:relative;">
+              <label for="newStudentName">Student</label>
+              <input id="newStudentName" type="text" placeholder="Start typing to search live learner records…" autocomplete="off" maxlength="150">
+              <input type="hidden" id="newStudentId" value="">
+              <div id="newStudentSuggest" class="student-suggest"></div>
+              <span class="ss-linked" id="newStudentLinked" style="display:none;">✓ Linked to enrolled student record</span>
+            </div>
+            <div class="field">
+              <label for="newCategory">Category</label>
+              <select id="newCategory" class="field-select"></select>
+            </div>
+            <div class="field" id="newIncidentDateField" style="display:none;">
+              <label for="newIncidentDate">Date of incident</label>
+              <input id="newIncidentDate" type="date">
+            </div>
+            <div class="field field-span3">
+              <label for="newDescription" id="newDescriptionLabel">What was reported, evidence available and immediate action taken</label>
+              <textarea id="newDescription" placeholder="Describe what was reported, evidence available and any immediate action taken."></textarea>
+            </div>
+          </div>
+          <div class="actions" style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" id="registerCaseBtn" type="button">Register case</button>
+            <button class="btn btn-ghost btn-sm" id="registerReferBtn" type="button">Register &amp; Escalate</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-head">
+            <h3>Complaints &amp; Incidents Register</h3>
+            <span style="font-size:10.5px;color:var(--success);font-weight:800;letter-spacing:.3px;">● LIVE</span>
+          </div>
+          <div style="padding:0 20px 4px;">
+            <div class="toolbar" style="margin-bottom:10px;">
+              <div class="search-pill" style="width:280px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input id="riskFilter" type="text" placeholder="Filter by reference, student, category…">
+              </div>
+              <select id="riskLevelFilter" class="btn btn-ghost btn-sm" style="font-weight:600;">
+                <option value="">All types</option>
+                <option value="complaint">Complaints</option>
+                <option value="incident">Serious Incidents</option>
+              </select>
+              <select id="riskSourceFilter" class="btn btn-ghost btn-sm" style="font-weight:600;">
+                <option value="">All statuses</option>
+                <option value="open">Open</option>
+                <option value="investigating">Investigating</option>
+                <option value="referred">Escalated</option>
+                <option value="resolved">Resolved</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" id="exportRiskBtn" type="button">Export CSV</button>
+              <span id="riskRangeLabel" style="font-size:11.5px; color:var(--muted); margin-left:auto;">—</span>
+            </div>
+          </div>
+          <div class="table-wrap" style="padding:0 14px 8px;">
+            <table class="data" id="riskTable">
+              <thead>
+                <tr>
+                  <th class="sortable sorted" data-key="date">Date</th>
+                  <th class="sortable" data-key="level">Type</th>
+                  <th class="sortable" data-key="title">Student / Reference</th>
+                  <th class="sortable" data-key="subject">Category</th>
+                  <th>Detail</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="riskTableBody"></tbody>
+            </table>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:4px 20px 18px;">
+            <button class="btn btn-sm btn-ghost" id="riskPrevBtn">← Previous</button>
+            <span id="riskPageLabel" style="font-size:11.5px; color:var(--muted); min-width:70px; text-align:center;">Page 1</span>
+            <button class="btn btn-sm btn-ghost" id="riskNextBtn">Next →</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Escalated / Needs Review</h3></div>
+          <div class="card-body" id="escalationFeed"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head"><h3>What this page shows</h3></div>
+        <div class="card-body" style="font-size:12px; color:var(--muted); line-height:1.7;">
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Complaints</b> are read and written from <code>complaints</code> (<code>student_id</code>, <code>category</code>, <code>description</code>, <code>status</code>, <code>handled_by</code>, <code>response</code>) and <b style="color:var(--ink);">Serious Incidents</b> from <code>discipline_records</code> (<code>student_id</code>, <code>incident_date</code>, <code>category</code>, <code>description</code>, <code>action_taken</code>, <code>status</code>, <code>recorded_by</code>) — the two tables reserved for this workflow. Neither was written to anywhere else in this codebase, so every row here was filed from this screen.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Reference codes</b> (e.g. <code>CMP-4F21A9</code> / <code>INC-4F21A9</code>) are derived from each record's own database id, not a stored field, so they're always consistent with the live row.</p>
+          <p style="margin:0 0 10px;"><b style="color:var(--ink);">Safeguarding-Flagged</b> counts open or investigating records whose category is one this codebase's own suspension form already treats as safeguarding-relevant (<code>weapon_policy</code>, <code>substance_violation</code>, <code>bullying_harassment</code>) plus <code>discrimination</code> complaints — a mapping onto existing taxonomy, not a formal safeguarding case log.</p>
+          <p style="margin:0 0 10px;">Serious-incident categories reuse the exact 9-value offense taxonomy already shipped on <code>principal/suspension.html</code>, so a complaint and a suspension referencing the same conduct read the same way district-wide.</p>
+          <p style="margin:0;">Neither table carries a verified <code>institution_id</code>, so no "School" column is shown — the same limitation already documented on <code>risk-register.html</code> and <code>school-performance.html</code>. Every record does carry a real <code>student_id</code>, shown here via the student's name and Student ID.</p>
+        </div>
+      </div>
+
+      <div class="allowed-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><b>DEO can:</b> register a complaint or serious incident against any enrolled student district-wide, escalate a case for further review, update a case's status as it's investigated, search/filter/sort the register, and export it to CSV.</div>
+      </div>
+
+      <div class="footer-ribbon">
+        EDU.LR · District Education Officer's Console · <b>Careysburg District</b> · Montserrado County
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATA LAYER — DEO / Complaints & Incidents Register (premium build)
+   Wired directly to EDU.LR's live Supabase project. No demo/placeholder
+   numbers — every stat and register row is a live row in one of two
+   tables reserved for this workflow and not written to anywhere else in
+   this codebase:
+
+     complaints          -> id, student_id, category, description, status
+                             ('open'|'investigating'|'referred'|'resolved'),
+                             handled_by, response, created_at, updated_at.
+     discipline_records  -> id, student_id, incident_date, category,
+                             description, action_taken, status
+                             ('open'|'investigating'|'referred'|'resolved'),
+                             recorded_by, created_at.
+
+   Both tables require a real student_id, so every record here is linked
+   to an actual row in `students` via the same live autocomplete pattern
+   already used on principal/suspension.html. Reference codes shown in
+   the table (CMP-xxxxxx / INC-xxxxxx) are derived client-side from each
+   record's own id — nothing is stored or invented beyond what's typed.
+
+   "Serious Incident" categories reuse the exact 9-value offense taxonomy
+   already shipped on principal/suspension.html / deo/risk-register.html
+   so a complaint and a suspension referencing the same conduct read the
+   same way district-wide. "Complaint" categories are a smaller set
+   appropriate to parent/community complaints, not student conduct.
+
+   Full design rationale: see HANDOFF-complaints-incidents.html.md.
+   ========================================================================= */
+let records = [];        // unified: { id, table, source, category, categoryLabel, studentName, studentCode, description, extra, status, date }
+let profile = null;
+let sortKey = 'date';
+let sortDir = 'desc';
+let recordType = 'complaint'; // which form is active: 'complaint' | 'incident'
+
+const SAFEGUARDING_CATEGORIES = ['weapon_policy', 'substance_violation', 'bullying_harassment', 'discrimination'];
+
+const INCIDENT_CATEGORY_LABEL = {
+  fighting: 'Fighting / Physical Altercation',
+  insubordination: 'Insubordination / Disrespect to Staff',
+  academic_dishonesty: 'Academic Dishonesty',
+  vandalism: 'Vandalism / Property Damage',
+  substance_violation: 'Substance Policy Violation',
+  bullying_harassment: 'Bullying / Harassment',
+  weapon_policy: 'Weapon Policy Violation',
+  repeated_misconduct: 'Repeated Misconduct',
+  other: 'Other Code of Conduct Violation',
+};
+const COMPLAINT_CATEGORY_LABEL = {
+  teacher_conduct: 'Teacher Conduct',
+  facility_safety: 'Facility / Safety Concern',
+  academic_concern: 'Academic Concern',
+  bullying_harassment: 'Bullying / Harassment',
+  discrimination: 'Discrimination',
+  financial: 'Fees / Financial',
+  other: 'Other',
+};
+const STATUS_LABEL = { open: 'Open', investigating: 'Investigating', referred: 'Escalated', resolved: 'Resolved' };
+const STATUS_PILL = { open: 'red', investigating: 'gold', referred: 'navy', resolved: 'green' };
+const TYPE_LABEL = { complaint: 'Complaint', incident: 'Serious Incident' };
+const TYPE_PILL = { complaint: 'navy', incident: 'red' };
+
+const stats = [
+  { label: 'Open Complaints', ic: 'alert' },
+  { label: 'Open Serious Incidents', ic: 'shield', color: 'gold' },
+  { label: 'Safeguarding-Flagged (Open)', ic: 'users', color: 'navy' },
+  { label: 'Escalated', ic: 'staff', color: 'gold' },
+  { label: 'Resolved (All Time)', ic: 'percent' },
+  { label: 'Total Records on File', ic: 'school', color: 'navy' },
+];
+const icons = {
+  users: '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M15.8 13.2c2.6.3 4.4 2.3 4.4 5"/>',
+  school: '<path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/>',
+  shield: '<path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9.5 12l2 2 3.5-4"/>',
+  staff: '<path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/>',
+  percent: '<circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/><path d="M18 6L6 18"/>',
+  alert: '<path d="M10.3 3.9L2.5 18a2 2 0 001.7 3h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+};
+
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function showToast(msg, kind){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),250); }, 3600);
+}
+function initials(name){ return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''); }
+function emptyFeed(msg){
+  return `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg><h4>Nothing to show yet</h4><p>${msg}</p></div>`;
+}
+function refCode(source, id){
+  return `${source === 'complaint' ? 'CMP' : 'INC'}-${(id || '').replace(/-/g,'').slice(0,6).toUpperCase()}`;
+}
+function fmtDate(v){ return (window.KPS && KPS.fmtDate) ? KPS.fmtDate(v) : (v || '—'); }
+
+function renderStatGrid(){
+  document.getElementById('statGrid').innerHTML = stats.map(s=>`
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-ic ${s.color||''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${icons[s.ic]}</svg></div>
+        <span class="stat-trend flat">live</span>
+      </div>
+      <div class="stat-num mono">${s.value ?? '—'}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`).join('');
+}
+
+/* ---- Register table: search + type/status filter + pagination ---- */
+const RISK_PAGE_SIZE = 10;
+let riskQuery = '';
+let riskLevelFilterVal = ''; // type filter (complaint/incident)
+let riskSourceFilterVal = ''; // status filter
+let riskPage = 0;
+
+function typePill(source){ return `<span class="pill ${TYPE_PILL[source]||'grey'}">${TYPE_LABEL[source]||source}</span>`; }
+function statusPill(status){ return `<span class="pill ${STATUS_PILL[status]||'grey'}">${STATUS_LABEL[status]||status}</span>`; }
+
+function statusSelectHtml(r){
+  const options = Object.keys(STATUS_LABEL).map(k => `<option value="${k}" ${k===r.status?'selected':''}>${STATUS_LABEL[k]}</option>`).join('');
+  return `<select class="row-status-select" data-id="${r.id}" data-table="${r.table}">${options}</select>`;
+}
+
+function riskRowHtml(r){
+  return `
+    <tr>
+      <td class="mono">${fmtDate(r.date)}</td>
+      <td>${typePill(r.source)}</td>
+      <td><div class="avatar-name"><div class="av">${initials(r.studentName)}</div><div><div class="nm">${escapeHtml(r.studentName)}</div><div class="sb mono">${escapeHtml(refCode(r.source, r.id))}${r.studentCode ? ' · ' + escapeHtml(r.studentCode) : ''}</div></div></div></td>
+      <td>${escapeHtml(r.categoryLabel || '—')}</td>
+      <td style="max-width:280px; white-space:normal;">${escapeHtml(r.description || '—')}</td>
+      <td>${statusSelectHtml(r)}</td>
+    </tr>`;
+}
+function filteredRisks(){
+  const q = riskQuery.trim().toLowerCase();
+  return records.filter(r => {
+    if (riskLevelFilterVal && r.source !== riskLevelFilterVal) return false;
+    if (riskSourceFilterVal && r.status !== riskSourceFilterVal) return false;
+    if (!q) return true;
+    return (
+      (r.studentName || '').toLowerCase().includes(q) ||
+      (r.categoryLabel || '').toLowerCase().includes(q) ||
+      (r.description || '').toLowerCase().includes(q) ||
+      refCode(r.source, r.id).toLowerCase().includes(q)
+    );
+  });
+}
+function sortValue(r, key){
+  if (key === 'date') return r.date || '';
+  if (key === 'level') return r.source;
+  if (key === 'title') return (r.studentName || '').toLowerCase();
+  if (key === 'subject') return (r.categoryLabel || '').toLowerCase();
+  return r[key];
+}
+function compareRisks(a, b){
+  const av = sortValue(a, sortKey), bv = sortValue(b, sortKey);
+  if (typeof av === 'string') return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+  return sortDir === 'asc' ? av - bv : bv - av;
+}
+function sortedRisks(list){ return list.slice().sort(compareRisks); }
+function applySortedHeaderClass(){
+  document.querySelectorAll('#riskTable th.sortable').forEach(th => {
+    th.classList.toggle('sorted', th.dataset.key === sortKey);
+  });
+}
+function renderRiskTable(){
+  const tbody = document.getElementById('riskTableBody');
+  const list = sortedRisks(filteredRisks());
+  const totalPages = Math.max(1, Math.ceil(list.length / RISK_PAGE_SIZE));
+  if (riskPage > totalPages - 1) riskPage = totalPages - 1;
+  if (riskPage < 0) riskPage = 0;
+
+  if (!records.length){
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);">No complaints or incidents on file yet — use the form above to register the first one.</td></tr>`;
+  } else if (!list.length){
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);">No records match the current search/filter.</td></tr>`;
+  } else {
+    const start = riskPage * RISK_PAGE_SIZE;
+    tbody.innerHTML = list.slice(start, start + RISK_PAGE_SIZE).map(riskRowHtml).join('');
+    tbody.querySelectorAll('.row-status-select').forEach(sel => {
+      sel.addEventListener('change', onStatusChange);
+    });
+  }
+
+  const rangeLabel = document.getElementById('riskRangeLabel');
+  const pageLabel = document.getElementById('riskPageLabel');
+  const prevBtn = document.getElementById('riskPrevBtn');
+  const nextBtn = document.getElementById('riskNextBtn');
+  if (!list.length){
+    rangeLabel.textContent = `0 of ${records.length} records`;
+  } else {
+    const start = riskPage * RISK_PAGE_SIZE;
+    const end = Math.min(list.length, start + RISK_PAGE_SIZE);
+    rangeLabel.textContent = `Showing ${start + 1}–${end} of ${list.length}${(riskQuery || riskLevelFilterVal || riskSourceFilterVal) ? ' matching' : ''} records`;
+  }
+  pageLabel.textContent = `Page ${riskPage + 1} of ${totalPages}`;
+  prevBtn.disabled = riskPage <= 0;
+  nextBtn.disabled = riskPage >= totalPages - 1;
+  applySortedHeaderClass();
+}
+
+async function onStatusChange(e){
+  const sel = e.target;
+  const id = sel.dataset.id;
+  const table = sel.dataset.table;
+  const newStatus = sel.value;
+  try {
+    const payload = { status: newStatus };
+    if (table === 'complaints') payload.updated_at = new Date().toISOString();
+    const { error } = await window.sb.from(table).update(payload).eq('id', id);
+    if (error) throw error;
+    showToast(`Status updated to "${STATUS_LABEL[newStatus]}"`);
+    await loadAllData();
+  } catch (err){
+    console.error('[Complaints & Incidents] status update failed', err);
+    showToast('Could not update status — check your connection', 'warn');
+  }
+}
+
+function exportRiskCsv(){
+  const list = sortedRisks(filteredRisks());
+  const header = ['Reference', 'Date', 'Type', 'Student', 'Student ID', 'Category', 'Description', 'Status'];
+  const rows = list.map(r => [refCode(r.source, r.id), r.date || '', TYPE_LABEL[r.source] || r.source, r.studentName || '', r.studentCode || '', r.categoryLabel || '', r.description || '', STATUS_LABEL[r.status] || r.status]);
+  const csvEscape = v => `"${String(v).replace(/"/g, '""')}"`;
+  const csv = [header, ...rows].map(r => r.map(csvEscape).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'district-complaints-incidents.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`Exported ${list.length} record${list.length === 1 ? '' : 's'}`);
+}
+
+function renderEscalationFeed(){
+  const el = document.getElementById('escalationFeed');
+  const flagged = records
+    .filter(r => r.status === 'referred' || (r.status !== 'resolved' && SAFEGUARDING_CATEGORIES.includes(r.category)))
+    .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+    .slice(0, 8);
+  if (!flagged.length){
+    el.innerHTML = emptyFeed('No record is currently escalated or safeguarding-flagged and still open.');
+    return;
+  }
+  el.innerHTML = flagged.map(r => `
+    <div class="row-line">
+      <span class="rl-name">${escapeHtml(r.studentName)}</span>
+      <span class="rl-sub">${escapeHtml(r.categoryLabel || '')} · ${fmtDate(r.date)}</span>
+      ${statusPill(r.status)}
+    </div>`).join('');
+}
+
+function renderConnectionStatus(){
+  const dot = document.getElementById('healthDot');
+  const label = document.getElementById('healthLabel');
+  const sub = document.getElementById('healthSub');
+  dot.classList.remove('warn');
+  label.textContent = 'Live data connected';
+  sub.textContent = (window.KPS && KPS.SUPABASE_URL) || '';
+}
+
+function renderProfileChip(){
+  const chipAvatar = document.getElementById('chipAvatar');
+  const chipName = document.getElementById('chipName');
+  const chipRole = document.getElementById('chipRole');
+  if (profile && profile.full_name){
+    chipAvatar.textContent = initials(profile.full_name);
+    chipName.textContent = profile.full_name;
+    chipRole.textContent = 'District Education Officer';
+  } else {
+    chipAvatar.textContent = '—';
+    chipName.textContent = 'Not signed in';
+    chipRole.textContent = 'Awaiting DEO account';
+  }
+}
+
+async function loadAllData(){
+  try {
+    const sbc = () => window.sb;
+
+    const [complaintRes, incidentRes] = await Promise.all([
+      sbc().from('complaints')
+        .select('id, student_id, category, description, status, response, created_at, updated_at, students(full_name, student_id)')
+        .order('created_at', { ascending: false }).limit(2000),
+      sbc().from('discipline_records')
+        .select('id, student_id, incident_date, category, description, action_taken, status, created_at, students(full_name, student_id)')
+        .order('created_at', { ascending: false }).limit(2000),
+    ]);
+    [complaintRes, incidentRes].forEach(r => { if (r && r.error) throw r.error; });
+
+    const complaintRows = complaintRes.data || [];
+    const incidentRows = incidentRes.data || [];
+    const items = [];
+
+    complaintRows.forEach(r => {
+      items.push({
+        id: r.id, table: 'complaints', source: 'complaint',
+        category: r.category, categoryLabel: COMPLAINT_CATEGORY_LABEL[r.category] || r.category || 'Uncategorized',
+        studentName: (r.students && r.students.full_name) || 'Unlinked student',
+        studentCode: (r.students && r.students.student_id) || '',
+        description: r.description,
+        extra: r.response,
+        status: r.status || 'open',
+        date: r.created_at,
+      });
+    });
+    incidentRows.forEach(r => {
+      items.push({
+        id: r.id, table: 'discipline_records', source: 'incident',
+        category: r.category, categoryLabel: INCIDENT_CATEGORY_LABEL[r.category] || r.category || 'Uncategorized',
+        studentName: (r.students && r.students.full_name) || 'Unlinked student',
+        studentCode: (r.students && r.students.student_id) || '',
+        description: r.description,
+        extra: r.action_taken,
+        status: r.status || 'open',
+        date: r.incident_date || r.created_at,
+      });
+    });
+
+    records = items;
+
+    const openComplaints = complaintRows.filter(r => (r.status || 'open') === 'open').length;
+    const openIncidents = incidentRows.filter(r => (r.status || 'open') === 'open').length;
+    const safeguardingOpen = items.filter(r => r.status !== 'resolved' && SAFEGUARDING_CATEGORIES.includes(r.category)).length;
+    const referred = items.filter(r => r.status === 'referred').length;
+    const resolved = items.filter(r => r.status === 'resolved').length;
+
+    stats.forEach(s => {
+      if (s.label === 'Open Complaints') s.value = openComplaints;
+      if (s.label === 'Open Serious Incidents') s.value = openIncidents;
+      if (s.label === 'Safeguarding-Flagged (Open)') s.value = safeguardingOpen;
+      if (s.label === 'Escalated') s.value = referred;
+      if (s.label === 'Resolved (All Time)') s.value = resolved;
+      if (s.label === 'Total Records on File') s.value = items.length;
+    });
+  } catch (err) {
+    console.error('[DEO Complaints & Incidents] failed to load live data', err);
+    showToast('Could not load live data — check your Supabase connection', 'warn');
+  }
+  renderAll();
+}
+
+function renderAll(){
+  renderStatGrid();
+  renderRiskTable();
+  renderEscalationFeed();
+  renderConnectionStatus();
+  renderProfileChip();
+}
+
+/* ---- Register form ---- */
+function categoryOptionsHtml(map){
+  return Object.keys(map).map(k => `<option value="${k}">${map[k]}</option>`).join('');
+}
+function setRecordType(type){
+  recordType = type;
+  document.getElementById('typeComplaintBtn').classList.toggle('active', type === 'complaint');
+  document.getElementById('typeIncidentBtn').classList.toggle('active', type === 'incident');
+  const catSel = document.getElementById('newCategory');
+  catSel.innerHTML = categoryOptionsHtml(type === 'complaint' ? COMPLAINT_CATEGORY_LABEL : INCIDENT_CATEGORY_LABEL);
+  document.getElementById('newIncidentDateField').style.display = type === 'incident' ? '' : 'none';
+  document.getElementById('newDescriptionLabel').textContent = type === 'incident'
+    ? 'What happened, evidence available and immediate action taken'
+    : 'What was reported, evidence available and immediate action taken';
+  if (type === 'incident' && !document.getElementById('newIncidentDate').value){
+    document.getElementById('newIncidentDate').value = new Date().toISOString().slice(0,10);
+  }
+}
+
+function wireStudentAutocomplete(nameEl, idEl, boxEl, linkedEl){
+  let debounceTimer = null;
+  let activeIndex = -1;
+  let currentResults = [];
+
+  function closeBox(){ boxEl.classList.remove('open'); boxEl.innerHTML = ''; activeIndex = -1; }
+
+  async function runSearch(term){
+    if (!term || term.trim().length < 2){ closeBox(); return; }
+    const { data, error } = await window.sb
+      .from('students')
+      .select('id, full_name, student_id, sections(name)')
+      .ilike('full_name', `%${term.trim()}%`)
+      .order('full_name', { ascending: true })
+      .limit(8);
+    if (error){ closeBox(); return; }
+    currentResults = data || [];
+    if (!currentResults.length){
+      boxEl.innerHTML = '<div class="ss-empty">No matching enrolled student found.</div>';
+      boxEl.classList.add('open');
+      return;
+    }
+    boxEl.innerHTML = currentResults.map((s, i) => `
+      <div class="ss-item" data-idx="${i}">
+        <span class="ss-name">${escapeHtml(s.full_name)}</span>
+        <span class="ss-meta">${escapeHtml(s.student_id || '')}${s.sections && s.sections.name ? ' · ' + escapeHtml(s.sections.name) : ''}</span>
+      </div>`).join('');
+    boxEl.classList.add('open');
+  }
+
+  function pick(i){
+    const s = currentResults[i];
+    if (!s) return;
+    nameEl.value = s.full_name;
+    idEl.value = s.id;
+    if (linkedEl) linkedEl.style.display = '';
+    closeBox();
+  }
+
+  nameEl.addEventListener('input', () => {
+    idEl.value = '';
+    if (linkedEl) linkedEl.style.display = 'none';
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => runSearch(nameEl.value), 250);
+  });
+  nameEl.addEventListener('keydown', e => {
+    if (!boxEl.classList.contains('open')) return;
+    const itemsEl = boxEl.querySelectorAll('.ss-item');
+    if (e.key === 'ArrowDown'){ e.preventDefault(); activeIndex = Math.min(activeIndex + 1, itemsEl.length - 1); }
+    else if (e.key === 'ArrowUp'){ e.preventDefault(); activeIndex = Math.max(activeIndex - 1, 0); }
+    else if (e.key === 'Enter' && activeIndex >= 0){ e.preventDefault(); pick(activeIndex); return; }
+    else if (e.key === 'Escape'){ closeBox(); return; }
+    else return;
+    itemsEl.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+  });
+  boxEl.addEventListener('mousedown', e => {
+    const item = e.target.closest('.ss-item[data-idx]');
+    if (item) pick(Number(item.dataset.idx));
+  });
+  nameEl.addEventListener('blur', () => setTimeout(closeBox, 150));
+}
+
+function clearComposeForm(){
+  document.getElementById('newStudentName').value = '';
+  document.getElementById('newStudentId').value = '';
+  document.getElementById('newStudentLinked').style.display = 'none';
+  document.getElementById('newDescription').value = '';
+  if (recordType === 'incident'){
+    document.getElementById('newIncidentDate').value = new Date().toISOString().slice(0,10);
+  }
+}
+
+async function submitRecord(refer){
+  const studentId = document.getElementById('newStudentId').value;
+  const description = document.getElementById('newDescription').value.trim();
+  const category = document.getElementById('newCategory').value;
+
+  if (!studentId){
+    showToast('Pick a real enrolled student from the search results first', 'warn');
+    return;
+  }
+  if (!description){
+    showToast('Please describe what was reported', 'warn');
+    return;
+  }
+
+  const status = refer ? 'referred' : 'open';
+  try {
+    if (recordType === 'complaint'){
+      const payload = {
+        student_id: studentId, category, description, status,
+        handled_by: profile ? profile.id : null,
+      };
+      const { error } = await window.sb.from('complaints').insert(payload);
+      if (error) throw error;
+    } else {
+      const payload = {
+        student_id: studentId, category, description, status,
+        incident_date: document.getElementById('newIncidentDate').value || new Date().toISOString().slice(0,10),
+        recorded_by: profile ? profile.id : null,
+      };
+      const { error } = await window.sb.from('discipline_records').insert(payload);
+      if (error) throw error;
+    }
+    showToast(refer ? 'Case registered and escalated' : 'Case registered');
+    clearComposeForm();
+    await loadAllData();
+  } catch (err){
+    console.error('[Complaints & Incidents] failed to register case', err);
+    showToast('Could not register case — check your connection', 'warn');
+  }
+}
+
+(async function init(){
+  const auth = await KPS.requireRole(['deo', 'super_admin']);
+  if (!auth.user) return; // requireRole already redirected to login
+  profile = auth.profile;
+  renderProfileChip();
+
+  setRecordType('complaint');
+  wireStudentAutocomplete(
+    document.getElementById('newStudentName'),
+    document.getElementById('newStudentId'),
+    document.getElementById('newStudentSuggest'),
+    document.getElementById('newStudentLinked')
+  );
+
+  await loadAllData();
+})();
+
+document.getElementById('typeComplaintBtn').addEventListener('click', () => setRecordType('complaint'));
+document.getElementById('typeIncidentBtn').addEventListener('click', () => setRecordType('incident'));
+document.getElementById('registerCaseBtn').addEventListener('click', () => submitRecord(false));
+document.getElementById('registerReferBtn').addEventListener('click', () => submitRecord(true));
+
+document.getElementById('globalSearch').addEventListener('keydown', e=>{
+  if (e.key === 'Enter' && e.target.value.trim()){
+    riskQuery = e.target.value;
+    riskPage = 0;
+    document.getElementById('riskFilter').value = e.target.value;
+    renderRiskTable();
+  }
+});
+const riskFilterInput = document.getElementById('riskFilter');
+riskFilterInput.addEventListener('input', e=>{
+  riskQuery = e.target.value;
+  riskPage = 0;
+  renderRiskTable();
+});
+document.getElementById('riskLevelFilter').addEventListener('change', e=>{
+  riskLevelFilterVal = e.target.value;
+  riskPage = 0;
+  renderRiskTable();
+});
+document.getElementById('riskSourceFilter').addEventListener('change', e=>{
+  riskSourceFilterVal = e.target.value;
+  riskPage = 0;
+  renderRiskTable();
+});
+document.getElementById('riskPrevBtn').addEventListener('click', ()=>{ riskPage -= 1; renderRiskTable(); });
+document.getElementById('riskNextBtn').addEventListener('click', ()=>{ riskPage += 1; renderRiskTable(); });
+document.getElementById('exportRiskBtn').addEventListener('click', exportRiskCsv);
+document.querySelectorAll('#riskTable th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    if (sortKey === key){
+      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortKey = key;
+      sortDir = (key === 'title' || key === 'subject') ? 'asc' : 'desc';
+    }
+    riskPage = 0;
+    renderRiskTable();
+  });
+});
+</script>
+</body>
+</html>

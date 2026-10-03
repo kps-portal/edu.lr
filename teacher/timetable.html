@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>Kingsville Public School — Timetable &amp; Academic Calendar</title>
+<style>
+  :root{
+    --red:#a3181c;
+    --red-bright:#d31f24;
+    --gold:#d4af37;
+    --gold-light:#f4e5a3;
+    --ink:#1a1a1a;
+    --line:#000;
+    --paper:#ffffff;
+    --grey-band:#e9e9e9;
+    --lock-green:#1f7a3d;
+    --lock-red:#a3181c;
+    --glow:rgba(163,24,28,.45);
+    --glow-gold:rgba(212,175,55,.65);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+  body{
+    font-family: Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(163,24,28,.06), transparent 60%),
+      #f2f2f0;
+    margin:0;
+    padding:24px 12px 60px;
+  }
+  .sheet{
+    position:relative;
+    max-width:920px;
+    margin:0 auto;
+    background:var(--paper);
+    padding:26px 34px 38px;
+    border:1px solid transparent;
+    border-radius:6px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    isolation:isolate;
+  }
+  /* Premium animated gold/crimson glowing frame */
+  .sheet::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    border-radius:8px;
+    padding:2px;
+    background:conic-gradient(from var(--frame-angle,0deg),
+      var(--gold), var(--red-bright), var(--gold-light), var(--red), var(--gold));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    z-index:-1;
+    animation: frame-spin 7s linear infinite;
+    filter:drop-shadow(0 0 6px var(--glow-gold));
+  }
+  @property --frame-angle{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:0deg;
+  }
+  @keyframes frame-spin{
+    to{ --frame-angle:360deg; }
+  }
+  .letterhead{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:3px double #333;
+    padding-bottom:12px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  /* subtle shimmer sweep across the letterhead */
+  .letterhead::after{
+    content:"";
+    position:absolute;
+    top:0; left:-60%;
+    width:40%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.35), transparent);
+    animation: sweep 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{ left:-60%; }
+    45%{ left:120%; }
+    100%{ left:120%; }
+  }
+  .letterhead img{
+    height:64px;
+    width:64px;
+    object-fit:contain;
+    flex-shrink:0;
+    border-radius:50%;
+    background:#fff;
+    padding:3px;
+    box-shadow:
+      0 0 0 2px var(--gold),
+      0 0 10px 2px var(--glow-gold);
+    animation: crest-glow 2.6s ease-in-out infinite;
+  }
+  @keyframes crest-glow{
+    0%, 100%{
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 8px 1px var(--glow-gold);
+    }
+    50%{
+      box-shadow:
+        0 0 0 2px var(--gold-light),
+        0 0 18px 6px var(--glow-gold);
+    }
+  }
+  .letterhead .headtext{
+    flex:1;
+    text-align:center;
+  }
+  .school-name{
+    font-weight:800;
+    font-size:26px;
+    letter-spacing:.5px;
+    margin:0 0 4px;
+    background:linear-gradient(100deg,
+      var(--red) 0%, var(--gold) 22%, var(--red-bright) 45%,
+      var(--gold-light) 60%, var(--red) 82%, var(--gold) 100%);
+    background-size:250% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 14px rgba(163,24,28,.18);
+    animation: text-shine 5s linear infinite;
+  }
+  @keyframes text-shine{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:250% 50%; }
+  }
+  .sub{ font-weight:700; font-size:13px; margin:0; color:#333; }
+  .motto{ font-style:italic; font-size:12.5px; color:#555; margin-top:2px; }
+
+  .master-title{
+    color:var(--red);
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:1px;
+    margin:8px 0 6px;
+    text-align:center;
+    text-shadow:0 0 10px rgba(163,24,28,.15);
+  }
+  .band{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(180deg,var(--grey-band),#f4f4f2);
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    color:var(--red);
+    padding:7px 0;
+    margin:4px 0 16px;
+    letter-spacing:2px;
+    border-radius:3px;
+    box-shadow:inset 0 0 0 1px rgba(212,175,55,.35), 0 0 10px rgba(163,24,28,.08);
+  }
+  .band::before{
+    content:"";
+    position:absolute;
+    top:0; left:-40%;
+    width:25%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(212,175,55,.55), transparent);
+    animation: sweep 4.5s ease-in-out infinite;
+    animation-delay:1s;
+    pointer-events:none;
+  }
+  .year-input{
+    font-family:inherit;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:2px;
+    color:var(--red);
+    background:transparent;
+    border:none;
+    border-bottom:1px dashed rgba(163,24,28,.5);
+    text-align:center;
+    width:110px;
+    padding:0 2px;
+  }
+  .year-input::placeholder{
+    color:rgba(163,24,28,.45);
+  }
+  .year-input:focus{
+    outline:none;
+    border-bottom:1px solid var(--red);
+    text-shadow:0 0 8px rgba(212,175,55,.5);
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 22px;
+    font-size:14px;
+    margin-bottom:18px;
+    align-items:baseline;
+  }
+  .meta-row label{ font-weight:700; white-space:nowrap; }
+  .meta-row input{
+    border:none;
+    border-bottom:1px solid #333;
+    font-family:inherit;
+    font-style:italic;
+    font-size:14px;
+    padding:2px 4px;
+    background:transparent;
+    min-width:140px;
+  }
+  .meta-row input:disabled{ color:#333; opacity:1; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  th,td{
+    border:1px solid var(--line);
+    padding:5px 6px;
+    text-align:center;
+  }
+  th{ background:#f6f6f6; font-size:12px; }
+  td.name{ text-align:left; }
+  tr:nth-child(even) td{ background:#fbfbfb; }
+
+  input.name-input{
+    width:100%;
+    border:1px solid #bbb;
+    font-family:inherit;
+    padding:3px 4px;
+    border-radius:3px;
+    text-align:left;
+  }
+  select.sex-input{
+    width:100%;
+    border:1px solid #bbb;
+    font-family:inherit;
+    padding:3px 2px;
+    border-radius:3px;
+    text-align:center;
+  }
+  input.att-input{
+    width:56px;
+    border:1px solid #bbb;
+    text-align:center;
+    font-family:inherit;
+    padding:3px 2px;
+    border-radius:3px;
+  }
+  input:disabled, select:disabled{
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--ink);
+    font-weight:600;
+  }
+  input:focus, select:focus{ outline:2px solid var(--red); }
+
+  .empty-row td{
+    color:#999;
+    font-style:italic;
+    padding:14px 6px;
+  }
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .status-pill{
+    font-size:13px;
+    font-weight:700;
+    padding:5px 12px;
+    border-radius:20px;
+    color:#fff;
+  }
+  .status-pill.locked{ background:var(--lock-red); }
+  .status-pill.unlocked{ background:var(--lock-green); }
+
+  button{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    padding:7px 14px;
+    border-radius:5px;
+    border:1px solid var(--red);
+    background:#fff;
+    color:var(--red);
+    cursor:pointer;
+    transition:box-shadow .25s ease, transform .15s ease, background .2s ease, color .2s ease;
+  }
+  button:hover{
+    background:var(--red);
+    color:#fff;
+    box-shadow:0 0 12px 2px var(--glow);
+    transform:translateY(-1px);
+  }
+  button:active{ transform:translateY(0); }
+  button.subtle{
+    border-color:#999; color:#444; font-weight:600;
+  }
+  button.subtle:hover{ background:#444; color:#fff; }
+  button:disabled{ opacity:.4; cursor:not-allowed; }
+
+  .row-actions{ display:flex; gap:6px; justify-content:center; }
+  .row-actions button{ padding:3px 6px; font-size:11px; }
+
+  /* ---- Attendance-specific additions ---- */
+  button.add-week-btn{
+    border-color:var(--gold);
+    color:#8a6d1a;
+    font-weight:700;
+  }
+  button.add-week-btn:hover{
+    background:var(--gold);
+    color:#fff;
+  }
+
+  .foot-actions{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:16px; flex-wrap:wrap; gap:10px;
+  }
+  .max-field{ font-size:13px; display:flex; align-items:center; gap:6px; }
+  .max-field input{ width:50px; text-align:center; border:1px solid #bbb; border-radius:3px; padding:3px; }
+  .save-note{ font-size:12px; color:#666; min-height:16px; }
+
+  /* Premium action buttons (Save / Download / Print / Submit) */
+  button.premium{
+    position:relative;
+    color:#fff;
+    border:none;
+    background:linear-gradient(100deg, var(--red) 0%, var(--red-bright) 45%, var(--gold) 100%);
+    background-size:220% 100%;
+    background-position:0% 50%;
+    box-shadow:0 0 8px 1px var(--glow-gold);
+    padding:8px 16px;
+  }
+  button.premium:hover{
+    background-position:100% 50%;
+    box-shadow:0 0 14px 3px var(--glow-gold);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+  button.premium.submit{
+    background:linear-gradient(100deg, var(--lock-green) 0%, #2fae5c 45%, var(--gold) 100%);
+    background-size:220% 100%;
+  }
+  .action-row{
+    display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
+  }
+
+  /* This is the Exam / Master sheet — unlike the single-purpose sheets
+     (CA, Assignment, Practical, Quiz) no grade column is locked here;
+     the teacher can enter or correct any score before finalising. */
+  input.grade-locked, input.grade-locked:disabled{
+    background:#f0f0ee;
+    color:#999;
+    border:1px solid #ddd;
+    text-align:center;
+    cursor:not-allowed;
+  }
+  input.grade-input{
+    background:#fffdf4;
+    border:1px solid var(--gold);
+    text-align:center;
+    font-weight:700;
+    color:var(--red);
+  }
+  input.grade-input:focus{ outline:2px solid var(--red); }
+  td.total-cell{
+    font-weight:800;
+    color:var(--red);
+    text-align:center;
+    background:#fbf6e6;
+  }
+
+  .submitted-banner{
+    display:none;
+    text-align:center;
+    font-weight:800;
+    letter-spacing:1px;
+    color:#fff;
+    background:var(--lock-green);
+    border-radius:4px;
+    padding:6px 0;
+    margin-bottom:12px;
+  }
+  .submitted .submitted-banner{ display:block; }
+  .submitted input, .submitted select, .submitted button#addRowBtn, .submitted button[data-remove]{
+    pointer-events:none;
+    opacity:.6;
+  }
+
+  /* ---- Timetable & Academic Calendar additions ---- */
+  select.band-sel{
+    font-family:inherit;
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:.5px;
+    color:var(--red);
+    background:transparent;
+    border:none;
+    border-bottom:1px dashed rgba(163,24,28,.5);
+    text-align:center;
+    padding:0 4px;
+    appearance:none;
+    -webkit-appearance:none;
+    cursor:pointer;
+  }
+  select.band-sel:focus{ outline:none; border-bottom:1px solid var(--red); }
+  .band-field{ display:inline-flex; align-items:center; gap:4px; margin:0 10px; }
+  .band-field label{ font-size:11px; letter-spacing:1px; color:#8a6d1a; }
+
+  h2.sect{
+    font-size:16px;
+    color:var(--red);
+    border-bottom:2px solid var(--gold);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding-bottom:4px;
+    margin:26px 0 12px;
+  }
+  h2.sect .sect-num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:22px; height:22px;
+    border-radius:50%;
+    background:var(--red);
+    color:#fff;
+    font-size:12px;
+    font-weight:800;
+  }
+  .section-block{ margin-bottom:8px; }
+  .section-sub{ font-size:12px; color:#777; margin:-6px 0 14px; }
+
+  .table-scroll{
+    width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    border:1px solid #ddd;
+    border-radius:4px;
+    margin-bottom:6px;
+  }
+  .table-scroll table{ width:max-content; min-width:100%; }
+
+  table.tt-table{ border-collapse:collapse; font-size:12px; }
+  table.tt-table th, table.tt-table td{ border:1px solid var(--line); padding:5px 6px; text-align:center; vertical-align:middle; }
+  table.tt-table th{ background:#f6f6f6; color:var(--red); font-size:11.5px; }
+  table.tt-table th.period-head{ position:sticky; left:0; z-index:2; background:#f6f6f6; text-align:left; min-width:150px; }
+  table.tt-table td.period-cell{
+    position:sticky; left:0; z-index:1; background:#fbf6e6;
+    text-align:left; font-weight:700; color:var(--red); min-width:150px;
+  }
+  table.tt-table tr:nth-child(even) td:not(.period-cell){ background:#fbfbfb; }
+  table.tt-table td.tt-cell{ min-width:108px; padding:2px; }
+  table.tt-table input.tt-input{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    text-align:center;
+    font-family:inherit;
+    font-size:11.5px;
+    padding:5px 3px;
+    border-radius:3px;
+  }
+  table.tt-table input.tt-input:hover, table.tt-table input.tt-input:focus{
+    border-color:#cfd6e4; background:#fff; outline:none;
+  }
+  table.tt-table td.break-row{ background:#fdf3d8 !important; font-style:italic; color:#a3781c; font-weight:700; }
+  input.period-label-input{
+    width:100%; border:1px solid transparent; background:transparent; font-family:inherit;
+    font-weight:700; color:var(--red); font-size:12px; padding:3px 2px; border-radius:3px;
+  }
+  input.period-label-input:hover, input.period-label-input:focus{ border-color:#cfd6e4; background:#fff; outline:none; }
+  .rm-row-btn{ background:none; border:none; color:var(--red); cursor:pointer; font-size:13px; }
+
+  .cal-terms{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:18px; }
+  .cal-term-card{
+    flex:1; min-width:220px;
+    border:1px solid #e2c98a; border-radius:8px; padding:12px 14px;
+    background:linear-gradient(135deg,#fffdf7,#fbf6e6);
+  }
+  .cal-term-card .term-name{ font-weight:800; color:var(--red); font-size:13px; margin-bottom:6px; }
+  .cal-term-card .term-dates{ display:flex; gap:8px; align-items:center; font-size:12px; }
+  .cal-term-card input[type=date]{
+    border:1px solid #bbb; border-radius:3px; padding:4px 5px; font-family:inherit; font-size:11.5px;
+  }
+
+  table.events-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.events-table th, table.events-table td{ border:1px solid var(--line); padding:6px 7px; text-align:left; vertical-align:top; }
+  table.events-table th{ background:#f6f6f6; color:var(--red); font-size:12px; }
+  table.events-table tr:nth-child(even) td{ background:#fbfbfb; }
+  table.events-table input[type=date]{ border:1px solid #bbb; border-radius:3px; padding:4px 5px; font-family:inherit; font-size:12px; }
+  table.events-table input[type=text]{
+    width:100%; border:1px solid #bbb; font-family:inherit; padding:4px 5px; border-radius:3px;
+  }
+  select.event-type-sel{
+    font-size:12px; border:1px solid #bbb; border-radius:3px; padding:4px 6px; width:118px; font-family:inherit;
+  }
+  select.event-type-sel.holiday{ background:#fbe6e6; color:var(--lock-red); border-color:#f0c0c0; font-weight:700; }
+  select.event-type-sel.exam{ background:#fdf3d8; color:#a3781c; border-color:#f0dca0; font-weight:700; }
+  select.event-type-sel.meeting{ background:#e6eefb; color:#1c4c8a; border-color:#c0d4f0; font-weight:700; }
+  select.event-type-sel.other{ background:#f1f1ef; color:#555; border-color:#ddd; }
+  .rm-event-btn{ background:none; border:none; color:var(--red); cursor:pointer; font-size:14px; }
+  .cal-actions, .tt-actions{ display:flex; justify-content:center; gap:10px; margin:14px 0 4px; flex-wrap:wrap; }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .sheet{ box-shadow:none; border:1px solid #999; }
+    .sheet::before{ display:none; }
+    .toolbar, .action-row, .row-actions, .save-note, .tt-actions, .cal-actions,
+    .rm-row-btn, .rm-event-btn, #addRowBtn{ display:none !important; }
+    .table-scroll{ overflow:visible; border:none; }
+    th.period-head, td.period-cell{ position:static; }
+  }
+
+  @media (max-width:640px){
+    .school-name{ font-size:20px; }
+    .sheet{ padding:16px; }
+    .letterhead img{ height:44px; width:44px; }
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<a href="dashboard.html" class="kps-back-btn" title="Back to Teacher Dashboard" style="position:fixed;top:14px;right:14px;z-index:9999;display:flex;align-items:center;gap:6px;background:#a3181c;color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 14px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.25);font-family:Arial,Helvetica,sans-serif;">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  Back to Dashboard
+</a>
+<style>@media print{ .kps-back-btn{ display:none !important; } }</style>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="sheet" id="sheet">
+
+  <div class="letterhead">
+    <img src="../assets/images/img-1005aedff1a0c5ea.png" alt="Kingsville Public High School crest">
+    <div class="headtext">
+      <p class="school-name">Kingsville Public School</p>
+      <p class="sub">Kingsville Township, Kingsville #7, Careysburg District &middot; Montserrado County, Liberia</p>
+      <p class="motto">Motto: "Knowledge Is Power"</p>
+    </div>
+    <img src="../assets/images/img-a7df6c3d8d6e390b.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+
+  <p class="master-title">TIMETABLE &amp; ACADEMIC CALENDAR</p>
+  <div class="band">
+    <span class="band-field"><label>ACADEMIC YEAR</label>
+      <input id="academicYear" class="year-input" type="text" placeholder="2025–2026" style="width:110px;">
+    </span>
+  </div>
+
+  <div class="foot-actions" style="margin-bottom:14px;">
+    <div class="max-field" style="visibility:hidden;"></div>
+    <div class="save-note" id="msgBar"></div>
+  </div>
+
+  <!-- ============ SECTION 1: WEEKLY CLASS TIMETABLE ============ -->
+  <h2 class="sect"><span class="sect-num">1</span> Weekly Class Timetable</h2>
+  <p class="section-sub">Pick a class to view or edit its weekly period-by-period timetable.</p>
+
+  <div class="meta-row">
+    <span><label>Class:</label>
+      <select id="classSel" class="band-sel" style="border-bottom:1px solid #bbb; font-size:13px;">
+        <option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option>
+        <option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option>
+        <option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+      </select>
+    </span>
+  </div>
+
+  <div class="table-scroll">
+    <table class="tt-table" id="classTable">
+      <thead><tr id="classTableHead"></tr></thead>
+      <tbody id="classTableBody"></tbody>
+    </table>
+  </div>
+  <div class="tt-actions">
+    <button class="subtle" id="addClassPeriodBtn">+ Add period row</button>
+    <button class="subtle" id="removeClassPeriodBtn">− Remove last row</button>
+    <button class="subtle" id="addBreakRowBtn">+ Add break/lunch row</button>
+  </div>
+
+  <!-- ============ SECTION 2: TEACHER SCHEDULE ============ -->
+  <h2 class="sect"><span class="sect-num">2</span> Teacher Schedule</h2>
+  <p class="section-sub">Enter a teacher's name to view or build their personal weekly schedule.</p>
+
+  <div class="meta-row">
+    <span><label>Teacher:</label> <input id="teacherName" placeholder="Enter teacher's name" style="min-width:200px;"></span>
+  </div>
+
+  <div class="table-scroll">
+    <table class="tt-table" id="teacherTable">
+      <thead><tr id="teacherTableHead"></tr></thead>
+      <tbody id="teacherTableBody"></tbody>
+    </table>
+  </div>
+  <div class="tt-actions">
+    <button class="subtle" id="addTeacherPeriodBtn">+ Add period row</button>
+    <button class="subtle" id="removeTeacherPeriodBtn">− Remove last row</button>
+  </div>
+
+  <!-- ============ SECTION 3: ACADEMIC CALENDAR ============ -->
+  <h2 class="sect"><span class="sect-num">3</span> Academic Calendar</h2>
+  <p class="section-sub">School year dates and key school events for the academic year above.</p>
+
+  <div class="cal-terms" id="calTerms"></div>
+
+  <table class="events-table" id="eventsTable">
+    <thead>
+      <tr>
+        <th style="width:130px;">Date</th>
+        <th>Event</th>
+        <th style="width:120px;">Type</th>
+        <th style="width:24px;"></th>
+      </tr>
+    </thead>
+    <tbody id="eventsTbody"></tbody>
+  </table>
+  <div class="cal-actions">
+    <button class="subtle" id="addEventBtn">+ Add event</button>
+  </div>
+
+  <div class="toolbar" style="margin-top:24px;">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">&nbsp;</div>
+    <div class="action-row">
+      <button class="premium" id="saveBtn">💾 Save</button>
+      <button class="premium" id="printBtn">🖨 Print</button>
+    </div>
+  </div>
+
+</div>
+<script>
+(function(){
+  const msgBar = document.getElementById('msgBar');
+  function showMsg(t){ msgBar.textContent = t; setTimeout(()=>{ if(msgBar.textContent===t) msgBar.textContent=''; }, 2400); }
+  function esc(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  const DAYS = ["Mon","Tue","Wed","Thu","Fri"];
+
+  function yearVal(){ return document.getElementById('academicYear').value || 'no-year'; }
+
+  /* ==================================================================
+     SECTION 1 — WEEKLY CLASS TIMETABLE
+     ================================================================== */
+  const classSel = document.getElementById('classSel');
+  let classSchedule = { periods: [] };
+
+  function blankPeriod(label, isBreak){
+    return { label: label || '', isBreak: !!isBreak, cells: DAYS.map(()=>'') };
+  }
+  function defaultClassPeriods(){
+    return [
+      blankPeriod('Period 1 (8:00 – 8:45)'),
+      blankPeriod('Period 2 (8:45 – 9:30)'),
+      blankPeriod('Period 3 (9:30 – 10:15)'),
+      blankPeriod('Break (10:15 – 10:30)', true),
+      blankPeriod('Period 4 (10:30 – 11:15)'),
+      blankPeriod('Period 5 (11:15 – 12:00)'),
+      blankPeriod('Lunch (12:00 – 12:45)', true),
+      blankPeriod('Period 6 (12:45 – 1:30)'),
+      blankPeriod('Period 7 (1:30 – 2:15)')
+    ];
+  }
+
+  function buildTTHead(theadRowId, className){
+    const row = document.getElementById(theadRowId);
+    let html = `<th class="period-head">Period</th>`;
+    DAYS.forEach(d => html += `<th>${d}</th>`);
+    row.innerHTML = html;
+  }
+
+  function renderClassTable(){
+    buildTTHead('classTableHead');
+    const tbody = document.getElementById('classTableBody');
+    tbody.innerHTML = '';
+    classSchedule.periods.forEach((p, i)=>{
+      const tr = document.createElement('tr');
+      let cells = '';
+      if (p.isBreak){
+        cells = `<td class="tt-cell break-row" colspan="${DAYS.length}">${esc(p.label || 'Break')}</td>`;
+        tr.innerHTML = `<td class="period-cell"><input class="period-label-input" data-i="${i}" value="${esc(p.label)}" placeholder="Break / Lunch"></td>${cells}`;
+      } else {
+        DAYS.forEach((d, di)=>{
+          cells += `<td class="tt-cell"><input class="tt-input" data-i="${i}" data-d="${di}" value="${esc(p.cells[di])}" placeholder="Subject – Teacher"></td>`;
+        });
+        tr.innerHTML = `<td class="period-cell"><input class="period-label-input" data-i="${i}" value="${esc(p.label)}" placeholder="Period label"></td>${cells}`;
+      }
+      tbody.appendChild(tr);
+    });
+    wireClassTableEvents();
+  }
+
+  function wireClassTableEvents(){
+    const tbody = document.getElementById('classTableBody');
+    tbody.querySelectorAll('input.period-label-input').forEach(inp=>{
+      inp.addEventListener('input', ()=>{ classSchedule.periods[+inp.dataset.i].label = inp.value; });
+      inp.addEventListener('change', ()=> saveClassSchedule(true));
+    });
+    tbody.querySelectorAll('input.tt-input').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        classSchedule.periods[+inp.dataset.i].cells[+inp.dataset.d] = inp.value;
+      });
+      inp.addEventListener('change', ()=> saveClassSchedule(true));
+    });
+  }
+
+  document.getElementById('addClassPeriodBtn').addEventListener('click', ()=>{
+    classSchedule.periods.push(blankPeriod('New period'));
+    renderClassTable(); saveClassSchedule(true);
+  });
+  document.getElementById('removeClassPeriodBtn').addEventListener('click', ()=>{
+    if (classSchedule.periods.length){ classSchedule.periods.pop(); renderClassTable(); saveClassSchedule(true); }
+  });
+  document.getElementById('addBreakRowBtn').addEventListener('click', ()=>{
+    classSchedule.periods.push(blankPeriod('Break', true));
+    renderClassTable(); saveClassSchedule(true);
+  });
+
+  function classKey(){
+    return 'timetable-class:' + encodeURIComponent(yearVal() + '|' + classSel.value);
+  }
+  async function saveClassSchedule(silent){
+    try{
+      if (window.storage && window.storage.set) await window.storage.set(classKey(), JSON.stringify(classSchedule), false);
+      if (!silent) showMsg('Timetable saved for ' + classSel.value + '.');
+    }catch(e){ if(!silent) showMsg('Could not save right now.'); }
+  }
+  async function loadClassSchedule(){
+    let payload = null;
+    try{
+      if (window.storage && window.storage.get){
+        const r = await window.storage.get(classKey());
+        if (r && r.value) payload = JSON.parse(r.value);
+      }
+    }catch(e){}
+    classSchedule = (payload && Array.isArray(payload.periods)) ? payload : { periods: defaultClassPeriods() };
+    renderClassTable();
+  }
+  classSel.addEventListener('change', loadClassSchedule);
+
+  /* ==================================================================
+     SECTION 2 — TEACHER SCHEDULE
+     ================================================================== */
+  const teacherNameEl = document.getElementById('teacherName');
+  let teacherSchedule = { periods: [] };
+
+  function defaultTeacherPeriods(){
+    return [
+      blankPeriod('Period 1 (8:00 – 8:45)'),
+      blankPeriod('Period 2 (8:45 – 9:30)'),
+      blankPeriod('Period 3 (9:30 – 10:15)'),
+      blankPeriod('Break (10:15 – 10:30)', true),
+      blankPeriod('Period 4 (10:30 – 11:15)'),
+      blankPeriod('Period 5 (11:15 – 12:00)'),
+      blankPeriod('Lunch (12:00 – 12:45)', true),
+      blankPeriod('Period 6 (12:45 – 1:30)'),
+      blankPeriod('Period 7 (1:30 – 2:15)')
+    ];
+  }
+
+  function renderTeacherTable(){
+    buildTTHead('teacherTableHead');
+    const tbody = document.getElementById('teacherTableBody');
+    tbody.innerHTML = '';
+    teacherSchedule.periods.forEach((p, i)=>{
+      const tr = document.createElement('tr');
+      let cells = '';
+      if (p.isBreak){
+        cells = `<td class="tt-cell break-row" colspan="${DAYS.length}">${esc(p.label || 'Break')}</td>`;
+        tr.innerHTML = `<td class="period-cell"><input class="period-label-input" data-tk="1" data-i="${i}" value="${esc(p.label)}" placeholder="Break / Lunch"></td>${cells}`;
+      } else {
+        DAYS.forEach((d, di)=>{
+          cells += `<td class="tt-cell"><input class="tt-input" data-tk="1" data-i="${i}" data-d="${di}" value="${esc(p.cells[di])}" placeholder="Class – Subject"></td>`;
+        });
+        tr.innerHTML = `<td class="period-cell"><input class="period-label-input" data-tk="1" data-i="${i}" value="${esc(p.label)}" placeholder="Period label"></td>${cells}`;
+      }
+      tbody.appendChild(tr);
+    });
+    wireTeacherTableEvents();
+  }
+
+  function wireTeacherTableEvents(){
+    const tbody = document.getElementById('teacherTableBody');
+    tbody.querySelectorAll('input.period-label-input').forEach(inp=>{
+      inp.addEventListener('input', ()=>{ teacherSchedule.periods[+inp.dataset.i].label = inp.value; });
+      inp.addEventListener('change', ()=> saveTeacherSchedule(true));
+    });
+    tbody.querySelectorAll('input.tt-input').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        teacherSchedule.periods[+inp.dataset.i].cells[+inp.dataset.d] = inp.value;
+      });
+      inp.addEventListener('change', ()=> saveTeacherSchedule(true));
+    });
+  }
+
+  document.getElementById('addTeacherPeriodBtn').addEventListener('click', ()=>{
+    teacherSchedule.periods.push(blankPeriod('New period'));
+    renderTeacherTable(); saveTeacherSchedule(true);
+  });
+  document.getElementById('removeTeacherPeriodBtn').addEventListener('click', ()=>{
+    if (teacherSchedule.periods.length){ teacherSchedule.periods.pop(); renderTeacherTable(); saveTeacherSchedule(true); }
+  });
+
+  function teacherKey(){
+    const name = teacherNameEl.value.trim() || 'unnamed';
+    return 'timetable-teacher:' + encodeURIComponent(yearVal() + '|' + name);
+  }
+  async function saveTeacherSchedule(silent){
+    try{
+      if (window.storage && window.storage.set) await window.storage.set(teacherKey(), JSON.stringify(teacherSchedule), false);
+      if (!silent) showMsg('Schedule saved for ' + (teacherNameEl.value.trim() || 'this teacher') + '.');
+    }catch(e){ if(!silent) showMsg('Could not save right now.'); }
+  }
+  async function loadTeacherSchedule(){
+    let payload = null;
+    try{
+      if (window.storage && window.storage.get){
+        const r = await window.storage.get(teacherKey());
+        if (r && r.value) payload = JSON.parse(r.value);
+      }
+    }catch(e){}
+    teacherSchedule = (payload && Array.isArray(payload.periods)) ? payload : { periods: defaultTeacherPeriods() };
+    renderTeacherTable();
+  }
+  teacherNameEl.addEventListener('change', loadTeacherSchedule);
+
+  /* ==================================================================
+     SECTION 3 — ACADEMIC CALENDAR
+     ================================================================== */
+  let calendar = { terms: [], events: [] };
+
+  function defaultCalendar(){
+    return {
+      terms: [
+        { name: 'School Year', start: '', end: '' }
+      ],
+      events: []
+    };
+  }
+  function blankEvent(){ return { date:'', name:'', type:'other' }; }
+
+  function renderTerms(){
+    const wrap = document.getElementById('calTerms');
+    wrap.innerHTML = '';
+    calendar.terms.forEach((t, i)=>{
+      const div = document.createElement('div');
+      div.className = 'cal-term-card';
+      div.innerHTML =
+        `<div class="term-name">${esc(t.name)}</div>` +
+        `<div class="term-dates">` +
+          `<input type="date" class="term-start" data-i="${i}" value="${esc(t.start)}">` +
+          `<span>to</span>` +
+          `<input type="date" class="term-end" data-i="${i}" value="${esc(t.end)}">` +
+        `</div>`;
+      wrap.appendChild(div);
+    });
+    wrap.querySelectorAll('.term-start').forEach(inp=>{
+      inp.addEventListener('change', ()=>{ calendar.terms[+inp.dataset.i].start = inp.value; saveCalendar(true); });
+    });
+    wrap.querySelectorAll('.term-end').forEach(inp=>{
+      inp.addEventListener('change', ()=>{ calendar.terms[+inp.dataset.i].end = inp.value; saveCalendar(true); });
+    });
+  }
+
+  function renderEvents(){
+    const tbody = document.getElementById('eventsTbody');
+    tbody.innerHTML = '';
+    calendar.events.forEach((ev, i)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        `<td><input type="date" class="ev-date" data-i="${i}" value="${esc(ev.date)}"></td>` +
+        `<td><input type="text" class="ev-name" data-i="${i}" placeholder="Event name…" value="${esc(ev.name)}"></td>` +
+        `<td><select class="event-type-sel ${ev.type}" data-i="${i}">` +
+          `<option value="holiday"${ev.type==='holiday'?' selected':''}>🔴 Holiday</option>` +
+          `<option value="exam"${ev.type==='exam'?' selected':''}>🟡 Exam</option>` +
+          `<option value="meeting"${ev.type==='meeting'?' selected':''}>🔵 Meeting</option>` +
+          `<option value="other"${ev.type==='other'?' selected':''}>⚪ Other</option>` +
+        `</select></td>` +
+        `<td><button class="rm-event-btn" data-i="${i}" title="Remove">✕</button></td>`;
+      tbody.appendChild(tr);
+    });
+    tbody.querySelectorAll('.ev-date').forEach(inp=>{
+      inp.addEventListener('change', ()=>{ calendar.events[+inp.dataset.i].date = inp.value; saveCalendar(true); });
+    });
+    tbody.querySelectorAll('.ev-name').forEach(inp=>{
+      inp.addEventListener('input', ()=>{ calendar.events[+inp.dataset.i].name = inp.value; });
+      inp.addEventListener('change', ()=> saveCalendar(true));
+    });
+    tbody.querySelectorAll('.event-type-sel').forEach(sel=>{
+      sel.addEventListener('change', ()=>{
+        const i = +sel.dataset.i;
+        calendar.events[i].type = sel.value;
+        sel.className = 'event-type-sel ' + sel.value;
+        saveCalendar(true);
+      });
+    });
+    tbody.querySelectorAll('.rm-event-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        calendar.events.splice(+btn.dataset.i, 1);
+        renderEvents();
+        saveCalendar(true);
+      });
+    });
+  }
+
+  document.getElementById('addEventBtn').addEventListener('click', ()=>{
+    calendar.events.push(blankEvent());
+    renderEvents();
+  });
+
+  function calendarKey(){
+    return 'academic-calendar:' + encodeURIComponent(yearVal());
+  }
+  async function saveCalendar(silent){
+    try{
+      if (window.storage && window.storage.set) await window.storage.set(calendarKey(), JSON.stringify(calendar), false);
+      if (!silent) showMsg('Academic calendar saved.');
+    }catch(e){ if(!silent) showMsg('Could not save right now.'); }
+  }
+  async function loadCalendar(){
+    let payload = null;
+    try{
+      if (window.storage && window.storage.get){
+        const r = await window.storage.get(calendarKey());
+        if (r && r.value) payload = JSON.parse(r.value);
+      }
+    }catch(e){}
+    calendar = (payload && Array.isArray(payload.terms)) ? payload : defaultCalendar();
+    renderTerms();
+    renderEvents();
+  }
+  document.getElementById('academicYear').addEventListener('change', ()=>{
+    loadClassSchedule();
+    loadTeacherSchedule();
+    loadCalendar();
+  });
+
+  /* ==================================================================
+     GLOBAL SAVE / PRINT
+     ================================================================== */
+  document.getElementById('saveBtn').addEventListener('click', async ()=>{
+    await Promise.all([saveClassSchedule(true), saveTeacherSchedule(true), saveCalendar(true)]);
+    showMsg('Everything saved.');
+  });
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+  /* ---------- Init ---------- */
+  (async function init(){
+    if (!document.getElementById('academicYear').value){
+      document.getElementById('academicYear').value = '2025–2026';
+    }
+    await loadClassSchedule();
+    await loadTeacherSchedule();
+    await loadCalendar();
+  })();
+})();
+</script>
+</body>
+</html>

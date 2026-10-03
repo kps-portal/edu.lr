@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public High School — Alumni Records &amp; Verification Letter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --gold-soft:#fbe4b3;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --panel:#f6f6f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:var(--panel);
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 100%);
+    color:#fff;display:flex;align-items:center;justify-content:space-between;
+    padding:clamp(6px,1.2vh,9px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;
+  }
+  header.topbar .left{display:flex;align-items:center;gap:12px;}
+  header.topbar .kps-logo{height:30px;width:30px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;box-shadow:0 0 0 1px var(--gold);flex-shrink:0;}
+  header.topbar .left b{font-weight:800;font-size:13.5px;letter-spacing:1.1px;}
+  header.topbar .left .page-label{font-weight:400;font-size:11.5px;opacity:.75;letter-spacing:.4px;margin-left:2px;}
+  header.topbar .moe-mini{height:26px;width:26px;object-fit:contain;border-radius:50%;background:#fff;padding:1px;}
+  header.topbar .live-pill{
+    display:flex;align-items:center;gap:6px;background:rgba(30,132,73,.18);
+    border:1px solid rgba(90,220,150,.4);color:#bdf5d3;border-radius:20px;
+    padding:4px 10px;font-size:10.5px;font-weight:700;letter-spacing:.4px;
+  }
+  header.topbar .live-pill .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:pulseDot 1.8s infinite;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55);}70%{box-shadow:0 0 0 7px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(10px,3vh,30px) 16px;min-height:0;overflow-y:auto;}
+  .card{
+    width:100%;max-width:1240px;background:#fff;border-radius:12px;
+    box-shadow:0 18px 45px rgba(11,23,48,.16),0 2px 8px rgba(11,23,48,.08);
+    border:1px solid var(--line);overflow:hidden;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .card .accent{height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 100%);}
+  .card .body{padding:clamp(18px,4vh,32px) clamp(20px,4vw,32px) clamp(16px,3vh,28px);text-align:left;}
+
+  .page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:clamp(10px,2vh,16px);flex-wrap:wrap;}
+  .page-head .id{display:flex;align-items:center;gap:16px;}
+  .seal-stage{position:relative;width:56px;height:56px;flex-shrink:0;}
+  .seal-stage img.seal{height:56px;width:56px;object-fit:contain;border-radius:50%;background:#fff;padding:3px;box-shadow:0 6px 16px rgba(11,23,48,.2), 0 0 0 3px #fff, 0 0 0 4px var(--line);}
+  .page-head h1{font-size:clamp(16px,3vh,19px);color:var(--navy);font-weight:800;line-height:1.35;letter-spacing:.2px;}
+  .page-head h1 .school-line{display:block;color:var(--crimson);font-size:clamp(12.5px,2.4vh,13.5px);font-weight:700;margin-top:2px;}
+  .db-status{font-size:11px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px;}
+  .db-status .n{color:var(--navy);font-weight:800;}
+  .subtitle-rule{width:46px;height:3px;background:var(--gold);margin:0 0 clamp(14px,2.6vh,20px);border-radius:2px;}
+
+  .layout{display:grid;grid-template-columns:380px 1fr;gap:22px;align-items:start;}
+  @media (max-width:960px){.layout{grid-template-columns:1fr;}}
+
+  .panel{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff;margin-bottom:clamp(14px,2.4vh,18px);}
+  .panel h2{font-size:11.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+  .panel h2 .count-badge{background:var(--panel);color:var(--navy);border-radius:20px;padding:2px 9px;font-size:10.5px;font-weight:800;letter-spacing:0;text-transform:none;}
+
+  .field{margin-bottom:clamp(10px,2vh,14px);text-align:left;}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:clamp(8px,1.5vh,10px) 12px;border:1px solid var(--line);border-radius:4px;
+    font-size:13.5px;background:#fff;color:var(--ink);font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:70px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--crimson);}
+  .compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:720px){.compose-grid{grid-template-columns:1fr;}}
+
+  /* ---------- Records DB panel ---------- */
+  .db-search{position:relative;margin-bottom:12px;}
+  .db-search input{padding-left:30px;}
+  .db-search svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--muted);}
+
+  .student-form{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:14px;}
+  .student-form .grid3{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+  .student-form input, .student-form select{
+    width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:4px;font-size:12.5px;background:#fff;font-family:inherit;
+  }
+  .student-form .full{grid-column:1 / -1;}
+  .student-form .form-actions{display:flex;gap:8px;margin-top:2px;}
+  .student-form .form-actions button{flex:1;}
+
+  .student-list{max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;}
+  .student-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);font-size:12px;}
+  .student-row:last-child{border-bottom:none;}
+  .student-row:hover{background:var(--panel);}
+  .student-row .who{flex:1;min-width:0;}
+  .student-row .who .nm{font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .student-row .who .sub{color:var(--muted);font-size:10.5px;}
+  .student-row .score-chip{font-weight:800;font-size:11px;color:var(--navy);width:40px;text-align:right;flex-shrink:0;}
+  .student-row .mini-btn{border:none;background:none;cursor:pointer;color:var(--muted);font-size:13px;padding:2px 4px;flex-shrink:0;}
+  .student-row .mini-btn:hover{color:var(--crimson);}
+  .empty-hint{padding:16px 10px;text-align:center;color:var(--muted);font-size:12px;font-style:italic;}
+
+  .badge{display:inline-block;padding:1.5px 7px;border-radius:20px;font-size:9.5px;font-weight:800;letter-spacing:.2px;text-transform:uppercase;flex-shrink:0;}
+  .badge.employed{background:#e8f5ec;color:var(--ok);}
+  .badge.education{background:#eaf1ff;color:#1d4ed8;}
+  .badge.entrepreneur{background:#fff3e0;color:#b5650a;}
+  .badge.unemployed{background:#fdecea;color:var(--danger);}
+  .badge.unknown{background:#f1f1f1;color:var(--muted);}
+
+  .db-tools{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .db-tools button{flex:1;min-width:120px;}
+  .import-box{display:none;margin-top:10px;}
+  .import-box.show{display:block;}
+  .import-box textarea{width:100%;min-height:80px;font-size:11px;font-family:"Consolas",monospace;padding:8px;border:1px solid var(--line);border-radius:4px;}
+  .import-box .import-actions{display:flex;gap:8px;margin-top:6px;}
+  .import-box .import-actions button{flex:1;}
+
+  button.action-btn{
+    border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:6px;
+    padding:9px 13px;font-size:12.5px;font-weight:700;cursor:pointer;transition:transform .12s ease, background .12s ease;
+  }
+  button.action-btn:hover{background:#fafafa;}
+  button.action-btn:active{transform:scale(.97);}
+  button.action-btn.gold{background:var(--gold);border-color:var(--gold);color:#3a2600;}
+  button.action-btn.gold:hover{filter:brightness(0.96);}
+  button.action-btn.crimson{background:var(--crimson);border-color:var(--crimson);color:#fff;}
+  button.action-btn.crimson:hover{background:var(--crimson-dark);}
+  button.action-btn.navy{background:var(--navy);border-color:var(--navy);color:#fff;}
+  button.action-btn.navy:hover{background:var(--navy-deep);}
+  button.action-btn.danger-outline{color:var(--danger);border-color:#f1c3bc;}
+  button.action-btn.small{padding:6px 10px;font-size:11.5px;}
+  .row-actions{display:flex;gap:8px;margin-top:4px;}
+  .row-actions button{flex:1;}
+
+  .topbar-actions{display:flex;gap:8px;}
+  .topbar-actions button{
+    border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;
+    border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .topbar-actions button.gold{background:var(--gold);border-color:var(--gold);color:#3a2600;}
+  .topbar-actions button:hover{background:rgba(255,255,255,.18);}
+  .topbar-actions button.gold:hover{filter:brightness(0.96);}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--navy-deep);color:#fff;border:1px solid var(--gold);
+    border-radius:8px;padding:11px 20px;font-size:13px;font-weight:600;
+    box-shadow:0 10px 30px rgba(11,23,48,.35);opacity:0;pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;z-index:999;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{border-color:var(--danger);}
+
+  /* ---------- Printable preview ---------- */
+  .preview-wrap{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:clamp(14px,2.4vh,22px);}
+  .preview-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .preview-toolbar span{font-size:11.5px;color:var(--muted);}
+  .preview-toolbar .filter-inline{display:flex;align-items:center;gap:6px;}
+  .preview-toolbar select{border:1px solid var(--line);background:#fff;border-radius:5px;padding:5px 8px;font-size:11.5px;color:var(--navy);font-weight:700;}
+  .preview-toolbar button{border:1px solid var(--line);background:#fff;border-radius:5px;padding:5px 10px;font-size:12px;font-weight:700;color:var(--navy);cursor:pointer;}
+
+  .doc-paper{
+    max-width:900px;margin:0 auto;background:#fff;padding:clamp(20px,4vw,36px);
+    border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);
+    font-family:Georgia,"Times New Roman",serif;color:#111;position:relative;
+  }
+  .doc-letterhead{display:flex;align-items:flex-start;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:16px;}
+  .doc-letterhead img{height:58px;width:58px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #ccc;flex-shrink:0;}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:21px;font-weight:800;color:#122148;letter-spacing:.2px;}
+  .doc-headtext .school-address{font-size:11.5px;color:#444;margin-top:3px;line-height:1.5;}
+  .doc-office-row{display:flex;justify-content:space-between;font-size:12px;font-style:italic;margin-bottom:14px;color:#333;}
+  .doc-banner{background:#20242e;color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;padding:9px;margin-bottom:14px;text-transform:uppercase;position:relative;overflow:hidden;}
+  .doc-banner::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--crimson),var(--gold));}
+
+  .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 26px;font-size:12.5px;margin-bottom:18px;}
+  .meta-row{display:flex;gap:8px;}
+  .meta-row .lbl{font-weight:700;min-width:150px;flex-shrink:0;color:#20242e;}
+  .meta-row .val{border-bottom:1px solid #333;flex:1;font-weight:700;padding-bottom:2px;min-height:16px;}
+
+  .doc-section-title{font-weight:700;font-size:13px;margin:22px 0 12px;text-transform:uppercase;letter-spacing:.3px;color:#20242e;border-bottom:1px solid #ccc;padding-bottom:5px;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;}
+  .doc-section-title .tag{font-size:9.5px;font-weight:800;color:var(--ok);background:#e8f5ec;padding:2px 8px;border-radius:20px;text-transform:none;letter-spacing:0;}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:6px;font-family:Arial,sans-serif;}
+  @media (max-width:720px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi-card{
+    border:1px solid var(--line);border-radius:10px;padding:13px 14px;background:linear-gradient(160deg,#fbfbfa 0%,#f3f3f1 100%);
+    position:relative;overflow:hidden;
+  }
+  .kpi-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--navy);}
+  .kpi-card.ok::before{background:var(--ok);}
+  .kpi-card.danger::before{background:var(--danger);}
+  .kpi-card .kpi-top{display:flex;align-items:center;justify-content:space-between;}
+  .kpi-card svg{width:16px;height:16px;stroke:var(--muted);flex-shrink:0;opacity:.8;}
+  .kpi-card.ok svg{stroke:var(--ok);}
+  .kpi-card.danger svg{stroke:var(--danger);}
+  .kpi-label{font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);}
+  .kpi-value{font-size:23px;font-weight:800;color:var(--navy);margin-top:5px;line-height:1.1;}
+  .kpi-value.ok{color:var(--ok);}
+  .kpi-value.danger{color:var(--danger);}
+  .kpi-sub{font-size:10px;color:var(--muted);margin-top:2px;font-weight:600;}
+  .kpi-empty{font-size:12.5px;color:var(--muted);font-style:italic;font-family:Arial,sans-serif;padding:6px 0;}
+
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-family:Arial,sans-serif;}
+  .bar-label{width:80px;flex-shrink:0;font-size:11.5px;color:var(--ink);font-weight:600;}
+  .bar-track{flex:1;height:13px;background:#eee;border-radius:7px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:7px;background:linear-gradient(90deg,var(--crimson),var(--gold));transition:width .5s ease;}
+  .bar-pct{width:70px;flex-shrink:0;text-align:right;font-size:11px;font-weight:800;color:var(--navy);}
+  .bar-empty{font-size:12.5px;color:var(--muted);font-style:italic;font-family:Arial,sans-serif;padding:6px 0;}
+
+  .split-two{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;font-family:Arial,sans-serif;}
+  @media (max-width:640px){.split-two{grid-template-columns:1fr;}}
+  .donut-wrap{display:flex;align-items:center;gap:18px;}
+  .donut{width:118px;height:118px;border-radius:50%;flex-shrink:0;position:relative;}
+  .donut .hole{position:absolute;inset:16px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:inset 0 0 0 1px var(--line);}
+  .donut .hole b{font-size:18px;color:var(--navy);}
+  .donut .hole span{font-size:8.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+  .legend{display:flex;flex-direction:column;gap:7px;}
+  .legend .li{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink);}
+  .legend .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .legend .li b{margin-left:auto;color:var(--navy);}
+
+  .doc-notes{font-size:12.5px;line-height:1.7;margin-top:14px;text-align:justify;font-family:Arial,sans-serif;}
+  .memo-signoff{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin:30px 0 8px;}
+  .memo-signoff div{font-size:12.5px;font-family:Arial,sans-serif;}
+  .memo-signoff .sig-line{border-top:1px solid #333;padding-top:4px;font-weight:700;min-height:20px;}
+  .memo-signoff .sig-title{color:#555;font-size:11px;}
+  .memo-ref{font-size:11px;margin-top:14px;font-weight:700;color:#555;text-align:center;font-family:Arial,sans-serif;}
+  .memo-ref .gen-note{display:block;font-weight:400;color:#888;font-size:10px;margin-top:3px;}
+
+  @media print{
+    header.topbar,.card > .accent,.card .page-head,.card .subtitle-rule,.layout > div:first-child,.preview-toolbar,.no-print{display:none !important;}
+    body{background:#fff;}
+    main{padding:0;display:block;}
+    .card{box-shadow:none;border:none;max-width:none;}
+    .card .body{padding:0;}
+    .layout{display:block;}
+    .preview-wrap{background:#fff;border:none;padding:0;}
+    .doc-paper{box-shadow:none;max-width:none;}
+  }
+
+  /* ---------- Alumni additions ---------- */
+  .badge.honor{background:#fdf3e3;color:#a3660a;}
+  .doc-to-block{margin-bottom:16px;font-family:Arial,sans-serif;}
+  .doc-to-block .to-label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+  .doc-to-block .to-name{font-size:16px;font-weight:800;color:var(--navy);}
+  .doc-to-block .to-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .letter-para{font-size:13px;line-height:1.85;margin-bottom:14px;text-align:justify;font-family:Georgia,"Times New Roman",serif;color:#20242e;}
+  .letter-para b{color:var(--navy);}
+
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="left">
+    <img class="kps-logo" id="topbarKpsLogo" alt="Kingsville Public School logo">
+    <div>
+      <b>KINGSVILLE PUBLIC HIGH SCHOOL</b>
+      <span class="page-label">Registrar Dashboard · Alumni Records &amp; Verification Letter</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="live-pill no-print"><span class="dot"></span>AUTO-SYNCED</div>
+    <div class="topbar-actions no-print">
+      <button id="generateBtn">Generate</button>
+      <button id="printBtn">Print</button>
+      <button id="saveBtn">Save</button>
+      <button id="shareBtn">Share</button>
+      <button id="downloadBtn" class="gold">Download</button>
+    </div>
+    <img class="moe-mini" id="topbarMoeLogo" alt="Ministry of Education seal">
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+
+      <div class="page-head">
+        <div class="id">
+          <div class="seal-stage"><img class="seal" id="cardSeal" alt="School seal"></div>
+          <h1>Alumni Verification Letter<span class="school-line">Kingsville Public High School — Office of the Registrar</span></h1>
+        </div>
+        <div class="db-status no-print">Alumni in database: <span class="n" id="dbCountBadge">0</span> · Last updated <span id="dbUpdatedAt">—</span></div>
+      </div>
+      <div class="subtitle-rule"></div>
+
+      <div class="layout">
+
+        <!-- CONFIG COLUMN -->
+        <div class="no-print">
+
+          <div class="panel">
+            <h2>Letter Setup</h2>
+
+            <div class="field">
+              <label for="alumSelect">Generate letter for</label>
+              <select id="alumSelect">
+                <option value="">— Select an alumnus/alumna —</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="purpose">Purpose of verification</label>
+              <select id="purpose">
+                <option>General Verification</option>
+                <option>Employment Verification</option>
+                <option>Further Education / University Application</option>
+                <option>Visa / Travel Documentation</option>
+                <option>Scholarship Application</option>
+              </select>
+            </div>
+
+            <div class="compose-grid">
+              <div class="field">
+                <label for="issueDate">Date issued</label>
+                <input id="issueDate" type="date">
+              </div>
+              <div class="field">
+                <label for="preparedBy">Prepared by (Registrar)</label>
+                <input id="preparedBy" type="text" placeholder="Registrar name">
+              </div>
+            </div>
+
+            <div class="field" style="margin-bottom:0;">
+              <label for="notes">Notes</label>
+              <textarea id="notes" placeholder="Any remarks to include below the statistics"></textarea>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>Alumni Database <span class="count-badge" id="panelCountBadge">0 records</span></h2>
+
+            <div class="db-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="searchBox" type="text" placeholder="Search by name…">
+            </div>
+
+            <div class="student-form">
+              <input type="hidden" id="editId">
+              <div class="grid3">
+                <input id="aName" type="text" placeholder="Full name of alumnus/alumna" class="full">
+              </div>
+              <div class="grid3">
+                <select id="aGradYear">
+                  <!-- populated by JS -->
+                </select>
+                <select id="aHonor">
+                  <option>Regular Graduate</option>
+                  <option>Honor Roll</option>
+                  <option>Valedictorian</option>
+                  <option>Salutatorian</option>
+                </select>
+              </div>
+              <div class="grid3">
+                <select id="aStatus">
+                  <option>Employed</option><option>Further Education</option>
+                  <option>Entrepreneur</option><option>Unemployed</option><option>Unknown</option>
+                </select>
+                <input id="aOccupation" type="text" placeholder="Occupation / institution">
+              </div>
+              <div class="grid3">
+                <input id="aPhone" type="tel" placeholder="Phone number" class="full">
+              </div>
+              <div class="grid3">
+                <input id="aId" type="text" placeholder="Alumni ID / former student ID" class="full">
+              </div>
+              <div class="form-actions">
+                <button class="action-btn crimson small" id="addStudentBtn">+ Add alumnus/alumna</button>
+                <button class="action-btn small" id="cancelEditBtn" style="display:none;">Cancel</button>
+              </div>
+            </div>
+
+            <div class="student-list" id="studentList"></div>
+
+            <div class="db-tools">
+              <button class="action-btn small" id="toggleImportBtn">Import data</button>
+              <button class="action-btn small" id="exportBtn">Export backup</button>
+              <button class="action-btn small danger-outline" id="clearDbBtn">Clear database</button>
+            </div>
+
+            <div class="import-box" id="importBox">
+              <textarea id="importText" placeholder='Paste JSON, e.g. [{"name":"Jane Doe","gradYear":"2021","honor":"Honor Roll","status":"Further Education","occupation":"University of Liberia","phone":"0770000000","alumniId":"KPS-2021-014"}]'></textarea>
+              <div class="import-actions">
+                <button class="action-btn small navy" id="doImportBtn">Import records</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PREVIEW COLUMN -->
+        <div class="preview-wrap">
+          <div class="preview-toolbar no-print">
+            <span>The letter fills in from the selected alumnus/alumna; statistics below are computed automatically from the database.</span>
+            <div class="filter-inline">
+              <button id="clearAllBtn">Reset letter fields</button>
+            </div>
+          </div>
+
+          <div class="doc-paper" id="paper">
+            <div class="doc-letterhead">
+              <img id="rSchoolLogo" alt="School logo">
+              <div class="doc-headtext">
+                <div class="school-name">KINGSVILLE PUBLIC HIGH SCHOOL</div>
+                <div class="school-address">Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia</div>
+              </div>
+              <img id="rMoeLogo" alt="Ministry of Education seal">
+            </div>
+
+            <div class="doc-office-row">
+              <span>Office of the Registrar</span>
+              <span id="mGenerated2">Date generated: —</span>
+            </div>
+
+            <div class="doc-banner" id="pvTitle">ALUMNI VERIFICATION LETTER</div>
+
+            <div class="doc-to-block">
+              <div class="to-label">To whom it may concern</div>
+              <div class="to-name" id="pvToName">—</div>
+              <div class="to-sub" id="pvToSub">—</div>
+            </div>
+
+            <div class="meta-grid">
+              <div class="meta-row"><span class="lbl">Graduation year:</span><span class="val" id="mGradYear">—</span></div>
+              <div class="meta-row"><span class="lbl">Honor status:</span><span class="val" id="mHonor">—</span></div>
+              <div class="meta-row"><span class="lbl">Current status:</span><span class="val" id="mStatus">—</span></div>
+              <div class="meta-row"><span class="lbl">Occupation / institution:</span><span class="val" id="mOccupation">—</span></div>
+              <div class="meta-row"><span class="lbl">Alumni ID:</span><span class="val" id="mAlumniId">—</span></div>
+              <div class="meta-row"><span class="lbl">Contact phone:</span><span class="val" id="mPhone">—</span></div>
+              <div class="meta-row"><span class="lbl">Purpose of letter:</span><span class="val" id="mPurpose">—</span></div>
+              <div class="meta-row"><span class="lbl">Date issued:</span><span class="val" id="mIssueDate">—</span></div>
+              <div class="meta-row"><span class="lbl">Prepared by:</span><span class="val" id="mPrepared">—</span></div>
+              <div class="meta-row"><span class="lbl">Reg. reference:</span><span class="val" id="mRefInline">—</span></div>
+            </div>
+
+            <div class="doc-section-title">Letter of Verification</div>
+            <div id="letterBody"></div>
+
+            <div class="doc-section-title">Alumni Statistics <span class="tag">auto-calculated</span></div>
+            <div class="kpi-grid" id="kpiGrid"></div>
+            <div class="kpi-empty" id="kpiEmpty" style="display:none;">No alumni records in the database yet — add or import records on the left.</div>
+
+            <div class="doc-section-title">Graduates by Year <span class="tag">last 6 years</span></div>
+            <div id="barGrid"></div>
+            <div class="bar-empty" id="barEmpty" style="display:none;">No records to break down yet.</div>
+
+            <div class="doc-section-title">Current Status &amp; Honors Distribution</div>
+            <div class="split-two" id="donutSection">
+              <div class="donut-wrap">
+                <div class="donut" id="perfDonut"><div class="hole"><b id="donutCenter">0%</b><span>Employed / Studying</span></div></div>
+                <div class="legend" id="perfLegend"></div>
+              </div>
+              <div class="legend" id="statusLegend"></div>
+            </div>
+
+            <p class="doc-notes" id="pvNotes" style="display:none;"></p>
+
+            <div class="memo-signoff">
+              <div><div class="sig-line" id="sigPrepared">&nbsp;</div>Prepared by</div>
+              <div><div class="sig-line">&nbsp;</div>Registrar, Kingsville Public High School</div>
+            </div>
+
+            <div class="memo-ref" id="mRef">Reference: ALM-000001<span class="gen-note">Figures reflect the live alumni database at time of generation.</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast no-print" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(async function(){
+  const auth = await KPS.requireRole(['registrar', 'super_admin']);
+  if (!auth || !auth.user) return;
+
+  const SCHOOL_NAME = "Kingsville Public High School";
+  const SCHOOL_ADDRESS = "Kingsville Township, Kingsville #7, Careysburg District, Montserrado County, Liberia";
+  // Printed-letter reference numbers (e.g. "ALM-000123") are a local,
+  // per-device document counter — not alumni-of-record data — so this one
+  // key stays in localStorage on purpose. See 014_addendum_alumni_wiring.sql.
+  const REF_KEY = "kps_registrar_alumni_ref_seed_v1";
+  const sbc = () => window.sb;
+
+  // -------- Supabase <-> UI record mapping --------
+  // The rest of this page's rendering code was built around a plain
+  // { id, name, gradYear, honor, status, occupation, phone, alumniId }
+  // shape, so we keep that shape in memory (`db.students`) and translate
+  // to/from the real `public.alumni` table at the load/save boundary only.
+  function rowToRecord(row){
+    return {
+      id: row.id,
+      name: row.full_name,
+      gradYear: String(row.graduation_year),
+      honor: row.honor || 'Regular Graduate',
+      status: row.employment_status || 'Unknown',
+      occupation: row.occupation || '—',
+      phone: row.phone || '—',
+      alumniId: row.alumni_number || '—',
+    };
+  }
+  function recordToRow(record){
+    return {
+      full_name: record.name,
+      graduation_year: parseInt(record.gradYear, 10),
+      honor: record.honor,
+      employment_status: record.status,
+      occupation: record.occupation === '—' ? null : record.occupation,
+      phone: record.phone === '—' ? null : record.phone,
+      alumni_number: record.alumniId === '—' ? null : record.alumniId,
+    };
+  }
+
+  const el = id => document.getElementById(id);
+  const toast = el('toast');
+  function showToast(msg, isErr){
+    toast.textContent = msg;
+    toast.classList.toggle('err', !!isErr);
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>toast.classList.remove('show'), 2600);
+  }
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function uid(){ return 'a_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+  function fmtDate(d){
+    if(!d) return '—';
+    const dt = new Date(d + 'T00:00:00');
+    if(isNaN(dt)) return d;
+    return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+  }
+
+  // -------- Logos --------
+  const KPS_LOGO = "../assets/images/img-7bc004e2cc65bfc9.jpg";
+  const MOE_SEAL = "../assets/images/img-d683f833d62c7b38.png";
+  ['topbarKpsLogo','cardSeal','rSchoolLogo'].forEach(id => el(id).src = KPS_LOGO);
+  ['topbarMoeLogo','rMoeLogo'].forEach(id => el(id).src = MOE_SEAL);
+
+  // -------- Graduation-year select options --------
+  const thisYear = new Date().getFullYear();
+  const yearsBack = 15;
+  (function populateYearSelect(){
+    const sel = el('aGradYear');
+    for(let y = thisYear; y >= thisYear - yearsBack; y--){
+      const opt = document.createElement('option');
+      opt.value = String(y); opt.textContent = String(y);
+      sel.appendChild(opt);
+    }
+  })();
+
+  // -------- DB (public.alumni, live Supabase table) --------
+  let db = { students: [] };
+  async function loadDb(){
+    const { data, error } = await sbc()
+      .from('alumni')
+      .select('*')
+      .order('graduation_year', { ascending: false })
+      .order('full_name');
+    if(error){
+      console.error('[alumni] load failed:', error);
+      showToast('Could not load the alumni database: ' + error.message, true);
+      db = { students: [] };
+      return;
+    }
+    db = { students: (data || []).map(rowToRecord) };
+  }
+  function markSynced(){
+    el('dbUpdatedAt').textContent = new Date().toLocaleTimeString();
+  }
+
+  function nextRef(){
+    let n = parseInt(localStorage.getItem(REF_KEY) || '1', 10);
+    localStorage.setItem(REF_KEY, String(n + 1));
+    return 'ALM-' + String(n).padStart(6,'0');
+  }
+
+  // -------- Student-form CRUD --------
+  function clearForm(){
+    el('editId').value = '';
+    el('aName').value = '';
+    el('aGradYear').value = String(thisYear);
+    el('aHonor').value = 'Regular Graduate';
+    el('aStatus').value = 'Employed';
+    el('aOccupation').value = '';
+    el('aPhone').value = '';
+    el('aId').value = '';
+    el('addStudentBtn').textContent = '+ Add alumnus/alumna';
+    el('cancelEditBtn').style.display = 'none';
+  }
+
+  el('addStudentBtn').addEventListener('click', async () => {
+    const name = el('aName').value.trim();
+    if(!name){ showToast('Please enter the alumnus/alumna full name.', true); return; }
+    const editId = el('editId').value;
+    const record = {
+      id: editId || uid(),
+      name,
+      gradYear: el('aGradYear').value,
+      honor: el('aHonor').value,
+      status: el('aStatus').value,
+      occupation: el('aOccupation').value.trim() || '—',
+      phone: el('aPhone').value.trim() || '—',
+      alumniId: el('aId').value.trim() || '—',
+    };
+    const btn = el('addStudentBtn');
+    const original = btn.textContent;
+    btn.disabled = true;
+    try{
+      if(editId){
+        const { error } = await sbc().from('alumni').update(recordToRow(record)).eq('id', editId);
+        if(error) throw error;
+        showToast('Alumni record updated.');
+      } else {
+        const row = recordToRow(record);
+        row.created_by = auth.user.id;
+        const { error } = await sbc().from('alumni').insert(row);
+        if(error) throw error;
+        showToast('Alumnus/alumna added to database.');
+      }
+      clearForm();
+      await loadDb();
+      markSynced();
+      refreshAll();
+    }catch(err){
+      console.error('[alumni] save failed:', err);
+      showToast('Could not save that record: ' + (err.message || 'unknown error'), true);
+    }finally{
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  });
+
+  el('cancelEditBtn').addEventListener('click', clearForm);
+
+  function editStudent(id){
+    const s = db.students.find(x => x.id === id);
+    if(!s) return;
+    el('editId').value = s.id;
+    el('aName').value = s.name;
+    el('aGradYear').value = s.gradYear;
+    el('aHonor').value = s.honor;
+    el('aStatus').value = s.status;
+    el('aOccupation').value = s.occupation === '—' ? '' : s.occupation;
+    el('aPhone').value = s.phone === '—' ? '' : s.phone;
+    el('aId').value = s.alumniId === '—' ? '' : s.alumniId;
+    el('addStudentBtn').textContent = 'Save changes';
+    el('cancelEditBtn').style.display = 'block';
+    window.scrollTo({ top: el('aName').getBoundingClientRect().top + window.scrollY - 100, behavior:'smooth' });
+  }
+
+  async function deleteStudent(id){
+    try{
+      const { error } = await sbc().from('alumni').delete().eq('id', id);
+      if(error) throw error;
+      if(el('editId').value === id) clearForm();
+      await loadDb();
+      markSynced();
+      refreshAll();
+      showToast('Alumni record removed.');
+    }catch(err){
+      console.error('[alumni] delete failed:', err);
+      showToast('Could not remove that record: ' + (err.message || 'unknown error'), true);
+    }
+  }
+
+  const STATUS_CLASS = { 'Employed':'employed', 'Further Education':'education', 'Entrepreneur':'entrepreneur', 'Unemployed':'unemployed', 'Unknown':'unknown' };
+
+  function renderStudentList(){
+    const q = el('searchBox').value.trim().toLowerCase();
+    const box = el('studentList');
+    const list = db.students
+      .filter(s => !q || s.name.toLowerCase().includes(q))
+      .sort((a,b) => b.gradYear.localeCompare(a.gradYear) || a.name.localeCompare(b.name));
+    if(!list.length){
+      box.innerHTML = `<div class="empty-hint">${db.students.length ? 'No alumni match your search.' : 'No alumni records yet — add one above or import a backup.'}</div>`;
+      return;
+    }
+    box.innerHTML = list.map(s => `
+      <div class="student-row">
+        <div class="who">
+          <div class="nm">${escapeHtml(s.name)}</div>
+          <div class="sub">Class of ${escapeHtml(s.gradYear)} · <span class="badge ${STATUS_CLASS[s.status]||'unknown'}">${escapeHtml(s.status)}</span>${s.honor !== 'Regular Graduate' ? ` · <span class="badge honor">${escapeHtml(s.honor)}</span>` : ''}</div>
+        </div>
+        <button class="mini-btn" title="Edit" data-edit="${s.id}">✎</button>
+        <button class="mini-btn" title="Delete" data-del="${s.id}">✕</button>
+      </div>`).join('');
+    box.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => editStudent(b.getAttribute('data-edit'))));
+    box.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+      if(confirm('Remove this alumni record? This cannot be undone.')) deleteStudent(b.getAttribute('data-del'));
+    }));
+    el('panelCountBadge').textContent = db.students.length + ' record' + (db.students.length === 1 ? '' : 's');
+    el('dbCountBadge').textContent = db.students.length;
+  }
+
+  el('searchBox').addEventListener('input', renderStudentList);
+
+  function refreshStudentSelect(){
+    const sel = el('alumSelect');
+    const current = sel.value;
+    const sorted = db.students.slice().sort((a,b) => b.gradYear.localeCompare(a.gradYear) || a.name.localeCompare(b.name));
+    sel.innerHTML = '<option value="">— Select an alumnus/alumna —</option>' +
+      sorted.map(s => `<option value="${s.id}">${escapeHtml(s.name)} (Class of ${escapeHtml(s.gradYear)})</option>`).join('');
+    if(sorted.some(s => s.id === current)) sel.value = current;
+  }
+  el('alumSelect').addEventListener('change', refreshAll);
+  el('purpose').addEventListener('change', refreshAll);
+
+  // -------- Import / export / clear --------
+  el('toggleImportBtn').addEventListener('click', () => el('importBox').classList.toggle('show'));
+  el('doImportBtn').addEventListener('click', async () => {
+    let rows;
+    try{
+      const parsed = JSON.parse(el('importText').value);
+      if(!Array.isArray(parsed)) throw new Error('not an array');
+      rows = parsed.filter(r => r && r.name).map(r => {
+        const row = recordToRow({
+          name: String(r.name),
+          gradYear: String(r.gradYear || thisYear),
+          honor: r.honor || 'Regular Graduate',
+          status: r.status || 'Unknown',
+          occupation: r.occupation || '—',
+          phone: r.phone || '—',
+          alumniId: r.alumniId || '—',
+        });
+        row.created_by = auth.user.id;
+        return row;
+      });
+    }catch(e){
+      showToast('Could not parse that JSON. Check the format and try again.', true);
+      return;
+    }
+    if(!rows.length){ showToast('No valid records found in that JSON.', true); return; }
+    try{
+      const { error } = await sbc().from('alumni').insert(rows);
+      if(error) throw error;
+      el('importText').value = '';
+      el('importBox').classList.remove('show');
+      await loadDb();
+      markSynced();
+      refreshAll();
+      showToast(rows.length + ' alumni record' + (rows.length===1?'':'s') + ' imported.');
+    }catch(err){
+      console.error('[alumni] import failed:', err);
+      showToast('Could not import those records: ' + (err.message || 'unknown error'), true);
+    }
+  });
+  el('exportBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(db.students, null, 2)], {type:'application/json;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'kps-registrar-alumni-database.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    showToast('Alumni database exported.');
+  });
+  el('clearDbBtn').addEventListener('click', async () => {
+    if(!confirm('Clear the entire alumni database? This cannot be undone.')) return;
+    try{
+      // no bare "delete everything" without a filter — match every real id
+      const { error } = await sbc().from('alumni').delete().not('id', 'is', null);
+      if(error) throw error;
+      clearForm();
+      await loadDb();
+      markSynced();
+      refreshAll();
+      showToast('Alumni database cleared.');
+    }catch(err){
+      console.error('[alumni] clear failed:', err);
+      showToast('Could not clear the database: ' + (err.message || 'unknown error'), true);
+    }
+  });
+
+  // -------- Stats --------
+  function computeStats(list){
+    const total = list.length;
+    const employed = list.filter(s => s.status === 'Employed').length;
+    const education = list.filter(s => s.status === 'Further Education').length;
+    const entrepreneur = list.filter(s => s.status === 'Entrepreneur').length;
+    const unemployed = list.filter(s => s.status === 'Unemployed').length;
+    const unknown = list.filter(s => s.status === 'Unknown').length;
+    const honor = list.filter(s => s.honor && s.honor !== 'Regular Graduate').length;
+    const engagedPct = total ? Math.round(((employed + education + entrepreneur) / total) * 100) : 0;
+    const yearCounts = {};
+    list.forEach(s => { yearCounts[s.gradYear] = (yearCounts[s.gradYear] || 0) + 1; });
+    let commonYear = '—', commonYearCount = 0;
+    Object.entries(yearCounts).forEach(([y,c]) => { if(c > commonYearCount){ commonYear = y; commonYearCount = c; } });
+    return { total, employed, education, entrepreneur, unemployed, unknown, honor, engagedPct, yearCounts, commonYear };
+  }
+
+  function renderKPIs(stats, total){
+    const grid = el('kpiGrid');
+    el('kpiEmpty').style.display = total ? 'none' : 'block';
+    if(!total){ grid.innerHTML = ''; return; }
+    const cards = [
+      { label:'Total Alumni', value: stats.total, cls:'', sub:'in the database' },
+      { label:'Employed', value: stats.employed, cls:'ok', sub: stats.total ? Math.round(stats.employed/stats.total*100)+'% of total' : '' },
+      { label:'Further Education', value: stats.education, cls:'', sub: stats.total ? Math.round(stats.education/stats.total*100)+'% of total' : '' },
+      { label:'Honor Graduates', value: stats.honor, cls:'', sub: stats.total ? Math.round(stats.honor/stats.total*100)+'% of total' : '' },
+    ];
+    grid.innerHTML = cards.map(c => `
+      <div class="kpi-card ${c.cls}">
+        <div class="kpi-top"><span class="kpi-label">${c.label}</span></div>
+        <div class="kpi-value ${c.cls}">${c.value}</div>
+        <div class="kpi-sub">${c.sub}</div>
+      </div>`).join('');
+  }
+
+  function renderYearBars(list){
+    const grid = el('barGrid');
+    el('barEmpty').style.display = list.length ? 'none' : 'block';
+    if(!list.length){ grid.innerHTML=''; return; }
+    const counts = {};
+    list.forEach(s => { counts[s.gradYear] = (counts[s.gradYear]||0)+1; });
+    const years = Object.keys(counts).sort((a,b)=>b.localeCompare(a)).slice(0,6);
+    const max = Math.max(...years.map(y=>counts[y]), 1);
+    grid.innerHTML = years.map(y => `
+      <div class="bar-row">
+        <div class="bar-label">Class of ${escapeHtml(y)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(counts[y]/max*100)}%"></div></div>
+        <div class="bar-pct">${counts[y]} grad${counts[y]===1?'':'s'}</div>
+      </div>`).join('');
+  }
+
+  function renderDonut(list){
+    const total = list.length;
+    const engaged = list.filter(s => s.status==='Employed'||s.status==='Further Education'||s.status==='Entrepreneur').length;
+    const pct = total ? Math.round(engaged/total*100) : 0;
+    const donut = el('perfDonut');
+    donut.style.background = total
+      ? `conic-gradient(var(--ok) 0% ${pct}%, var(--line) ${pct}% 100%)`
+      : 'var(--line)';
+    donut.innerHTML = `<div class="hole"><b id="donutCenter">${pct}%</b><span>Employed / Studying</span></div>`;
+
+    const statusColors = { 'Employed':'#1e8449','Further Education':'#1d4ed8','Entrepreneur':'#b5650a','Unemployed':'#c0392b','Unknown':'#7a7f8a' };
+    const statusCounts = {};
+    list.forEach(s => { statusCounts[s.status] = (statusCounts[s.status]||0)+1; });
+    el('statusLegend').innerHTML = Object.keys(statusColors).map(k => `
+      <div class="li"><span class="dot" style="background:${statusColors[k]}"></span>${k}<b>${statusCounts[k]||0}</b></div>`).join('');
+
+    const honorColors = { 'Regular Graduate':'#7a7f8a','Honor Roll':'#f2a71b','Valedictorian':'#c8102e','Salutatorian':'#122148' };
+    const honorCounts = {};
+    list.forEach(s => { honorCounts[s.honor] = (honorCounts[s.honor]||0)+1; });
+    el('perfLegend').innerHTML = Object.keys(honorColors).map(k => `
+      <div class="li"><span class="dot" style="background:${honorColors[k]}"></span>${k}<b>${honorCounts[k]||0}</b></div>`).join('');
+  }
+
+  // -------- Letter body --------
+  function letterParagraphs(s){
+    if(!s){
+      return `<p class="letter-para">This letter is issued upon request to confirm alumni status. Please select an alumnus or alumna from the database on the left to generate a personalized verification letter.</p>`;
+    }
+    const purpose = el('purpose').value;
+    const honorLine = s.honor !== 'Regular Graduate' ? ` and graduated with the distinction of <b>${escapeHtml(s.honor)}</b>` : '';
+    let purposeLine = '';
+    if(purpose === 'Employment Verification'){
+      purposeLine = `This letter is issued in support of an employment verification request and confirms the above graduation record as held in our official registry.`;
+    } else if(purpose === 'Further Education / University Application'){
+      purposeLine = `This letter is issued in support of an application for further studies and confirms the above graduation record as held in our official registry.`;
+    } else if(purpose === 'Visa / Travel Documentation'){
+      purposeLine = `This letter is issued in support of visa or travel documentation and confirms the above graduation record as held in our official registry.`;
+    } else if(purpose === 'Scholarship Application'){
+      purposeLine = `This letter is issued in support of a scholarship application and confirms the above graduation record as held in our official registry.`;
+    } else {
+      purposeLine = `This letter is issued as a general confirmation of the above graduation record as held in our official registry.`;
+    }
+    return `
+      <p class="letter-para">This is to certify that <b>${escapeHtml(s.name)}</b> was a duly enrolled student of Kingsville Public High School and successfully completed the secondary school program, graduating with the Class of <b>${escapeHtml(s.gradYear)}</b>${honorLine}.</p>
+      <p class="letter-para">${purposeLine} Our records indicate the alumnus/alumna's current status as <b>${escapeHtml(s.status)}</b>${s.occupation && s.occupation !== '—' ? `, currently associated with <b>${escapeHtml(s.occupation)}</b>` : ''}.</p>
+      <p class="letter-para">Should any recipient of this letter require further confirmation, the Office of the Registrar may be contacted directly, quoting the reference number below.</p>`;
+  }
+
+  // -------- Refresh / render --------
+  function refreshAll(){
+    renderStudentList();
+    refreshStudentSelect();
+    const list = db.students.slice();
+    const stats = computeStats(list);
+    const s = db.students.find(x => x.id === el('alumSelect').value) || null;
+
+    el('mGenerated2').textContent = 'Date generated: ' + new Date().toLocaleDateString();
+    el('mIssueDate').textContent = fmtDate(el('issueDate').value);
+    el('mPurpose').textContent = el('purpose').value;
+    el('mPrepared').textContent = el('preparedBy').value || '—';
+    el('sigPrepared').innerHTML = el('preparedBy').value ? escapeHtml(el('preparedBy').value) : '&nbsp;';
+    el('mRefInline').textContent = el('mRef').textContent.split('\n')[0].replace('Reference: ','');
+
+    if(s){
+      el('pvToName').textContent = s.name;
+      el('pvToSub').textContent = 'Alumni ID: ' + s.alumniId;
+      el('mGradYear').textContent = s.gradYear;
+      el('mHonor').textContent = s.honor;
+      el('mStatus').textContent = s.status;
+      el('mOccupation').textContent = s.occupation;
+      el('mAlumniId').textContent = s.alumniId;
+      el('mPhone').textContent = s.phone;
+    } else {
+      el('pvToName').textContent = '—';
+      el('pvToSub').textContent = 'No alumnus/alumna selected';
+      ['mGradYear','mHonor','mStatus','mOccupation','mAlumniId','mPhone'].forEach(id => el(id).textContent = '—');
+    }
+
+    el('letterBody').innerHTML = letterParagraphs(s);
+
+    const notes = el('notes').value.trim();
+    el('pvNotes').style.display = notes ? 'block' : 'none';
+    el('pvNotes').textContent = notes ? ('Notes: ' + notes) : '';
+
+    renderKPIs(stats, list.length);
+    renderYearBars(list);
+    renderDonut(list);
+  }
+
+  ['purpose','issueDate','preparedBy','notes'].forEach(id => {
+    el(id).addEventListener('input', refreshAll);
+    el(id).addEventListener('change', refreshAll);
+  });
+
+  el('clearAllBtn').addEventListener('click', () => {
+    document.querySelectorAll('#issueDate,#preparedBy,#notes').forEach(i => i.value = '');
+    el('purpose').value = 'General Verification';
+    refreshAll();
+    showToast('Letter fields reset. Database was not touched.');
+  });
+
+  el('generateBtn').addEventListener('click', () => {
+    el('mRef').innerHTML = 'Reference: ' + nextRef() + '<span class="gen-note">Figures reflect the live alumni database at time of generation.</span>';
+    refreshAll();
+    el('paper').scrollIntoView({ behavior:'smooth', block:'start' });
+    showToast('Letter and statistics refreshed from the database.');
+  });
+
+  function currentReportData(stats, list, s){
+    return {
+      generatedAt: new Date().toISOString(),
+      purpose: el('purpose').value,
+      issueDate: el('issueDate').value,
+      preparedBy: el('preparedBy').value,
+      notes: el('notes').value,
+      selectedAlumnus: s,
+      stats,
+      allAlumni: list,
+      reference: el('mRef').textContent.split('\n')[0],
+    };
+  }
+
+  el('saveBtn').addEventListener('click', () => {
+    try{
+      const list = db.students.slice();
+      const stats = computeStats(list);
+      const s = db.students.find(x => x.id === el('alumSelect').value) || null;
+      const data = currentReportData(stats, list, s);
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const fname = (s ? s.name : 'alumni-verification').trim().replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+      a.href = url; a.download = 'kps-alumni-' + fname + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      showToast('Letter saved.');
+    }catch(err){
+      showToast('Could not save the letter.', true);
+    }
+  });
+
+  el('shareBtn').addEventListener('click', async () => {
+    const s = db.students.find(x => x.id === el('alumSelect').value) || null;
+    const title = 'Alumni Verification Letter';
+    const text = (s ? `${title} — ${s.name}, Class of ${s.gradYear}` : title) + ` — ${SCHOOL_NAME}\n` + el('mRef').textContent.split('\n')[0];
+    if(navigator.share){
+      try{ await navigator.share({ title: title + ' — ' + SCHOOL_NAME, text }); showToast('Shared.'); }
+      catch(err){ /* cancelled */ }
+      return;
+    }
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast('Sharing isn\'t available here, so the letter summary was copied to your clipboard.');
+    }catch(err){
+      window.open('mailto:?subject=' + encodeURIComponent(title + ' — ' + SCHOOL_NAME) + '&body=' + encodeURIComponent(text), '_blank');
+    }
+  });
+
+  el('printBtn').addEventListener('click', () => window.print());
+
+  el('downloadBtn').addEventListener('click', () => {
+    const btn = el('downloadBtn');
+    const original = btn.textContent;
+    btn.textContent = 'Preparing…';
+    btn.disabled = true;
+    html2canvas(el('paper'), {scale:2, backgroundColor:'#ffffff'}).then(canvas => {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p','pt','a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgW = pageWidth;
+      const imgH = canvas.height * (imgW / canvas.width);
+      let heightLeft = imgH;
+      let position = 0;
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', 0, position, imgW, imgH);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0){
+        position = heightLeft - imgH;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgW, imgH);
+        heightLeft -= pageHeight;
+      }
+      const s = db.students.find(x => x.id === el('alumSelect').value) || null;
+      const fname = 'kps-alumni-verification-' + (s ? s.name : 'letter').trim().replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+      pdf.save(fname + '.pdf');
+      btn.textContent = original;
+      btn.disabled = false;
+      showToast('PDF downloaded.');
+    }).catch(() => {
+      showToast('Could not generate the PDF. Please try Print instead.', true);
+      btn.textContent = original;
+      btn.disabled = false;
+    });
+  });
+
+  // ---------------- Init ----------------
+  await loadDb();
+  markSynced();
+  clearForm();
+  el('issueDate').value = new Date().toISOString().slice(0,10);
+  el('mRef').innerHTML = 'Reference: ' + nextRef() + '<span class="gen-note">Figures reflect the live alumni database at time of generation.</span>';
+  refreshAll();
+})();
+</script>
+
+</body>
+</html>

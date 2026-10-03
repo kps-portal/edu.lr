@@ -1,0 +1,35 @@
+{
+  "platform": "EDU.LR",
+  "hierarchy": [
+    {
+      "level": 1,
+      "role": "District Education Officer (DEO)",
+      "scope": "District",
+      "reports_to": "Ministry of Education"
+    },
+    {
+      "level": 2,
+      "role": "Principal",
+      "scope": "School",
+      "reports_to": "DEO"
+    },
+    {
+      "level": 3,
+      "role": "Teacher",
+      "scope": "Assigned classes / subjects",
+      "reports_to": "Principal"
+    },
+    {
+      "level": 4,
+      "role": "Learner",
+      "scope": "Own records / learning",
+      "reports_to": "School"
+    }
+  ],
+  "rules": [
+    "Role scope must be enforced server-side.",
+    "Users may only access records within their authorized administrative boundary.",
+    "Sensitive learner and safeguarding records require additional authorization.",
+    "All approvals, submissions, changes and sensitive access should be audited."
+  ]
+}

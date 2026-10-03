@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; Audit Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:grid; grid-template-columns:272px 1fr; min-height:100vh; }
+
+/* -------- Sidebar -------- */
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--navy-3) 0%, transparent 55%),
+    linear-gradient(190deg, var(--navy) 0%, #0A1226 100%);
+  border-right:1px solid rgba(217,138,36,.18);
+  padding:26px 16px 30px;
+  display:flex; flex-direction:column;
+}
+.brand{ display:flex; align-items:center; gap:12px; padding:2px 10px 22px; border-bottom:1px solid rgba(217,138,36,.18); margin-bottom:18px; }
+.brand img{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:#fff; object-fit:cover; }
+.brand-text .k1{ color:var(--gold-light); font-size:10px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; opacity:.75; }
+.brand-text .k2{ color:#fff; font-family:'Fraunces',serif; font-size:16.5px; font-weight:600; line-height:1.15; }
+
+.role-chip{ display:flex; align-items:center; gap:8px; margin:16px 10px 10px; padding:9px 12px; border-radius:10px; background:linear-gradient(135deg, rgba(217,138,36,.22), rgba(217,138,36,.05)); border:1px solid rgba(217,138,36,.3); }
+.role-chip svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.role-chip span{ color:#fff; font-size:11.5px; font-weight:700; letter-spacing:.03em; }
+
+.nav-group-label{ color:rgba(255,255,255,.32); font-size:10.5px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin:16px 12px 8px; }
+.nav{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:10px;
+  color:rgba(255,255,255,.68); font-size:13.6px; font-weight:500;
+  position:relative; border-left:3px solid transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item svg{ width:17px; height:17px; flex:none; opacity:.85; }
+.nav-item .badge-count{
+  margin-left:auto; background:rgba(224,27,46,.22); color:#ffb9c0; font-size:10.5px;
+  font-weight:700; padding:1px 7px; border-radius:20px;
+}
+.nav-item .badge-count.gold{ background:rgba(217,138,36,.25); color:var(--gold-light); }
+.nav-item:hover{ background:rgba(255,255,255,.05); color:#fff; }
+.nav-item.active{
+  background:linear-gradient(90deg, rgba(216,30,46,.28), rgba(216,30,46,.05));
+  color:#fff; border-left-color:var(--gold);
+}
+.nav-item.active svg{ opacity:1; filter:drop-shadow(0 0 6px rgba(217,138,36,.5)); }
+
+.sidebar-foot{ margin-top:auto; padding-top:16px; border-top:1px solid rgba(217,138,36,.18); }
+.sys-health{ display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.04); }
+.cannot-box{ margin:14px 10px 4px; padding:10px 12px; border-radius:10px; background:rgba(224,27,46,.1); border:1px solid rgba(224,27,46,.22); }
+.cannot-box .title{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#F3A9B1; font-weight:800; margin-bottom:4px; }
+.pulse-dot{ width:8px; height:8px; border-radius:50%; background:#38C87A; box-shadow:0 0 0 0 rgba(56,200,122,.6); animation:pulse 2s infinite; flex:none; }
+.pulse-dot.warn{ background:var(--gold); box-shadow:0 0 0 0 rgba(217,138,36,.6); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(56,200,122,.55);} 70%{box-shadow:0 0 0 8px rgba(56,200,122,0);} 100%{box-shadow:0 0 0 0 rgba(56,200,122,0);} }
+.sys-health-text{ font-size:11.5px; color:rgba(255,255,255,.65); line-height:1.3; }
+.sys-health-text b{ color:#fff; display:block; font-size:12.5px; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper); align-items:center; justify-content:center; flex:none; }
+.hamburger svg{ width:18px; height:18px; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER (ICT signature element) ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS (shared) ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-trend{ font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; }
+.stat-trend.up{ background:#E4F3E9; color:var(--success); }
+.stat-trend.down{ background:#FBE6E6; color:var(--danger); }
+.stat-trend.flat{ background:#EFEAE0; color:var(--muted); }
+.stat-num{ font-family:'Fraunces',serif; font-size:30px; font-weight:700; margin-top:14px; line-height:1; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+/* Bento layout */
+.bento{ display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start; }
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-head .see-all{ font-size:11.8px; color:var(--crimson); font-weight:700; }
+.card-body{ padding:14px 20px 20px; }
+
+/* chart bars */
+.chart-bars{ display:flex; align-items:flex-end; gap:10px; height:140px; padding-top:10px; }
+.chart-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.chart-bar{ width:100%; border-radius:8px 8px 3px 3px; background:linear-gradient(180deg, var(--gold-light), var(--gold-deep)); position:relative; transition:filter .15s; }
+.chart-bar:hover{ filter:brightness(1.08); }
+.chart-bar.alt{ background:linear-gradient(180deg, #9FB6E0, var(--navy-3)); }
+.chart-lbl{ font-size:10.5px; color:var(--muted); font-weight:600; }
+.chart-legend{ display:flex; gap:16px; margin-top:6px; font-size:11.5px; color:var(--muted); }
+.chart-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.chip-dot{ width:8px; height:8px; border-radius:2px; }
+
+/* feed / lists */
+.feed-item{ display:flex; gap:12px; padding:11px 0; border-bottom:1px dashed var(--line); }
+.feed-item:last-child{ border-bottom:none; }
+.feed-dot{ width:32px; height:32px; border-radius:9px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex:none; }
+.feed-dot svg{ width:15px; height:15px; color:var(--crimson); }
+.feed-dot.gold svg{ color:var(--gold-deep); }
+.feed-dot.navy svg{ color:var(--navy-3); }
+.feed-text{ font-size:13px; font-weight:600; }
+.feed-sub{ font-size:11.6px; color:var(--muted); margin-top:1px; }
+.feed-time{ margin-left:auto; font-size:11px; color:var(--muted); white-space:nowrap; }
+
+.row-line{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.row-line:last-child{ border-bottom:none; }
+.row-line .rl-name{ font-size:13px; font-weight:600; }
+.row-line .rl-sub{ font-size:11.5px; color:var(--muted); }
+.progress-track{ height:6px; border-radius:20px; background:var(--line); overflow:hidden; flex:1; }
+.progress-fill{ height:100%; border-radius:20px; background:linear-gradient(90deg, var(--gold), var(--gold-deep)); }
+.progress-fill.ok{ background:linear-gradient(90deg, #8FD8AC, var(--success)); }
+.progress-fill.warn{ background:linear-gradient(90deg, var(--gold-light), var(--warn)); }
+.progress-fill.bad{ background:linear-gradient(90deg, #F0A7AE, var(--danger)); }
+
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.health-row{ display:flex; align-items:center; gap:10px; font-size:12.5px; padding:7px 0; }
+.health-row .hb{ flex:1; height:7px; background:var(--line); border-radius:20px; overflow:hidden; }
+.health-row .hb i{ display:block; height:100%; border-radius:20px; }
+.health-row .hv{ width:74px; text-align:right; font-weight:700; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+button.pill:hover{ filter:brightness(0.96); }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:18px; flex-wrap:wrap; }
+.tab{ padding:8px 16px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; }
+
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+/* Module placeholder cards */
+.module-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow-sm); transition:transform .15s, box-shadow .15s; }
+.module-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.module-ic{ width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; }
+.module-ic svg{ width:19px; height:19px; color:var(--gold-light); }
+.module-card h4{ margin:0; font-size:14.5px; }
+.module-card p{ margin:0; font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* Device status card (network) */
+.device-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:10px; }
+.device-top{ display:flex; align-items:center; justify-content:space-between; }
+.device-ic{ width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); display:flex; align-items:center; justify-content:center; color:#fff; }
+.device-ic svg{ width:19px; height:19px; }
+.device-name{ font-weight:700; font-size:13.5px; margin-top:2px; }
+.device-meta{ font-size:11.5px; color:var(--muted); }
+
+/* Restricted note */
+.restricted-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#FBE6E6; border:1px solid #F3C7CB; margin-top:14px; }
+.restricted-note svg{ width:16px; height:16px; color:var(--danger); flex:none; margin-top:1px; }
+.restricted-note div{ font-size:12px; color:#7A2530; line-height:1.55; }
+.restricted-note b{ color:var(--danger); }
+
+.allowed-note{ display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:12px; background:#E4F3E9; border:1px solid #C7E6D1; margin-top:14px; }
+.allowed-note svg{ width:16px; height:16px; color:var(--success); flex:none; margin-top:1px; }
+.allowed-note div{ font-size:12px; color:#215C3D; line-height:1.55; }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:480px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field input[type=text], .field input[type=password], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.settings-list .row-line{ align-items:flex-start; }
+.settings-list .rl-name{ font-size:13.5px; }
+.settings-list .rl-sub{ margin-top:2px; max-width:52ch; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .bento{ grid-template-columns:1fr; }
+  .grid-3,.grid-4{ grid-template-columns:repeat(2,1fr); }
+}
+@media print{
+  .sidebar, .topbar, .btn, .tbl-actions, .toolbar, .tabs, .toast-wrap, .modal-backdrop, .footer-ribbon, .hamburger{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .view{ display:none !important; }
+  .view.active{ display:block !important; }
+  .card, .stat-card, .module-card, .device-card{ box-shadow:none !important; border:1px solid #ccc !important; break-inside:avoid; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{ position:fixed; left:0; z-index:80; transform:translateX(-104%); transition:transform .2s; width:272px; }
+  .sidebar.open{ transform:translateX(0); }
+  .search-pill{ display:none; }
+  .stat-grid,.grid-3,.grid-2,.grid-4{ grid-template-columns:1fr; }
+  .hamburger{ display:flex; }
+}
+
+/* ============================= AUDIT LOG SPECIFIC ============================= */
+.filter-bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.filter-bar .search-pill{ width:300px; }
+.date-range{ display:flex; align-items:center; gap:8px; }
+.date-range input[type=date]{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:8px 10px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+.date-range span{ color:var(--muted); font-size:12px; }
+
+.log-detail dl{ display:grid; grid-template-columns:120px 1fr; gap:10px 14px; margin:0; font-size:12.8px; }
+.log-detail dt{ color:var(--muted); font-weight:700; }
+.log-detail dd{ margin:0; }
+.log-detail .diff{ background:var(--cream); border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:'IBM Plex Mono',monospace; font-size:11.6px; line-height:1.7; white-space:pre-wrap; }
+.log-detail .diff .rm{ color:var(--danger); }
+.log-detail .diff .add{ color:var(--success); }
+
+.pager{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:16px; flex-wrap:wrap; }
+.pager .pg-info{ font-size:12px; color:var(--muted); }
+.pager .pg-btns{ display:flex; gap:6px; }
+.pager button{ width:32px; height:32px; border-radius:9px; border:1px solid var(--line); background:var(--paper); font-size:12.6px; font-weight:700; }
+.pager button:hover{ border-color:var(--gold); }
+.pager button.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; border-color:transparent; }
+.pager button:disabled{ opacity:.4; cursor:default; }
+
+.ic-btn{ width:20px; height:20px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; flex:none; }
+.ic-btn.login{ background:#E4E9F4; color:var(--navy-3); }
+.ic-btn.create{ background:#E4F3E9; color:var(--success); }
+.ic-btn.update{ background:#FBEED2; color:var(--gold-deep); }
+.ic-btn.delete{ background:#FBE6E6; color:var(--danger); }
+.ic-btn.approve{ background:#E4F3E9; color:var(--success); }
+.ic-btn svg{ width:11px; height:11px; }
+
+@media (max-width: 900px){
+  .filter-bar .search-pill{ width:100%; }
+}
+
+</style>
+<style>
+.app{ display:block; grid-template-columns:none; min-height:100vh; }
+.main{ min-width:0; }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="app">
+  <main class="main">
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia &middot; Ministry of Education</div>
+        <div class="page-title">Audit Log</div>
+      </div>
+      <div class="search-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="globalSearch" type="text" placeholder="Search by user, action, or target&hellip;">
+      </div>
+      <button type="button" class="btn btn-ghost" id="exportBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
+        Export CSV
+      </button>
+      <a class="btn btn-ghost" href="users.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/></svg>
+        View All Users
+      </a>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="view active" id="view-audit-log">
+
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div>
+            <div class="sb-t">Immutable Activity Record</div>
+            <div class="sb-s">Every create, edit, approval, and sign-in across the platform is logged here automatically and cannot be altered or deleted &mdash; including by a <b class="sa">Super Administrator</b>. Use the filters below to narrow by actor, action type, or date range.</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>System Audit Log</h2>
+            <p>A chronological record of account and system activity across Kingsville Public High School&rsquo;s admin console.</p>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+              <span class="stat-trend flat" id="statEventsTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statEventsToday">&ndash;</div>
+            <div class="stat-label">Events logged today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic" style="background:linear-gradient(135deg, var(--danger), #8C0F26);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></div>
+              <span class="stat-trend flat" id="statFailedTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statFailedLogins">&ndash;</div>
+            <div class="stat-label">Failed logins (24h)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+              <span class="stat-trend flat" id="statPendingTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statPendingApprovals">&ndash;</div>
+            <div class="stat-label">Pending approvals</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-ic navy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2S15.5 16.4 15.5 20"/><path d="M17 8l2 2 3.5-3.5"/></svg></div>
+              <span class="stat-trend flat" id="statSessionsTrend">&ndash;</span>
+            </div>
+            <div class="stat-num" id="statActiveSessions">&ndash;</div>
+            <div class="stat-label">Active admin sessions</div>
+          </div>
+        </div>
+
+        <div class="tabs" id="logTabs">
+          <button type="button" class="tab active" data-filter="all">All Activity</button>
+          <button type="button" class="tab" data-filter="login">Logins</button>
+          <button type="button" class="tab" data-filter="user">User Management</button>
+          <button type="button" class="tab" data-filter="approval">Approvals</button>
+          <button type="button" class="tab" data-filter="system">System</button>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="logSearch" type="text" placeholder="Search by actor, action, or target&hellip;">
+          </div>
+          <select class="filter" id="roleFilter">
+            <option value="">All Roles</option>
+            <option>Super Administrator</option>
+            <option>Registrar</option>
+            <option>Teacher</option>
+            <option>Non-Teaching Staff</option>
+            <option>Parent / Guardian</option>
+          </select>
+          <div class="date-range">
+            <input type="date" id="dateFrom">
+            <span>&rarr;</span>
+            <input type="date" id="dateTo">
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body" style="padding-top:14px;">
+            <div class="table-wrap">
+              <table class="data" id="logTable">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Actor</th>
+                    <th>Action</th>
+                    <th>Target</th>
+                    <th>Role</th>
+                    <th>IP Address</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="logTableBody">
+                </tbody>
+              </table>
+
+              <div class="empty-state" id="logEmptyState" style="display:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                <h4 id="logEmptyTitle">No activity found</h4>
+                <p id="logEmptyBody">There are no audit events matching the current filters.</p>
+              </div>
+            </div>
+
+            <div class="pager">
+              <div class="pg-info" id="pgInfo">Loading&hellip;</div>
+              <div class="pg-btns" id="pgBtns">
+                <button type="button" id="pgPrev" disabled>&lsaquo;</button>
+                <button type="button" id="pgNext" disabled>&rsaquo;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <div class="modal-backdrop" id="logModalBackdrop">
+        <div class="modal">
+          <div class="modal-head">
+            <h3>Event Details</h3>
+            <button type="button" id="logModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div class="card-body log-detail" id="logModalBody">
+            <!-- populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-ribbon">
+        <img class="footer-crest" src="../assets/images/img-cb82ee0a5da7b4ee.jpg" alt="">
+        Kingsville Public High School &middot; Super Administrator Console &middot; <b>Knowledge is Power</b> &middot; Kingsville #7, Careysburg District
+        <img class="footer-crest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="">
+        Republic of Liberia &middot; Ministry of Education
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+</body>
+</html>
+<script>
+/* ---------- Toast ---------- */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+
+/* =========================================================================
+   LIVE DATABASE WIRING
+   Backed by: audit_logs (auto-populated by a trigger on the high-value
+   tables, see 010_functions_triggers.sql), login_history, and
+   approval_requests. `audit_logs` has no explicit success/failure or
+   session concept, so a couple of the summary cards below are honest
+   best-effort approximations rather than exact backend concepts:
+     - activeSessions is approximated as distinct profiles with a
+       successful login_history row in the last 30 minutes (Supabase's
+       anon-key client has no direct access to live server-side session
+       state), not a true concurrent-session count.
+     - "status"/"statusColor" on each row is always "Logged" (green) —
+       audit_logs only records events that already happened; failed
+       *login attempts* are tracked separately in login_history and
+       folded into the failedLogins24h stat card instead.
+   ========================================================================= */
+
+let currentPage = 1;
+const pageSize = 10;
+let activeFilter = 'all';
+let currentEvents = [];
+let searchDebounce = null;
+
+const ROLE_PILL_COLOR = {
+  super_admin: 'navy', ict: 'gold', principal: 'navy',
+  registrar: 'green', teacher: 'gold', student: 'grey'
+};
+// table_name groupings for the category tabs (login/user/approval/system)
+const APPROVALISH_TABLES = ['approval_requests','promotions','suspensions','transfer_requests','graduation_requests','correction_requests'];
+
+function pctTrend(today, yesterday){
+  if(!yesterday) return today > 0 ? '+100%' : null;
+  const delta = Math.round(((today - yesterday) / yesterday) * 100);
+  if(delta === 0) return 'No change';
+  return (delta > 0 ? '+' : '') + delta + '%';
+}
+
+/* ---------- Summary stat cards ---------- */
+async function loadSummary(){
+  try{
+    const now = new Date();
+    const todayStart = new Date(now); todayStart.setHours(0,0,0,0);
+    const yesterdayStart = new Date(todayStart); yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+    const last24h = new Date(now.getTime() - 24*60*60*1000);
+    const prev24h = new Date(now.getTime() - 48*60*60*1000);
+    const last30min = new Date(now.getTime() - 30*60*1000);
+
+    const [
+      { count: eventsToday },
+      { count: eventsYesterday },
+      { count: failedLogins24h },
+      { count: failedLoginsPrev },
+      { count: pendingApprovals },
+      { data: recentLogins }
+    ] = await Promise.all([
+      sb.from('audit_logs').select('id', { count: 'exact', head: true }).gte('created_at', todayStart.toISOString()),
+      sb.from('audit_logs').select('id', { count: 'exact', head: true }).gte('created_at', yesterdayStart.toISOString()).lt('created_at', todayStart.toISOString()),
+      sb.from('login_history').select('id', { count: 'exact', head: true }).eq('success', false).gte('created_at', last24h.toISOString()),
+      sb.from('login_history').select('id', { count: 'exact', head: true }).eq('success', false).gte('created_at', prev24h.toISOString()).lt('created_at', last24h.toISOString()),
+      sb.from('approval_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+      sb.from('login_history').select('profile_id').eq('success', true).gte('created_at', last30min.toISOString())
+    ]);
+
+    const activeSessions = new Set((recentLogins || []).map(r => r.profile_id)).size;
+
+    document.getElementById('statEventsToday').textContent = formatNumber(eventsToday);
+    document.getElementById('statFailedLogins').textContent = formatNumber(failedLogins24h);
+    document.getElementById('statPendingApprovals').textContent = formatNumber(pendingApprovals);
+    document.getElementById('statActiveSessions').textContent = formatNumber(activeSessions);
+    setTrend('statEventsTrend', pctTrend(eventsToday || 0, eventsYesterday || 0));
+    setTrend('statFailedTrend', pctTrend(failedLogins24h || 0, failedLoginsPrev || 0));
+    setTrend('statPendingTrend', null);
+    setTrend('statSessionsTrend', null);
+  }catch(err){
+    console.error('Failed to load audit summary', err);
+    ['statEventsToday','statFailedLogins','statPendingApprovals','statActiveSessions'].forEach(id => {
+      document.getElementById(id).textContent = '&mdash;';
+    });
+    showToast('Could not load summary stats from the server.');
+  }
+}
+
+function setTrend(id, value){
+  const el = document.getElementById(id);
+  if(!value){ el.textContent = '&ndash;'; el.className = 'stat-trend flat'; return; }
+  el.textContent = value;
+  el.className = 'stat-trend ' + (value.startsWith('+') || value.toLowerCase().includes('up') ? 'up'
+    : value.startsWith('-') || value.toLowerCase().includes('down') ? 'down' : 'flat');
+}
+
+function formatNumber(n){
+  if(n === null || n === undefined) return '&mdash;';
+  return Number(n).toLocaleString();
+}
+
+function fmtDateTime(iso){
+  if(!iso) return '\u2014';
+  try{ return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }); }
+  catch(e){ return iso; }
+}
+
+function tableLabel(t){
+  if(!t) return 'System';
+  return t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function buildDiffHtml(oldVal, newVal){
+  if(!oldVal && !newVal) return '';
+  const keys = new Set([...Object.keys(oldVal || {}), ...Object.keys(newVal || {})]);
+  let rows = '';
+  keys.forEach(k => {
+    const before = oldVal ? oldVal[k] : undefined;
+    const after = newVal ? newVal[k] : undefined;
+    if(JSON.stringify(before) === JSON.stringify(after)) return;
+    rows += '<div style="margin-bottom:6px;"><b>' + escapeHtml(k) + ':</b> '
+      + '<span style="text-decoration:line-through; opacity:.6;">' + escapeHtml(before === undefined ? '&mdash;' : JSON.stringify(before)) + '</span>'
+      + ' &rarr; <span>' + escapeHtml(after === undefined ? '&mdash;' : JSON.stringify(after)) + '</span></div>';
+  });
+  return rows;
+}
+
+async function findMatchingProfileIds(term){
+  if(!term) return null;
+  const { data, error } = await sb.from('profiles').select('id')
+    .or(`full_name.ilike.%${term}%,username.ilike.%${term}%`);
+  if(error) throw error;
+  return (data || []).map(r => r.id);
+}
+
+/* ---------- Fetch + render the log table ---------- */
+async function loadLogs(){
+  const tbody = document.getElementById('logTableBody');
+  const emptyState = document.getElementById('logEmptyState');
+  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--muted);">Loading activity&hellip;</td></tr>';
+  emptyState.style.display = 'none';
+
+  const search = document.getElementById('logSearch').value.trim();
+  const role = document.getElementById('roleFilter').value;
+  const dateFrom = document.getElementById('dateFrom').value;
+  const dateTo = document.getElementById('dateTo').value;
+
+  try{
+    let matchingProfileIds = null;
+    if(search) matchingProfileIds = await findMatchingProfileIds(search);
+
+    // profiles!inner is required (not the default left-embed) whenever we
+    // filter on profiles.role below — PostgREST only restricts top-level
+    // rows on an embedded-column filter when the join is inner.
+    const profilesEmbed = role ? 'profiles!inner(full_name, username, role)' : 'profiles(full_name, username, role)';
+    let query = sb.from('audit_logs')
+      .select(`id, created_at, action, table_name, record_id, ip_address, user_agent, old_value, new_value, profile_id, ${profilesEmbed}`, { count: 'exact' });
+
+    if(activeFilter === 'login'){
+      query = query.in('action', ['login', 'logout']);
+    }else if(activeFilter === 'user'){
+      query = query.eq('table_name', 'profiles');
+    }else if(activeFilter === 'approval'){
+      query = query.in('table_name', APPROVALISH_TABLES);
+    }else if(activeFilter === 'system'){
+      query = query.not('table_name', 'in', `(${APPROVALISH_TABLES.concat(['profiles']).join(',')})`).not('action', 'in', '(login,logout)');
+    }
+
+    if(role) query = query.eq('profiles.role', role);
+    if(dateFrom) query = query.gte('created_at', new Date(dateFrom).toISOString());
+    if(dateTo) query = query.lt('created_at', new Date(new Date(dateTo).getTime() + 24*60*60*1000).toISOString());
+    if(search){
+      const ids = matchingProfileIds && matchingProfileIds.length ? matchingProfileIds : ['00000000-0000-0000-0000-000000000000'];
+      query = query.or(`action.ilike.%${search}%,table_name.ilike.%${search}%,profile_id.in.(${ids.join(',')})`);
+    }
+
+    query = query.order('created_at', { ascending: false })
+      .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+
+    const { data, error, count } = await query;
+    if(error) throw error;
+
+    currentEvents = (data || []).map(row => {
+      const p = row.profiles || {};
+      const rawAction = row.action || '';
+      const iconClass = rawAction === 'insert' ? 'create' : (['update','delete','login'].includes(rawAction) ? rawAction : 'update');
+      const category = ['login','logout'].includes(rawAction) ? 'login'
+        : row.table_name === 'profiles' ? 'user'
+        : APPROVALISH_TABLES.includes(row.table_name) ? 'approval'
+        : 'system';
+      return {
+        id: row.id,
+        timestamp: row.created_at,
+        actorId: row.profile_id || '',
+        actorName: p.full_name || p.username || 'Unknown',
+        actorEmail: p.username ? ('@' + p.username) : '',
+        actorInitials: initials(p.full_name || p.username || ''),
+        action: rawAction ? (rawAction.charAt(0).toUpperCase() + rawAction.slice(1)) : 'Event',
+        actionCategory: category,
+        actionIcon: iconClass,
+        target: tableLabel(row.table_name) + (row.record_id ? (' #' + String(row.record_id).slice(0, 8)) : ''),
+        role: p.role || '',
+        roleColor: ROLE_PILL_COLOR[p.role] || 'grey',
+        ip: row.ip_address || '',
+        status: 'Logged',
+        statusColor: 'green',
+        device: row.user_agent || '',
+        note: '',
+        diffHtml: buildDiffHtml(row.old_value, row.new_value)
+      };
+    });
+    renderRows(currentEvents);
+    renderPager(currentPage, pageSize, count || 0);
+  }catch(err){
+    console.error('Failed to load audit log', err);
+    tbody.innerHTML = '';
+    emptyState.style.display = '';
+    document.getElementById('logEmptyTitle').textContent = 'Could not load activity';
+    document.getElementById('logEmptyBody').textContent = 'There was a problem reaching the audit log service. Try again shortly.';
+    document.getElementById('pgInfo').textContent = 'Showing 0 of 0 events';
+  }
+}
+
+function renderRows(events){
+  const tbody = document.getElementById('logTableBody');
+  const emptyState = document.getElementById('logEmptyState');
+  tbody.innerHTML = '';
+
+  if(!events.length){
+    emptyState.style.display = '';
+    document.getElementById('logEmptyTitle').textContent = 'No activity found';
+    document.getElementById('logEmptyBody').textContent = 'There are no audit events matching the current filters.';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  const iconPaths = {
+    login:  'M15 3h4v18h-4M10 17l5-5-5-5M15 12H3',
+    create: 'M12 5v14M5 12h14',
+    update: 'M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z',
+    delete: 'M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6',
+    approve:'M9 12l2 2 4-4-4 4z' // fallback, real icon below uses approve class
+  };
+
+  events.forEach(ev => {
+    const tr = document.createElement('tr');
+    tr.dataset.cat = ev.actionCategory || '';
+    tr.dataset.detail = ev.id;
+
+    const iconClass = ev.actionIcon || 'update';
+    const iconPath = iconPaths[iconClass] || iconPaths.update;
+
+    tr.innerHTML =
+      '<td class="mono">' + escapeHtml(fmtDateTime(ev.timestamp)) + '</td>' +
+      '<td><div class="avatar-name"><div class="av">' + escapeHtml(ev.actorInitials || '') + '</div>' +
+        '<div><div class="nm">' + (ev.actorId ? '<a href="edit-user.html?id=' + encodeURIComponent(ev.actorId) + '" style="color:inherit; text-decoration:none;">' + escapeHtml(ev.actorName) + '</a>' : escapeHtml(ev.actorName)) + '</div><div class="sb">' + escapeHtml(ev.actorEmail || '') + '</div></div></div></td>' +
+      '<td><span class="ic-btn ' + iconClass + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="' + iconPath + '"/></svg></span> ' + escapeHtml(ev.action) + '</td>' +
+      '<td>' + escapeHtml(ev.target || '') + '</td>' +
+      '<td><span class="pill ' + (ev.roleColor || 'grey') + '">' + escapeHtml(ev.role || '') + '</span></td>' +
+      '<td class="mono">' + escapeHtml(ev.ip || '') + '</td>' +
+      '<td><span class="pill ' + (ev.statusColor || 'grey') + '">' + escapeHtml(ev.status || '') + '</span></td>' +
+      '<td class="tbl-actions"><button type="button" class="view-log-btn" title="View details"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></td>';
+
+    tr.querySelector('.view-log-btn').addEventListener('click', () => openLogModal(ev.id));
+    tbody.appendChild(tr);
+  });
+}
+
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------- Pager ---------- */
+function renderPager(page, size, total){
+  currentPage = page;
+  const start = total === 0 ? 0 : (page - 1) * size + 1;
+  const end = Math.min(page * size, total);
+  document.getElementById('pgInfo').innerHTML = 'Showing <b>' + start + '&ndash;' + end + '</b> of <b>' + formatNumber(total) + '</b> events';
+
+  const totalPages = Math.max(1, Math.ceil(total / size));
+  const btnsWrap = document.getElementById('pgBtns');
+  btnsWrap.innerHTML = '';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.type = 'button'; prevBtn.id = 'pgPrev'; prevBtn.textContent = '\u2039';
+  prevBtn.disabled = page <= 1;
+  prevBtn.addEventListener('click', () => { if(currentPage > 1){ currentPage--; loadLogs(); } });
+  btnsWrap.appendChild(prevBtn);
+
+  const maxButtons = 5;
+  let startPage = Math.max(1, page - Math.floor(maxButtons / 2));
+  let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+  startPage = Math.max(1, endPage - maxButtons + 1);
+
+  for(let p = startPage; p <= endPage; p++){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = p;
+    if(p === page) b.classList.add('active');
+    b.addEventListener('click', () => { currentPage = p; loadLogs(); });
+    btnsWrap.appendChild(b);
+  }
+
+  const nextBtn = document.createElement('button');
+  nextBtn.type = 'button'; nextBtn.id = 'pgNext'; nextBtn.textContent = '\u203a';
+  nextBtn.disabled = page >= totalPages;
+  nextBtn.addEventListener('click', () => { if(currentPage < totalPages){ currentPage++; loadLogs(); } });
+  btnsWrap.appendChild(nextBtn);
+}
+
+/* ---------- Modal: view log detail ---------- */
+const logModalBackdrop = document.getElementById('logModalBackdrop');
+const logModalBody = document.getElementById('logModalBody');
+
+function openLogModal(id){
+  const d = currentEvents.find(ev => String(ev.id) === String(id));
+  if(!d) return;
+  let html = '<dl>'
+    + '<dt>Event</dt><dd><b>' + escapeHtml(d.action) + '</b></dd>'
+    + '<dt>Actor</dt><dd>' + escapeHtml(d.actorName) + (d.role ? ' &middot; ' + escapeHtml(d.role) : '') + '</dd>'
+    + '<dt>Timestamp</dt><dd class="mono">' + escapeHtml(fmtDateTime(d.timestamp)) + '</dd>'
+    + '<dt>IP Address</dt><dd class="mono">' + escapeHtml(d.ip || '') + '</dd>'
+    + '<dt>Device</dt><dd>' + escapeHtml(d.device || '') + '</dd>'
+    + '</dl>'
+    + '<p style="font-size:12.6px; color:var(--muted); margin:14px 0 0; line-height:1.6;">' + escapeHtml(d.note || '') + '</p>';
+  if(d.diffHtml){
+    html += '<div class="diff" style="margin-top:12px;">' + d.diffHtml + '</div>';
+  }
+  logModalBody.innerHTML = html;
+  logModalBackdrop.classList.add('open');
+}
+document.getElementById('logModalClose').addEventListener('click', () => logModalBackdrop.classList.remove('open'));
+logModalBackdrop.addEventListener('click', (e) => { if(e.target === logModalBackdrop) logModalBackdrop.classList.remove('open'); });
+
+/* ---------- Tabs / filters trigger a fresh server fetch ---------- */
+const logTabs = document.querySelectorAll('#logTabs .tab');
+logTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    logTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeFilter = tab.dataset.filter;
+    currentPage = 1;
+    loadLogs();
+  });
+});
+document.getElementById('logSearch').addEventListener('input', () => {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => { currentPage = 1; loadLogs(); }, 300);
+});
+document.getElementById('roleFilter').addEventListener('change', () => { currentPage = 1; loadLogs(); });
+document.getElementById('dateFrom').addEventListener('change', () => { currentPage = 1; loadLogs(); });
+document.getElementById('dateTo').addEventListener('change', () => { currentPage = 1; loadLogs(); });
+
+/* ---------- Export ---------- */
+// Re-runs the same filters as loadLogs() but without pagination (capped at
+// 5,000 rows so a very wide date range can't hang the browser), then builds
+// the CSV client-side — there's no dedicated export endpoint in the backend.
+document.getElementById('exportBtn').addEventListener('click', async () => {
+  showToast('Preparing your export&hellip;');
+  try{
+    const search = document.getElementById('logSearch').value.trim();
+    const role = document.getElementById('roleFilter').value;
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+
+    let matchingProfileIds = null;
+    if(search) matchingProfileIds = await findMatchingProfileIds(search);
+
+    const profilesEmbed = role ? 'profiles!inner(full_name, username, role)' : 'profiles(full_name, username, role)';
+    let query = sb.from('audit_logs')
+      .select(`created_at, action, table_name, record_id, ip_address, ${profilesEmbed}`);
+
+    if(activeFilter === 'login'){
+      query = query.in('action', ['login', 'logout']);
+    }else if(activeFilter === 'user'){
+      query = query.eq('table_name', 'profiles');
+    }else if(activeFilter === 'approval'){
+      query = query.in('table_name', APPROVALISH_TABLES);
+    }else if(activeFilter === 'system'){
+      query = query.not('table_name', 'in', `(${APPROVALISH_TABLES.concat(['profiles']).join(',')})`).not('action', 'in', '(login,logout)');
+    }
+    if(role) query = query.eq('profiles.role', role);
+    if(dateFrom) query = query.gte('created_at', new Date(dateFrom).toISOString());
+    if(dateTo) query = query.lt('created_at', new Date(new Date(dateTo).getTime() + 24*60*60*1000).toISOString());
+    if(search){
+      const ids = matchingProfileIds && matchingProfileIds.length ? matchingProfileIds : ['00000000-0000-0000-0000-000000000000'];
+      query = query.or(`action.ilike.%${search}%,table_name.ilike.%${search}%,profile_id.in.(${ids.join(',')})`);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false }).limit(5000);
+    if(error) throw error;
+
+    const header = ['Timestamp','Actor','Role','Action','Target','IP Address'];
+    const rows = (data || []).map(row => {
+      const p = row.profiles || {};
+      return [
+        row.created_at,
+        p.full_name || p.username || 'Unknown',
+        p.role || '',
+        row.action || '',
+        tableLabel(row.table_name) + (row.record_id ? (' #' + row.record_id) : ''),
+        row.ip_address || ''
+      ];
+    });
+    const csv = [header, ...rows].map(r =>
+      r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')
+    ).join('\r\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'audit-log-export.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }catch(err){
+    console.error('Export failed', err);
+    showToast('Export failed. Please try again.');
+  }
+});
+
+/* ---------- Initial load ---------- */
+loadSummary();
+loadLogs();
+</script>

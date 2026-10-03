@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kingsville Public School — Grade Sheet Portal | Teacher's Master Grade Sheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root{
+    --crimson:#c8102e;
+    --crimson-dark:#8f0b20;
+    --navy:#122148;
+    --navy-deep:#0b1730;
+    --gold:#f2a71b;
+    --gold-light:#ffe08a;
+    --gold-deep:#a9700c;
+    --ink:#20242e;
+    --muted:#7a7f8a;
+    --line:#e3e2df;
+    --danger:#c0392b;
+    --ok:#1e8449;
+    --info:#1a5fb4;
+    --panel:#f6f6f5;
+    --paper:#fffdf8;
+    --glow-gold:rgba(242,167,27,.55);
+    --glow-gold-soft:rgba(242,167,27,.28);
+    --glow-crimson:rgba(200,16,46,.4);
+    --glow-navy:rgba(18,33,72,.35);
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif;}
+  html{height:100%;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 12% -10%, rgba(18,33,72,.10), transparent 60%),
+      radial-gradient(1000px 500px at 105% 10%, rgba(242,167,27,.10), transparent 55%),
+      var(--panel);
+    background-attachment:fixed;
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;color:var(--ink);
+  }
+
+  header.topbar{
+    background:linear-gradient(90deg,var(--navy-deep) 0%,var(--navy) 55%,var(--navy-deep) 100%);
+    background-size:220% 100%;
+    animation:navyDrift 14s ease-in-out infinite;
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    padding:clamp(8px,1.4vh,11px) clamp(12px,4vw,22px);
+    border-bottom:2px solid var(--gold);flex-shrink:0;position:relative;
+    overflow:hidden;
+  }
+  @keyframes navyDrift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+  header.topbar::after{
+    content:"";position:absolute;top:0;left:-40%;width:35%;height:100%;
+    background:linear-gradient(100deg,transparent,rgba(255,224,138,.22),transparent);
+    animation:shimmerSweep 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes shimmerSweep{0%{left:-40%;}45%,100%{left:140%;}}
+  header.topbar .left{display:flex;align-items:center;justify-content:center;gap:10px;position:relative;z-index:1;}
+  header.topbar .header-logo{
+    height:30px;width:30px;object-fit:contain;border-radius:50%;background:#fff;
+    box-shadow:0 0 0 1px var(--gold),0 0 10px var(--glow-gold-soft);flex-shrink:0;
+    transition:box-shadow .3s ease;
+  }
+  header.topbar .header-logo:hover{box-shadow:0 0 0 1px var(--gold-light),0 0 16px var(--glow-gold);}
+  header.topbar .left b{
+    font-weight:800;font-size:13.5px;letter-spacing:1.3px;
+    background:linear-gradient(90deg,#fff 0%, var(--gold-light) 50%, #fff 100%);
+    background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:textShine 7s linear infinite;
+  }
+  @keyframes textShine{0%{background-position:0% center;}100%{background-position:220% center;}}
+
+  main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:clamp(14px,3vh,30px) 16px;}
+  .card{
+    width:100%;max-width:1180px;background:#fff;border-radius:14px;position:relative;
+    box-shadow:0 24px 60px rgba(11,23,48,.18),0 2px 8px rgba(11,23,48,.08),0 0 0 1px rgba(242,167,27,.15);
+    border:1px solid var(--line);overflow:hidden;
+    animation:cardRise .6s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardRise{from{opacity:0;transform:translateY(18px) scale(.99);}to{opacity:1;transform:translateY(0) scale(1);}}
+  .card .accent{
+    height:6px;background:linear-gradient(90deg,var(--crimson) 0%,var(--gold) 50%,var(--crimson) 100%);
+    background-size:200% 100%;animation:accentFlow 8s linear infinite;
+    box-shadow:0 0 14px var(--glow-gold-soft);
+  }
+  @keyframes accentFlow{0%{background-position:0% 0;}100%{background-position:200% 0;}}
+  .card .body{padding:clamp(18px,4vh,30px) clamp(18px,5vw,32px) clamp(18px,3vh,26px);}
+
+  .toolbar{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;
+    margin-bottom:clamp(14px,2.4vh,20px);
+  }
+  .toolbar .toolbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  select.scope-select{padding:9px 11px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:#fff;color:var(--ink);max-width:230px;transition:box-shadow .2s ease,border-color .2s ease;}
+  select.scope-select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--glow-gold-soft);}
+  button{transition:transform .15s ease,box-shadow .25s ease,background .2s ease;}
+  button:active{transform:translateY(1px) scale(.98);}
+  button.btn-primary{padding:10px 18px;border:none;border-radius:6px;background:linear-gradient(160deg,var(--crimson) 0%,var(--crimson-dark) 100%);color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(200,16,46,.25);}
+  button.btn-primary:hover{box-shadow:0 6px 20px var(--glow-crimson),0 0 0 1px rgba(255,224,138,.4);transform:translateY(-1px);}
+  button.btn-secondary{padding:10px 18px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--navy);font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-secondary:hover{background:#fafafa;border-color:var(--gold);box-shadow:0 4px 14px var(--glow-gold-soft);transform:translateY(-1px);}
+  button.btn-print{padding:10px 18px;border:none;border-radius:6px;background:linear-gradient(160deg,var(--navy) 0%,var(--navy-deep) 100%);color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 12px var(--glow-navy);}
+  button.btn-print:hover{box-shadow:0 6px 20px var(--glow-navy),0 0 0 1px rgba(255,224,138,.35);transform:translateY(-1px);}
+  button.btn-submit{padding:10px 18px;border:none;border-radius:6px;background:linear-gradient(160deg,var(--ok) 0%,#144d29 100%);color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(30,132,73,.35);}
+  button.btn-submit:hover{box-shadow:0 6px 20px rgba(30,132,73,.45),0 0 0 1px rgba(255,224,138,.35);transform:translateY(-1px);}
+  button.btn-unlock{padding:10px 18px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--danger);font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-unlock:hover{background:#fff6f5;border-color:var(--danger);}
+  .submitted-banner{display:none;margin:0 0 10px;padding:10px 14px;border-radius:6px;background:#eef8f1;border:1px solid #bfe3c9;color:#144d29;font-weight:700;font-size:13px;}
+  #paper.submitted .submitted-banner{display:block;}
+  #paper.submitted input:not([readonly]){background:#f4f4f4;color:var(--muted);pointer-events:none;}
+  button.btn-doc-delete{padding:10px 16px;border:1px solid #f6c9c4;border-radius:6px;background:#fff;color:var(--danger);font-weight:700;font-size:13px;cursor:pointer;}
+  button.btn-doc-delete:hover{background:#fdecea;box-shadow:0 4px 14px rgba(200,16,46,.18);transform:translateY(-1px);}
+  button.btn-add-row{
+    font-family:Arial,sans-serif;font-size:11.5px;font-weight:700;color:var(--crimson);
+    background:none;border:1px dashed var(--crimson);border-radius:5px;padding:7px 14px;cursor:pointer;margin-top:10px;
+  }
+  button.btn-add-row:hover{background:#fdecea;box-shadow:0 0 12px rgba(200,16,46,.15);}
+
+  .msg{margin-bottom:14px;font-size:12.5px;padding:9px 12px;border-radius:4px;display:none;}
+  .msg.show{display:block;}
+  .msg.err{background:#fdecea;color:var(--danger);border:1px solid #f6c9c4;}
+  .msg.ok{background:#eafaf1;color:var(--ok);border:1px solid #b9e6c9;}
+
+  /* ---------- Document / letterhead area (this is what prints & downloads) ---------- */
+  .doc-paper{
+    font-family:Georgia,"Times New Roman",serif;color:#111;
+    border:1px solid var(--line);border-radius:8px;padding:clamp(16px,3.5vw,30px);background:var(--paper);
+  }
+  .doc-letterhead{display:flex;align-items:center;gap:16px;border-bottom:3px double #333;padding-bottom:12px;margin-bottom:14px;}
+  .doc-letterhead .crest-img{
+    height:64px;width:64px;object-fit:contain;flex-shrink:0;border-radius:50%;background:#fff;
+    box-shadow:0 0 0 1px #ccc,0 0 0 4px rgba(242,167,27,.12),0 2px 10px rgba(0,0,0,.12);
+    transition:box-shadow .35s ease,transform .35s ease;
+  }
+  .doc-letterhead .crest-img:hover{box-shadow:0 0 0 1px var(--gold),0 0 0 5px var(--glow-gold-soft),0 2px 14px rgba(0,0,0,.16);transform:scale(1.04);}
+  .doc-headtext{flex:1;text-align:center;}
+  .doc-headtext .school-name{font-size:20px;font-weight:800;color:var(--navy);letter-spacing:.3px;}
+  .doc-headtext .school-sub{font-size:11.5px;color:#444;margin-top:3px;}
+  .doc-headtext .school-motto{font-size:11.5px;color:var(--crimson-dark);font-style:italic;margin-top:2px;}
+  .doc-banner{
+    background:linear-gradient(120deg,var(--navy-deep) 0%,var(--navy) 45%,var(--navy-deep) 100%);
+    background-size:220% 100%;animation:navyDrift 10s ease-in-out infinite;
+    color:#fff;text-align:center;font-weight:800;font-size:15px;letter-spacing:.6px;
+    padding:9px;margin-bottom:8px;text-transform:uppercase;border-radius:3px;position:relative;overflow:hidden;
+    box-shadow:0 3px 12px rgba(11,23,48,.25);
+  }
+  .doc-banner::after{
+    content:"";position:absolute;top:0;left:-45%;width:30%;height:100%;
+    background:linear-gradient(100deg,transparent,rgba(255,224,138,.28),transparent);
+    animation:shimmerSweep 7s ease-in-out infinite;pointer-events:none;
+  }
+  .doc-banner2{
+    background:linear-gradient(90deg,var(--crimson) 0%,var(--crimson-dark) 100%);
+    color:#fff;text-align:center;font-weight:700;font-size:12.5px;letter-spacing:.4px;
+    padding:6px;margin-bottom:4px;text-transform:uppercase;border-radius:3px;
+    box-shadow:0 2px 8px rgba(200,16,46,.2);
+  }
+  .doc-gold-rule{
+    height:3px;margin:0 0 16px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,var(--gold) 20%,var(--gold-light) 50%,var(--gold) 80%,transparent);
+    background-size:200% 100%;animation:accentFlow 6s linear infinite;
+    box-shadow:0 0 10px var(--glow-gold-soft);
+  }
+
+  .gs-meta-row{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:10px 20px;font-size:13px;margin-bottom:16px;}
+  @media (max-width:760px){.gs-meta-row{grid-template-columns:1fr 1fr;}}
+  .gs-meta-item{display:flex;align-items:baseline;gap:6px;}
+  .gs-meta-item b{white-space:nowrap;color:#111;font-size:12.5px;}
+  .gs-meta-item input, .gs-meta-item select{
+    flex:1;min-width:0;font-family:inherit;font-size:13px;color:#111;
+    border:none;border-bottom:1px solid #cfcfc9;background:#fbfbf9;padding:4px 4px;
+  }
+  .gs-meta-item input:focus, .gs-meta-item select:focus{outline:none;border-bottom:1px solid var(--crimson);}
+
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  table.gs-table{width:100%;border-collapse:collapse;font-size:11.5px;min-width:1080px;}
+  table.gs-table th, table.gs-table td{border:1px solid #999;padding:5px 4px;text-align:center;vertical-align:middle;}
+  table.gs-table thead th{background:var(--navy);color:#fff;font-size:10.5px;text-transform:uppercase;letter-spacing:.2px;}
+  table.gs-table thead tr.sub th{background:#e7eaf2;color:var(--navy);font-size:10px;}
+  table.gs-table td.name-cell{text-align:left;min-width:160px;}
+  table.gs-table td input{
+    width:100%;border:none;background:transparent;font-family:inherit;font-size:11.5px;text-align:center;padding:2px;
+  }
+  table.gs-table td.name-cell input{text-align:left;}
+  table.gs-table td input:focus{outline:none;background:#fffef2;}
+  table.gs-table td.avg-cell input{font-weight:700;color:var(--navy);background:#f4f6fb;}
+  table.gs-table td.yravg-cell input{font-weight:800;color:var(--crimson-dark);background:#fdf3ea;}
+  table.gs-table td.no-cell{width:28px;color:var(--muted);font-weight:700;}
+  table.gs-table td.rm-cell{width:26px;}
+  table.gs-table td.rm-cell button{border:none;background:none;color:var(--danger);cursor:pointer;font-size:15px;line-height:1;font-family:Arial,sans-serif;}
+
+  .legend{font-size:10.5px;color:var(--muted);margin-top:8px;}
+
+  .doc-ref{font-size:11px;margin-top:16px;font-weight:700;color:#333;}
+
+  .doc-actions{
+    display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);
+  }
+
+  footer.site-footer{background:var(--navy-deep);color:#c9d2e8;font-size:11px;text-align:center;padding:clamp(9px,1.4vh,12px) 10px;border-top:2px solid var(--gold);flex-shrink:0;}
+  footer.site-footer .footer-line-1{font-weight:600;letter-spacing:.2px;}
+  footer.site-footer .footer-line-2{margin-top:3px;font-size:10.5px;color:var(--gold);letter-spacing:.3px;}
+
+  @media print{
+    header.topbar, footer.site-footer, .toolbar, .msg, .doc-actions, .rm-cell, .btn-add-row, .submitted-banner{display:none !important;}
+    body{background:#fff;}
+    main{padding:0;}
+    .card{box-shadow:none;border:none;max-width:none;}
+    .card .accent{display:none;}
+    .card .body{padding:0;}
+    .doc-paper{border:none;padding:0;}
+    input, select{border-color:transparent !important;background:transparent !important;}
+    table.gs-table{min-width:0;}
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<a href="dashboard.html" class="kps-back-btn" title="Back to Teacher Dashboard" style="position:fixed;top:14px;right:14px;z-index:9999;display:flex;align-items:center;gap:6px;background:#a3181c;color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 14px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.25);font-family:Arial,Helvetica,sans-serif;">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  Back to Dashboard
+</a>
+<style>@media print{ .kps-back-btn{ display:none !important; } }</style>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<header class="topbar">
+  <div class="left">
+    <img class="header-logo" src="../assets/images/img-3017f844b16322ef.png" alt="Kingsville Public School logo">
+    <b>KINGSVILLE PUBLIC SCHOOL &mdash; GRADE SHEET PORTAL</b>
+    <img class="header-logo" src="../assets/images/img-3ca5314e4a31fea3.png" alt="Ministry of Education, Republic of Liberia seal">
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="accent"></div>
+    <div class="body">
+
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <select class="scope-select" id="assignmentSelect"></select>
+        </div>
+        <div class="toolbar-left">
+          <button class="btn-print" id="printBtn">Print</button>
+          <button class="btn-secondary" id="downloadPdfBtn">Download PDF</button>
+          <button class="btn-primary" id="saveBtn">Save</button>
+          <button class="btn-submit" id="submitBtn">Submit for Approval</button>
+          <button class="btn-unlock" id="unlockBtn" style="display:none;">Unlock</button>
+        </div>
+      </div>
+      <div id="noAssignmentNote" style="display:none;padding:12px 4px;color:var(--muted);font-size:13px;">
+        You have no class/subject assignments yet. Contact the Super Admin to be assigned to a class.
+      </div>
+
+      <div class="msg" id="statusMsg"></div>
+
+      <div class="doc-paper" id="paper">
+        <div class="submitted-banner">&#10003; Submitted for Principal approval &mdash; this sheet is locked. Click "Unlock" above to make further changes.</div>
+        <div class="doc-letterhead">
+          <img class="crest-img" src="../assets/images/img-3ca5314e4a31fea3.png" alt="Ministry of Education, Republic of Liberia seal">
+          <div class="doc-headtext">
+            <div class="school-name">Kingsville Public High School</div>
+            <div class="school-sub">Kingsville Township, Kingsville #7, Careysburg District &bull; Montserrado County, Liberia</div>
+            <div class="school-motto">Knowledge is Power</div>
+          </div>
+          <img class="crest-img" src="../assets/images/img-3017f844b16322ef.png" alt="Kingsville Public School logo">
+        </div>
+
+        <div class="doc-banner">Teacher's Master Grade Sheet</div>
+        <div class="doc-banner2">Academic Year <span id="ayDisplay">2025&ndash;2026</span></div>
+
+        <div class="gs-meta-row">
+          <div class="gs-meta-item"><b>Teacher's Name:</b><input type="text" id="fTeacher" readonly></div>
+          <div class="gs-meta-item"><b>Subject:</b><input type="text" id="fSubject" readonly></div>
+          <div class="gs-meta-item"><b>Grade:</b><input type="text" id="fGrade" readonly></div>
+          <div class="gs-meta-item"><b>Section:</b><input type="text" id="fSection" readonly></div>
+          <div class="gs-meta-item"><b>Academic Year:</b><input type="text" id="fYear" value="2025-2026" readonly></div>
+          <div class="gs-meta-item"><b>Class Size:</b><input type="text" id="fSize" placeholder="e.g. 30" readonly></div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="gs-table" id="gradeTable">
+            <thead>
+              <tr>
+                <th rowspan="2">No</th>
+                <th rowspan="2">Student's Name</th>
+                <th rowspan="2">Sex</th>
+                <th colspan="5">First Semester</th>
+                <th colspan="5">Second Semester</th>
+                <th rowspan="2">Yrly&nbsp;Ave</th>
+                <th rowspan="2"></th>
+              </tr>
+              <tr class="sub">
+                <th>1st Pd</th><th>2nd Pd</th><th>3rd Pd</th><th>Exam</th><th>Sem.&nbsp;Ave</th>
+                <th>4th Pd</th><th>5th Pd</th><th>6th Pd</th><th>Exam</th><th>Sem.&nbsp;Ave</th>
+              </tr>
+            </thead>
+            <tbody id="studentRows">
+            </tbody>
+          </table>
+        </div>
+
+        <div class="legend" id="rosterNote">Loading roster…</div>
+        <div class="legend">Roster loads automatically from students enrolled in this class/section. To add or remove a student, contact the Registrar. Enter scores out of 100 for each period and the exam. Sem. Ave = ((1st+2nd+3rd Period) &divide; 3 + Exam) &divide; 2. Yearly Ave = (1st Sem. Ave + 2nd Sem. Ave) &divide; 2. All averages are calculated automatically. Saved grades are pending until the Principal approves them.</div>
+
+        <div class="doc-ref" id="gsRef">Grade Sheet Reference: —</div>
+
+        <div class="doc-actions">
+          <button class="btn-print" id="printBtn2">Print</button>
+          <button class="btn-secondary" id="downloadPdfBtn2">Download PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-line-1">Kingsville Public High School &mdash; Grade Sheet Portal</div>
+  <div class="footer-line-2">Ministry of Education, Republic of Liberia</div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // This Master Grade Sheet is wired to the live Supabase project the same
+  // way teacher/exam-marks.html is: pick a class/subject assignment, the
+  // roster loads automatically from real enrollment (`students` table,
+  // no manual "Add student"), and every cell here upserts into the shared
+  // `marks` table. Saving always leaves published=false — a teacher's
+  // submission is pending until the Principal approves it in
+  // principal/result-approval.html (its "Publish Grades" section already
+  // reads marks where published=false and flips them to true), which is
+  // the same moment the student's Academics page is allowed to show the
+  // real score instead of "Pending" (see get_my_grade_submissions() in
+  // 032_addendum_master_grade_sheet_wiring.sql).
+  //
+  // Each period column maps to a `component` + `semester` pair on the
+  // `marks` row, tied to the exact class/subject/section assignment
+  // (`class_subject_teacher_id`) and to the real student
+  // (`student_id` -> students.id) — that student's admission ID
+  // (students.student_id) is shown under their name and is the same
+  // identifier that links every other part of the ERP to this student.
+  const FIELD_MAP = {
+    s1p1:   { component: "p1",   semester: "First" },
+    s1p2:   { component: "p2",   semester: "First" },
+    s1p3:   { component: "p3",   semester: "First" },
+    s1exam: { component: "exam", semester: "First" },
+    s2p1:   { component: "p1",   semester: "Second" },
+    s2p2:   { component: "p2",   semester: "Second" },
+    s2p3:   { component: "p3",   semester: "Second" },
+    s2exam: { component: "exam", semester: "Second" }
+  };
+
+  const studentRowsEl = document.getElementById("studentRows");
+  const sb = window.sb;
+
+  let auth = null;          // { user, profile } for the signed-in teacher
+  let assignments = [];     // this teacher's class_subject_teachers rows
+  let currentCst = null;    // the selected assignment row
+  let rowsData = [];        // one entry per enrolled student
+  let sheetSubmitted = false; // true once this assignment's sheet has been submitted to the Principal and is locked for editing
+
+  function noteEl(){ return document.getElementById("rosterNote"); }
+
+  function assignmentLabel(a){
+    const cls = a.sections && a.sections.classes ? a.sections.classes.name : "";
+    const sec = a.sections ? a.sections.name : "";
+    const subj = a.subjects ? a.subjects.name : "(no subject)";
+    return [cls, sec].filter(Boolean).join(" ") + " \u2014 " + subj;
+  }
+
+  function round1(v){ return (v === null || v === undefined) ? null : Math.round(v * 10) / 10; }
+
+  function calcAverages(row){
+    const g = (k) => { const v = parseFloat(row[k]); return isNaN(v) ? null : v; };
+
+    const s1periods = [g("s1p1"), g("s1p2"), g("s1p3")].filter(v => v !== null);
+    const s1periodAvg = s1periods.length ? (s1periods.reduce((a,b)=>a+b,0) / s1periods.length) : null;
+    const s1exam = g("s1exam");
+    let s1avg = null;
+    if (s1periodAvg !== null && s1exam !== null) s1avg = (s1periodAvg + s1exam) / 2;
+    else if (s1periodAvg !== null) s1avg = s1periodAvg;
+    else if (s1exam !== null) s1avg = s1exam;
+    row.s1avg = round1(s1avg);
+
+    const s2periods = [g("s2p1"), g("s2p2"), g("s2p3")].filter(v => v !== null);
+    const s2periodAvg = s2periods.length ? (s2periods.reduce((a,b)=>a+b,0) / s2periods.length) : null;
+    const s2exam = g("s2exam");
+    let s2avg = null;
+    if (s2periodAvg !== null && s2exam !== null) s2avg = (s2periodAvg + s2exam) / 2;
+    else if (s2periodAvg !== null) s2avg = s2periodAvg;
+    else if (s2exam !== null) s2avg = s2exam;
+    row.s2avg = round1(s2avg);
+
+    const both = [s1avg, s2avg].filter(v => v !== null);
+    row.yravg = both.length ? round1(both.reduce((a,b)=>a+b,0) / both.length) : null;
+  }
+
+  function scoreCell(key, row){
+    const val = (row[key] === null || row[key] === undefined) ? "" : row[key];
+    return '<td class="' + key + '"><input type="text" inputmode="decimal" data-field="' + key + '" value="' + val + '"></td>';
+  }
+
+  function renderRow(row, idx){
+    const tr = document.createElement("tr");
+    tr.dataset.studentId = row.studentId;
+    tr.innerHTML =
+      '<td class="no-cell">' + (idx + 1) + '</td>' +
+      '<td class="name-cell">' + row.name + '<div style="font-size:10px;color:var(--muted);">ID: ' + row.no + '</div>' +
+        (row.needsRevision ? '<div style="font-size:10px;color:#a3181c;font-weight:700;margin-top:2px;">&#9888; Sent back by Principal' + (row.revisionNote ? ': ' + row.revisionNote.replace(/[<>&]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c])) : '') + '</div>' : '') +
+      '</td>' +
+      '<td>' + (row.sex || "-") + '</td>' +
+      scoreCell("s1p1", row) + scoreCell("s1p2", row) + scoreCell("s1p3", row) + scoreCell("s1exam", row) +
+      '<td class="s1avg avg-cell"><input type="text" readonly value="' + (row.s1avg == null ? "" : row.s1avg) + '"></td>' +
+      scoreCell("s2p1", row) + scoreCell("s2p2", row) + scoreCell("s2p3", row) + scoreCell("s2exam", row) +
+      '<td class="s2avg avg-cell"><input type="text" readonly value="' + (row.s2avg == null ? "" : row.s2avg) + '"></td>' +
+      '<td class="yravg yravg-cell"><input type="text" readonly value="' + (row.yravg == null ? "" : row.yravg) + '"></td>' +
+      '<td class="rm-cell"></td>';
+    studentRowsEl.appendChild(tr);
+
+    tr.querySelectorAll("input[data-field]").forEach(inp => {
+      inp.addEventListener("input", () => {
+        row[inp.dataset.field] = inp.value;
+        calcAverages(row);
+        tr.querySelector(".s1avg input").value = row.s1avg == null ? "" : row.s1avg;
+        tr.querySelector(".s2avg input").value = row.s2avg == null ? "" : row.s2avg;
+        tr.querySelector(".yravg input").value = row.yravg == null ? "" : row.yravg;
+      });
+    });
+  }
+
+  function render(){
+    studentRowsEl.innerHTML = "";
+    if (!rowsData.length){
+      studentRowsEl.innerHTML = '<tr><td colspan="15" style="padding:14px;color:var(--muted);text-align:left;">No students enrolled in this class/section yet. Once the Registrar or Super Admin enrolls students into it, they will appear here automatically.</td></tr>';
+    } else {
+      rowsData.forEach((row, idx) => renderRow(row, idx));
+    }
+    document.getElementById("fSize").value = rowsData.length;
+    noteEl().textContent = rowsData.length
+      ? (rowsData.length + " student" + (rowsData.length === 1 ? "" : "s") + " enrolled in this class")
+      : "";
+
+    document.getElementById("paper").classList.toggle("submitted", sheetSubmitted);
+    document.getElementById("saveBtn").style.display = sheetSubmitted ? "none" : "";
+    document.getElementById("submitBtn").style.display = sheetSubmitted ? "none" : "";
+    document.getElementById("unlockBtn").style.display = sheetSubmitted ? "" : "none";
+    studentRowsEl.querySelectorAll("input[data-field]").forEach(inp => { inp.disabled = sheetSubmitted; });
+  }
+
+  function refCode(){ return "GS-" + Math.random().toString(36).slice(2, 8).toUpperCase(); }
+
+  function showMsg(text, kind){
+    const el = document.getElementById("statusMsg");
+    el.textContent = text;
+    el.className = "msg show " + (kind || "ok");
+    setTimeout(() => el.classList.remove("show"), 3200);
+  }
+
+  /** Expands this teacher's class_subject_teachers rows into one live,
+   * section-scoped assignment each. A row assigned at the whole-grade
+   * level (section_id = null — e.g. created from Super Admin > Subjects,
+   * which only asks for a Grade Level, not a section) is expanded here
+   * into one virtual assignment per real section under that class, so
+   * the roster still auto-loads from actual enrollment
+   * (students.section_id) instead of requiring the Super Admin to
+   * re-assign per section. Saving still writes against the same
+   * underlying class_subject_teachers.id no matter which expanded
+   * section is being viewed, so it stays one assignment record. */
+  async function expandTeacherAssignments(teacherId){
+    const [{ data: direct, error: e1 }, { data: gradeLevel, error: e2 }] = await Promise.all([
+      sb.from("class_subject_teachers")
+        .select("id, section_id, subject_id, sections(name, classes(name)), subjects(name)")
+        .eq("teacher_id", teacherId)
+        .not("section_id", "is", null),
+      sb.from("class_subject_teachers")
+        .select("id, class_id, subject_id, classes(name), subjects(name)")
+        .eq("teacher_id", teacherId)
+        .is("section_id", null)
+        .not("class_id", "is", null)
+    ]);
+    if (e1) console.error("[grades] loadAssignments (direct)", e1);
+    if (e2) console.error("[grades] loadAssignments (grade-level)", e2);
+
+    const out = (direct || []).map(a => ({ ...a, optKey: a.id }));
+
+    const gl = gradeLevel || [];
+    if (gl.length){
+      const classIds = [...new Set(gl.map(r => r.class_id))];
+      const { data: sections, error: e3 } = await sb.from("sections")
+        .select("id, name, class_id")
+        .in("class_id", classIds);
+      if (e3) console.error("[grades] loadAssignments (sections)", e3);
+      (sections || []).forEach(sec => {
+        gl.filter(r => r.class_id === sec.class_id).forEach(r => {
+          out.push({
+            id: r.id,
+            section_id: sec.id,
+            subject_id: r.subject_id,
+            subjects: r.subjects,
+            sections: { name: sec.name, classes: r.classes },
+            optKey: r.id + "::" + sec.id
+          });
+        });
+      });
+    }
+    return out;
+  }
+
+  /** Loads which class(es)/subject(s) the Super Admin has assigned this
+   * teacher to teach (class_subject_teachers), for the assignment picker. */
+  async function loadAssignments(){
+    assignments = await expandTeacherAssignments(auth.user.id);
+
+    const sel = document.getElementById("assignmentSelect");
+    sel.innerHTML = "";
+    assignments.forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a.optKey;
+      opt.textContent = assignmentLabel(a);
+      sel.appendChild(opt);
+    });
+
+    document.getElementById("noAssignmentNote").style.display = assignments.length ? "none" : "";
+    document.getElementById("paper").style.display = assignments.length ? "" : "none";
+
+    if (assignments.length){
+      currentCst = assignments[0];
+      sel.value = currentCst.optKey;
+      await loadRosterAndMarks();
+    }
+  }
+
+  async function currentAcademicYearLabel(){
+    try {
+      const { data } = await sb.from("academic_years").select("name").eq("is_current", true).maybeSingle();
+      return (data && data.name) || "2025-2026";
+    } catch (e) { return "2025-2026"; }
+  }
+
+  /** Pulls the real student roster for the selected assignment's section
+   * (auto — no manual "Add student"), plus every mark already saved for
+   * it across both semesters, so grades already entered/approved show up
+   * on reload instead of a blank sheet. */
+  async function loadRosterAndMarks(){
+    noteEl().textContent = "Loading roster\u2026";
+
+    document.getElementById("fTeacher").value = (auth.profile && auth.profile.full_name) || "";
+    document.getElementById("fSubject").value = currentCst.subjects ? currentCst.subjects.name : "";
+    document.getElementById("fGrade").value = (currentCst.sections && currentCst.sections.classes) ? currentCst.sections.classes.name : "";
+    document.getElementById("fSection").value = currentCst.sections ? currentCst.sections.name : "";
+    const year = await currentAcademicYearLabel();
+    document.getElementById("fYear").value = year;
+    document.getElementById("ayDisplay").textContent = year.replace("-", "\u2013");
+
+    const { data: students, error: sErr } = await sb
+      .from("students")
+      .select("id, student_id, full_name, gender")
+      .eq("section_id", currentCst.section_id)
+      .eq("status", "active")
+      .order("full_name", { ascending: true });
+    if (sErr) { console.error("[grades] students", sErr); noteEl().textContent = "Could not load roster."; return; }
+
+    const ids = (students || []).map(s => s.id);
+    let marksRows = [];
+    if (ids.length){
+      const { data, error: mErr } = await sb
+        .from("marks")
+        .select("student_id, component, semester, score, needs_revision, revision_note, submitted")
+        .eq("class_subject_teacher_id", currentCst.id)
+        .in("student_id", ids);
+      if (mErr) console.error("[grades] marks", mErr);
+      else marksRows = data || [];
+    }
+
+    // Locked if any Master Grade Sheet row (semester First/Second) for this
+    // assignment has already been submitted and isn't published yet — once
+    // published, the Principal already acted on it, and a returning teacher
+    // would only need to see a fresh sheet if the Principal sends it back
+    // (needs_revision), which they can then Unlock and edit normally.
+    sheetSubmitted = marksRows.some(m => m.submitted);
+
+    rowsData = (students || []).map(s => {
+      const forStudent = marksRows.filter(m => m.student_id === s.id);
+      const valueFor = (component, semester) => {
+        const row = forStudent.find(m => m.component === component && m.semester === semester);
+        return (row && row.score !== null && row.score !== undefined) ? row.score : "";
+      };
+      const sentBack = forStudent.find(m => m.needs_revision);
+      const row = {
+        studentId: s.id,
+        no: s.student_id,
+        name: s.full_name,
+        sex: (s.gender === "female" || s.gender === "F") ? "F" : ((s.gender === "male" || s.gender === "M") ? "M" : "-"),
+        needsRevision: !!sentBack,
+        revisionNote: sentBack ? (sentBack.revision_note || "") : ""
+      };
+      Object.keys(FIELD_MAP).forEach(key => {
+        const m = FIELD_MAP[key];
+        row[key] = valueFor(m.component, m.semester);
+      });
+      calcAverages(row);
+      return row;
+    });
+
+    noteEl().textContent = "";
+    render();
+    document.getElementById("gsRef").textContent = "Grade Sheet Reference: " + refCode();
+  }
+
+  /** Writes every entered score into the real `marks` table, always as
+   * published=false. Never touches `submitted` — for an existing row that
+   * stays whatever it already was, and a brand-new row defaults to false —
+   * so a plain Save never changes what the Principal's queue shows. Shared
+   * by both saveDraft() and submitSheet(). Returns true on success. */
+  async function persistScores(){
+    if (!currentCst) { showMsg("Select a class/subject assignment first.", "err"); return false; }
+    if (!rowsData.length){ showMsg("No students on this roster yet.", "err"); return false; }
+
+    const rows = [];
+    rowsData.forEach(row => {
+      Object.keys(FIELD_MAP).forEach(key => {
+        const raw = row[key];
+        if (raw !== "" && raw !== null && raw !== undefined && !isNaN(parseFloat(raw))){
+          const m = FIELD_MAP[key];
+          const entry = {
+            student_id: row.studentId,
+            subject_id: currentCst.subject_id,
+            class_subject_teacher_id: currentCst.id,
+            component: m.component,
+            semester: m.semester,
+            score: parseFloat(raw),
+            max_score: 100,
+            entered_by: auth.user.id,
+            published: false,
+            needs_revision: false,
+            revision_note: null
+          };
+          // Carry the computed semester average on that semester's exam
+          // row, and the yearly average on the second semester's exam
+          // row — the student's Academics page reads these straight off
+          // the marks row once it is published.
+          if (m.component === "exam"){
+            entry.semester_average = m.semester === "First" ? row.s1avg : row.s2avg;
+            if (m.semester === "Second" && row.yravg !== null) entry.yearly_average = row.yravg;
+          }
+          rows.push(entry);
+        }
+      });
+    });
+
+    if (!rows.length){ showMsg("Enter at least one score first.", "err"); return false; }
+
+    try {
+      const { error } = await sb.from("marks")
+        .upsert(rows, { onConflict: "student_id,class_subject_teacher_id,component,semester" });
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.error("[grades] save", err);
+      showMsg("Couldn't save the grade sheet \u2014 check your connection.", "err");
+      return false;
+    }
+  }
+
+  /** Save button: writes scores but keeps the sheet open for editing.
+   * The Principal never sees this until "Submit for Approval" is used. */
+  async function saveDraft(){
+    const ok = await persistScores();
+    if (!ok) return;
+    showMsg("Saved \u2014 still on your roster only. Click \"Submit for Approval\" when this sheet is ready for the Principal.", "ok");
+    rowsData.forEach(r => { r.needsRevision = false; r.revisionNote = ""; });
+    render();
+  }
+  document.getElementById("saveBtn").addEventListener("click", saveDraft);
+
+  /** Submit button: saves whatever is on screen, then flips `submitted`
+   * to true on every Master Grade Sheet row (semester First/Second) for
+   * this assignment, which is what makes it appear in the Principal's
+   * Publish Grades queue (principal/result-approval.html). Locks the
+   * sheet from further edits until Unlock is used. */
+  async function submitSheet(){
+    if (!currentCst) { showMsg("Select a class/subject assignment first.", "err"); return; }
+    if (!confirm("Submit this grade sheet to the Principal for approval? It will be locked from further editing until you unlock it again.")) return;
+
+    const ok = await persistScores();
+    if (!ok) return;
+
+    try {
+      const { error } = await sb.from("marks")
+        .update({ submitted: true, needs_revision: false, revision_note: null })
+        .eq("class_subject_teacher_id", currentCst.id)
+        .in("semester", ["First", "Second"]);
+      if (error) throw error;
+      sheetSubmitted = true;
+      rowsData.forEach(r => { r.needsRevision = false; r.revisionNote = ""; });
+      showMsg("Submitted \u2014 this grade sheet now awaits Principal approval. Students will see their scores once approved.", "ok");
+      render();
+    } catch (err) {
+      console.error("[grades] submit", err);
+      showMsg("Couldn't submit the grade sheet \u2014 check your connection.", "err");
+    }
+  }
+  document.getElementById("submitBtn").addEventListener("click", submitSheet);
+
+  /** Unlock button: pulls the sheet back out of the Principal's queue so
+   * it can be edited again, then requires Submit again when ready. */
+  async function unlockSheet(){
+    if (!currentCst) return;
+    if (!confirm("Unlock this grade sheet for editing? It will be pulled back from the Principal's queue until you submit it again.")) return;
+
+    try {
+      const { error } = await sb.from("marks")
+        .update({ submitted: false })
+        .eq("class_subject_teacher_id", currentCst.id)
+        .in("semester", ["First", "Second"]);
+      if (error) throw error;
+      sheetSubmitted = false;
+      showMsg("Unlocked \u2014 you can edit this sheet again.", "ok");
+      render();
+    } catch (err) {
+      console.error("[grades] unlock", err);
+      showMsg("Couldn't unlock the grade sheet \u2014 check your connection.", "err");
+    }
+  }
+  document.getElementById("unlockBtn").addEventListener("click", unlockSheet);
+
+  document.getElementById("assignmentSelect").addEventListener("change", async (e) => {
+    currentCst = assignments.find(a => a.optKey === e.target.value) || null;
+    if (currentCst) await loadRosterAndMarks();
+  });
+
+  function doPrint(){ window.print(); }
+  document.getElementById("printBtn").addEventListener("click", doPrint);
+  document.getElementById("printBtn2").addEventListener("click", doPrint);
+
+  function doDownload(){
+    const grade = document.getElementById("fGrade").value || "untitled";
+    const filename = "kps-grade-sheet-" + grade.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + ".pdf";
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: filename,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+      pagebreak: { mode: ["css", "legacy"] }
+    };
+    const paper = document.getElementById("paper");
+    html2pdf().set(opt).from(paper).save().catch(() => {
+      showMsg("PDF export failed \u2014 try Print instead and choose 'Save as PDF'.", "err");
+    });
+  }
+  document.getElementById("downloadPdfBtn").addEventListener("click", doDownload);
+  document.getElementById("downloadPdfBtn2").addEventListener("click", doDownload);
+
+  (async function init(){
+    auth = await KPS.requireRole(['teacher']);
+    if (!auth || !auth.user) return; // requireRole already redirected
+    await loadAssignments();
+  })();
+})();
+</script>
+</body>
+</html>

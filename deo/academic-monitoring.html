@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDU.LR — DEO — Track teaching and learning</title>
+<link rel="stylesheet" href="deo.css">
+</head>
+<body>
+<div class="deo-shell">
+  <aside class="deo-side">
+    <div class="brand"><b>EDU.LR</b><span>District Education Officer Portal</span></div>
+    <div class="nav">
+      <div class="nav-title">DISTRICT</div>
+      <a href="dashboard.html">District overview</a>
+      <a href="schools.html">All schools in the education district</a>
+      <a href="school-profile.html">School profile</a>
+      <a href="school-visits.html">Plan</a>
+      <a href="inspection.html">School inspection checklist covering administration</a>
+      <a href="inspection-report.html">Review completed inspection reports</a>
+      <div class="nav-title">PEOPLE</div>
+      <a href="principals.html">Monitor principals and school administrators</a>
+      <a href="teachers.html">District teacher register</a>
+      <a href="students.html">District learner register with enrollment</a>
+      <a href="student-attendance.html">Monitor learner attendance</a>
+      <div class="nav-title">ACADEMICS</div>
+      <a class="active" href="academic-monitoring.html">Track teaching and learning</a>
+      <a href="curriculum.html">Monitor curriculum implementation</a>
+      <a href="assessment-results.html">District examination and assessment results</a>
+      <a href="school-performance.html">School performance scorecards and improvement priorities.</a>
+<div class="nav-title">GOVERNANCE</div>
+      <a href="lsmc.html">Local School Management Committee participation</a>
+      <a href="policies-directives.html">District policies &amp; directives</a>
+      <a href="complaints-incidents.html">Record</a>
+      <div class="nav-title">REPORTING</div>
+      <a href="monthly-report.html">Prepare the DEO monthly operational report.</a>
+      <a href="quarterly-report.html">Prepare the quarterly district education report with performance and implementation evidence.</a>
+      <a href="annual-report.html">Compile the annual DEO report covering district operations</a>
+      <a href="special-report.html">Create and submit special reports for district needs.</a>
+      <a href="notifications.html">District alerts</a>
+    </div>
+  </aside>
+
+  <main class="deo-main">
+    <div class="top">
+      <div>
+        <h1>Track teaching and learning</h1>
+        <div class="crumb">District Education Officer / Track teaching and learning</div>
+      </div>
+      <div class="user" id="userChip">DEO • Education District</div>
+    </div>
+
+    <div class="notice">
+      Live classroom-visit and lesson-observation reports submitted by principals across the district
+      (<code>public.classroom_visits</code>). Curriculum-implementation tracking and district examination /
+      assessment results live on their own pages — see <a href="curriculum.html">Monitor curriculum
+      implementation</a> and <a href="assessment-results.html">District examination and assessment results</a>.
+    </div>
+
+    <div class="section grid">
+      <div class="card">
+        <div class="label">Classroom visits logged (district)</div>
+        <div class="kpi" id="kpiTotal">—</div>
+      </div>
+      <div class="card">
+        <div class="label">Visits logged this month</div>
+        <div class="kpi" id="kpiMonth">—</div>
+      </div>
+      <div class="card">
+        <div class="label">Rated Excellent / Good</div>
+        <div class="kpi" id="kpiRating">—</div>
+      </div>
+      <div class="card">
+        <div class="label">Follow-up visits flagged</div>
+        <div class="kpi" id="kpiFollowUp">—</div>
+      </div>
+    </div>
+
+    <div class="section card">
+      <div class="toolbar">
+        <input class="input" placeholder="Search teacher, subject, grade, focus area..." data-filter="#data">
+        <button class="btn" data-export="#data">Export CSV</button>
+        <button class="btn" data-print>Print</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table" id="data">
+          <thead>
+            <tr>
+              <th>Teacher</th>
+              <th>Subject</th>
+              <th>Grade / Class</th>
+              <th>Visit date</th>
+              <th>Focus area</th>
+              <th>Rating</th>
+              <th>Status</th>
+              <th>Observer</th>
+              <th>Follow-up</th>
+            </tr>
+          </thead>
+          <tbody id="visitsBody">
+            <tr><td colspan="9" class="empty">Loading live classroom-visit data…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">EDU.LR District Education Management System • DEO workspace</div>
+  </main>
+</div>
+
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="deo.js"></script>
+<script src="deo-premium.js"></script>
+<script>
+/* =========================================================================
+   LIVE DATA LAYER — DEO / Track teaching and learning
+   Wired directly to EDU.LR's live Supabase project (see
+   ../js/supabase-config.js for the shared client). No demo/placeholder
+   numbers — every stat and table row below comes from a real query
+   against:
+
+     classroom_visits -> the only confirmed-real backing table for this
+                          page. Written by principals via
+                          principal/classroom-visit.html (full CRUD) and
+                          already read by deo/dashboard.html for the
+                          "Classroom Visits & Supervision" feed.
+                          Columns used: id, teacher_name, subject_name,
+                          grade_label, visit_date, focus_area, rating,
+                          status, observer_name, follow_up, created_at.
+
+   Deliberately NOT wired to invented "curriculum coverage" / "assessment
+   coverage" numbers the old static demo table showed (39/48 schools on
+   target, 91% assessment coverage, etc.) — there is no confirmed table
+   backing those in this codebase. See HANDOFF-academic-monitoring.md for
+   the full reasoning and what a future session would need to wire those
+   up for real.
+
+   classroom_visits has no institution_id column populated in this build
+   (teacher_id/section_id FK columns exist in the schema but are left null
+   by the principal's compose screen, which only stores free-text
+   teacher_name/subject_name/grade_label). That means visits CANNOT be
+   reliably attributed back to a specific school yet, so this page shows
+   the district-wide feed only — it does not attempt a per-school
+   breakdown or a "schools on target" style count, since either would
+   have to be invented. Do not add a per-school column here without a
+   real institution_id (or a working teacher_id -> profiles.institution_id
+   join) landing in the schema first.
+   ========================================================================= */
+let visits = [];
+let profile = null;
+
+/* ---- Toast (mirrors deo-premium.js's closure-local toast(); duplicated
+   here because that one isn't exposed on window) ---- */
+function showToast(msg, type){
+  let t = document.querySelector('.deo-toast');
+  if (!t){ t = document.createElement('div'); t.className = 'deo-toast'; document.body.appendChild(t); }
+  t.className = 'deo-toast ' + (type || 'info');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__amToast);
+  window.__amToast = setTimeout(() => t.classList.remove('show'), 3600);
+}
+
+function ratingBadgeClass(rating){
+  if (rating === 'Excellent' || rating === 'Good') return 'badge good';
+  if (rating === 'Satisfactory') return 'badge warn';
+  if (rating === 'Needs Improvement') return 'badge bad';
+  return 'badge info';
+}
+function statusBadgeClass(status){
+  return status === 'finalized' ? 'badge good' : 'badge warn';
+}
+function fmtDate(v){
+  if (!v) return '—';
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return v;
+  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+function esc(s){
+  return (s ?? '—').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderUserChip(){
+  const el = document.getElementById('userChip');
+  if (!el) return;
+  el.textContent = profile && profile.full_name
+    ? `${profile.full_name} • District Education Officer`
+    : 'DEO • Education District';
+}
+
+function renderStats(){
+  const total = visits.length;
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+  const monthStartStr = monthStart.toISOString().slice(0,10);
+  const thisMonth = visits.filter(v => v.visit_date && v.visit_date >= monthStartStr).length;
+  const rated = visits.filter(v => v.rating === 'Excellent' || v.rating === 'Good').length;
+  const ratedPct = total ? Math.round((rated / total) * 100) : null;
+  const followUp = visits.filter(v => v.follow_up === true).length;
+
+  document.getElementById('kpiTotal').textContent = total;
+  document.getElementById('kpiMonth').textContent = thisMonth;
+  document.getElementById('kpiRating').textContent = total ? `${ratedPct}%` : '—';
+  document.getElementById('kpiFollowUp').textContent = followUp;
+}
+
+function renderTable(){
+  const tbody = document.getElementById('visitsBody');
+  if (!visits.length){
+    tbody.innerHTML = `<tr><td colspan="9" class="empty">No classroom visit or lesson-observation reports have been logged in the district yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = visits.map(v => `
+    <tr>
+      <td>${esc(v.teacher_name)}</td>
+      <td>${esc(v.subject_name)}</td>
+      <td>${esc(v.grade_label)}</td>
+      <td>${fmtDate(v.visit_date)}</td>
+      <td>${esc(v.focus_area)}</td>
+      <td><span class="${ratingBadgeClass(v.rating)}">${esc(v.rating)}</span></td>
+      <td><span class="${statusBadgeClass(v.status)}">${v.status === 'finalized' ? 'Finalized' : 'Draft'}</span></td>
+      <td>${esc(v.observer_name)}</td>
+      <td>${v.follow_up ? '<span class="badge warn">Yes</span>' : '<span class="badge info">No</span>'}</td>
+    </tr>`).join('');
+}
+
+async function loadData(){
+  try {
+    const { data, error } = await window.sb
+      .from('classroom_visits')
+      .select('id, teacher_name, subject_name, grade_label, visit_date, focus_area, rating, status, observer_name, follow_up, created_at')
+      .order('visit_date', { ascending: false })
+      .limit(500);
+    if (error) throw error;
+    visits = data || [];
+  } catch (err){
+    console.error('[DEO Academic Monitoring] failed to load live data', err);
+    showToast('Could not load live data — check your Supabase connection', 'warn');
+    visits = [];
+  }
+  renderStats();
+  renderTable();
+}
+
+(async function init(){
+  const auth = await KPS.requireRole(['deo', 'super_admin']);
+  if (!auth.user) return; // requireRole already redirected to login
+  profile = auth.profile;
+  renderUserChip();
+  await loadData();
+})();
+</script>
+</body>
+</html>

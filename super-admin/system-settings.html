@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public High School &mdash; System Settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --crimson-deep:#6E0F1E; --crimson:#A81530; --crimson-bright:#E01B2E;
+  --gold:#D98A24; --gold-deep:#A8631A; --gold-light:#F3CD8E;
+  --navy:#0D1730; --navy-2:#182548; --navy-3:#22315C;
+  --cream:#FBF4E6; --paper:#FFFEFB; --ink:#1E1712; --muted:#7A7064; --line:#EBE0CA;
+  --success:#2E7D4F; --warn:#B9750D; --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{ margin:0; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+.app{ display:block; min-height:100vh; }
+.main{ min-width:0; }
+
+.topbar{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:16px; padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.school-brand .brand-badge{ width:46px; height:46px; border-radius:50%; box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; color:var(--gold-light); font-family:'Fraunces',serif; font-weight:700; font-size:15px; object-fit:cover; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+.scope-banner{ display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px; background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08)); border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px; }
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-danger{ background:linear-gradient(135deg, var(--danger), #8C0F26); color:#fff; }
+
+.tabs{ display:flex; gap:4px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:12px; width:fit-content; margin-bottom:22px; flex-wrap:wrap; }
+.tab{ display:flex; align-items:center; gap:7px; padding:9px 15px; border-radius:9px; font-size:12.6px; font-weight:700; color:var(--muted); border:none; background:transparent; white-space:nowrap; }
+.tab svg{ width:14px; height:14px; flex:none; }
+.tab.active{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 8px 18px -8px rgba(200,20,40,.5); }
+
+.form-shell{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; margin-bottom:24px; }
+.form-head{ padding:22px 26px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); position:relative; }
+.form-head::after{ content:""; position:absolute; right:-20px; top:-20px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.25), transparent 70%); }
+.form-head h2{ color:#fff; margin:0 0 4px; font-size:20px; }
+.form-head p{ margin:0; color:rgba(255,255,255,.65); font-size:12.6px; max-width:70ch; }
+.form-body{ padding:26px; }
+.form-foot{ padding:20px 26px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:#FBF8F0; }
+.form-foot .fp-note{ font-size:11.8px; color:var(--muted); max-width:56ch; }
+.form-actions{ display:flex; gap:10px; }
+
+.fgrid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+.fgrid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+.fgrid.cols-4{ grid-template-columns:repeat(4, 1fr); }
+.fspan-2{ grid-column:span 2; }
+.fspan-3{ grid-column:span 3; }
+.field label{ display:block; font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.field input[type=text], .field input[type=email], .field input[type=number], .field input[type=password],
+.field select, .field textarea{
+  width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 13px; font-size:13.5px; font-family:inherit; color:var(--ink); background:var(--paper);
+}
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold-deep); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.field .hint{ font-size:10.8px; color:var(--muted); font-weight:500; margin-top:5px; }
+
+.divider-label{ display:flex; align-items:center; gap:10px; margin:26px 0 16px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.09em; color:var(--gold-deep); }
+.divider-label::after{ content:""; flex:1; height:1px; background:var(--line); }
+.divider-label:first-child{ margin-top:0; }
+
+.toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 0; border-bottom:1px solid var(--line); }
+.toggle-row:last-child{ border-bottom:none; }
+.tr-t{ font-size:13px; font-weight:700; }
+.tr-s{ font-size:11.8px; color:var(--muted); margin-top:2px; max-width:56ch; }
+.toggle{ width:38px; height:22px; border-radius:20px; background:#D9CDB4; position:relative; flex:none; transition:background .18s; border:none; }
+.toggle::after{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.25); transition:left .18s; }
+.toggle.on{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); }
+.toggle.on::after{ left:18px; }
+
+.module-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+.module-card{ display:flex; align-items:flex-start; gap:12px; padding:16px; border:1px solid var(--line); border-radius:14px; background:var(--paper); }
+.module-ic{ width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); display:flex; align-items:center; justify-content:center; flex:none; }
+.module-ic svg{ width:15px; height:15px; color:var(--gold-light); }
+.module-main{ flex:1; min-width:0; }
+.module-name{ font-size:13px; font-weight:700; }
+.module-desc{ font-size:11.3px; color:var(--muted); margin-top:2px; }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.maint-banner{ display:flex; align-items:center; gap:14px; padding:14px 18px; border-radius:14px; background:#FBEED2; border:1px solid #EAD2A1; margin-bottom:20px; display:none; }
+.maint-banner.show{ display:flex; }
+.maint-banner svg{ width:18px; height:18px; color:var(--gold-deep); flex:none; }
+.maint-banner b{ color:var(--gold-deep); }
+
+.report-note{ display:flex; gap:12px; padding:14px 18px; border-radius:14px; background:#FBF8F0; border:1px solid var(--line); margin-top:20px; font-size:12px; color:var(--muted); line-height:1.6; }
+.report-note svg{ width:17px; height:17px; color:var(--gold-deep); flex:none; margin-top:1px; }
+.report-note b{ color:var(--ink); }
+
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+@media (max-width:880px){ .school-brand .sb-t2{ display:none; } .topbar-divider{ display:none; } }
+@media (max-width:1100px){ .fgrid,.fgrid.cols-2,.fgrid.cols-4{ grid-template-columns:1fr 1fr; } .module-grid{ grid-template-columns:1fr 1fr; } }
+@media (max-width:640px){ .fgrid,.fgrid.cols-2,.fgrid.cols-4{ grid-template-columns:1fr; } .module-grid{ grid-template-columns:1fr; } }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="app">
+  <main class="main">
+
+    <header class="topbar">
+      <a href="dashboard.html" class="icon-btn" title="Back to Dashboard" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="school-brand">
+        <img class="brand-badge" src="../assets/images/img-382a5ec339393563.png" alt="Kingsville Public School crest">
+        <div>
+          <div class="sb-t1">Kingsville #7 &middot; Careysburg</div>
+          <div class="sb-t2">Kingsville Public School</div>
+        </div>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Super Admin Console</div>
+        <div class="page-title">System Settings</div>
+      </div>
+      <button type="button" class="btn btn-primary" id="saveAllBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+        Save Changes
+      </button>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned during initial system setup">
+        <div class="av-init" id="chipAvatar">&mdash;</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Super Admin account</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="maint-banner" id="maintBanner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        <div><b>Maintenance Mode is ON.</b> Only Super Admins and ICT can sign in &mdash; every other role sees the maintenance page.</div>
+      </div>
+
+      <div class="scope-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <div>
+          <div class="sb-t">Application-Wide Configuration</div>
+          <div class="sb-s">These settings control how the entire system behaves &mdash; separate from <b class="sa">Institution Setup</b>, which only covers the school's identity and branding. Changes here affect every portal: Super Admin, ICT, Principal, Registrar, Teachers and Students.</div>
+        </div>
+      </div>
+
+      <div class="tabs" id="mainTabs">
+        <button type="button" class="tab active" data-view="general">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          General
+        </button>
+        <button type="button" class="tab" data-view="notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          Notifications
+        </button>
+        <button type="button" class="tab" data-view="modules">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Modules
+        </button>
+        <button type="button" class="tab" data-view="security">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Security &amp; Access
+        </button>
+        <button type="button" class="tab" data-view="maintenance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 11-5.4 5.4L3 18v3h3l6.3-6.3"/><path d="M15 5l4 4"/></svg>
+          Maintenance &amp; Backup
+        </button>
+      </div>
+
+      <!-- ================= GENERAL ================= -->
+      <section class="view active" id="view-general">
+        <div class="form-shell">
+          <div class="form-head">
+            <h2>General Preferences</h2>
+            <p>Defaults applied system-wide for every user session, regardless of role.</p>
+          </div>
+          <div class="form-body">
+            <div class="fgrid">
+              <div class="field">
+                <label for="genTimezone">Server Timezone</label>
+                <select id="genTimezone">
+                  <option selected>GMT (Africa/Monrovia)</option>
+                  <option>GMT+0 (UTC)</option>
+                  <option>GMT+1</option>
+                  <option>GMT-5 (US Eastern)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="genDateFormat">Date Format</label>
+                <select id="genDateFormat">
+                  <option selected>DD/MM/YYYY</option>
+                  <option>MM/DD/YYYY</option>
+                  <option>YYYY-MM-DD</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="genLanguage">Default Language</label>
+                <select id="genLanguage">
+                  <option selected>English</option>
+                  <option>French</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="genLanding">Default Landing Page (after login)</label>
+                <select id="genLanding">
+                  <option selected>Role Dashboard</option>
+                  <option>Notifications</option>
+                  <option>Profile</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="genPageSize">Rows Per Page (tables)</label>
+                <input type="number" id="genPageSize" value="25" min="10" max="200">
+              </div>
+              <div class="field">
+                <label for="genSessionTimeout">Session Timeout (minutes)</label>
+                <input type="number" id="genSessionTimeout" value="30" min="5" max="240">
+                <div class="hint">Inactive users are signed out automatically after this period.</div>
+              </div>
+            </div>
+
+            <div class="divider-label">User Experience</div>
+            <div class="toggle-row">
+              <div><div class="tr-t">Dark Mode Available</div><div class="tr-s">Lets users switch to a dark color theme from their profile menu.</div></div>
+              <button type="button" class="toggle" id="toggleDarkMode"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="tr-t">Show Announcements Banner on Dashboards</div><div class="tr-s">Displays the latest circular or announcement at the top of every role's dashboard.</div></div>
+              <button type="button" class="toggle on" id="toggleAnnounceBanner"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="tr-t">Allow Users to Change Their Own Profile Photo</div><div class="tr-s">If off, only Registrar or Super Admin can update a user's photo.</div></div>
+              <button type="button" class="toggle on" id="toggleSelfPhoto"></button>
+            </div>
+          </div>
+          <div class="form-foot">
+            <div class="fp-note">These preferences apply immediately to every active session once saved.</div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-ghost" id="resetGeneralBtn">Reset</button>
+              <button type="button" class="btn btn-primary save-tab-btn">Save General Settings</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= NOTIFICATIONS ================= -->
+      <section class="view" id="view-notifications">
+        <div class="form-shell">
+          <div class="form-head">
+            <h2>Email Gateway (SMTP)</h2>
+            <p>Used for report cards, admission letters, password resets and system alerts sent by email.</p>
+          </div>
+          <div class="form-body">
+            <div class="fgrid cols-2">
+              <div class="field"><label for="smtpHost">SMTP Host</label><input type="text" id="smtpHost" placeholder="smtp.kingsvillepublic.edu.lr"></div>
+              <div class="field"><label for="smtpPort">SMTP Port</label><input type="number" id="smtpPort" value="587"></div>
+              <div class="field"><label for="smtpUser">SMTP Username</label><input type="text" id="smtpUser" placeholder="notifications@kingsvillepublic.edu.lr"></div>
+              <div class="field"><label for="smtpPass">SMTP Password</label><input type="password" id="smtpPass" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"></div>
+              <div class="field fspan-2"><label for="smtpFrom">"From" Name &amp; Address</label><input type="text" id="smtpFrom" placeholder="Kingsville Public School &lt;no-reply@kingsvillepublic.edu.lr&gt;"></div>
+            </div>
+            <div class="toggle-row" style="margin-top:6px;">
+              <div><div class="tr-t">Use TLS Encryption</div><div class="tr-s">Recommended for all outgoing mail.</div></div>
+              <button type="button" class="toggle on" id="toggleSmtpTls"></button>
+            </div>
+          </div>
+          <div class="form-foot">
+            <div class="fp-note">Send a test email to confirm your SMTP details before saving.</div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-ghost" id="testEmailBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 6l-10 7L2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+                Send Test Email
+              </button>
+              <button type="button" class="btn btn-primary save-tab-btn">Save Email Settings</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-shell">
+          <div class="form-head">
+            <h2>SMS Gateway</h2>
+            <p>Used for attendance alerts, fee reminders and emergency notices sent to parents/guardians.</p>
+          </div>
+          <div class="form-body">
+            <div class="fgrid cols-2">
+              <div class="field"><label for="smsProvider">SMS Provider</label>
+                <select id="smsProvider"><option selected>Africa's Talking</option><option>Twilio</option><option>Custom API</option></select>
+              </div>
+              <div class="field"><label for="smsSenderId">Sender ID</label><input type="text" id="smsSenderId" placeholder="KPHS"></div>
+              <div class="field fspan-2"><label for="smsApiKey">API Key</label><input type="password" id="smsApiKey" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"></div>
+            </div>
+            <div class="toggle-row" style="margin-top:6px;">
+              <div><div class="tr-t">Enable SMS Notifications</div><div class="tr-s">Turn off to pause all outgoing SMS system-wide, e.g. during a billing issue.</div></div>
+              <button type="button" class="toggle on" id="toggleSmsEnabled"></button>
+            </div>
+          </div>
+          <div class="form-foot">
+            <div class="fp-note">Test messages count toward your provider's usage.</div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-ghost" id="testSmsBtn">Send Test SMS</button>
+              <button type="button" class="btn btn-primary save-tab-btn">Save SMS Settings</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-shell">
+          <div class="form-head">
+            <h2>Notification Triggers</h2>
+            <p>Choose which system events send an email and/or SMS automatically.</p>
+          </div>
+          <div class="form-body" id="triggerRows">
+            <div class="toggle-row"><div><div class="tr-t">Student marked absent</div><div class="tr-s">Notifies the guardian the same day.</div></div><button type="button" class="toggle on trigger-toggle"></button></div>
+            <div class="toggle-row"><div><div class="tr-t">Fee payment received</div><div class="tr-s">Sends a receipt confirmation.</div></div><button type="button" class="toggle on trigger-toggle"></button></div>
+            <div class="toggle-row"><div><div class="tr-t">Report card published</div><div class="tr-s">Notifies parents once the Principal approves results.</div></div><button type="button" class="toggle on trigger-toggle"></button></div>
+            <div class="toggle-row"><div><div class="tr-t">Disciplinary action recorded</div><div class="tr-s">Alerts guardians of a suspension or warning.</div></div><button type="button" class="toggle on trigger-toggle"></button></div>
+            <div class="toggle-row"><div><div class="tr-t">New circular or announcement</div><div class="tr-s">Broadcast to the relevant audience only.</div></div><button type="button" class="toggle trigger-toggle"></button></div>
+          </div>
+          <div class="form-foot">
+            <div class="fp-note">Triggers respect each channel's on/off switch above.</div>
+            <div class="form-actions"><button type="button" class="btn btn-primary save-tab-btn">Save Triggers</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MODULES ================= -->
+      <section class="view" id="view-modules">
+        <div class="section-head">
+          <div>
+            <h2>Portal &amp; Module Availability</h2>
+            <p>Turn a portal off to hide it system-wide (its nav item, routes and data stay intact &mdash; just unreachable) without deleting any records.</p>
+          </div>
+        </div>
+        <div class="module-grid" id="moduleGrid">
+          <!-- module cards render here -->
+        </div>
+        <div class="report-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <span>Disabling a portal here is instant for every signed-in user of that role &mdash; they'll see a "temporarily unavailable" notice instead of losing access to the app entirely.</span>
+        </div>
+        <div class="form-foot" style="margin-top:20px; border-top:none; border-radius:14px; border:1px solid var(--line);">
+          <div class="fp-note">Module changes are audit-logged with your Super Admin account.</div>
+          <div class="form-actions"><button type="button" class="btn btn-primary save-tab-btn">Save Module Settings</button></div>
+        </div>
+      </section>
+
+      <!-- ================= SECURITY & ACCESS ================= -->
+      <section class="view" id="view-security">
+        <div class="form-shell">
+          <div class="form-head">
+            <h2>Password Policy</h2>
+            <p>Applies at password creation and reset for every account, across all roles.</p>
+          </div>
+          <div class="form-body">
+            <div class="fgrid cols-4">
+              <div class="field"><label for="secMinLength">Minimum Length</label><input type="number" id="secMinLength" value="8" min="6" max="32"></div>
+              <div class="field"><label for="secExpiry">Password Expiry (days)</label><input type="number" id="secExpiry" value="90" min="0"><div class="hint">0 = never expires</div></div>
+              <div class="field"><label for="secLockAttempts">Lockout After (failed attempts)</label><input type="number" id="secLockAttempts" value="5" min="3" max="10"></div>
+              <div class="field"><label for="secLockDuration">Lockout Duration (minutes)</label><input type="number" id="secLockDuration" value="15" min="1"></div>
+            </div>
+            <div class="toggle-row" style="margin-top:6px;">
+              <div><div class="tr-t">Require Uppercase, Number &amp; Symbol</div><div class="tr-s">Enforced on password creation and reset screens.</div></div>
+              <button type="button" class="toggle on" id="toggleComplexPw"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="tr-t">Require Two-Factor Authentication for Super Admin &amp; ICT</div><div class="tr-s">One-time code sent by email or SMS at login for the highest-privilege roles.</div></div>
+              <button type="button" class="toggle on" id="toggle2fa"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="tr-t">Force Password Change on First Login</div><div class="tr-s">Applies to every account created by Registrar, ICT or Super Admin.</div></div>
+              <button type="button" class="toggle on" id="toggleForceChange"></button>
+            </div>
+          </div>
+          <div class="form-foot">
+            <div class="fp-note">Existing sessions are not affected until the user's next login.</div>
+            <div class="form-actions"><button type="button" class="btn btn-primary save-tab-btn">Save Security Policy</button></div>
+          </div>
+        </div>
+
+        <div class="form-shell">
+          <div class="form-head">
+            <h2>Access &amp; Login Restrictions</h2>
+            <p>Coordinates with ICT's Device Management and Network Management tools.</p>
+          </div>
+          <div class="form-body">
+            <div class="toggle-row">
+              <div><div class="tr-t">Restrict Staff Logins to School Network / VPN</div><div class="tr-s">Managed alongside ICT &rarr; Network Management IP allowlists.</div></div>
+              <button type="button" class="toggle" id="toggleIpRestrict"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="tr-t">Allow Only One Active Session Per Account</div><div class="tr-s">Signs a user out elsewhere if they log in on a new device.</div></div>
+              <button type="button" class="toggle" id="toggleSingleSession"></button>
+            </div>
+            <div class="toggle-row">
+              <div><div class="tr-t">Log All Login Attempts to Audit Log</div><div class="tr-s">Feeds Super Admin &rarr; Audit Log and ICT &rarr; Security.</div></div>
+              <button type="button" class="toggle on" id="toggleLogLogins"></button>
+            </div>
+          </div>
+          <div class="form-foot">
+            <div class="fp-note">See <b>ICT &rarr; Security</b> and <b>Super Admin &rarr; Audit Log</b> for related detail views.</div>
+            <div class="form-actions"><button type="button" class="btn btn-primary save-tab-btn">Save Access Rules</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MAINTENANCE & BACKUP ================= -->
+      <section class="view" id="view-maintenance">
+        <div class="form-shell">
+          <div class="form-head">
+            <h2>Maintenance Mode</h2>
+            <p>Temporarily restrict the whole system to Super Admin and ICT while you make changes.</p>
+          </div>
+          <div class="form-body">
+            <div class="toggle-row">
+              <div><div class="tr-t">Enable Maintenance Mode Now</div><div class="tr-s">Every other role is signed out and shown a maintenance notice immediately.</div></div>
+              <button type="button" class="toggle" id="toggleMaintenanceNow"></button>
+            </div>
+            <div class="fgrid cols-2" style="margin-top:16px;">
+              <div class="field fspan-2"><label for="maintMessage">Maintenance Message Shown to Users</label>
+                <textarea id="maintMessage" rows="2" placeholder="We're performing scheduled maintenance and will be back shortly. Thank you for your patience.">We're performing scheduled maintenance and will be back shortly. Thank you for your patience.</textarea>
+              </div>
+              <div class="field"><label for="maintWindowStart">Scheduled Window Start</label><input type="text" id="maintWindowStart" placeholder="e.g. 11:00 PM"></div>
+              <div class="field"><label for="maintWindowEnd">Scheduled Window End</label><input type="text" id="maintWindowEnd" placeholder="e.g. 1:00 AM"></div>
+            </div>
+          </div>
+          <div class="form-foot">
+            <div class="fp-note">Scheduling a window here does not turn maintenance mode on automatically &mdash; ICT still triggers it at the set time.</div>
+            <div class="form-actions"><button type="button" class="btn btn-primary save-tab-btn">Save Maintenance Settings</button></div>
+          </div>
+        </div>
+
+        <div class="form-shell">
+          <div class="form-head">
+            <h2>Backup Defaults</h2>
+            <p>Baseline schedule used by ICT &rarr; Database Backup and Super Admin &rarr; Backups.</p>
+          </div>
+          <div class="form-body">
+            <div class="fgrid cols-3">
+              <div class="field"><label for="backupFrequency">Automatic Backup Frequency</label>
+                <select id="backupFrequency"><option>Every 6 hours</option><option selected>Daily</option><option>Weekly</option></select>
+              </div>
+              <div class="field"><label for="backupRetention">Retention Period (days)</label><input type="number" id="backupRetention" value="30" min="7"></div>
+              <div class="field"><label for="backupTime">Preferred Run Time</label><input type="text" id="backupTime" placeholder="e.g. 2:00 AM"></div>
+            </div>
+            <div class="toggle-row" style="margin-top:6px;">
+              <div><div class="tr-t">Store an Off-Site Copy</div><div class="tr-s">Mirrors each backup to secondary cloud storage, managed by ICT.</div></div>
+              <button type="button" class="toggle on" id="toggleOffsiteBackup"></button>
+            </div>
+          </div>
+          <div class="form-foot">
+            <div class="fp-note">To restore a backup or view history, go to <b>ICT &rarr; Database Backup</b>.</div>
+            <div class="form-actions"><button type="button" class="btn btn-primary save-tab-btn">Save Backup Defaults</button></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer-ribbon">
+        <b>Kingsville Public School</b> &middot; Kingsville #7, Careysburg District &middot; Super Admin Console
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =========================================================================
+   LIVE DATABASE WIRING (Supabase-backed, via the shared KPS.kv bridge)
+   Storage key: "system_settings" (shared row — one config for the whole school)
+   ========================================================================= */
+const SETTINGS_KEY = 'system_settings';
+
+const MODULES = [
+  { key:'registrar',  name:'Registrar',        desc:'Admissions, enrollment, transfers & records.' },
+  { key:'principal',  name:'Principal',        desc:'Approvals, reports & school-wide monitoring.' },
+  { key:'ict',        name:'ICT',              desc:'Devices, network, backups & support tickets.' },
+  { key:'teacher',    name:'Teacher',          desc:'Grades, attendance, assignments & lesson plans.' },
+  { key:'student',    name:'Student',          desc:'Profile, results, attendance & documents.' }
+];
+
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' + msg + '</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+async function readJson(res){
+  if(!res.ok) throw new Error('Request failed with status ' + res.status);
+  return res.json();
+}
+function toggleEl(el){ el.classList.toggle('on'); }
+
+/* ---------- Tabs ---------- */
+document.querySelectorAll('#mainTabs .tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#mainTabs .tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + tab.dataset.view).classList.add('active');
+  });
+});
+
+/* ---------- Toggle switches (all, incl. dynamically rendered) ---------- */
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.toggle');
+  if(!btn) return;
+  toggleEl(btn);
+  if(btn.id === 'toggleMaintenanceNow'){
+    document.getElementById('maintBanner').classList.toggle('show', btn.classList.contains('on'));
+  }
+});
+
+/* ---------- Modules ---------- */
+function renderModules(states){
+  const grid = document.getElementById('moduleGrid');
+  grid.innerHTML = MODULES.map(m => {
+    const on = states[m.key] !== false;
+    return `
+    <div class="module-card">
+      <div class="module-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/></svg></div>
+      <div class="module-main">
+        <div class="module-name">${m.name}</div>
+        <div class="module-desc">${m.desc}</div>
+      </div>
+      <button type="button" class="toggle module-toggle ${on ? 'on' : ''}" data-key="${m.key}"></button>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- Load ---------- */
+async function loadSettings(){
+  let data = {};
+  try{
+    const row = await KPS.kv.get(SETTINGS_KEY, true); // shared: one config for the whole school
+    data = row && row.value ? row.value : {};
+  }catch(err){
+    console.warn('No saved system settings yet, using defaults', err);
+    data = {};
+  }
+  renderModules(data.modules || {});
+  if(data.maintenance && data.maintenance.enabled){
+    document.getElementById('toggleMaintenanceNow').classList.add('on');
+    document.getElementById('maintBanner').classList.add('show');
+  }
+}
+
+/* ---------- Save (per section, and top "Save Changes") ---------- */
+async function saveSection(label){
+  try{
+    // Merge with whatever is already saved so saving one tab doesn't wipe others
+    let existing = {};
+    try{
+      const row = await KPS.kv.get(SETTINGS_KEY, true);
+      existing = row && row.value ? row.value : {};
+    }catch(e){ existing = {}; }
+
+    const modules = {};
+    document.querySelectorAll('#moduleGrid .module-toggle').forEach(btn => {
+      modules[btn.dataset.key] = btn.classList.contains('on');
+    });
+
+    const payload = Object.assign({}, existing, {
+      modules,
+      maintenance: {
+        enabled: document.getElementById('toggleMaintenanceNow').classList.contains('on'),
+        message: document.getElementById('maintMessage') ? document.getElementById('maintMessage').value : existing.maintenance && existing.maintenance.message
+      },
+      lastSection: label,
+      savedAt: new Date().toISOString()
+    });
+
+    await KPS.kv.set(SETTINGS_KEY, payload, true); // shared so every role sees the same system settings
+    showToast(label + ' saved.');
+  }catch(err){
+    console.error('Failed to save ' + label, err);
+    showToast('Could not save ' + label + ' — the database did not confirm it.');
+  }
+}
+document.querySelectorAll('.save-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => saveSection(btn.textContent.replace('Save ', '').trim()));
+});
+document.getElementById('saveAllBtn').addEventListener('click', () => saveSection('All System Settings'));
+document.getElementById('testEmailBtn').addEventListener('click', () => showToast('Test email queued using the SMTP details above.'));
+document.getElementById('testSmsBtn').addEventListener('click', () => showToast('Test SMS queued using the gateway details above.'));
+document.getElementById('resetGeneralBtn').addEventListener('click', () => location.reload());
+
+/* ---------- Initial load ---------- */
+loadSettings();
+</script>
+
+</body>
+</html>

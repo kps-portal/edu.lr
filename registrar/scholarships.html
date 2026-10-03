@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../responsive.css">
+<title>Kingsville Public High School — Scholarships & Fee Tiers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS (matches Registrar / Super Admin) ============================= */
+:root{
+  --crimson-deep:#6E0F1E;
+  --crimson:#A81530;
+  --crimson-bright:#E01B2E;
+  --gold:#D98A24;
+  --gold-deep:#A8631A;
+  --gold-light:#F3CD8E;
+  --navy:#0D1730;
+  --navy-2:#182548;
+  --navy-3:#22315C;
+  --cream:#FBF4E6;
+  --paper:#FFFEFB;
+  --ink:#1E1712;
+  --muted:#7A7064;
+  --line:#EBE0CA;
+  --success:#2E7D4F;
+  --warn:#B9750D;
+  --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35);
+  --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+.mono{ font-family:'IBM Plex Mono',monospace; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* ============================= APP SHELL ============================= */
+.app{ display:block; min-height:100vh; }
+
+/* -------- Main -------- */
+.main{ min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 32px; background:rgba(251,244,230,.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.hamburger{ display:none; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+
+.search-pill{
+  display:flex; align-items:center; gap:9px; background:var(--paper);
+  border:1px solid var(--line); border-radius:30px; padding:9px 16px; width:280px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-pill:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.search-pill svg{ width:15px; height:15px; color:var(--muted); flex:none; }
+.search-pill input{ border:none; outline:none; background:transparent; font-size:13.5px; width:100%; font-family:inherit; color:var(--ink); }
+
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:var(--paper); border:1px solid var(--line); position:relative; flex:none;
+  transition:border-color .15s, transform .1s;
+}
+.icon-btn:hover{ border-color:var(--gold); }
+.icon-btn:active{ transform:scale(.94); }
+.icon-btn svg{ width:17px; height:17px; color:var(--ink); }
+.dot-flag{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--crimson-bright); box-shadow:0 0 0 2px var(--paper); }
+
+.profile-chip{ display:flex; align-items:center; gap:9px; padding:5px 12px 5px 5px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.profile-chip .av-init{ width:30px; height:30px; border-radius:50%; box-shadow:0 0 0 2px var(--gold); background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:12px; }
+.profile-chip .pn{ font-size:12.5px; font-weight:700; line-height:1.15; }
+.profile-chip .pr{ font-size:10.5px; color:var(--muted); }
+.moe-badge{ display:flex; align-items:center; gap:8px; padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--line); background:var(--paper); }
+.moe-badge img{ width:30px; height:30px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 2px var(--navy-3); }
+.moe-badge .mt{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); line-height:1.2; }
+.moe-badge .mt b{ display:block; font-size:11px; color:var(--ink); letter-spacing:0; text-transform:none; font-family:'Fraunces',serif; font-weight:700; }
+.footer-crest{ width:20px; height:20px; border-radius:50%; object-fit:cover; vertical-align:-5px; margin:0 6px; }
+
+.content{ padding:22px 32px 60px; }
+.view{ display:none; animation:rise .35s ease; }
+.view.active{ display:block; }
+@keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+/* ============================= SCOPE BANNER ============================= */
+.scope-banner{
+  display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px;
+  background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08));
+  border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px;
+}
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+/* ============================= COMPONENTS ============================= */
+.section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0 0 4px; font-weight:600; }
+.section-head p{ margin:0; color:var(--muted); font-size:13.5px; max-width:60ch; }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#2A1806; box-shadow:0 10px 22px -10px rgba(168,99,26,.5); }
+.btn-navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; box-shadow:0 10px 22px -10px rgba(13,23,48,.5); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:7px 12px; font-size:12px; border-radius:8px; }
+
+/* Stat cards */
+.stat-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:22px; }
+.stat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-sm); transition:transform .18s, box-shadow .18s;
+}
+.stat-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+.stat-card::after{ content:""; position:absolute; right:-30px; top:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.14), transparent 70%); }
+.stat-top{ display:flex; align-items:center; justify-content:space-between; }
+.stat-ic{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.stat-ic svg{ width:18px; height:18px; color:#fff; }
+.stat-ic.gold{ background:linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+.stat-ic.navy{ background:linear-gradient(135deg, var(--navy-3), var(--navy)); }
+.stat-num{ font-family:'Fraunces',serif; font-size:24px; font-weight:700; margin-top:14px; line-height:1.15; }
+.stat-num small{ display:block; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--muted); font-weight:600; margin-top:3px; }
+.stat-label{ font-size:12.5px; color:var(--muted); margin-top:6px; font-weight:500; }
+
+.card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-sm); }
+.card-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 4px; }
+.card-head h3{ font-size:15.5px; font-weight:700; margin:0; font-family:'Inter',sans-serif; }
+.card-body{ padding:14px 20px 20px; }
+
+/* Tables */
+.table-wrap{ overflow-x:auto; }
+table.data{ width:100%; border-collapse:collapse; font-size:13px; }
+table.data th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; padding:10px 14px; border-bottom:2px solid var(--line); white-space:nowrap; }
+table.data td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.data tr:last-child td{ border-bottom:none; }
+table.data tbody tr{ transition:background .12s; }
+table.data tbody tr:hover{ background:#FBF4E6; }
+.avatar-name{ display:flex; align-items:center; gap:10px; }
+.avatar-name .av{ width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg, var(--navy-3), var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; font-family:'Fraunces',serif; }
+.avatar-name .nm{ font-weight:700; font-size:13px; }
+.avatar-name .sb{ font-size:11.3px; color:var(--muted); }
+
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+button.pill{ font-family:inherit; border:none; background:none; }
+.pill.green{ background:#E4F3E9; color:var(--success); }
+.pill.gold{ background:#FBEED2; color:var(--gold-deep); }
+.pill.red{ background:#FBE6E6; color:var(--danger); }
+.pill.grey{ background:#EFEAE0; color:var(--muted); }
+.pill.navy{ background:#E4E9F4; color:var(--navy-3); }
+.pill::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+.tbl-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+.tbl-actions button{ width:29px; height:29px; border-radius:8px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+.tbl-actions button:hover{ border-color:var(--gold); }
+.tbl-actions svg{ width:13px; height:13px; }
+
+.toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .search-pill{ width:260px; }
+select.filter{ border:1px solid var(--line); background:var(--paper); border-radius:10px; padding:9px 12px; font-size:12.6px; font-family:inherit; color:var(--ink); }
+
+/* Modal */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(13,10,7,.55); backdrop-filter:blur(2px); z-index:100; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-backdrop.open{ display:flex; }
+.modal{ background:var(--paper); border-radius:18px; width:560px; max-width:100%; box-shadow:var(--shadow); overflow:hidden; animation:pop .2s ease; max-height:90vh; display:flex; flex-direction:column; }
+@keyframes pop{ from{ transform:scale(.95); opacity:0;} to{ transform:none; opacity:1;} }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); flex:none; }
+.modal-head h3{ color:#fff; margin:0; font-size:16px; }
+.modal-head button{ background:rgba(255,255,255,.15); border:none; width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; }
+.modal-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; overflow-y:auto; }
+.modal-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; flex:none; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:700; color:var(--muted); }
+.field label .req{ color:var(--crimson); }
+.field input[type=text], .field input[type=number], .field select, .field textarea{
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; background:var(--paper);
+}
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,138,36,.14); }
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.field-hint{ font-size:11px; color:var(--muted); margin-top:-2px; }
+.lookup-row{ display:flex; gap:8px; }
+.lookup-row input{ flex:1; }
+.lookup-results{ border:1px solid var(--line); border-radius:10px; margin-top:4px; max-height:160px; overflow-y:auto; display:none; background:var(--paper); }
+.lookup-results.open{ display:block; }
+.lookup-item{ padding:9px 12px; font-size:12.5px; border-bottom:1px solid var(--line); cursor:pointer; }
+.lookup-item:last-child{ border-bottom:none; }
+.lookup-item:hover{ background:#FBF4E6; }
+.lookup-item b{ display:block; font-size:12.8px; }
+.lookup-item span{ color:var(--muted); font-size:11px; }
+.selected-chip{
+  display:flex; align-items:center; gap:8px; margin-top:8px; padding:8px 10px;
+  background:rgba(46,125,79,.1); border:1px solid rgba(46,125,79,.35); border-radius:10px;
+  font-size:12.5px; font-weight:600; color:var(--success);
+}
+.selected-chip svg{ width:15px; height:15px; flex:none; }
+.selected-chip span{ flex:1; }
+.selected-chip button{
+  background:none; border:none; color:var(--success); opacity:.7; font-size:13px;
+  padding:2px 4px; border-radius:6px; line-height:1;
+}
+.selected-chip button:hover{ opacity:1; background:rgba(46,125,79,.15); }
+
+/* Scan / photo uploader */
+.scan-box{ border:2px dashed var(--line); border-radius:12px; padding:16px; text-align:center; background:#FBF4E6; transition:border-color .15s; }
+.scan-box.has-img{ padding:10px; }
+.scan-box svg{ width:26px; height:26px; color:var(--gold-deep); margin-bottom:6px; }
+.scan-box p{ margin:0; font-size:12px; color:var(--muted); }
+.scan-box input[type=file]{ display:none; }
+.scan-preview{ display:flex; align-items:center; gap:12px; text-align:left; }
+.scan-preview img{ width:72px; height:96px; object-fit:cover; border-radius:8px; border:1px solid var(--line); background:#fff; }
+.scan-preview .sp-info{ flex:1; }
+.scan-preview .sp-info b{ display:block; font-size:12.5px; }
+.scan-status{ font-size:11.5px; color:var(--gold-deep); margin-top:6px; display:flex; align-items:center; gap:6px; justify-content:center; }
+.scan-status.ok{ color:var(--success); }
+.spinner{ width:12px; height:12px; border:2px solid rgba(217,138,36,.25); border-top-color:var(--gold-deep); border-radius:50%; animation:spin .7s linear infinite; flex:none; }
+@keyframes spin{ to{ transform:rotate(360deg);} }
+.ocr-text{ margin-top:8px; max-height:70px; overflow-y:auto; font-size:10.8px; color:var(--muted); background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:8px 10px; text-align:left; white-space:pre-wrap; }
+.convert-note{ font-size:11.5px; color:var(--gold-deep); font-weight:700; margin-top:-4px; }
+
+/* Official receipt (print + PDF export) — cash-receipt style, boxed layout */
+#officialReceiptRoot{ position:fixed; left:-9999px; top:0; }
+.off-receipt{ font-family:'IBM Plex Mono',monospace; }
+.off-receipt{
+  position:relative; width:700px; max-width:100%; margin:0 auto 26px;
+  background:#F7E08A; color:#1E1712; border:2px solid #1E1712;
+  box-shadow:0 0 0 5px #F7E08A, 0 0 0 6px #1E1712;
+  overflow:hidden;
+}
+.rc-body{ position:relative; z-index:2; padding:30px 36px 24px; }
+.rc-corner{ position:absolute; width:22px; height:22px; border:#A8631A solid; z-index:3; }
+.rc-corner.tl{ top:10px; left:10px; border-width:3px 0 0 3px; }
+.rc-corner.tr{ top:10px; right:10px; border-width:3px 3px 0 0; }
+.rc-corner.bl{ bottom:10px; left:10px; border-width:0 0 3px 3px; }
+.rc-corner.br{ bottom:10px; right:10px; border-width:0 3px 3px 0; }
+.rc-watermark{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:180px; font-weight:800; color:rgba(30,23,18,.06); letter-spacing:.04em;
+  transform:rotate(-20deg); z-index:1; pointer-events:none; user-select:none;
+}
+.rc-stamp{
+  position:absolute; top:8px; right:8px; font-size:11px; font-weight:700;
+  letter-spacing:.06em; padding:6px 10px; border:2px solid; transform:rotate(4deg);
+  text-transform:uppercase; background:rgba(247,224,138,.85); z-index:4;
+}
+.rc-stamp.received{ color:#1F5C1F; border-color:#1F5C1F; }
+.rc-stamp.paid{ color:#A81530; border-color:#A81530; }
+
+.rc-header{ display:flex; align-items:center; gap:16px; }
+.rc-logo{ width:56px; height:56px; border-radius:50%; object-fit:cover; flex:none; border:1.5px solid #1E1712; background:#fff; }
+.rc-head-mid{ flex:1; text-align:center; }
+.rc-super{ font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; color:#1E1712; margin-bottom:4px; }
+.rc-title{ font-size:28px; font-weight:700; letter-spacing:.03em; color:#1F5C1F; line-height:1.1; }
+.rc-school{ margin-top:4px; }
+.rc-school .s1{ font-size:13px; font-weight:700; }
+.rc-school .s2{ font-size:10.5px; color:#4a4436; }
+.rc-rule{ display:flex; align-items:center; text-align:center; margin:16px 0 18px; color:#A8631A; }
+.rc-rule::before, .rc-rule::after{ content:""; flex:1; height:0; border-top:1.5px double #1E1712; }
+.rc-rule span{ padding:0 10px; font-size:11px; }
+
+table.rc-table{ width:100%; border-collapse:collapse; table-layout:fixed; margin-bottom:14px; position:relative; z-index:2; }
+table.rc-table th{
+  border:1.5px solid #1E1712; text-align:left; font-size:12px; font-weight:700;
+  padding:6px 10px; background:rgba(255,255,255,.18);
+}
+table.rc-table td{
+  border:1.5px solid #1E1712; border-top:none; padding:10px 10px 12px;
+  font-size:13px; color:#1F5C1F; vertical-align:top; line-height:1.65;
+  background:rgba(255,255,255,.06);
+}
+.rc-serial{ letter-spacing:.06em; font-weight:700; }
+.rc-field{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; border-bottom:1px dotted #8a7f5e; padding:3px 0; }
+.rc-field:last-child{ border-bottom:none; }
+.rc-flabel{ font-size:9.5px; text-transform:uppercase; letter-spacing:.05em; color:#6b6350; font-weight:700; flex:none; }
+.rc-fval{ color:#1F5C1F; font-weight:700; text-align:right; }
+.rc-paidby{ color:#1F5C1F; }
+.rc-check{ display:flex; align-items:center; gap:8px; margin:3px 0; }
+.rc-cb{ display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; border:1.5px solid #1E1712; font-size:11px; color:#fff; flex:none; }
+.rc-cb.on{ background:#1F5C1F; border-color:#1F5C1F; }
+.rc-amount{ font-size:22px; font-weight:700; color:#1E1712; }
+.rc-words{ text-transform:capitalize; }
+.rc-equiv{ margin-top:8px; font-size:10.5px; color:#6b6350; text-transform:none; }
+.rc-foot{ display:flex; justify-content:space-between; margin-top:30px; font-size:12px; position:relative; z-index:2; }
+.rc-foot .sig{ width:44%; border-top:1.5px solid #1E1712; text-align:center; padding-top:5px; }
+.rc-barcode{ margin-top:18px; text-align:center; font-size:20px; letter-spacing:1px; color:#1E1712; opacity:.55; line-height:1; }
+.rc-legal{ text-align:center; font-size:9.5px; color:#6b6350; margin-top:6px; position:relative; z-index:2; }
+
+/* Toast */
+.toast-wrap{ position:fixed; bottom:22px; right:22px; z-index:200; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:13px 18px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; min-width:220px; animation:toastin .25s ease; border-left:4px solid var(--gold); }
+@keyframes toastin{ from{ transform:translateX(30px); opacity:0;} to{ transform:none; opacity:1;} }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+.toast.err{ border-left-color:var(--crimson-bright); }
+.toast.err svg{ color:#ffb9c0; }
+
+/* Footer ribbon */
+.footer-ribbon{ margin-top:34px; text-align:center; padding:20px; color:var(--muted); font-size:11.6px; border-top:1px solid var(--line); }
+.footer-ribbon b{ color:var(--crimson); }
+
+/* Empty state */
+.empty-state{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty-state svg{ width:44px; height:44px; color:var(--gold-deep); margin-bottom:10px; }
+.empty-state h4{ margin:6px 0 4px; color:var(--ink); font-size:15px; }
+.empty-state p{ margin:0; font-size:12.5px; max-width:36ch; margin:0 auto; }
+
+/* Responsive */
+@media (max-width:1180px){
+  .stat-grid{ grid-template-columns:repeat(2,1fr); }
+  .field-row{ grid-template-columns:1fr; }
+}
+@media print{
+  .topbar, .btn, .tbl-actions, .toolbar, .toast-wrap, .modal-backdrop, .footer-ribbon{ display:none !important; }
+  .app{ display:block; }
+  .content{ padding:0; }
+  .card{ box-shadow:none !important; border:1px solid #ccc !important; }
+  body{ background:#fff; }
+}
+@media (max-width:880px){
+  .search-pill{ display:none; }
+  .stat-grid{ grid-template-columns:1fr; }
+}
+</style>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+<div class="app">
+
+  <!-- ============================= MAIN ============================= -->
+  <main class="main">
+    <header class="topbar">
+      <a class="icon-btn" id="backBtn" href="dashboard.html" title="Back to Dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </a>
+      <div class="page-title-wrap">
+        <div class="eyebrow">Republic of Liberia · Ministry of Education</div>
+        <div class="page-title">Scholarships &amp; Fee Tiers</div>
+      </div>
+      <span class="pill green" id="connStatusPill" style="border:none;" title="Connected to Kingsville Public High School's Supabase project">Live · Supabase</span>
+      <div class="moe-badge" title="Ministry of Education, Republic of Liberia">
+        <img src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt="Ministry of Education, Republic of Liberia seal">
+        <div class="mt">Republic of Liberia<b>Ministry of Education</b></div>
+      </div>
+      <div class="profile-chip" style="cursor:default;" title="Provisioned by the Super Administrator">
+        <div class="av-init" id="chipAvatar">—</div>
+        <div>
+          <div class="pn" id="chipName">Not signed in</div>
+          <div class="pr" id="chipRole">Awaiting Registrar account</div>
+        </div>
+      </div>
+      <button class="icon-btn logout" data-action="logout" title="Log out" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </header>
+
+    <div class="content">
+      <section class="view active">
+        <div class="scope-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5h.01"/></svg>
+          <div>
+            <div class="sb-t">Scope of Access</div>
+            <div class="sb-s">Every scholarship and fee tier recorded here is real and visible to everyone with a reason to see it: the student themselves (their own record), the Registrar, and the <b class="sa">Super Administrator</b>. The Principal and DEO dashboards see the school-wide total value of active scholarships folded into the Fee Collections figure, with a labeled footnote — never hidden, never a separate untracked pool.</div>
+          </div>
+        </div>
+
+        <!-- ============================= FEE TIERS ============================= -->
+        <div class="section-head">
+          <div>
+            <h2>Fee Tiers by Grade</h2>
+            <p>Set the tuition amount (USD) for each grade. Leave a tier blank if that grade uses the school's standard tuition. Changes apply going forward and are visible to Principal, DEO, and Super Admin.</p>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-bottom:30px;">
+          <table class="table" id="tiersTable" style="width:100%; border-collapse:collapse;">
+            <thead>
+              <tr style="text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); border-bottom:1px solid var(--line);">
+                <th style="padding:10px 8px;">Grade</th>
+                <th style="padding:10px 8px;">Tuition (USD)</th>
+                <th style="padding:10px 8px;">≈ LRD (rate L$200 = $1)</th>
+                <th style="padding:10px 8px;">Notes</th>
+                <th style="padding:10px 8px;">Last Updated</th>
+                <th style="padding:10px 8px;"></th>
+              </tr>
+            </thead>
+            <tbody id="tiersBody">
+              <tr><td colspan="6" style="padding:16px 8px; color:var(--muted); font-style:italic;">Loading grades…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ============================= SCHOLARSHIPS ============================= -->
+        <div class="section-head">
+          <div>
+            <h2>Scholarships &amp; Waivers</h2>
+            <p>Record a per-student discount or full waiver with a name/reason. Every scholarship has a status (Active / Revoked) and shows who approved it. The aggregate value feeds the Principal &amp; DEO Fee Collections footnote automatically.</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="openScholarshipModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Grant Scholarship / Waiver
+            </button>
+          </div>
+        </div>
+
+        <div class="stat-grid" id="statGrid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="stat-card"><div class="stat-top"><div class="stat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></svg></div></div><div class="stat-num" id="sumActiveCount">—</div><div class="stat-label">Active Scholarships</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-ic gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></div></div><div class="stat-num" id="sumValueUsd">—</div><div class="stat-label">Total Value (USD / year)</div></div>
+          <div class="stat-card"><div class="stat-top"><div class="stat-ic navy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19h16M7 19v-6M12 19V6M17 19v-9"/></svg></div></div><div class="stat-num" id="sumValueLrd">—</div><div class="stat-label">≈ LRD Equivalent</div></div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table" style="width:100%; border-collapse:collapse;">
+            <thead>
+              <tr style="text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); border-bottom:1px solid var(--line);">
+                <th style="padding:10px 8px;">Student</th>
+                <th style="padding:10px 8px;">Class</th>
+                <th style="padding:10px 8px;">Name / Reason</th>
+                <th style="padding:10px 8px;">Discount</th>
+                <th style="padding:10px 8px;">Est. Value</th>
+                <th style="padding:10px 8px;">Approved By</th>
+                <th style="padding:10px 8px;">Status</th>
+                <th style="padding:10px 8px;"></th>
+              </tr>
+            </thead>
+            <tbody id="scholarshipsBody">
+              <tr><td colspan="8" style="padding:16px 8px; color:var(--muted); font-style:italic;">Loading scholarships…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+    </div>
+
+    <div class="footer-ribbon" style="padding:16px 32px; font-size:11px; color:var(--muted); text-align:center;">
+      <img class="footer-crest" src="../assets/images/img-a6d38f005f0a5d4a.jpg" alt=""> Kingsville Public High School · Republic of Liberia · Ministry of Education
+    </div>
+  </main>
+</div>
+
+<!-- ============================= SCHOLARSHIP MODAL ============================= -->
+<div class="modal-backdrop" id="scholarshipModalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Grant Scholarship / Waiver</h3>
+      <button onclick="closeScholarshipModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field" style="position:relative;">
+        <label>Student <span class="req">*</span></label>
+        <input type="text" id="sStudentName" placeholder="Search by name or student ID…" autocomplete="off">
+        <div class="lookup-results" id="sLookupResults" style="position:absolute; top:100%; left:0; right:0; background:var(--paper); border:1px solid var(--line); border-radius:10px; margin-top:4px; max-height:220px; overflow-y:auto; box-shadow:var(--shadow-sm); z-index:20; display:none;"></div>
+        <div class="field-hint" id="sSelectedHint"></div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Discount Type <span class="req">*</span></label>
+          <select id="sDiscountType">
+            <option value="percentage">Percentage of tuition</option>
+            <option value="fixed">Fixed amount (USD)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label id="sDiscountValueLabel">Discount Value (%) <span class="req">*</span></label>
+          <input type="number" id="sDiscountValue" placeholder="0" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="field">
+        <label>Scholarship / Waiver Name (reason) <span class="req">*</span></label>
+        <input type="text" id="sName" placeholder="e.g. Merit Scholarship, Financial Hardship Waiver, Staff Sibling Discount">
+      </div>
+      <div class="field-hint">Recorded under your name as the approving Registrar, with today's date, for accountability.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeScholarshipModal()">Cancel</button>
+      <button class="btn btn-primary" id="saveScholarshipBtn" onclick="saveScholarship()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        Save Scholarship
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+let profile = null;
+let classes = [];
+let tiers = [];
+let scholarships = [];
+let selectedScholarshipStudent = null;
+const EXCHANGE_RATE = 200; // L$200 = $1, matches fee_receipts
+
+/* ============================= TOAST ============================= */
+function showToast(msg, kind){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind==='err' ? ' err' : '');
+  const icon = kind==='err'
+    ? '<path d="M12 8v5M12 16.5h.01"/><circle cx="12" cy="12" r="9"/>'
+    : '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>';
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icon}</svg><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),250); }, 3600);
+}
+function initials(name){ return (name||'?').split(' ').map(w=>w[0]).slice(0,2).join(''); }
+function money(n, cur){ return (cur==='USD' ? '$' : 'L$') + (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtDate(d){ if(!d) return '—'; try{ return new Date(d).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); }catch(e){ return '—'; } }
+
+function renderProfileChip(){
+  const chipAvatar = document.getElementById('chipAvatar');
+  const chipName = document.getElementById('chipName');
+  const chipRole = document.getElementById('chipRole');
+  if(profile && (profile.full_name || profile.name)){
+    const name = profile.full_name || profile.name;
+    chipAvatar.textContent = initials(name);
+    chipName.textContent = name;
+    chipRole.textContent = profile.role || 'Registrar';
+  } else {
+    chipAvatar.textContent = '—';
+    chipName.textContent = 'Not signed in';
+    chipRole.textContent = 'Awaiting Registrar account';
+  }
+}
+function renderConnectionStatus(){
+  const pill = document.getElementById('connStatusPill');
+  if(!pill) return;
+  pill.textContent = 'Live · Supabase';
+  pill.title = 'Connected to Kingsville Public High School\'s Supabase project: ' + (window.KPS ? KPS.SUPABASE_URL : '');
+}
+
+/* ============================= FEE TIERS ============================= */
+async function loadTiers(){
+  const body = document.getElementById('tiersBody');
+  try{
+    const [{ data: classData, error: classErr }, { data: tierData, error: tierErr }] = await Promise.all([
+      window.sb.from('classes').select('id, name, level').order('level', { ascending: true }),
+      window.sb.from('fee_tiers').select('id, class_id, tuition_amount_usd, notes, updated_at')
+    ]);
+    if(classErr) throw classErr;
+    if(tierErr) throw tierErr;
+    classes = classData || [];
+    tiers = tierData || [];
+    renderTiers();
+  }catch(err){
+    console.warn('[Scholarships] loadTiers failed', err);
+    body.innerHTML = `<tr><td colspan="6" style="padding:16px 8px; color:var(--danger); font-style:italic;">Could not load fee tiers.</td></tr>`;
+  }
+}
+function tierFor(classId){ return tiers.find(t => t.class_id === classId) || null; }
+function renderTiers(){
+  const body = document.getElementById('tiersBody');
+  if(!classes.length){ body.innerHTML = `<tr><td colspan="6" style="padding:16px 8px; color:var(--muted); font-style:italic;">No grades found.</td></tr>`; return; }
+  body.innerHTML = classes.map(c=>{
+    const t = tierFor(c.id);
+    const usd = t ? t.tuition_amount_usd : '';
+    const lrd = t ? (Number(t.tuition_amount_usd)||0) * EXCHANGE_RATE : 0;
+    const notes = t ? (t.notes||'') : '';
+    return `<tr style="border-bottom:1px dashed var(--line);" data-class-id="${c.id}">
+      <td style="padding:9px 8px; font-weight:700;">${c.name}</td>
+      <td style="padding:9px 8px;"><input type="number" min="0" step="0.01" class="tier-usd-input" style="width:110px; padding:6px 9px; border:1px solid var(--line); border-radius:8px; font-family:inherit;" value="${usd}" placeholder="Standard"></td>
+      <td style="padding:9px 8px; color:var(--muted); font-size:12.5px;" class="tier-lrd-preview">${t ? money(lrd,'LRD') : '—'}</td>
+      <td style="padding:9px 8px;"><input type="text" class="tier-notes-input" style="width:100%; padding:6px 9px; border:1px solid var(--line); border-radius:8px; font-family:inherit;" value="${notes.replace(/"/g,'&quot;')}" placeholder="Optional note"></td>
+      <td style="padding:9px 8px; color:var(--muted); font-size:12px;">${t ? fmtDate(t.updated_at) : '—'}</td>
+      <td style="padding:9px 8px;"><button class="btn btn-gold" style="padding:7px 14px; font-size:12px;" onclick="saveTier('${c.id}')">Save</button></td>
+    </tr>`;
+  }).join('');
+  document.querySelectorAll('.tier-usd-input').forEach(inp=>{
+    inp.addEventListener('input', (e)=>{
+      const row = e.target.closest('tr');
+      const preview = row.querySelector('.tier-lrd-preview');
+      const v = parseFloat(e.target.value);
+      preview.textContent = v > 0 ? money(v*EXCHANGE_RATE,'LRD') : '—';
+    });
+  });
+}
+async function saveTier(classId){
+  const row = document.querySelector(`tr[data-class-id="${classId}"]`);
+  const usdInput = row.querySelector('.tier-usd-input');
+  const notesInput = row.querySelector('.tier-notes-input');
+  const usd = parseFloat(usdInput.value);
+  if(!usd || usd <= 0){ showToast('Enter a tuition amount before saving', 'err'); return; }
+  try{
+    const existing = tierFor(classId);
+    const payload = { class_id: classId, tuition_amount_usd: usd, notes: notesInput.value.trim() || null, created_by: profile ? profile.id : null };
+    let error;
+    if(existing){
+      ({ error } = await window.sb.from('fee_tiers').update(payload).eq('id', existing.id));
+    } else {
+      ({ error } = await window.sb.from('fee_tiers').insert(payload));
+    }
+    if(error) throw error;
+    showToast('Fee tier saved');
+    await loadTiers();
+  }catch(err){
+    console.error('[Scholarships] saveTier failed', err);
+    showToast('Could not save fee tier: ' + (err.message||'unknown error'), 'err');
+  }
+}
+
+/* ============================= SCHOLARSHIP LOOKUP ============================= */
+let lookupTimer = null;
+document.getElementById('sStudentName').addEventListener('input', (e)=>{
+  selectedScholarshipStudent = null;
+  document.getElementById('sSelectedHint').textContent = '';
+  const q = e.target.value.trim();
+  const box = document.getElementById('sLookupResults');
+  clearTimeout(lookupTimer);
+  if(q.length < 2){ box.style.display='none'; box.innerHTML=''; return; }
+  lookupTimer = setTimeout(async ()=>{
+    try{
+      const { data, error } = await window.sb
+        .from('students')
+        .select('id, student_id, full_name, sections(id, name, classes(id, name))')
+        .or(`student_id.ilike.%${q}%,full_name.ilike.%${q}%`)
+        .limit(8);
+      if(error) throw error;
+      const rows = data || [];
+      if(!rows.length){ box.style.display='none'; box.innerHTML=''; return; }
+      box.innerHTML = rows.map(s=>{
+        const cls = s.sections && s.sections.classes ? s.sections.classes.name : '';
+        const classId = s.sections && s.sections.classes ? s.sections.classes.id : '';
+        return `<div class="lookup-item" data-id="${s.id}" data-name="${(s.full_name||'').replace(/"/g,'&quot;')}" data-class="${cls}" data-class-id="${classId}">
+          <b>${s.full_name||'Unnamed'}</b><span>${s.student_id||'—'} ${cls?'· '+cls:''}</span>
+        </div>`;
+      }).join('');
+      box.style.display = 'block';
+      box.querySelectorAll('.lookup-item').forEach(item=>{
+        item.addEventListener('click', ()=>{
+          document.getElementById('sStudentName').value = item.dataset.name;
+          selectedScholarshipStudent = { id: item.dataset.id, name: item.dataset.name, class: item.dataset.class, classId: item.dataset.classId };
+          document.getElementById('sSelectedHint').textContent = `Selected: ${item.dataset.name}${item.dataset.class ? ' · ' + item.dataset.class : ''}`;
+          box.style.display = 'none';
+          box.innerHTML = '';
+        });
+      });
+    }catch(err){
+      console.warn('[Scholarships] student lookup failed', err);
+    }
+  }, 280);
+});
+document.getElementById('sDiscountType').addEventListener('change', (e)=>{
+  const label = document.getElementById('sDiscountValueLabel');
+  label.innerHTML = e.target.value === 'percentage'
+    ? 'Discount Value (%) <span class="req">*</span>'
+    : 'Discount Value (USD) <span class="req">*</span>';
+});
+
+/* ============================= SCHOLARSHIP MODAL ============================= */
+function openScholarshipModal(){
+  document.getElementById('sStudentName').value = '';
+  document.getElementById('sSelectedHint').textContent = '';
+  document.getElementById('sDiscountType').value = 'percentage';
+  document.getElementById('sDiscountValueLabel').innerHTML = 'Discount Value (%) <span class="req">*</span>';
+  document.getElementById('sDiscountValue').value = '';
+  document.getElementById('sName').value = '';
+  selectedScholarshipStudent = null;
+  document.getElementById('sLookupResults').style.display = 'none';
+  document.getElementById('scholarshipModalBackdrop').classList.add('open');
+}
+function closeScholarshipModal(){
+  document.getElementById('scholarshipModalBackdrop').classList.remove('open');
+}
+document.getElementById('scholarshipModalBackdrop').addEventListener('click', (e)=>{
+  if(e.target.id === 'scholarshipModalBackdrop') closeScholarshipModal();
+});
+
+async function saveScholarship(){
+  if(!selectedScholarshipStudent){ showToast('Search and select a student first', 'err'); return; }
+  const discountType = document.getElementById('sDiscountType').value;
+  const discountValue = parseFloat(document.getElementById('sDiscountValue').value);
+  const name = document.getElementById('sName').value.trim();
+  if(!discountValue || discountValue <= 0){ showToast('Enter a discount value before saving', 'err'); return; }
+  if(discountType === 'percentage' && discountValue > 100){ showToast('Percentage discount cannot exceed 100%', 'err'); return; }
+  if(!name){ showToast('Enter a name / reason for this scholarship', 'err'); return; }
+
+  const btn = document.getElementById('saveScholarshipBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const row = {
+    student_id: selectedScholarshipStudent.id,
+    name: name,
+    discount_type: discountType,
+    discount_value: discountValue,
+    approved_by: profile ? profile.id : null,
+    status: 'active'
+  };
+
+  try{
+    const { error } = await window.sb.from('scholarships').insert(row);
+    if(error) throw error;
+    showToast('Scholarship saved — visible to the student and reflected in the school-wide total');
+    closeScholarshipModal();
+    await loadScholarships();
+  }catch(err){
+    console.error('[Scholarships] save failed', err);
+    showToast('Could not save scholarship: ' + (err.message||'unknown error'), 'err');
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Save Scholarship`;
+  }
+}
+
+async function revokeScholarship(id){
+  if(!confirm('Revoke this scholarship? The student will return to standard tuition and this will no longer count toward the school-wide total.')) return;
+  try{
+    const { error } = await window.sb.from('scholarships').update({ status: 'revoked' }).eq('id', id);
+    if(error) throw error;
+    showToast('Scholarship revoked');
+    await loadScholarships();
+  }catch(err){
+    console.error('[Scholarships] revoke failed', err);
+    showToast('Could not revoke scholarship: ' + (err.message||'unknown error'), 'err');
+  }
+}
+
+/* ============================= LOAD & RENDER SCHOLARSHIPS ============================= */
+async function loadScholarships(){
+  const body = document.getElementById('scholarshipsBody');
+  try{
+    const { data, error } = await window.sb
+      .from('scholarships')
+      .select('id, student_id, name, discount_type, discount_value, status, created_at, approved_by, students(full_name, student_id, sections(name, class_id, classes(name)))')
+      .order('created_at', { ascending: false });
+    if(error) throw error;
+    scholarships = data || [];
+
+    // Resolve approver names in one batch query
+    const approverIds = [...new Set(scholarships.map(s=>s.approved_by).filter(Boolean))];
+    let approverMap = {};
+    if(approverIds.length){
+      const { data: approvers } = await window.sb.from('profiles').select('id, full_name').in('id', approverIds);
+      (approvers||[]).forEach(a=> approverMap[a.id] = a.full_name);
+    }
+
+    renderScholarships(approverMap);
+    renderScholarshipSummary();
+  }catch(err){
+    console.warn('[Scholarships] loadScholarships failed', err);
+    body.innerHTML = `<tr><td colspan="8" style="padding:16px 8px; color:var(--danger); font-style:italic;">Could not load scholarships.</td></tr>`;
+  }
+}
+function estValueUsd(s){
+  const cls = s.students && s.students.sections ? s.students.sections.class_id : null;
+  const tier = cls ? tierFor(cls) : null;
+  const base = tier ? Number(tier.tuition_amount_usd)||0 : 0;
+  return s.discount_type === 'percentage' ? round2(base * s.discount_value / 100) : round2(s.discount_value);
+}
+function round2(n){ return Math.round((Number(n)||0) * 100) / 100; }
+function renderScholarships(approverMap){
+  const body = document.getElementById('scholarshipsBody');
+  if(!scholarships.length){ body.innerHTML = `<tr><td colspan="8" style="padding:16px 8px; color:var(--muted); font-style:italic;">No scholarships recorded yet.</td></tr>`; return; }
+  body.innerHTML = scholarships.map(s=>{
+    const student = s.students || {};
+    const cls = student.sections && student.sections.classes ? student.sections.classes.name : '—';
+    const value = estValueUsd(s);
+    const discountLabel = s.discount_type === 'percentage' ? `${s.discount_value}%` : money(s.discount_value,'USD');
+    const approver = approverMap[s.approved_by] || '—';
+    const statusPill = s.status === 'active'
+      ? `<span class="pill green">Active</span>`
+      : `<span class="pill grey">Revoked</span>`;
+    return `<tr style="border-bottom:1px dashed var(--line);">
+      <td style="padding:9px 8px; font-weight:700;">${student.full_name||'Unknown'}<div style="font-size:11px;color:var(--muted);font-weight:400;">${student.student_id||''}</div></td>
+      <td style="padding:9px 8px;">${cls}</td>
+      <td style="padding:9px 8px;">${s.name}</td>
+      <td style="padding:9px 8px;">${discountLabel}</td>
+      <td style="padding:9px 8px;">${value ? money(value,'USD') : '—'}</td>
+      <td style="padding:9px 8px; font-size:12px; color:var(--muted);">${approver}</td>
+      <td style="padding:9px 8px;">${statusPill}</td>
+      <td style="padding:9px 8px;">${s.status==='active' ? `<button class="btn btn-ghost" style="padding:6px 12px; font-size:11.5px;" onclick="revokeScholarship('${s.id}')">Revoke</button>` : ''}</td>
+    </tr>`;
+  }).join('');
+}
+function renderScholarshipSummary(){
+  const active = scholarships.filter(s=>s.status==='active');
+  const totalUsd = active.reduce((sum,s)=> sum + estValueUsd(s), 0);
+  document.getElementById('sumActiveCount').textContent = active.length;
+  document.getElementById('sumValueUsd').innerHTML = money(totalUsd,'USD');
+  document.getElementById('sumValueLrd').innerHTML = money(totalUsd*EXCHANGE_RATE,'LRD');
+}
+
+(async function init(){
+  const auth = await KPS.requireRole(['registrar', 'super_admin']);
+  if (!auth.user) return; // requireRole already redirected to login
+  profile = auth.profile;
+  renderProfileChip();
+  renderConnectionStatus();
+  await loadTiers();
+  await loadScholarships();
+})();
+</script>
+</body>
+</html>

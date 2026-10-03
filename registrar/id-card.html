@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingsville Public School &mdash; Registrar ID Card Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* ============================= TOKENS (matches ID Card Designer) ============================= */
+:root{
+  --crimson-deep:#6E0F1E; --crimson:#A81530; --crimson-bright:#E01B2E;
+  --gold:#D98A24; --gold-deep:#A8631A; --gold-light:#F3CD8E;
+  --navy:#0D1730; --navy-2:#182548; --navy-3:#22315C;
+  --cream:#FBF4E6; --paper:#FFFEFB; --ink:#1E1712; --muted:#7A7064; --line:#EBE0CA;
+  --success:#2E7D4F; --warn:#B9750D; --danger:#C81430;
+  --shadow: 0 20px 50px -20px rgba(20,10,10,.35); --shadow-sm: 0 8px 20px -12px rgba(20,10,10,.25);
+  --foil-1:#eaf1ff; --foil-2:#ffd9ef; --foil-3:#d8fff2; --foil-4:#fff3d0;
+  --noise-uri: none;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{ margin:0; background:var(--cream); color:var(--ink); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
+h1,h2,h3,.display{ font-family:'Fraunces',serif; letter-spacing:-.01em; }
+::selection{ background:var(--gold-light); color:var(--navy); }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+input,select{ font-family:inherit; }
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:#D9C9A6; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--gold-deep); }
+
+/* -------- Topbar -------- */
+.topbar{ position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:16px; padding:16px 32px; background:rgba(251,244,230,.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+.school-brand{ display:flex; align-items:center; gap:12px; flex:none; }
+.brand-mark{ width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg, var(--navy-3), var(--navy)); box-shadow:0 0 0 2px var(--gold), 0 0 0 5px rgba(217,138,36,.18); display:flex; align-items:center; justify-content:center; color:#fff; font-family:'Fraunces',serif; font-weight:700; font-size:15px; overflow:hidden; }
+.brand-mark img{ width:100%; height:100%; object-fit:cover; }
+.school-brand .sb-t1{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; }
+.school-brand .sb-t2{ font-family:'Fraunces',serif; font-size:15.5px; font-weight:700; color:var(--navy); line-height:1.15; }
+.topbar-divider{ width:1px; height:34px; background:var(--line); flex:none; }
+.page-title-wrap{ margin-right:auto; }
+.eyebrow{ font-size:10.5px; text-transform:uppercase; letter-spacing:.16em; color:var(--gold-deep); font-weight:700; }
+.page-title{ font-size:22px; font-weight:600; margin-top:1px; }
+.badge-count{ background:var(--navy); color:#fff; border-radius:20px; padding:2px 10px; font-size:12px; font-weight:800; margin-left:8px; }
+
+.content{ padding:22px 32px 70px; max-width:1400px; margin:0 auto; }
+
+.scope-banner{ display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-radius:14px; background:linear-gradient(90deg, rgba(13,23,48,.05), rgba(217,138,36,.08)); border:1px solid var(--line); border-left:4px solid var(--navy); margin-bottom:20px; }
+.scope-banner svg{ width:18px; height:18px; color:var(--navy-3); flex:none; margin-top:2px; }
+.scope-banner .sb-t{ font-size:12.6px; font-weight:700; color:var(--navy); }
+.scope-banner .sb-s{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.scope-banner b.sa{ color:var(--crimson); }
+
+.btn{ display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; padding:10px 18px; border-radius:10px; border:1px solid transparent; transition:transform .1s, box-shadow .15s, background .15s; white-space:nowrap; }
+.btn svg{ width:14px; height:14px; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep)); color:#fff; box-shadow:0 10px 22px -10px rgba(200,20,40,.55); }
+.btn-primary:hover{ box-shadow:0 14px 26px -10px rgba(200,20,40,.65); }
+.btn-ghost{ background:var(--paper); border-color:var(--line); color:var(--ink); }
+.btn-ghost:hover{ border-color:var(--gold); }
+.btn-sm{ padding:8px 14px; font-size:12.5px; border-radius:9px; }
+.btn-success{ background:linear-gradient(135deg, #3B9765, var(--success)); color:#fff; }
+.btn-danger-ghost{ background:var(--paper); border-color:#EBC9CE; color:var(--danger); }
+.btn-danger-ghost:hover{ background:#FDF1F2; }
+
+/* -------- Toolbar -------- */
+.toolbar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:20px; }
+.search-wrap{ position:relative; flex:1; min-width:220px; max-width:380px; }
+.search-wrap svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:var(--muted); }
+.search-wrap input{ width:100%; border:1px solid var(--line); border-radius:11px; padding:10px 12px 10px 34px; font-size:13px; background:var(--paper); }
+.search-wrap input:focus{ outline:none; border-color:var(--gold-deep); }
+.filter-tabs{ display:flex; gap:6px; background:var(--paper); border:1px solid var(--line); padding:4px; border-radius:11px; }
+.filter-tabs button{ border:none; background:transparent; padding:7px 13px; border-radius:8px; font-size:12px; font-weight:700; color:var(--muted); }
+.filter-tabs button.active{ background:var(--navy); color:#fff; }
+.toolbar-spacer{ flex:1; }
+
+/* -------- Card grid -------- */
+.grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(360px,1fr)); gap:20px; }
+.record{ background:var(--paper); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm); overflow:hidden; display:flex; flex-direction:column; }
+.record-head{ padding:14px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--line); }
+.record-head .rh-name{ font-family:'Fraunces',serif; font-weight:700; font-size:15px; color:var(--navy); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.record-head .rh-id{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); }
+.status-pill{ font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:20px; flex:none; }
+.status-pill.new{ background:rgba(232,142,12,.14); color:var(--gold-deep); }
+.status-pill.issued{ background:rgba(46,125,79,.14); color:var(--success); }
+
+.record-cards{ display:flex; gap:16px; align-items:flex-start; justify-content:center; padding:18px 12px; background:#FBF8F0; overflow:auto; }
+.record-cards .rc-col{ display:flex; flex-direction:column; align-items:center; gap:6px; transform:scale(.72); transform-origin:top center; margin:-16px -22px; }
+.record-cards .rc-label{ font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+
+.record-meta{ padding:10px 16px; font-size:12px; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap; border-top:1px solid var(--line); }
+.record-meta b{ color:var(--ink); font-weight:700; }
+
+.record-foot{ padding:10px 14px; border-top:1px solid var(--line); display:flex; gap:8px; background:#FBF8F0; }
+.record-foot .btn{ flex:1; justify-content:center; }
+
+/* -------- ID CARD (identical rendering to Designer) -------- */
+.idcard{
+  width:338px; height:214px; border-radius:16px; position:relative; overflow:hidden;
+  background:var(--paper);
+  box-shadow:0 18px 40px -18px rgba(20,10,10,.45), 0 0 0 1px rgba(20,10,10,.06),
+             inset 0 0 0 2px rgba(217,138,36,.4), inset 0 0 0 5.5px rgba(217,138,36,.14);
+  font-family:'Inter',sans-serif;
+}
+.idcard::before{
+  content:""; position:absolute; inset:8px; border-radius:9px; pointer-events:none; z-index:5;
+  border:1px solid rgba(217,138,36,.22);
+}
+.idcard .id-noise{ position:absolute; inset:0; z-index:1; pointer-events:none; background-image:var(--noise-uri); opacity:.5; mix-blend-mode:multiply; }
+.idcard .id-watermark{
+  position:absolute; inset:-20%; z-index:1; pointer-events:none; display:flex; flex-wrap:wrap; align-content:space-around; justify-content:space-around;
+  transform:rotate(-16deg); opacity:.05; color:var(--navy);
+}
+.idcard .id-watermark span{ font-size:8px; font-weight:800; letter-spacing:.12em; white-space:nowrap; margin:9px 14px; }
+.idcard .id-rosette{ position:absolute; z-index:2; pointer-events:none; }
+.idcard .id-microtext{ position:absolute; z-index:2; pointer-events:none; }
+.idcard .id-holo{
+  position:absolute; z-index:8; width:32px; height:32px; border-radius:50%;
+  background:conic-gradient(from 0deg, var(--foil-1), var(--foil-2), var(--foil-3), var(--foil-4), var(--foil-1));
+  mix-blend-mode:color-dodge; opacity:.6; filter:saturate(1.5);
+  box-shadow:0 0 0 1px rgba(255,255,255,.5) inset;
+}
+.idcard .id-chip{ width:24px; height:18px; border-radius:3px; background:linear-gradient(135deg, var(--gold-light), var(--gold-deep)); position:relative; flex:none; box-shadow:0 0 0 1px rgba(0,0,0,.08); }
+.idcard .id-chip::before{
+  content:""; position:absolute; inset:3px; border-radius:2px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,0,0,.28) 2px 2.6px),
+    repeating-linear-gradient(90deg, transparent 0 3.5px, rgba(0,0,0,.18) 3.5px 4.2px);
+}
+.idcard .id-barcode{
+  height:14px; opacity:.88;
+  background-image: repeating-linear-gradient(90deg,
+    var(--ink) 0 1px, transparent 1px 2px,
+    var(--ink) 2px 2.6px, transparent 2.6px 4px,
+    var(--ink) 4px 4.5px, transparent 4.5px 6.6px,
+    var(--ink) 6.6px 7.8px, transparent 7.8px 9px);
+}
+.flag-mini{ width:16px; height:11.6px; position:relative; border-radius:1px; overflow:hidden; flex:none; box-shadow:0 0 0 1px rgba(0,0,0,.15);
+  background:repeating-linear-gradient(180deg, #BF0A30 0 1.05px, #fff 1.05px 2.1px); }
+.flag-mini .canton{ position:absolute; top:0; left:0; width:8px; height:6.3px; background:#00205B; display:flex; align-items:center; justify-content:center; }
+.flag-mini .canton span{ font-size:5.5px; color:#fff; line-height:1; transform:translateY(-.3px); }
+
+.idcard .id-head{
+  background:linear-gradient(135deg, var(--id-head, var(--navy-3)), var(--navy));
+  padding:9px 12px 8px; display:flex; align-items:center; gap:9px; position:relative; z-index:4;
+}
+.idcard .id-head::after{ content:""; position:absolute; right:-14px; top:-24px; width:80px; height:80px; border-radius:50%; background:radial-gradient(circle, rgba(217,138,36,.28), transparent 70%); }
+.idcard .id-logo{ width:38px; height:38px; border-radius:50%; background:#fff; box-shadow:0 0 0 2px var(--id-accent, var(--gold)); flex:none; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.idcard .id-logo img{ width:100%; height:100%; object-fit:cover; }
+.idcard .id-logo svg{ width:16px; height:16px; color:var(--muted); }
+.idcard .id-head-center{ flex:1; text-align:center; color:#fff; min-width:0; }
+.idcard .id-school{
+  font-family:'Fraunces',serif; font-weight:700; font-size:12px; line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background:linear-gradient(180deg,#fff, var(--gold-light)); -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 1px 0 rgba(0,0,0,.3); letter-spacing:.01em;
+}
+.idcard .id-org{ font-size:7px; letter-spacing:.06em; text-transform:uppercase; color:var(--id-gold, var(--gold-light)); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.idcard .id-goldbar{ height:3px; background:linear-gradient(90deg, var(--id-accent, var(--gold-deep)), var(--id-gold, var(--gold)), var(--id-accent, var(--gold-deep))); position:relative; z-index:4; }
+.idcard .id-title-strip{ text-align:center; font-size:8.5px; font-weight:800; letter-spacing:.14em; color:#fff; background:var(--id-primary, var(--crimson)); padding:2.5px 0; text-transform:uppercase; position:relative; z-index:4; }
+
+.idcard .id-body{ display:flex; gap:10px; padding:9px 12px 4px; position:relative; z-index:4; }
+.idcard .id-photo{ width:66px; height:78px; border-radius:8px; background:#EFE7D5; border:2px solid var(--id-accent, var(--gold)); flex:none; overflow:hidden; display:flex; align-items:center; justify-content:center; position:relative; z-index:3; }
+.idcard .id-photo img{ width:100%; height:100%; object-fit:cover; }
+.idcard .id-photo svg{ width:26px; height:26px; color:var(--muted); }
+.idcard .id-fields{ flex:1; min-width:0; padding-top:1px; }
+.idcard .idf{ margin-bottom:4px; }
+.idcard .idf .idf-l{ font-size:6.4px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); }
+.idcard .idf .idf-v{ font-size:11px; font-weight:700; color:var(--ink); line-height:1.2; border-bottom:1px solid var(--line); padding-bottom:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.idcard .idf-chiprow{ display:flex; align-items:center; gap:6px; margin-top:5px; }
+
+.idcard .id-foot{ position:absolute; left:0; right:0; bottom:0; padding:5px 12px 7px; display:flex; align-items:flex-end; justify-content:space-between; gap:8px; z-index:4; }
+.idcard .id-sig{ flex:1; }
+.idcard .id-sig .sig-line{ border-top:1px solid var(--ink); width:100%; display:block; margin-bottom:2px; }
+.idcard .id-sig .sig-label{ font-size:6.2px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+.idcard .id-num{ font-family:'IBM Plex Mono',monospace; font-size:7.5px; color:var(--id-primary, var(--crimson)); font-weight:600; white-space:nowrap; }
+
+/* ---- BACK ---- */
+.idcard.back{ display:flex; flex-direction:column; }
+.idcard .id-back-body{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px 16px 6px; position:relative; z-index:4; }
+.idcard .id-seal{ width:46px; height:46px; margin-bottom:2px; display:flex; align-items:center; justify-content:center; position:relative; z-index:3; }
+.idcard .id-seal img{ width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+.idcard .id-back-title-row{ display:flex; align-items:center; gap:6px; }
+.idcard .id-back-title{ font-family:'Fraunces',serif; font-weight:700; font-size:11.5px; color:var(--navy); }
+.idcard .id-back-sub{ font-size:7.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-deep); font-weight:700; margin-top:1px; }
+.idcard .id-valid{ display:flex; gap:14px; margin-top:5px; }
+.idcard .id-valid div{ text-align:center; }
+.idcard .id-valid .iv-l{ font-size:6px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:700; }
+.idcard .id-valid .iv-v{ font-size:11px; font-weight:700; color:var(--ink); font-family:'IBM Plex Mono',monospace; }
+.idcard .id-found{ font-size:6.3px; color:var(--muted); line-height:1.4; margin-top:5px; padding:0 4px; }
+.idcard .id-back-sig{ display:flex; justify-content:space-between; align-items:flex-end; width:100%; margin-top:auto; padding-top:4px; }
+.idcard .id-back-sig .bs-col{ flex:1; text-align:center; }
+.idcard .id-back-sig .sig-line{ border-top:1px solid var(--ink); margin:0 6px 2px; }
+.idcard .id-back-sig .sig-label{ font-size:6px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+.idcard .id-back-barcode{ width:100%; padding:0 16px; margin-top:4px; }
+.idcard .id-back-serial{ font-family:'IBM Plex Mono',monospace; font-size:6px; letter-spacing:.08em; color:var(--muted); text-align:center; margin-top:2px; }
+.idcard .id-back-foot{ background:var(--id-primary, var(--crimson)); color:#fff; text-align:center; font-size:7px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:3.5px 0; position:relative; z-index:4; }
+
+/* -------- Empty state -------- */
+.empty-state{ text-align:center; padding:70px 20px; color:var(--muted); }
+.empty-state svg{ width:56px; height:56px; color:var(--line); margin-bottom:14px; }
+.empty-state .es-t{ font-family:'Fraunces',serif; font-size:19px; color:var(--navy); font-weight:700; margin-bottom:6px; }
+.empty-state .es-s{ font-size:13px; max-width:420px; margin:0 auto 18px; line-height:1.6; }
+
+/* -------- Toast -------- */
+.toast-wrap{ position:fixed; right:24px; bottom:24px; z-index:60; display:flex; flex-direction:column; gap:10px; }
+.toast{ background:var(--navy); color:#fff; padding:12px 16px; border-radius:12px; font-size:13px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow); max-width:340px; animation:toastin .2s ease; }
+.toast svg{ width:16px; height:16px; color:var(--gold-light); flex:none; }
+@keyframes toastin{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+<div class="topbar">
+      <a href="dashboard.html" title="Back to Dashboard" style="width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d8d8d8;flex:none;text-decoration:none;margin-right:10px;"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#1a2b4c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></a>
+  <div class="school-brand">
+    <div class="brand-mark" id="topbarBrandMark"><img src="../assets/images/img-63d9fc79f267bd59.png" alt="Kingsville Public School logo"></div>
+    <div>
+      <div class="sb-t1">Kingsville Public School</div>
+      <div class="sb-t2">Registrar</div>
+    </div>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="page-title-wrap">
+    <div class="eyebrow">Identity &amp; Records</div>
+    <div class="page-title">ID Card Dashboard <span class="badge-count" id="countBadge">0</span></div>
+  </div>
+  <button class="btn btn-ghost btn-sm" id="refreshBtn" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-2.64-6.36M21 4v6h-6"/></svg>
+    Refresh
+  </button>
+</div>
+
+<div class="content">
+  <div class="scope-banner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+    <div>
+      <div class="sb-t">Cards issued from the ID Card Designer</div>
+      <div class="sb-s">Every time staff choose <b class="sa">Send to&hellip; &rarr; Registrar</b> in the ID Card Designer, the finished card lands here for the Registrar to review, mark as issued, or download.</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Search by name, ID number, or grade&hellip;">
+    </div>
+    <div class="filter-tabs" id="filterTabs">
+      <button data-f="all" class="active">All</button>
+      <button data-f="new">New</button>
+      <button data-f="issued">Issued</button>
+    </div>
+    <div class="toolbar-spacer"></div>
+    <button class="btn btn-danger-ghost btn-sm" id="clearAllBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M8 7V4h8v3M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13"/></svg>
+      Clear all
+    </button>
+  </div>
+
+  <div id="gridWrap"></div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================= STORAGE (shared with id-card-design.html) ============================= */
+const REGISTRAR_INBOX_KEY = 'kps_registrar_id_card_inbox';
+
+const KPS_LOGO_DATA = '../assets/images/img-63d9fc79f267bd59.png';
+const MOE_LOGO_DATA = '../assets/images/img-e10181f4577f3c9f.png';
+
+function loadInbox(){
+  try { return JSON.parse(localStorage.getItem(REGISTRAR_INBOX_KEY)) || []; }
+  catch(e){ return []; }
+}
+function saveInbox(inbox){
+  localStorage.setItem(REGISTRAR_INBOX_KEY, JSON.stringify(inbox));
+}
+
+let inbox = loadInbox();
+let filter = 'all';
+let query = '';
+
+/* ============================= ICONS ============================= */
+const userIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2S19 16.4 19 20"/></svg>';
+
+/* ============================= PAPER-GRAIN NOISE (once) ============================= */
+const noiseSvg = '<svg xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>';
+document.documentElement.style.setProperty('--noise-uri', 'url("data:image/svg+xml,'+encodeURIComponent(noiseSvg)+'")');
+
+/* ============================= SECURITY-PRINT BUILDERS (identical to Designer) ============================= */
+function buildRosette(count, rx, ry){
+  let shapes = '';
+  for(let i=0;i<count;i++){
+    const angle = (180/count)*i;
+    shapes += '<ellipse cx="50" cy="50" rx="'+rx+'" ry="'+ry+'" transform="rotate('+angle.toFixed(2)+' 50 50)" fill="none" stroke="currentColor" stroke-width="0.4"/>';
+  }
+  return '<svg viewBox="0 0 100 100" style="width:100%;height:100%;color:var(--id-accent, var(--gold-deep));opacity:.4;">'+shapes+'</svg>';
+}
+function buildMicrotext(id, text){
+  const t = (text+'  \u2022  ').repeat(6);
+  return '<svg viewBox="0 0 100 100" style="width:100%;height:100%;">'+
+    '<defs><path id="'+id+'" d="M50,50 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>'+
+    '<text font-size="2.5" fill="var(--gold-deep)" opacity=".5" letter-spacing="1">'+
+    '<textPath href="#'+id+'" startOffset="0%">'+t+'</textPath></text></svg>';
+}
+
+/* ============================= RENDER A SINGLE CARD FROM A STATE SNAPSHOT ============================= */
+function renderFrontEl(el, state, uid){
+  const sec = state.security || {};
+  const watermarkHtml = sec.barcode ? '<div class="id-watermark">'+Array(14).fill('<span>'+(state.school||'').toUpperCase()+'</span>').join('')+'</div>' : '';
+  const rosetteHtml = sec.guilloche ? '<div class="id-rosette" style="left:9px;top:47px;width:84px;height:84px;">'+buildRosette(18,44,20)+'</div>' : '';
+  const microtextHtml = sec.microtext ? '<div class="id-microtext" style="left:-8px;top:33px;width:100px;height:100px;">'+buildMicrotext('mtF'+uid, state.school||'')+'</div>' : '';
+  const holoHtml = sec.hologram ? '<div class="id-holo" style="right:10px;bottom:24px;"></div>' : '';
+  const chipHtml = sec.chip ? '<div class="idf-chiprow"><div class="id-chip"></div><span style="font-size:6px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;">Tap Access</span></div>' : '';
+
+  el.style.setProperty('--id-primary', state.colorPrimary);
+  el.style.setProperty('--id-accent', state.colorAccent);
+  el.style.setProperty('--id-head', state.colorHead);
+
+  el.innerHTML = `
+    <div class="id-noise"></div>
+    ${watermarkHtml}
+    ${rosetteHtml}
+    ${microtextHtml}
+    <div class="id-head">
+      <div class="id-logo"><img src="${state.logo || KPS_LOGO_DATA}"></div>
+      <div class="id-head-center">
+        <div class="id-school">${(state.school||'').toUpperCase()}</div>
+        <div class="id-org">${state.subtitle||''}</div>
+      </div>
+      <div class="id-logo"><img src="${state.moeLogo || MOE_LOGO_DATA}"></div>
+    </div>
+    <div class="id-goldbar"></div>
+    <div class="id-title-strip">${state.title||''}</div>
+    <div class="id-body">
+      <div class="id-photo">${state.photo ? '<img src="'+state.photo+'">' : userIcon}</div>
+      <div class="id-fields">
+        <div class="idf"><div class="idf-l">Full Name</div><div class="idf-v">${state.name||''}</div></div>
+        <div class="idf"><div class="idf-l">Grade / Class</div><div class="idf-v">${state.grade||''} &middot; Sec ${state.section||''}</div></div>
+        <div class="idf"><div class="idf-l">ID Number</div><div class="idf-v">${state.idnum||''}</div></div>
+        ${chipHtml}
+      </div>
+    </div>
+    <div class="id-foot">
+      <div class="id-sig"><span class="sig-line"></span><span class="sig-label">${state.siglabel||''}</span></div>
+      <div class="id-num">${state.from||''}&ndash;${state.to||''}</div>
+    </div>
+    ${holoHtml}`;
+}
+
+function renderBackEl(el, state, uid){
+  const sec = state.security || {};
+  const watermarkHtml = sec.barcode ? '<div class="id-watermark">'+Array(14).fill('<span>OFFICIAL</span>').join('')+'</div>' : '';
+  const rosetteHtml = sec.guilloche ? '<div class="id-rosette" style="left:50%;top:6px;width:96px;height:96px;transform:translateX(-50%);">'+buildRosette(20,46,46)+'</div>' : '';
+  const microtextHtml = sec.microtext ? '<div class="id-microtext" style="left:50%;top:2px;width:100px;height:100px;transform:translateX(-50%);">'+buildMicrotext('mtB'+uid, 'REPUBLIC OF LIBERIA')+'</div>' : '';
+  const holoHtml = sec.hologram ? '<div class="id-holo" style="left:12px;top:10px;"></div>' : '';
+  const barcodeHtml = sec.barcode ? '<div class="id-back-barcode"><div class="id-barcode"></div><div class="id-back-serial">'+(state.idnum||'')+'</div></div>' : '';
+
+  el.style.setProperty('--id-primary', state.colorPrimary);
+  el.style.setProperty('--id-accent', state.colorAccent);
+  el.style.setProperty('--id-head', state.colorHead);
+
+  el.innerHTML = `
+    <div class="id-noise"></div>
+    ${watermarkHtml}
+    <div class="id-back-body">
+      ${rosetteHtml}
+      ${microtextHtml}
+      <div class="id-seal">${state.seal ? '<img src="'+state.seal+'">' : ''}</div>
+      <div class="id-back-title-row">
+        <span class="flag-mini"><span class="canton">&#9733;</span></span>
+        <div class="id-back-title">Republic of Liberia</div>
+      </div>
+      <div class="id-back-sub">Ministry of Education</div>
+      <div class="id-valid">
+        <div><div class="iv-l">Issued</div><div class="iv-v">${state.from||''}</div></div>
+        <div><div class="iv-l">Expires</div><div class="iv-v">${state.to||''}</div></div>
+      </div>
+      <div class="id-found"><b>${state.address||''}</b><br>${state.found||''}</div>
+      <div class="id-back-sig">
+        <div class="bs-col"><span class="sig-line"></span><span class="sig-label">${state.principal||''} &middot; ${state.ptitle||''}</span></div>
+      </div>
+      ${barcodeHtml}
+    </div>
+    <div class="id-back-foot">${state.motto||''}</div>
+    ${holoHtml}`;
+}
+
+/* ============================= TOAST ============================= */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>'+msg+'</span>';
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 4200);
+}
+
+/* ============================= DOWNLOAD (PNG via html2canvas) ============================= */
+async function downloadRecord(record){
+  showToast('Preparing PNG&hellip;');
+  const front = document.getElementById('front-'+record.id);
+  const back = document.getElementById('back-'+record.id);
+  const [cFront, cBack] = await Promise.all([
+    html2canvas(front, { scale:3, backgroundColor:null, useCORS:true }),
+    html2canvas(back, { scale:3, backgroundColor:null, useCORS:true })
+  ]);
+  const gap = 40;
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(cFront.width, cBack.width);
+  canvas.height = cFront.height + cBack.height + gap;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FBF4E6'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(cFront, 0, 0);
+  ctx.drawImage(cBack, 0, cFront.height + gap);
+  const safeName = (record.idnum || 'idcard').replace(/[^a-z0-9-]+/gi, '_');
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png'); a.download = safeName+'-front-back.png';
+  document.body.appendChild(a); a.click(); a.remove();
+  showToast('Downloaded &middot; front &amp; back PNG saved.');
+}
+
+/* ============================= RECORD ACTIONS ============================= */
+function markIssued(id){
+  inbox = inbox.map(r => r.id === id ? { ...r, status:'issued' } : r);
+  saveInbox(inbox);
+  renderGrid();
+  showToast('Marked as issued.');
+}
+function removeRecord(id){
+  inbox = inbox.filter(r => r.id !== id);
+  saveInbox(inbox);
+  renderGrid();
+  showToast('Card removed from the dashboard.');
+}
+function clearAll(){
+  if(!inbox.length) return;
+  if(!confirm('Remove all '+inbox.length+' card(s) from the Registrar Dashboard? This cannot be undone.')) return;
+  inbox = [];
+  saveInbox(inbox);
+  renderGrid();
+  showToast('Dashboard cleared.');
+}
+
+/* ============================= GRID RENDER ============================= */
+function fmtWhen(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})+' &middot; '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+  } catch(e){ return ''; }
+}
+
+function matchesFilters(r){
+  if(filter !== 'all' && r.status !== filter) return false;
+  if(!query) return true;
+  const q = query.toLowerCase();
+  return (r.name||'').toLowerCase().includes(q)
+      || (r.idnum||'').toLowerCase().includes(q)
+      || (r.grade||'').toLowerCase().includes(q)
+      || (r.section||'').toLowerCase().includes(q);
+}
+
+function renderGrid(){
+  document.getElementById('countBadge').textContent = inbox.length;
+  const wrap = document.getElementById('gridWrap');
+  const visible = inbox.filter(matchesFilters);
+
+  if(!inbox.length){
+    wrap.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
+        <div class="es-t">No ID cards yet</div>
+        <div class="es-s">Open the ID Card Designer, finish a card, then choose <b>Send to&hellip; &rarr; Registrar</b>. It will appear here automatically.</div>
+      </div>`;
+    return;
+  }
+
+  if(!visible.length){
+    wrap.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <div class="es-t">No matching cards</div>
+        <div class="es-s">Try a different search term or filter.</div>
+      </div>`;
+    return;
+  }
+
+  wrap.innerHTML = '<div class="grid" id="grid"></div>';
+  const grid = document.getElementById('grid');
+
+  visible.forEach(record => {
+    const col = document.createElement('div');
+    col.className = 'record';
+    col.innerHTML = `
+      <div class="record-head">
+        <div class="rh-name">${record.name || 'Unnamed'}</div>
+        <span class="status-pill ${record.status}">${record.status === 'issued' ? 'Issued' : 'New'}</span>
+      </div>
+      <div class="record-cards">
+        <div class="rc-col">
+          <div class="rc-label">Front</div>
+          <div class="idcard" id="front-${record.id}"></div>
+        </div>
+        <div class="rc-col">
+          <div class="rc-label">Back</div>
+          <div class="idcard back" id="back-${record.id}"></div>
+        </div>
+      </div>
+      <div class="record-meta">
+        <div><b>ID</b> ${record.idnum || '&mdash;'}</div>
+        <div><b>Grade</b> ${record.grade || '&mdash;'} &middot; Sec ${record.section || '&mdash;'}</div>
+        <div><b>Sent</b> ${fmtWhen(record.sentAt)}</div>
+      </div>
+      <div class="record-foot"></div>
+    `;
+    grid.appendChild(col);
+
+    renderFrontEl(document.getElementById('front-'+record.id), record.state || record, record.id);
+    renderBackEl(document.getElementById('back-'+record.id), record.state || record, record.id);
+
+    const foot = col.querySelector('.record-foot');
+
+    const issueBtn = document.createElement('button');
+    issueBtn.className = 'btn btn-success btn-sm';
+    issueBtn.type = 'button';
+    issueBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>'+(record.status==='issued' ? 'Issued' : 'Mark issued');
+    issueBtn.disabled = record.status === 'issued';
+    issueBtn.addEventListener('click', () => markIssued(record.id));
+
+    const downloadBtn = document.createElement('button');
+    downloadBtn.className = 'btn btn-ghost btn-sm';
+    downloadBtn.type = 'button';
+    downloadBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0l-4-4m4 4l4-4M4 20h16"/></svg>PNG';
+    downloadBtn.addEventListener('click', () => downloadRecord(record));
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'btn btn-danger-ghost btn-sm';
+    removeBtn.type = 'button';
+    removeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>Remove';
+    removeBtn.addEventListener('click', () => removeRecord(record.id));
+
+    foot.appendChild(issueBtn);
+    foot.appendChild(downloadBtn);
+    foot.appendChild(removeBtn);
+  });
+}
+
+/* ============================= WIRE UP TOOLBAR ============================= */
+document.getElementById('searchInput').addEventListener('input', e => {
+  query = e.target.value;
+  renderGrid();
+});
+document.getElementById('filterTabs').addEventListener('click', e => {
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#filterTabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filter = btn.dataset.f;
+  renderGrid();
+});
+document.getElementById('clearAllBtn').addEventListener('click', clearAll);
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  inbox = loadInbox();
+  renderGrid();
+  showToast('Dashboard refreshed.');
+});
+
+/* Live-update if the Designer tool sends a card from another tab/window */
+window.addEventListener('storage', e => {
+  if(e.key === REGISTRAR_INBOX_KEY){
+    inbox = loadInbox();
+    renderGrid();
+    showToast('A new ID card just arrived.');
+  }
+});
+
+/* ============================= INIT ============================= */
+renderGrid();
+</script>
+</body>
+</html>

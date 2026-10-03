@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document1 - Word</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root{
+    --ribbon-bg:#f3f2f1;
+    --ribbon-border:#d0d0d0;
+    --blue:#185abd;
+    --blue-dark:#0f3d82;
+    --ink:#000;
+    --page-shadow:0 0 0 1px #c8c8c8, 0 4px 18px rgba(0,0,0,.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;
+    font-family:"Segoe UI",Calibri,Arial,sans-serif;
+    background:#e9e9e9;
+    color:#1b1b1b;
+  }
+
+  /* ===================== TITLE BAR ===================== */
+  .titlebar{
+    background:var(--blue-dark);color:#fff;font-size:13px;padding:5px 14px;
+    display:flex;align-items:center;gap:8px;user-select:none;
+  }
+  .titlebar .word-icon{
+    width:18px;height:18px;background:#fff;border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--blue-dark);font-weight:800;font-size:12px;
+  }
+  .titlebar .doc-title{font-weight:600;}
+  .titlebar .doc-title[contenteditable]{outline:none;border-bottom:1px dashed transparent;}
+  .titlebar .doc-title[contenteditable]:hover{border-bottom:1px dashed rgba(255,255,255,.5);}
+
+  /* ===================== APP LETTERHEAD BAR ===================== */
+  .app-letterhead{
+    background:linear-gradient(180deg,#ffffff 0%,#fbfaf6 100%);
+    display:flex;flex-direction:column;user-select:none;
+  }
+  .app-letterhead .al-row{
+    display:flex;align-items:center;justify-content:center;gap:20px;padding:10px 20px 8px;
+  }
+  .app-letterhead .al-logo{height:46px;width:auto;flex:0 0 auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25));}
+  .app-letterhead .al-text{text-align:center;}
+  .app-letterhead .al-text .al-name{
+    font-family:'Playfair Display',Georgia,serif;font-size:17pt;font-weight:800;
+    letter-spacing:1px;color:var(--blue-dark);text-transform:uppercase;
+  }
+  .app-letterhead .al-text .al-addr{
+    font-size:9.5pt;color:#4a4a4a;letter-spacing:.3px;margin-top:1px;
+  }
+  .app-letterhead .al-text .al-motto{
+    font-family:'Cormorant Garamond',Georgia,serif;font-size:11pt;font-style:italic;
+    color:#a8791a;margin-top:2px;
+  }
+  .app-letterhead .al-rule{height:3px;background:var(--blue-dark);}
+  .app-letterhead .al-rule-thin{height:1.5px;background:#c9a227;margin-top:2px;}
+
+  /* ===================== RIBBON TABS ===================== */
+  .ribbon-tabs{background:var(--blue-dark);display:flex;gap:2px;padding:0 10px;font-size:13px;}
+  .ribbon-tabs button{
+    background:none;border:none;color:#dbe6f7;padding:7px 12px;cursor:pointer;
+    font-size:13px;border-radius:3px 3px 0 0;
+  }
+  .ribbon-tabs button.active{background:var(--ribbon-bg);color:#111;font-weight:600;}
+  .ribbon-tabs button:hover:not(.active){background:rgba(255,255,255,.12);}
+
+  /* ===================== RIBBON ===================== */
+  .ribbon{
+    background:var(--ribbon-bg);border-bottom:1px solid var(--ribbon-border);
+    display:flex;align-items:stretch;padding:6px 8px 2px;min-height:78px;
+  }
+  .ribbon-panel{display:none;flex-wrap:wrap;flex:1;align-items:stretch;}
+  .ribbon-panel.active{display:flex;}
+  .ribbon-group{
+    display:flex;flex-direction:column;align-items:center;
+    border-right:1px solid var(--ribbon-border);padding:0 10px;min-width:56px;
+  }
+  .ribbon-group:last-child{border-right:none;}
+  .ribbon-group .row{display:flex;align-items:center;gap:3px;margin-bottom:3px;flex-wrap:wrap;justify-content:center;}
+  .ribbon-group .label{font-size:11px;color:#444;margin-top:auto;padding-top:2px;text-align:center;}
+  .rbtn{
+    border:1px solid transparent;background:none;padding:5px 7px;border-radius:3px;
+    cursor:pointer;font-size:13.5px;color:#222;line-height:1;white-space:nowrap;
+  }
+  .rbtn.big{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 8px;font-size:11px;height:52px;justify-content:center;}
+  .rbtn.big span.ico{font-size:18px;}
+  .rbtn:hover{background:#e3e9f5;border-color:#bcd0ee;}
+  .rbtn.active{background:#cfe0f7;border-color:#8fb6e8;}
+  .rbtn b{font-family:Georgia,serif;}
+  .rbtn i{font-family:Georgia,serif;}
+  select.rsel{font-size:12.5px;padding:3px 4px;border:1px solid #c6c6c6;border-radius:3px;background:#fff;}
+  #fontFamily{width:112px;}
+  #fontSize{width:48px;}
+  #styleSel{width:96px;}
+  .swatch-btn{position:relative;}
+  .swatch-bar{width:16px;height:3px;display:block;margin:2px auto 0;background:#c00;}
+  input[type=color]{width:0;height:0;border:none;padding:0;opacity:0;position:absolute;}
+  input[type=number].narrow{width:44px;font-size:12px;padding:2px 3px;border:1px solid #c6c6c6;border-radius:3px;}
+
+  .ribbon-actions{margin-left:auto;display:flex;align-items:center;gap:6px;padding:4px 6px;align-self:flex-start;}
+  .ribbon-actions button{
+    background:#fff;border:1px solid #bbb;border-radius:4px;padding:6px 12px;
+    font-size:12.5px;cursor:pointer;color:#222;display:flex;align-items:center;gap:5px;
+  }
+  .ribbon-actions button:hover{background:#f0f0f0;}
+  .ribbon-actions button.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .ribbon-actions button.primary:hover{background:var(--blue-dark);}
+
+  .msg{text-align:center;font-size:12px;padding:4px;color:#0a6b2c;background:#eafaf0;display:none;}
+  .msg.show{display:block;}
+
+  /* ===================== RULER ===================== */
+  .ruler{height:22px;background:#fff;border-bottom:1px solid #cfcfcf;display:none;position:relative;}
+  .ruler.show{display:block;}
+  .ruler .track{width:816px;height:100%;margin:0 auto;position:relative;background:
+    repeating-linear-gradient(to right, #999 0, #999 1px, transparent 1px, transparent 12px);
+    background-size:12px 6px;background-position:0 bottom;background-repeat:repeat-x;}
+  .ruler .track::before{content:"";position:absolute;left:96px;top:0;bottom:0;width:1px;background:#c00;}
+  .ruler .track::after{content:"";position:absolute;right:96px;top:0;bottom:0;width:1px;background:#c00;}
+
+  /* ===================== WORKSPACE / PAGE ===================== */
+  .workspace{padding:22px 0 90px;display:flex;justify-content:center;}
+  .page-wrap{transform-origin:top center;}
+  .page{
+    width:816px;min-height:1056px;background:#fff;box-shadow:var(--page-shadow);
+    padding:96px 96px;font-family:Calibri,"Segoe UI",Arial,sans-serif;
+    font-size:12pt;line-height:1.5;color:#000;outline:none;position:relative;
+  }
+  .page:focus{outline:none;}
+  .page.gridlines{background-image:
+    linear-gradient(to right, rgba(0,0,0,.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,.08) 1px, transparent 1px);
+    background-size:24px 24px;}
+  .page h1{font-size:20pt;font-weight:700;margin:14px 0 8px;}
+  .page h2{font-size:16pt;font-weight:700;margin:12px 0 6px;}
+  .page h3{font-size:13pt;font-weight:700;margin:10px 0 5px;}
+  .page table{border-collapse:collapse;}
+  .page table td, .page table th{border:1px solid #666;padding:5px 7px;min-width:20px;}
+  .page a{color:#1155cc;text-decoration:underline;}
+  .page .pagebreak{border-top:1px dashed #999;margin:16px 0;padding-top:2px;font-size:9pt;color:#999;text-align:center;page-break-before:always;}
+  .page .comment-mark{background:#fff2a8;cursor:help;}
+  .page .textbox{border:1px solid #444;padding:8px;display:inline-block;min-width:160px;min-height:60px;vertical-align:top;margin:4px;}
+  .doc-header, .doc-footer{
+    min-height:20px;font-size:10.5pt;color:#333;display:none;
+  }
+  .doc-header{
+    padding-bottom:0;margin-bottom:22px;flex-direction:column;
+    display:none;
+  }
+  .doc-header .hdr-row{display:flex;align-items:center;justify-content:center;gap:18px;padding-bottom:10px;}
+  .doc-header .hdr-logo{height:78px;width:auto;flex:0 0 auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25));}
+  .doc-header .hdr-text{flex:1 1 auto;text-align:center;}
+  .doc-header .hdr-text .sch-name{
+    font-family:'Playfair Display',Georgia,serif;font-size:18pt;font-weight:800;
+    letter-spacing:1px;color:var(--blue-dark);text-transform:uppercase;
+  }
+  .doc-header .hdr-text .sch-addr{font-size:10.5pt;color:#4a4a4a;letter-spacing:.2px;margin-top:2px;}
+  .doc-header .hdr-text .sch-motto{
+    font-family:'Cormorant Garamond',Georgia,serif;font-size:12.5pt;font-style:italic;
+    color:#a8791a;margin-top:3px;
+  }
+  .doc-header .hdr-rule{height:3px;background:var(--blue-dark);}
+  .doc-header .hdr-rule-thin{height:1.5px;background:#c9a227;margin-top:2px;}
+
+  /* ===================== PREMIUM ANIMATIONS (KPS red/gold + MOE navy/gold) ===================== */
+  @keyframes logoGlow{
+    0%,100%{filter:drop-shadow(0 0 3px rgba(15,61,130,.5)) drop-shadow(0 1px 2px rgba(0,0,0,.25));}
+    35%{filter:drop-shadow(0 0 9px rgba(201,162,39,.9)) drop-shadow(0 1px 2px rgba(0,0,0,.25));}
+    65%{filter:drop-shadow(0 0 9px rgba(198,40,40,.75)) drop-shadow(0 1px 2px rgba(0,0,0,.25));}
+  }
+  @keyframes ruleShimmer{
+    0%{background-position:0% 0;}
+    100%{background-position:200% 0;}
+  }
+  @keyframes textShimmer{
+    0%{background-position:200% center;}
+    100%{background-position:-200% center;}
+  }
+  .app-letterhead .al-logo, .doc-header .hdr-logo{
+    animation:logoGlow 3.6s ease-in-out infinite;
+    border-radius:50%;
+  }
+  .app-letterhead .al-rule, .doc-header .hdr-rule{
+    background:linear-gradient(90deg,var(--blue-dark) 0%,#c9a227 20%,#c62828 40%,#c9a227 60%,var(--blue-dark) 80%,#c9a227 100%);
+    background-size:220% 100%;
+    animation:ruleShimmer 5s linear infinite;
+  }
+  .app-letterhead .al-rule-thin, .doc-header .hdr-rule-thin{
+    background:linear-gradient(90deg,#c9a227 0%,#c62828 50%,#c9a227 100%);
+    background-size:220% 100%;
+    animation:ruleShimmer 5s linear infinite reverse;
+  }
+  .app-letterhead .al-name, .doc-header .hdr-text .sch-name{
+    background:linear-gradient(100deg,var(--blue-dark) 20%,#c9a227 38%,#c62828 48%,#c9a227 58%,var(--blue-dark) 80%);
+    background-size:220% auto;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--blue-dark);
+    animation:textShimmer 6s linear infinite;
+  }
+  .doc-footer{
+    border-top:1px dashed #bbb;padding-top:6px;margin-top:24px;
+    text-align:center;font-size:10pt;color:#444;display:none;
+  }
+  .doc-header.show{display:flex;}
+  .doc-footer.show{display:block;}
+  .footnotes-area{margin-top:30px;border-top:1px solid #000;padding-top:6px;font-size:9.5pt;display:none;}
+  .footnotes-area.show{display:block;}
+  .footnotes-area .fn-line{margin-bottom:2px;}
+
+  .page.weblayout{width:100%;max-width:900px;min-height:0;box-shadow:none;border:1px solid #ddd;}
+
+  /* ===================== STATUS BAR ===================== */
+  .statusbar{
+    position:fixed;left:0;right:0;bottom:0;height:26px;background:var(--blue-dark);color:#dbe6f7;
+    font-size:11.5px;display:flex;align-items:center;padding:0 14px;gap:16px;z-index:50;
+  }
+  .statusbar .credit{
+    padding-left:16px;border-left:1px dashed #6f8bb5;color:#c7d6ee;font-style:italic;
+  }
+  .statusbar .zoom{margin-left:auto;display:flex;align-items:center;gap:6px;}
+  .statusbar input[type=range]{width:100px;}
+
+  /* ===================== SYMBOL / TOC POPUPS ===================== */
+  .popup{
+    position:absolute;background:#fff;border:1px solid #999;box-shadow:0 4px 14px rgba(0,0,0,.25);
+    padding:8px;z-index:100;display:none;border-radius:4px;
+  }
+  .popup.show{display:block;}
+  .popup .sym-grid{display:grid;grid-template-columns:repeat(8,26px);gap:3px;}
+  .popup .sym-grid button{width:26px;height:26px;border:1px solid #ddd;background:#fafafa;cursor:pointer;font-size:14px;border-radius:3px;}
+  .popup .sym-grid button:hover{background:#e3e9f5;}
+
+  @media print{
+    .titlebar,.ribbon-tabs,.ribbon,.msg,.ruler,.statusbar,.popup,.app-letterhead{display:none!important;}
+    body{background:#fff;}
+    .workspace{padding:0;display:block;}
+    .page-wrap{transform:none!important;}
+    .page{box-shadow:none;width:auto;min-height:0;padding:0.6in;margin:0;}
+  }
+</style>
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<a href="dashboard.html" class="kps-back-btn" title="Back to Teacher Dashboard" style="position:fixed;top:14px;right:14px;z-index:9999;display:flex;align-items:center;gap:6px;background:#a3181c;color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 14px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.25);font-family:Arial,Helvetica,sans-serif;">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  Back to Dashboard
+</a>
+<style>@media print{ .kps-back-btn{ display:none !important; } }</style>
+<script>window.KPS_PATH_DEPTH = 1;</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-api.js"></script>
+<script src="../js/auth-guard.js"></script>
+<script src="../js/kps-core.js"></script>
+<script src="../js/module-registry.js"></script>
+<script src="../js/permissions.js"></script>
+<script src="../js/relationships.js"></script>
+<script src="../js/workflow.js"></script>
+<script src="../js/forms.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/erp-engine-v4.js"></script>
+
+
+  <div class="titlebar">
+    <div class="word-icon">W</div>
+    <div class="doc-title" contenteditable="true" spellcheck="false">Document1</div>
+  </div>
+
+  <div class="app-letterhead">
+    <div class="al-row">
+      <img class="al-logo" src="../assets/images/img-b557acedc7555134.jpg" alt="Kingsville Public School logo">
+      <div class="al-text">
+        <div class="al-name">Kingsville Public School</div>
+        <div class="al-addr">Kingsville #7, Careysburg District, Montserrado County, Republic of Liberia</div>
+        <div class="al-motto">Motto: &ldquo;Knowledge is Power&rdquo;</div>
+      </div>
+      <img class="al-logo" src="../assets/images/img-f08cf997ff26b731.png" alt="Ministry of Education seal">
+    </div>
+    <div class="al-rule"></div>
+    <div class="al-rule-thin"></div>
+  </div>
+
+  <div class="ribbon-tabs">
+    <button data-tab="file">File</button>
+    <button data-tab="home" class="active">Home</button>
+    <button data-tab="insert">Insert</button>
+    <button data-tab="layout">Layout</button>
+    <button data-tab="references">References</button>
+    <button data-tab="review">Review</button>
+    <button data-tab="view">View</button>
+  </div>
+
+  <div class="ribbon">
+
+    <!-- ============ FILE ============ -->
+    <div class="ribbon-panel" data-panel="file">
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="newBtn"><span class="ico">📄</span>New</button></div>
+        <div class="label">New</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="openBtn"><span class="ico">📂</span>Open</button>
+          <input type="file" id="openFile" accept=".html,.htm" style="display:none;"></div>
+        <div class="label">Open</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="saveBtnFile"><span class="ico">💾</span>Save</button></div>
+        <div class="label">Save</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="printBtnFile"><span class="ico">🖶</span>Print</button></div>
+        <div class="label">Print</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="pdfBtnFile"><span class="ico">⬇</span>Export PDF</button></div>
+        <div class="label">Export</div>
+      </div>
+    </div>
+
+    <!-- ============ HOME ============ -->
+    <div class="ribbon-panel active" data-panel="home">
+      <div class="ribbon-group">
+        <div class="row">
+          <select id="fontFamily" class="rsel">
+            <option value="Calibri" selected>Calibri</option>
+            <option value="'Times New Roman'">Times New Roman</option>
+            <option value="Arial">Arial</option>
+            <option value="Georgia">Georgia</option>
+            <option value="'Courier New'">Courier New</option>
+          </select>
+          <select id="fontSize" class="rsel">
+            <option>8</option><option>9</option><option>10</option><option>11</option>
+            <option selected>12</option><option>14</option><option>16</option>
+            <option>18</option><option>20</option><option>24</option><option>28</option><option>36</option>
+          </select>
+        </div>
+        <div class="row">
+          <button class="rbtn" data-cmd="bold" title="Bold"><b>B</b></button>
+          <button class="rbtn" data-cmd="italic" title="Italic"><i>I</i></button>
+          <button class="rbtn" data-cmd="underline" title="Underline"><u>U</u></button>
+          <button class="rbtn" data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
+          <button class="rbtn swatch-btn" title="Text color" id="colorBtn">
+            A<span class="swatch-bar" id="colorSwatch"></span>
+            <input type="color" id="colorPicker" value="#c00000">
+          </button>
+        </div>
+        <div class="label">Font</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="row">
+          <select id="styleSel" class="rsel" title="Styles">
+            <option value="p">Normal</option>
+            <option value="h1">Heading 1</option>
+            <option value="h2">Heading 2</option>
+            <option value="h3">Heading 3</option>
+          </select>
+        </div>
+        <div class="label">Styles</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn" data-cmd="justifyLeft" title="Align left">≡⌐</button>
+          <button class="rbtn" data-cmd="justifyCenter" title="Center">≣</button>
+          <button class="rbtn" data-cmd="justifyRight" title="Align right">⌐≡</button>
+          <button class="rbtn" data-cmd="justifyFull" title="Justify">☰</button>
+        </div>
+        <div class="row">
+          <button class="rbtn" data-cmd="insertUnorderedList" title="Bullets">• ≡</button>
+          <button class="rbtn" data-cmd="insertOrderedList" title="Numbering">1. ≡</button>
+          <button class="rbtn" data-cmd="indent" title="Increase indent">→≡</button>
+          <button class="rbtn" data-cmd="outdent" title="Decrease indent">←≡</button>
+        </div>
+        <div class="label">Paragraph</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn" data-cmd="undo" title="Undo">↶</button>
+          <button class="rbtn" data-cmd="redo" title="Redo">↷</button>
+          <button class="rbtn" data-cmd="removeFormat" title="Clear formatting">Aa✕</button>
+        </div>
+        <div class="label">Editing</div>
+      </div>
+    </div>
+
+    <!-- ============ INSERT ============ -->
+    <div class="ribbon-panel" data-panel="insert">
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="insBreakBtn"><span class="ico">⏎</span>Page Break</button></div>
+        <div class="label">Pages</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="insTableBtn"><span class="ico">▦</span>Table</button></div>
+        <div class="label">Tables</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn big" id="insPicBtn"><span class="ico">🖼</span>Pictures</button>
+          <input type="file" id="picFile" accept="image/*" style="display:none;">
+        </div>
+        <div class="label">Illustrations</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="insLinkBtn"><span class="ico">🔗</span>Link</button></div>
+        <div class="label">Links</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn" id="toggleHeaderBtn">Header</button>
+          <button class="rbtn" id="toggleFooterBtn">Footer</button>
+        </div>
+        <div class="row"><button class="rbtn" id="insLetterheadBtn">🏫 School Letterhead</button></div>
+        <div class="row"><button class="rbtn" id="insPageNumBtn"># Page Number</button></div>
+        <div class="label">Header &amp; Footer</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn" id="insTextBoxBtn">Text Box</button>
+          <button class="rbtn" id="insDateBtn">Date &amp; Time</button>
+        </div>
+        <div class="label">Text</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row" style="position:relative;">
+          <button class="rbtn" id="insSymbolBtn">Ω Symbol</button>
+          <div class="popup" id="symbolPopup">
+            <div class="sym-grid" id="symGrid"></div>
+          </div>
+        </div>
+        <div class="label">Symbols</div>
+      </div>
+    </div>
+
+    <!-- ============ LAYOUT ============ -->
+    <div class="ribbon-panel" data-panel="layout">
+      <div class="ribbon-group">
+        <div class="row">
+          <select id="marginsSel" class="rsel">
+            <option value="normal" selected>Margins: Normal</option>
+            <option value="narrow">Margins: Narrow</option>
+            <option value="moderate">Margins: Moderate</option>
+            <option value="wide">Margins: Wide</option>
+          </select>
+        </div>
+        <div class="row">
+          <select id="orientationSel" class="rsel">
+            <option value="portrait" selected>Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
+          <select id="sizeSel" class="rsel">
+            <option value="letter" selected>Letter</option>
+            <option value="a4">A4</option>
+            <option value="legal">Legal</option>
+          </select>
+        </div>
+        <div class="label">Page Setup</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row">
+          <select id="columnsSel" class="rsel">
+            <option value="1" selected>One Column</option>
+            <option value="2">Two Columns</option>
+            <option value="3">Three Columns</option>
+          </select>
+        </div>
+        <div class="label">Columns</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn" data-cmd="indent" title="Increase indent">→≡</button>
+          <button class="rbtn" data-cmd="outdent" title="Decrease indent">←≡</button>
+        </div>
+        <div class="row">
+          <select id="lineSpacingSel" class="rsel">
+            <option value="1">1.0</option>
+            <option value="1.15" selected>1.15</option>
+            <option value="1.5">1.5</option>
+            <option value="2">2.0</option>
+          </select>
+        </div>
+        <div class="label">Paragraph</div>
+      </div>
+    </div>
+
+    <!-- ============ REFERENCES ============ -->
+    <div class="ribbon-panel" data-panel="references">
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn big" id="insTocBtn"><span class="ico">📑</span>Table of<br>Contents</button>
+          <button class="rbtn big" id="updateTocBtn"><span class="ico">🔄</span>Update<br>TOC</button>
+        </div>
+        <div class="label">Table of Contents</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="insFootnoteBtn"><span class="ico">¹</span>Insert<br>Footnote</button></div>
+        <div class="label">Footnotes</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="insCitationBtn"><span class="ico">❝</span>Insert<br>Citation</button></div>
+        <div class="label">Citations</div>
+      </div>
+    </div>
+
+    <!-- ============ REVIEW ============ -->
+    <div class="ribbon-panel" data-panel="review">
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn big" id="spellBtn"><span class="ico">✓</span>Spelling &amp;<br>Grammar</button>
+          <button class="rbtn big" id="wordCountBtn"><span class="ico">123</span>Word<br>Count</button>
+        </div>
+        <div class="label">Proofing</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="newCommentBtn"><span class="ico">💬</span>New<br>Comment</button></div>
+        <div class="label">Comments</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row"><button class="rbtn big" id="trackChangesBtn"><span class="ico">✎</span>Track<br>Changes</button></div>
+        <div class="label">Tracking</div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW ============ -->
+    <div class="ribbon-panel" data-panel="view">
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn" id="printLayoutBtn">Print Layout</button>
+          <button class="rbtn" id="webLayoutBtn">Web Layout</button>
+        </div>
+        <div class="label">Views</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn" id="rulerToggleBtn">Ruler</button>
+          <button class="rbtn" id="gridToggleBtn">Gridlines</button>
+        </div>
+        <div class="label">Show</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="row">
+          <button class="rbtn" id="zoomOutBtn">−</button>
+          <span id="zoomLabelRibbon" style="font-size:12px;width:38px;text-align:center;">100%</span>
+          <button class="rbtn" id="zoomInBtn">+</button>
+        </div>
+        <div class="label">Zoom</div>
+      </div>
+    </div>
+
+    <div class="ribbon-actions">
+      <button id="printBtn">🖶 Print</button>
+      <button id="downloadBtn">⬇ Download PDF</button>
+      <button id="saveBtn" class="primary">💾 Save</button>
+    </div>
+  </div>
+
+  <div class="msg" id="statusMsg"></div>
+
+  <div class="ruler" id="ruler"><div class="track"></div></div>
+
+  <div class="workspace">
+    <div class="page-wrap" id="pageWrap">
+      <div class="page" id="page" contenteditable="true" spellcheck="false">
+        <div class="doc-header show" id="docHeader" contenteditable="true">
+          <div class="hdr-row">
+            <img class="hdr-logo" src="../assets/images/img-b557acedc7555134.jpg" alt="Kingsville Public School logo" contenteditable="false">
+            <div class="hdr-text">
+              <div class="sch-name">Kingsville Public School</div>
+              <div class="sch-addr">Kingsville #7, Careysburg District, Montserrado County, Republic of Liberia</div>
+              <div class="sch-motto">Motto: &ldquo;Knowledge is Power&rdquo;</div>
+            </div>
+            <img class="hdr-logo" src="../assets/images/img-f08cf997ff26b731.png" alt="Ministry of Education seal" contenteditable="false">
+          </div>
+          <div class="hdr-rule" contenteditable="false"></div>
+          <div class="hdr-rule-thin" contenteditable="false"></div>
+        </div>
+        <p><br></p>
+        <div class="doc-footer show" id="docFooter" contenteditable="true">Developed by Mr. Fomba S. Varfee</div>
+        <div class="footnotes-area" id="footnotesArea"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span id="wordCountLabel">Words: 0</span>
+    <span id="trackChangesLabel"></span>
+    <span class="credit">Developed by Mr. Fomba S. Varfee</span>
+    <div class="zoom">
+      <button id="zoomOutBtn2" style="background:none;border:none;color:#dbe6f7;cursor:pointer;">−</button>
+      <input type="range" id="zoomRange" min="50" max="200" step="10" value="100">
+      <span id="zoomLabel">100%</span>
+      <button id="zoomInBtn2" style="background:none;border:none;color:#dbe6f7;cursor:pointer;">+</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const page = document.getElementById('page');
+  const pageWrap = document.getElementById('pageWrap');
+  const statusMsg = document.getElementById('statusMsg');
+  const docHeader = document.getElementById('docHeader');
+  const docFooter = document.getElementById('docFooter');
+  const footnotesArea = document.getElementById('footnotesArea');
+  const letterheadTemplate = docHeader.innerHTML; // captured once at load, restorable from the ribbon
+
+  function showMsg(text){
+    statusMsg.textContent = text;
+    statusMsg.classList.add('show');
+    setTimeout(()=>statusMsg.classList.remove('show'), 2400);
+  }
+
+  /* ===================== TAB SWITCHING ===================== */
+  document.querySelectorAll('.ribbon-tabs button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.ribbon-tabs button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.ribbon-panel').forEach(p=>p.classList.remove('active'));
+      document.querySelector('.ribbon-panel[data-panel="'+btn.dataset.tab+'"]').classList.add('active');
+    });
+  });
+
+  /* ===================== SELECTION HELPERS ===================== */
+  let savedRange = null;
+  function saveSelection(){
+    const sel = window.getSelection();
+    if (sel.rangeCount && page.contains(sel.anchorNode)) savedRange = sel.getRangeAt(0).cloneRange();
+  }
+  function restoreSelection(){
+    if (savedRange){
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(savedRange);
+    }
+  }
+  page.addEventListener('keyup', saveSelection);
+  page.addEventListener('mouseup', saveSelection);
+
+  /* ===================== HOME: FORMATTING ===================== */
+  document.querySelectorAll('.rbtn[data-cmd]').forEach(btn => {
+    btn.addEventListener('mousedown', e => e.preventDefault());
+    btn.addEventListener('click', () => {
+      page.focus();
+      document.execCommand(btn.dataset.cmd, false, null);
+      syncToolbarState();
+    });
+  });
+
+  document.getElementById('fontFamily').addEventListener('change', function(){
+    page.focus(); document.execCommand('fontName', false, this.value);
+  });
+  document.getElementById('fontSize').addEventListener('change', function(){
+    page.focus();
+    document.execCommand('fontSize', false, '7');
+    document.querySelectorAll('font[size="7"]').forEach(f=>{
+      f.removeAttribute('size'); f.style.fontSize = this.value + 'pt';
+    });
+  });
+
+  const colorPicker = document.getElementById('colorPicker');
+  document.getElementById('colorBtn').addEventListener('click', (e)=>{
+    if(e.target === colorPicker) return; colorPicker.click();
+  });
+  colorPicker.addEventListener('input', function(){
+    page.focus();
+    document.execCommand('foreColor', false, this.value);
+    document.getElementById('colorSwatch').style.background = this.value;
+  });
+
+  document.getElementById('styleSel').addEventListener('change', function(){
+    page.focus();
+    document.execCommand('formatBlock', false, this.value);
+    this.selectedIndex = 0;
+  });
+
+  function syncToolbarState(){
+    ['bold','italic','underline','strikeThrough'].forEach(cmd=>{
+      const btn = document.querySelector('.rbtn[data-cmd="'+cmd+'"]');
+      try{ btn.classList.toggle('active', document.queryCommandState(cmd)); }catch(e){}
+    });
+  }
+  page.addEventListener('keyup', syncToolbarState);
+  page.addEventListener('mouseup', syncToolbarState);
+
+  /* ===================== INSERT TAB ===================== */
+  document.getElementById('insBreakBtn').addEventListener('click', ()=>{
+    page.focus(); restoreSelection();
+    document.execCommand('insertHTML', false, '<div class="pagebreak">Page Break</div><p><br></p>');
+  });
+
+  document.getElementById('insTableBtn').addEventListener('click', ()=>{
+    const rows = parseInt(prompt('Number of rows:', '3')||'0', 10);
+    const cols = parseInt(prompt('Number of columns:', '3')||'0', 10);
+    if (!rows || !cols) return;
+    let html = '<table style="width:100%;">';
+    for (let r=0;r<rows;r++){
+      html += '<tr>';
+      for (let c=0;c<cols;c++) html += '<td>&nbsp;</td>';
+      html += '</tr>';
+    }
+    html += '</table><p><br></p>';
+    page.focus(); restoreSelection();
+    document.execCommand('insertHTML', false, html);
+  });
+
+  document.getElementById('insPicBtn').addEventListener('click', ()=> document.getElementById('picFile').click());
+  document.getElementById('picFile').addEventListener('change', function(){
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e){
+      page.focus(); restoreSelection();
+      document.execCommand('insertImage', false, e.target.result);
+      const imgs = page.querySelectorAll('img:not([style])');
+      imgs.forEach(img => img.style.maxWidth = '100%');
+    };
+    reader.readAsDataURL(file);
+    this.value = '';
+  });
+
+  document.getElementById('insLinkBtn').addEventListener('click', ()=>{
+    const url = prompt('Enter URL:', 'https://');
+    if (!url) return;
+    page.focus(); restoreSelection();
+    const sel = window.getSelection();
+    if (!sel.toString()) document.execCommand('insertHTML', false, '<a href="'+url+'" target="_blank">'+url+'</a>');
+    else document.execCommand('createLink', false, url);
+  });
+
+  document.getElementById('toggleHeaderBtn').addEventListener('click', ()=>{
+    docHeader.classList.toggle('show');
+    if (docHeader.classList.contains('show')) docHeader.focus();
+  });
+  document.getElementById('toggleFooterBtn').addEventListener('click', ()=>{
+    docFooter.classList.toggle('show');
+    if (docFooter.classList.contains('show')) docFooter.focus();
+  });
+  document.getElementById('insPageNumBtn').addEventListener('click', ()=>{
+    docFooter.classList.add('show');
+    docFooter.innerHTML += (docFooter.innerHTML ? ' | ' : '') + 'Page 1';
+  });
+  document.getElementById('insLetterheadBtn').addEventListener('click', ()=>{
+    docHeader.innerHTML = letterheadTemplate;
+    docHeader.classList.add('show');
+    showMsg('School letterhead inserted into the header.');
+  });
+
+  document.getElementById('insTextBoxBtn').addEventListener('click', ()=>{
+    page.focus(); restoreSelection();
+    document.execCommand('insertHTML', false, '<div class="textbox" contenteditable="true">Text box</div>');
+  });
+  document.getElementById('insDateBtn').addEventListener('click', ()=>{
+    page.focus(); restoreSelection();
+    const now = new Date();
+    document.execCommand('insertText', false, now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
+  });
+
+  const symbols = ['©','®','™','§','¶','€','£','¥','•','…','–','—','±','÷','×','≈','≠','≤','≥','∞','√','∑','∆','Ω','α','β','π','µ','°','½'];
+  const symGrid = document.getElementById('symGrid');
+  symbols.forEach(s=>{
+    const b = document.createElement('button');
+    b.textContent = s;
+    b.addEventListener('mousedown', e=>e.preventDefault());
+    b.addEventListener('click', ()=>{
+      page.focus(); restoreSelection();
+      document.execCommand('insertText', false, s);
+      document.getElementById('symbolPopup').classList.remove('show');
+    });
+    symGrid.appendChild(b);
+  });
+  document.getElementById('insSymbolBtn').addEventListener('click', (e)=>{
+    saveSelection();
+    document.getElementById('symbolPopup').classList.toggle('show');
+  });
+  document.addEventListener('click', (e)=>{
+    const pop = document.getElementById('symbolPopup');
+    if (!pop.contains(e.target) && e.target.id !== 'insSymbolBtn') pop.classList.remove('show');
+  });
+
+  /* ===================== LAYOUT TAB ===================== */
+  const marginPresets = {normal:'96px', narrow:'48px', moderate:'72px', wide:'144px'};
+  document.getElementById('marginsSel').addEventListener('change', function(){
+    page.style.padding = marginPresets[this.value] + ' ' + marginPresets[this.value];
+  });
+
+  const sizePresets = { // [width,height] in px at 96dpi (portrait)
+    letter:[816,1056], a4:[794,1123], legal:[816,1344]
+  };
+  function applyPageSize(){
+    const size = document.getElementById('sizeSel').value;
+    const orient = document.getElementById('orientationSel').value;
+    let [w,h] = sizePresets[size];
+    if (orient === 'landscape') [w,h] = [h,w];
+    page.style.width = w + 'px';
+    page.style.minHeight = h + 'px';
+  }
+  document.getElementById('sizeSel').addEventListener('change', applyPageSize);
+  document.getElementById('orientationSel').addEventListener('change', applyPageSize);
+
+  document.getElementById('columnsSel').addEventListener('change', function(){
+    if (this.value === '1'){ page.style.columnCount = ''; page.style.columnGap = ''; }
+    else { page.style.columnCount = this.value; page.style.columnGap = '32px'; }
+  });
+
+  document.getElementById('lineSpacingSel').addEventListener('change', function(){
+    page.focus();
+    const sel = window.getSelection();
+    if (!sel.rangeCount) { page.style.lineHeight = this.value; return; }
+    let node = sel.anchorNode;
+    if (node && node.nodeType === 3) node = node.parentElement;
+    const block = node ? node.closest('p,div,li,h1,h2,h3') : null;
+    if (block && block !== page) block.style.lineHeight = this.value;
+    else page.style.lineHeight = this.value;
+  });
+
+  /* ===================== REFERENCES TAB ===================== */
+  function buildToc(){
+    const heads = page.querySelectorAll('h1, h2, h3');
+    if (!heads.length){ showMsg('No headings found. Apply a Heading style first (Home > Styles).'); return null; }
+    let html = '<div class="toc" contenteditable="false" style="border:1px solid #ccc;padding:10px 14px;margin:8px 0;"><b>Table of Contents</b><ul style="margin:6px 0 0;padding-left:18px;">';
+    heads.forEach((h,i)=>{
+      const id = 'heading-' + i;
+      h.id = id;
+      const indent = h.tagName === 'H1' ? '' : (h.tagName === 'H2' ? 'margin-left:16px;' : 'margin-left:32px;');
+      html += '<li style="'+indent+'"><a href="#'+id+'">'+h.textContent+'</a></li>';
+    });
+    html += '</ul></div>';
+    return html;
+  }
+  document.getElementById('insTocBtn').addEventListener('click', ()=>{
+    const html = buildToc();
+    if (!html) return;
+    const existing = page.querySelector('.toc');
+    if (existing) existing.remove();
+    page.insertAdjacentHTML('afterbegin', html);
+    showMsg('Table of contents inserted.');
+  });
+  document.getElementById('updateTocBtn').addEventListener('click', ()=>{
+    const existing = page.querySelector('.toc');
+    const html = buildToc();
+    if (!html) return;
+    if (existing) existing.outerHTML = html; else page.insertAdjacentHTML('afterbegin', html);
+    showMsg('Table of contents updated.');
+  });
+
+  let footnoteCount = 0;
+  document.getElementById('insFootnoteBtn').addEventListener('click', ()=>{
+    const text = prompt('Footnote text:', '');
+    if (text === null) return;
+    footnoteCount++;
+    page.focus(); restoreSelection();
+    document.execCommand('insertHTML', false, '<sup>'+footnoteCount+'</sup>');
+    footnotesArea.classList.add('show');
+    const line = document.createElement('div');
+    line.className = 'fn-line';
+    line.textContent = footnoteCount + '. ' + text;
+    footnotesArea.appendChild(line);
+  });
+
+  document.getElementById('insCitationBtn').addEventListener('click', ()=>{
+    const cite = prompt('Citation (e.g. Author, Year):', '');
+    if (!cite) return;
+    page.focus(); restoreSelection();
+    document.execCommand('insertHTML', false, ' (' + cite + ')');
+  });
+
+  /* ===================== REVIEW TAB ===================== */
+  let spellOn = false;
+  document.getElementById('spellBtn').addEventListener('click', function(){
+    spellOn = !spellOn;
+    page.spellcheck = spellOn;
+    this.classList.toggle('active', spellOn);
+    // toggling attribute needs a reflow to take effect in most browsers
+    page.setAttribute('spellcheck', spellOn ? 'true' : 'false');
+    page.blur(); page.focus();
+    showMsg('Spelling & grammar check ' + (spellOn ? 'enabled' : 'disabled') + '.');
+  });
+
+  function countStats(){
+    const text = page.innerText.trim();
+    const words = text ? (text.match(/\S+/g) || []).length : 0;
+    const chars = text.length;
+    const paras = page.querySelectorAll('p, div, li, h1, h2, h3').length;
+    return {words, chars, paras};
+  }
+  function updateWordCountLabel(){
+    document.getElementById('wordCountLabel').textContent = 'Words: ' + countStats().words;
+  }
+  document.getElementById('wordCountBtn').addEventListener('click', ()=>{
+    const s = countStats();
+    alert('Word Count\n\nWords: ' + s.words + '\nCharacters: ' + s.chars + '\nParagraphs: ' + s.paras);
+  });
+  page.addEventListener('input', updateWordCountLabel);
+  updateWordCountLabel();
+
+  document.getElementById('newCommentBtn').addEventListener('click', ()=>{
+    const sel = window.getSelection();
+    if (!sel.rangeCount || sel.toString().trim() === ''){ showMsg('Select some text first to comment on.'); return; }
+    const text = prompt('Comment:', '');
+    if (!text) return;
+    const range = sel.getRangeAt(0);
+    const span = document.createElement('span');
+    span.className = 'comment-mark';
+    span.title = text;
+    range.surroundContents(span);
+    showMsg('Comment added (hover the highlighted text to view).');
+  });
+
+  let trackOn = false;
+  document.getElementById('trackChangesBtn').addEventListener('click', function(){
+    trackOn = !trackOn;
+    this.classList.toggle('active', trackOn);
+    document.getElementById('trackChangesLabel').textContent = trackOn ? 'Track Changes: On' : '';
+    showMsg('Track Changes ' + (trackOn ? 'enabled — insertions made via the ribbon (tables, links, text) will be marked.' : 'disabled') + '.');
+  });
+  // Lightweight tracking: marks ribbon-driven insertions when track changes is on
+  const originalExec = document.execCommand.bind(document);
+  document.execCommand = function(cmd, ui, val){
+    if (trackOn && cmd === 'insertHTML' && val){
+      val = '<span style="color:#c00000;text-decoration:underline;">' + val + '</span>';
+    }
+    return originalExec(cmd, ui, val);
+  };
+
+  /* ===================== VIEW TAB ===================== */
+  document.getElementById('printLayoutBtn').addEventListener('click', ()=>{
+    page.classList.remove('weblayout');
+    applyPageSize();
+  });
+  document.getElementById('webLayoutBtn').addEventListener('click', ()=>{
+    page.classList.add('weblayout');
+  });
+
+  document.getElementById('rulerToggleBtn').addEventListener('click', function(){
+    document.getElementById('ruler').classList.toggle('show');
+    this.classList.toggle('active');
+  });
+  document.getElementById('gridToggleBtn').addEventListener('click', function(){
+    page.classList.toggle('gridlines');
+    this.classList.toggle('active');
+  });
+
+  let zoom = 100;
+  function applyZoom(){
+    pageWrap.style.transform = 'scale(' + (zoom/100) + ')';
+    document.getElementById('zoomLabel').textContent = zoom + '%';
+    document.getElementById('zoomLabelRibbon').textContent = zoom + '%';
+    document.getElementById('zoomRange').value = zoom;
+  }
+  function changeZoom(delta){ zoom = Math.max(50, Math.min(200, zoom + delta)); applyZoom(); }
+  document.getElementById('zoomInBtn').addEventListener('click', ()=>changeZoom(10));
+  document.getElementById('zoomOutBtn').addEventListener('click', ()=>changeZoom(-10));
+  document.getElementById('zoomInBtn2').addEventListener('click', ()=>changeZoom(10));
+  document.getElementById('zoomOutBtn2').addEventListener('click', ()=>changeZoom(-10));
+  document.getElementById('zoomRange').addEventListener('input', function(){ zoom = parseInt(this.value,10); applyZoom(); });
+
+  /* ===================== FILE TAB ===================== */
+  document.getElementById('newBtn').addEventListener('click', ()=>{
+    if (confirm('Start a new blank document? Unsaved changes will be lost.')){
+      page.querySelectorAll(':scope > *:not(.doc-header):not(.doc-footer):not(.footnotes-area)').forEach(el=>el.remove());
+      page.insertAdjacentHTML('afterbegin', '<p><br></p>');
+      footnotesArea.innerHTML = ''; footnotesArea.classList.remove('show');
+      updateWordCountLabel();
+    }
+  });
+  document.getElementById('openBtn').addEventListener('click', ()=> document.getElementById('openFile').click());
+  document.getElementById('openFile').addEventListener('change', function(){
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(e.target.result, 'text/html');
+      const incoming = doc.getElementById('page');
+      if (incoming){ page.innerHTML = incoming.innerHTML; showMsg('Document opened.'); }
+      else showMsg('Could not read that file.');
+      updateWordCountLabel();
+    };
+    reader.readAsText(file);
+    this.value = '';
+  });
+
+  /* ===================== SAVE / PRINT / PDF (shared) ===================== */
+  document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+  document.getElementById('printBtnFile').addEventListener('click', ()=> window.print());
+
+  function downloadPdf(){
+    const title = document.querySelector('.doc-title').textContent.trim() || 'Document1';
+    const filename = title.replace(/[^a-z0-9]+/gi,'-').toLowerCase() + '.pdf';
+    const opt = {
+      margin: 0, filename: filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'in', format: 'letter', orientation: document.getElementById('orientationSel').value },
+      pagebreak: { mode: ['css','legacy'] }
+    };
+    html2pdf().set(opt).from(page).save().catch(()=>{
+      showMsg('PDF export failed — try Print instead and choose "Save as PDF".');
+    });
+  }
+  document.getElementById('downloadBtn').addEventListener('click', downloadPdf);
+  document.getElementById('pdfBtnFile').addEventListener('click', downloadPdf);
+
+  async function saveDoc(){
+    const data = { title: document.querySelector('.doc-title').textContent, html: page.innerHTML, savedAt: Date.now() };
+    try{
+      if (window.storage && window.storage.set){
+        await window.storage.set('blank-document:current', JSON.stringify(data), false);
+        showMsg('Document saved.');
+      } else showMsg('Saved in this session (storage unavailable).');
+    }catch(err){ showMsg("Couldn't save — please try again."); }
+  }
+  document.getElementById('saveBtn').addEventListener('click', saveDoc);
+  document.getElementById('saveBtnFile').addEventListener('click', saveDoc);
+
+  async function loadDoc(){
+    try{
+      if (window.storage && window.storage.get){
+        const result = await window.storage.get('blank-document:current');
+        if (result && result.value){
+          const data = JSON.parse(result.value);
+          if (data.html) page.innerHTML = data.html;
+          if (data.title) document.querySelector('.doc-title').textContent = data.title;
+        }
+      }
+    }catch(err){ /* no saved doc yet */ }
+    updateWordCountLabel();
+  }
+  loadDoc();
+
+  document.addEventListener('keydown', (e)=>{
+    if (e.ctrlKey && e.key.toLowerCase()==='s'){ e.preventDefault(); saveDoc(); }
+  });
+
+  applyPageSize();
+})();
+</script>
+</body>
+</html>
